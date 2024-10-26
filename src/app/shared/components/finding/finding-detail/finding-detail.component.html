@@ -1,0 +1,78 @@
+<div class="flex flex-col gap-4 w-full">
+  <div class="flex flex-col border-b border-border pb-4 gap-4">
+    <div class="flex flex-row justify-between items-center">
+      <div class="text-xl">{{ finding()?.name }}</div>
+      @if (minimal) {
+        <div class="flex-row gap-2 items-center hidden lg:flex">
+          <a [routerLink]="['/finding', finding()?.id]">
+            <ng-icon name="detail" size="18" class="cursor-pointer"></ng-icon>
+          </a>
+          <div class="shrink-0 bg-border w-[1px] h-5 text-muted"></div>
+          <ng-icon
+            (click)="closeFinding()"
+            name="x" size="18"
+            class="cursor-pointer"></ng-icon>
+        </div>
+      }
+    </div>
+    <div class="flex flex-row items-center gap-4">
+      <status-finding [status]="finding()?.status"></status-finding>
+      <div class="px-4 py-1.5 rounded bg-background border border-border items-center">
+        <ng-icon name="trash"></ng-icon>
+      </div>
+    </div>
+  </div>
+  <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <div class="font-semibold">Found at</div>
+        <div class="block rounded border border-border bg-background h-10 p-2 items-center">
+          <div>{{ finding()?.location }}</div>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <div class="font-semibold">Description</div>
+        <div class="block rounded border border-border bg-background p-2 items-center">
+          <div>{{ finding()?.description }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2 rounded bg-background border border-border"
+         [ngClass]="minimal ? '' : 'min-w-[400px]'">
+      <div class="flex flex-col border-b border-border px-4 py-2">
+        <div class="flex flex-row justify-between">
+          <span>First seen</span>
+          <span>10m ago</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Last seen</span>
+          <span>2m ago</span>
+        </div>
+      </div>
+      <div class="flex flex-col px-4 py-2 border-b border-border">
+        <div class="flex flex-row justify-between">
+          <span>Finding ID</span>
+          <div class="flex flex-row items-center gap-2">
+            <a class="flex items-center gap-1 hover:text-[#605CEE] text-[#605CEECC]"
+               [routerLink]="['/finding', finding()?.id]"
+               target="_blank">
+              <span class="truncate ml-auto max-w-32">cs9igu2urjos73fe4hggasdasdfasfafafafa</span>
+              <ng-icon name="arrow-square"></ng-icon>
+            </a>
+          </div>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Scan ID</span>
+          <div class="flex flex-row items-center gap-2">
+            <a class="flex items-center gap-1 hover:text-[#605CEE] text-[#605CEECC]"
+               [routerLink]="['/finding', finding()?.id]"
+               target="_blank">
+              <span class="truncate ml-auto max-w-32">cs9igu2urjos73fe4hggasdasdfasfafafafa</span>
+              <ng-icon name="arrow-square"></ng-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

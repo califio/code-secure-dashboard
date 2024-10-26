@@ -1,0 +1,33 @@
+<div
+  class="max-h-0 overflow-hidden pt-1 pl-4 transition-all duration-500"
+  [ngClass]="{ hidden: !menuService.showSidebar, 'max-h-screen': item().expanded }">
+  <ul class="flex flex-col border-l border-dashed border-border pl-2 text-muted-foreground">
+    @for(sub of item().children; track $index) {
+      <li>
+        <div class="flex rounded text-muted-foreground hover:bg-card hover:text-foreground" (click)="toggleMenu(sub)">
+          <!-- Condition -->
+          @if(sub.children){
+            <a class="inline-block w-full cursor-pointer px-4 py-2 text-xs font-semibold">
+              {{ sub.label }}
+            </a>
+            <button
+              [ngClass]="{ hidden: !menuService.showSidebar, 'rotate-90': sub.expanded }"
+              class="flex items-center p-1 text-muted-foreground transition-all duration-500">
+              <ng-icon name="next"></ng-icon>
+            </button>
+          } @else {
+            <a
+              [routerLink]="sub.route"
+              routerLinkActive="text-primary"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="inline-block w-full px-4 py-2 text-xs font-semibold">
+              {{ sub.label }}
+            </a>
+          }
+        </div>
+        <!-- Submenu items -->
+        <app-sidebar-submenu [item]="sub"></app-sidebar-submenu>
+      </li>
+    }
+  </ul>
+</div>

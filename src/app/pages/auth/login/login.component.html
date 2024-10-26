@@ -1,0 +1,87 @@
+<!-- login form -->
+<form class="my-10 space-y-6 text-white" [formGroup]="form" (ngSubmit)="onSignIn()">
+  <div class="flex flex-row justify-center items-center rounded-lg bg-gray-700 gap-2 py-1 cursor-pointer text-gray-300 font-semibold h-10">
+    <ng-icon [name]="'google'" size=32></ng-icon>
+    <span>Log in with Google</span>
+  </div>
+
+  <div
+    class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-muted after:mt-0.5 after:flex-1 after:border-t after:border-muted">
+    <p class="mx-4 mb-0 text-center text-sm text-muted-foreground">or</p>
+  </div>
+
+  <div class="text-center">
+    <p class="text-sm text-muted-foreground">Enter your credential to access your account.</p>
+  </div>
+
+  <div class="space-y-3 text-left">
+    <div class="form__group">
+      <div class="relative">
+        <input
+          type="text"
+          id="username"
+          [ngClass]="{ 'is__invalid-input': submitted && form.controls }"
+          class="peer block"
+          placeholder=" "
+          [formControl]="form.controls.userName" />
+        <label
+          for="username"
+          class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+          UserName
+        </label>
+      </div>
+      @if(submitted && form.controls.userName.getError('required')) {
+        <div class="is__invalid-error">
+          <div>Required field</div>
+        </div>
+      }
+    </div>
+
+    <div class="form__group">
+      <div class="relative">
+        <input
+          [type]="passwordTextType ? 'text' : 'password'"
+          id="password"
+          [ngClass]="{ 'is__invalid-input': submitted && form.controls.userName.getError('required') }"
+          class="peer block"
+          placeholder=" "
+          [formControl]="form.controls.password" />
+        <label
+          for="password"
+          class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+          Password
+        </label>
+        <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground" (click)="passwordTextType = !passwordTextType">
+          <ng-icon [name]="passwordTextType ? 'eye' : 'eye-off'"></ng-icon>
+        </span>
+      </div>
+      @if(submitted && form.controls.password.getError('required')) {
+        <div class="is__invalid-error">
+          <div>Required field</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="mb-2 flex items-center justify-between space-x-3">
+    <div class="flex items-center">
+      <input id="remember-me" name="remember-me" type="checkbox" />
+      <label for="remember-me" class="ml-2 block text-sm text-muted-foreground"> Remember me </label>
+    </div>
+
+    <div routerLink="/auth/forgot-password" class="px-2 rounded bg-background hover:bg-primary/10 text-sm text-muted-foreground cursor-pointer">
+      Forgot your password?
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div>
+    <ng-button
+      (onClick)="onSignIn()"
+      label="Sign in"
+      [loading]="form.disabled"
+      [disabled]="form.disabled"
+      [ngClass]="'justify-center rounded-lg bg-primary gap-2 py-1 cursor-pointer text-gray-50 font-semibold h-10'">
+    </ng-button>
+  </div>
+</form>

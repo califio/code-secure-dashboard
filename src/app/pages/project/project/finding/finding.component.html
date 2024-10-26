@@ -1,0 +1,26 @@
+<div class="mx-auto px-2 lg:px-6 flex flex-row pt-6 text-sm gap-4 w-full">
+  <list-finding
+    class="w-full lg:w-1/2"
+    [findings]="findings"
+    [loading]="loading"
+    (openFinding)="onOpenFinding($event)"
+  >
+  </list-finding>
+  <div class="hidden lg:block w-1/2">
+    @if(finding != null) {
+      <finding-detail
+        (onClose)="closeFinding()"
+        [finding]="finding">
+      </finding-detail>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-[720px] w-full">
+        @if (loadingFinding) {
+          <ng-icon name="spin" size="24"></ng-icon>
+        } @else {
+          <ng-icon name="click" size="24"></ng-icon>
+          <div>Select vulnerability to see its details.</div>
+        }
+      </div>
+    }
+  </div>
+</div>

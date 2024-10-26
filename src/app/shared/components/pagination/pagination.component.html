@@ -1,0 +1,30 @@
+<div class="flex items-center justify-between px-2 py-1 bg-background text-muted-foreground">
+  <span>Page {{currentPage()}} of total {{totalPage()}} pages.</span>
+  <div class="flex items-center h-10 rounded border border-border/20">
+    <button
+      (click)="prevPage()"
+      class="inline-flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full rounded-none"
+      title="Previous page" [disabled]="disable.prev">
+      <ng-icon name="next" size="18" class="rotate-180"></ng-icon>
+    </button>
+    <button
+      (click)="firstPage()"
+      class="inline-flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full rounded-none"
+      title="First page" [disabled]="disable.prev">
+      <ng-icon name="double-prev" size="18"></ng-icon>
+    </button>
+    <div class="px-2 py-1 flex items-center">{{currentPage()}}</div>
+    <button
+      (click)="nextPage()"
+      class="inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full"
+      title="Last page" [disabled]="disable.next">
+      <ng-icon name="next" size="18"></ng-icon>
+    </button>
+    <button
+      (click)="endPage()"
+      class="inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full"
+      title="Next page" [disabled]="disable.next">
+      <ng-icon name="double-next" size="18"></ng-icon>
+    </button>
+  </div>
+</div>

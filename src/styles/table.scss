@@ -1,0 +1,20 @@
+table {
+  @apply border-collapse text-muted-foreground text-sm border border-border;
+  thead {
+    @apply sticky top-0 bg-background;
+    tr {
+      @apply rounded-lg;
+      th {
+        @apply border-b border-border py-2 text-left align-middle font-medium whitespace-nowrap hover:text-primary text-xs cursor-pointer;
+      }
+    }
+  }
+  tbody {
+    tr {
+      @apply transition-colors bg-background relative hover:bg-card group-hover:bg-card;
+      td {
+        @apply border-b border-border p-0 m-0 py-2;
+      }
+    }
+  }
+}

@@ -1,0 +1,240 @@
+<div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm gap-4">
+  <div class="flex flex-col overflow-hidden w-full border border-white/5 gap-4 rounded-xl bg-background p-6">
+    <div class="flex w-full items-center">
+      <div class="flex flex-col font-normal">
+        <div class="flex">
+          <div>You have</div>
+          <div class="font-bold px-2  hover:underline hover:underline-offset-4">0</div>
+          <div>open vulnerabilities.</div>
+        </div>
+        <div class="flex gap-4">No new vulnerabilities detected last week!</div>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <div class="flex flex-row gap-2 w-full justify-between items-center min-w-[1024px]">
+        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-rose-600 rounded-xl">
+          <ng-icon name="bug" class="text-rose-600" size="36"></ng-icon>
+          <div class="text-2xl font-bold font-code-medium">
+            @if (statisticLoading) {
+              <ng-icon name="spin"></ng-icon>
+            } @else {
+              <span>{{statistic.critical}}</span>
+            }
+          </div>
+          <div class="opacity-50 text-sm uppercase">critical</div>
+        </div>
+        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-orange-600 rounded-xl">
+          <ng-icon name="bug" class="text-orange-600" size="36"></ng-icon>
+          <div class="text-2xl font-bold font-code-medium">
+            @if (statisticLoading) {
+              <ng-icon name="spin"></ng-icon>
+            } @else {
+              <span>{{statistic.high}}</span>
+            }
+          </div>
+          <div class="opacity-50 text-sm uppercase">high</div>
+        </div>
+        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-yellow-500 rounded-xl">
+          <ng-icon name="bug" class="text-yellow-500" size="36"></ng-icon>
+          <div class="text-2xl font-bold font-code-medium">
+            @if (statisticLoading) {
+              <ng-icon name="spin"></ng-icon>
+            } @else {
+              <span>{{statistic.medium}}</span>
+            }
+          </div>
+          <div class="opacity-50 text-sm uppercase">medium</div>
+        </div>
+        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-indigo-500 rounded-xl">
+          <ng-icon name="bug" class="text-indigo-500" size="36"></ng-icon>
+          <div class="text-2xl font-bold font-code-medium">
+            @if (statisticLoading) {
+              <ng-icon name="spin"></ng-icon>
+            } @else {
+              <span>{{statistic.low}}</span>
+            }
+          </div>
+          <div class="opacity-50 text-sm uppercase">low</div>
+        </div>
+        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-zinc-700 rounded-xl">
+          <ng-icon name="bug" class="text-zinc-700" size="36"></ng-icon>
+          <div class="text-2xl font-bold font-code-medium">
+            @if (statisticLoading) {
+              <ng-icon name="spin"></ng-icon>
+            } @else {
+              <span>{{statistic.info}}</span>
+            }
+          </div>
+          <div class="opacity-50 text-sm uppercase">Informative</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--  SCANS-->
+  <div class="flex min-w-full flex-col rounded-xl border border-muted/20 bg-background">
+    <!--    FILTER-->
+    <div class="flex flex-col py-3 px-5">
+      <div class="flex flex-row gap-2 w-full ">
+        <!--SEARCH-->
+        <div class="flex w-full md:max-w-80">
+          <label class="relative text-muted-foreground w-full">
+            <div class="absolute left-2.5 top-2.5">
+              <ng-icon name="search"></ng-icon>
+            </div>
+            <input class="py-2 pl-8 pr-2" placeholder="Search..." type="text"
+                   (keyup.enter)="onSearchChange()"/>
+          </label>
+        </div>
+        <!--STATUS-->
+        <dropdown defaultLabel="Status"
+                  (onSelect)="onStatusChange($event)"
+                  [options]="statuOptions">
+
+        </dropdown>
+      </div>
+    </div>
+    <!--    TABLE-->
+    <div class="overflow-x-auto">
+      <table
+        class="table w-full min-w-[1024px] table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
+        <thead class="border border-muted/20 text-xs text-muted-foreground">
+        <tr>
+          <th class="w-[50px] min-w-[50px] text-center">
+            <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox"/>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1">
+              <span>SCAN</span>
+            </div>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1">
+              <span>SCANNER</span>
+            </div>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1">
+              <span>TYPE</span>
+            </div>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1">
+              <span>STATUS</span>
+            </div>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1">
+              <span>FINDING</span>
+            </div>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1 w-10">
+              <span>LAST SCAN</span>
+            </div>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1 w-10">
+              <span>DURATION</span>
+            </div>
+          </th>
+          <th class="w-[60px]"></th>
+        </tr>
+        </thead>
+        @if(!loading) {
+          <tbody>
+            @for (scan of response.items; track scan.id) {
+              <tr>
+                <td class="text-center">
+                  <input
+                    class="checkbox checkbox-sm"
+                    data-datatable-row-check="true"
+                    type="checkbox"
+                    value="28"/>
+                </td>
+                <td>
+                  <a [routerLink]="['/project', slug, 'scan']" class="flex flex-col gap-1">
+                    <div class="">{{scan.commitTitle}}</div>
+                    <div class="flex flex-row items-center gap-2 text-xs">
+                      @if(scan.commitBranch) {
+                        <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
+                          <ng-icon name="git-branch" size="14"></ng-icon>
+                          <span>{{ scan.commitBranch }}</span>
+                        </div>
+                      }
+                      @if (scan.gitAction == GitAction.MergeRequest) {
+                        <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
+                          <ng-icon name="git-merge" size="14"></ng-icon>
+                          <span>{{ scan.targetBranch }}</span>
+                          <span><-</span>
+                          <span>{{ scan.sourceBranch }}</span>
+                        </div>
+                        <div class="border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">merge request</div>
+                      }
+                      @if (scan.commitTag) {
+                        <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
+                          <ng-icon name="git-tag" size="14"></ng-icon>
+                          <span>{{ scan.commitTag }}</span>
+                        </div>
+                        <div class="border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">tag</div>
+                      }
+                    </div>
+                  </a>
+                </td>
+                <td>{{ scan.scanner }}</td>
+                <td>{{ scan.type }}</td>
+                <td>{{ scan.status }}</td>
+                <td>
+                  <div
+                    class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
+                    <p
+                      class="flex-1 text-center bg-rose-600/20 text-rose-500 flex items-center justify-center opacity-100">
+                      {{scan.severityCritical}}
+                    </p>
+                    <p
+                      class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center opacity-100">
+                      {{scan.severityHigh}}
+                    </p>
+                    <p
+                      class="flex-1 text-center bg-yellow-600/20 text-yellow-500 flex items-center justify-center opacity-100">
+                      {{scan.severityMedium}}
+                    </p>
+                    <p
+                      class="flex-1 text-center bg-indigo-500/20 text-indigo-400 flex items-center justify-center opacity-100">
+                      {{scan.severityLow}}
+                    </p>
+                    <p
+                      class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center opacity-100">
+                      {{scan.severityInfo}}
+                    </p>
+                  </div>
+                </td>
+                <td>
+                  <div class="text-[#00c869]" [title]="scan.startedAt">
+                    {{ scan.startedAt | timeago }}
+                  </div>
+                </td>
+                <td>TODO</td>
+                <td></td>
+              </tr>
+            }
+          </tbody>
+        }
+      </table>
+    </div>
+    @if (loading) {
+      <div class="flex flex-col animate-pulse w-full gap-0.5">
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
+      </div>
+    }
+    <!--  FOOTER-->
+    <pagination class="sticky bottom-0 z-10"></pagination>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="flex h-screen w-screen">
+  <div class="auth-bg hidden flex-1 items-center justify-center bg-primary bg-cover lg:flex">
+    <div class="max-w-2xl space-y-4 p-8 text-center text-white">
+<!--      <img src="./assets/images/auth-screens.png" alt="dashboard widget" />-->
+      <h1 class="text-4xl font-bold">"Fast, Secure and Productive"</h1>
+      <p class="text-xs font-light">
+        Description here
+      </p>
+    </div>
+  </div>
+  <div class="flex flex-1 items-center justify-center bg-background">
+    <div class="max-w-md overflow-y-auto px-4 sm:w-[500px]">
+      <!-- logo -->
+      <div class="flex items-center justify-center">
+        <div class="flex justify-center bg-primary rounded h-10 w-10 items-center">
+          <ng-icon name="logo" size="24"></ng-icon>
+        </div>
+        <b class="text-md pl-3 font-bold text-foreground text-xl"> Code Secure </b>
+      </div>
+      <!-- Route -->
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
