@@ -17,6 +17,8 @@ import { getFinding } from '../fn/finding/get-finding';
 import { GetFinding$Params } from '../fn/finding/get-finding';
 import { getFindingActivities } from '../fn/finding/get-finding-activities';
 import { GetFindingActivities$Params } from '../fn/finding/get-finding-activities';
+import { updateFinding } from '../fn/finding/update-finding';
+import { UpdateFinding$Params } from '../fn/finding/update-finding';
 
 @Injectable({ providedIn: 'root' })
 export class FindingService extends BaseService {
@@ -25,7 +27,7 @@ export class FindingService extends BaseService {
   }
 
   /** Path part for operation `getFinding()` */
-  static readonly GetFindingPath = '/api/finding/{sid}';
+  static readonly GetFindingPath = '/api/finding/{id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -49,8 +51,33 @@ export class FindingService extends BaseService {
     );
   }
 
+  /** Path part for operation `updateFinding()` */
+  static readonly UpdateFindingPath = '/api/finding/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateFinding()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateFinding$Response(params: UpdateFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateFinding(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateFinding$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateFinding(params: UpdateFinding$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateFinding$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
   /** Path part for operation `getFindingActivities()` */
-  static readonly GetFindingActivitiesPath = '/api/finding/{sid}/activity';
+  static readonly GetFindingActivitiesPath = '/api/finding/{id}/activity';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

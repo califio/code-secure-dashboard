@@ -8,30 +8,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { UserSortField } from '../../models/user-sort-field';
-import { UserStatus } from '../../models/user-status';
+import { UserFilter } from '../../models/user-filter';
 import { UserSummaryPage } from '../../models/user-summary-page';
 
 export interface GetUsers$Params {
-  Name?: string;
-  RoleId?: string;
-  Status?: UserStatus;
-  SortBy?: UserSortField;
-  Size?: number;
-  Page?: number;
-  Desc?: boolean;
+      body?: UserFilter
 }
 
 export function getUsers(http: HttpClient, rootUrl: string, params?: GetUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
   const rb = new RequestBuilder(rootUrl, getUsers.PATH, 'get');
   if (params) {
-    rb.query('Name', params.Name, {"style":"form"});
-    rb.query('RoleId', params.RoleId, {"style":"form"});
-    rb.query('Status', params.Status, {"style":"form"});
-    rb.query('SortBy', params.SortBy, {"style":"form"});
-    rb.query('Size', params.Size, {"style":"form"});
-    rb.query('Page', params.Page, {"style":"form"});
-    rb.query('Desc', params.Desc, {"style":"form"});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(

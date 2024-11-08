@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { UserDetail } from '../../models/user-detail';
+import { UserInfo } from '../../models/user-info';
 
 export interface GetUser$Params {
   userId: string;
 }
 
-export function getUser(http: HttpClient, rootUrl: string, params: GetUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
+export function getUser(http: HttpClient, rootUrl: string, params: GetUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
   const rb = new RequestBuilder(rootUrl, getUser.PATH, 'get');
   if (params) {
     rb.path('userId', params.userId, {"style":"simple"});
@@ -25,7 +25,7 @@ export function getUser(http: HttpClient, rootUrl: string, params: GetUser$Param
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserDetail>;
+      return r as StrictHttpResponse<UserInfo>;
     })
   );
 }

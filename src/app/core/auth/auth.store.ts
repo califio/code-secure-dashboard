@@ -1,14 +1,15 @@
-import {Injectable} from "@angular/core";
+import {Injectable, signal} from "@angular/core";
+import {UserProfile} from '../../api/models/user-profile';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthStoreService {
+export class AuthStore {
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private _accessToken: string | null = null;
   private _refreshToken: string | null = null;
-
+  currentUser = signal<UserProfile>({});
 
   constructor() {
     this._accessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY)

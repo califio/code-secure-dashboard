@@ -1,0 +1,9 @@
+<div class="w-10 h-10 flex flex-row" [ngClass]="[shape == 'circle' ? 'rounded-full' : '', ngClass]" [style]="style()">
+  @if (src) {
+    <img class="w-full h-full" [src]="src" alt="avatar">
+  } @else {
+    <div class="w-full h-full flex flex-row items-center justify-center">
+      <span>{{_text}}</span>
+    </div>
+  }
+</div>

@@ -4,7 +4,7 @@ import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/route
 import {NavItem} from '../../../core/menu';
 import {getPathParam} from '../../../core/router';
 import {Subject, takeUntil} from 'rxjs';
-import {ProjectStoreService} from './project-store.service';
+import {ProjectStore} from './project-store';
 
 @Component({
   selector: 'app-project',
@@ -22,7 +22,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   navItems: NavItem[] = [
     {
       label: 'Overview',
-      route: '/scan',
+      route: 'scan',
       icon: 'scan',
       count: 1
     },
@@ -47,7 +47,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   slug = '';
   constructor(
     private router: Router,
-    private projectStore: ProjectStoreService
+    private projectStore: ProjectStore
   ) {
     getPathParam('slug').pipe(
       takeUntil(this.destroy$)

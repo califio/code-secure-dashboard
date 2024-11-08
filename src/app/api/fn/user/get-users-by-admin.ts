@@ -8,30 +8,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { UserDetailPage } from '../../models/user-detail-page';
-import { UserSortField } from '../../models/user-sort-field';
-import { UserStatus } from '../../models/user-status';
+import { UserFilter } from '../../models/user-filter';
+import { UserInfoPage } from '../../models/user-info-page';
 
 export interface GetUsersByAdmin$Params {
-  Name?: string;
-  RoleId?: string;
-  Status?: UserStatus;
-  SortBy?: UserSortField;
-  Size?: number;
-  Page?: number;
-  Desc?: boolean;
+      body?: UserFilter
 }
 
-export function getUsersByAdmin(http: HttpClient, rootUrl: string, params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetailPage>> {
-  const rb = new RequestBuilder(rootUrl, getUsersByAdmin.PATH, 'get');
+export function getUsersByAdmin(http: HttpClient, rootUrl: string, params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfoPage>> {
+  const rb = new RequestBuilder(rootUrl, getUsersByAdmin.PATH, 'post');
   if (params) {
-    rb.query('Name', params.Name, {"style":"form"});
-    rb.query('RoleId', params.RoleId, {"style":"form"});
-    rb.query('Status', params.Status, {"style":"form"});
-    rb.query('SortBy', params.SortBy, {"style":"form"});
-    rb.query('Size', params.Size, {"style":"form"});
-    rb.query('Page', params.Page, {"style":"form"});
-    rb.query('Desc', params.Desc, {"style":"form"});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -39,7 +26,7 @@ export function getUsersByAdmin(http: HttpClient, rootUrl: string, params?: GetU
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserDetailPage>;
+      return r as StrictHttpResponse<UserInfoPage>;
     })
   );
 }

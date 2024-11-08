@@ -11,18 +11,29 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { addMember } from '../fn/project/add-member';
+import { AddMember$Params } from '../fn/project/add-member';
+import { getProjectBranches } from '../fn/project/get-project-branches';
+import { GetProjectBranches$Params } from '../fn/project/get-project-branches';
 import { getProjectFindings } from '../fn/project/get-project-findings';
 import { GetProjectFindings$Params } from '../fn/project/get-project-findings';
+import { getProjectInfo } from '../fn/project/get-project-info';
+import { GetProjectInfo$Params } from '../fn/project/get-project-info';
 import { getProjects } from '../fn/project/get-projects';
 import { GetProjects$Params } from '../fn/project/get-projects';
 import { getProjectScans } from '../fn/project/get-project-scans';
 import { GetProjectScans$Params } from '../fn/project/get-project-scans';
 import { getProjectStatistic } from '../fn/project/get-project-statistic';
 import { GetProjectStatistic$Params } from '../fn/project/get-project-statistic';
+import { getProjectUsers } from '../fn/project/get-project-users';
+import { GetProjectUsers$Params } from '../fn/project/get-project-users';
 import { ProjectFindingPage } from '../models/project-finding-page';
+import { ProjectInfo } from '../models/project-info';
 import { ProjectScanPage } from '../models/project-scan-page';
 import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
+import { ProjectUser } from '../models/project-user';
+import { ProjectUserPage } from '../models/project-user-page';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService extends BaseService {
@@ -52,6 +63,31 @@ export class ProjectService extends BaseService {
   getProjects(params?: GetProjects$Params, context?: HttpContext): Observable<ProjectSummaryPage> {
     return this.getProjects$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectSummaryPage>): ProjectSummaryPage => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectInfo()` */
+  static readonly GetProjectInfoPath = '/api/project/{slug}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectInfo()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectInfo$Response(params: GetProjectInfo$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectInfo>> {
+    return getProjectInfo(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectInfo$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectInfo(params: GetProjectInfo$Params, context?: HttpContext): Observable<ProjectInfo> {
+    return this.getProjectInfo$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectInfo>): ProjectInfo => r.body)
     );
   }
 
@@ -127,6 +163,81 @@ export class ProjectService extends BaseService {
   getProjectFindings(params: GetProjectFindings$Params, context?: HttpContext): Observable<ProjectFindingPage> {
     return this.getProjectFindings$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectFindingPage>): ProjectFindingPage => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectUsers()` */
+  static readonly GetProjectUsersPath = '/api/project/{slug}/member/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectUsers()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectUsers$Response(params: GetProjectUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUserPage>> {
+    return getProjectUsers(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectUsers$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectUsers(params: GetProjectUsers$Params, context?: HttpContext): Observable<ProjectUserPage> {
+    return this.getProjectUsers$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectUserPage>): ProjectUserPage => r.body)
+    );
+  }
+
+  /** Path part for operation `addMember()` */
+  static readonly AddMemberPath = '/api/project/{slug}/member';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `addMember()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  addMember$Response(params: AddMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUser>> {
+    return addMember(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `addMember$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  addMember(params: AddMember$Params, context?: HttpContext): Observable<ProjectUser> {
+    return this.addMember$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectUser>): ProjectUser => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectBranches()` */
+  static readonly GetProjectBranchesPath = '/api/project/{slug}/branches';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectBranches()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectBranches$Response(params: GetProjectBranches$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return getProjectBranches(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectBranches$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectBranches(params: GetProjectBranches$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.getProjectBranches$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
     );
   }
 

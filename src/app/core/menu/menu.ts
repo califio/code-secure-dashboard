@@ -15,11 +15,6 @@ export const items: MenuItem[] = [
         label: 'Projects',
         route: '/project',
       },
-      {
-        label: 'Assets',
-        icon: 'asset',
-        route: '/assets',
-      },
     ]
   },
   {
@@ -27,14 +22,19 @@ export const items: MenuItem[] = [
     separator: false,
     items: [
       {
+        label: 'User Manager',
+        icon: 'users',
+        route: '/user',
+      },
+      {
         label: 'Rules',
         icon: 'template',
-        route: '/rules',
+        route: '/rule',
       },
       {
         icon: 'setting',
         label: 'Settings',
-        route: '/settings',
+        route: '/setting/ci-token',
       },
       // {
       //   icon: 'assets/icons/heroicons/outline/folder.svg',

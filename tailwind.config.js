@@ -85,6 +85,11 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        critical: '#f43f5e',
+        high: '#f97316',
+        medium: '#eab308',
+        low: '#6366f1',
+        info: '#22c55e',
       },
       container: {
         padding: {

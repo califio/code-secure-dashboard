@@ -1,12 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../shared/components/pagination/pagination.component';
+import {PaginationComponent} from '../../../../shared/components/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, RouterLink} from '@angular/router';
-import {ProjectStoreService} from '../project-store.service';
-import {DropdownComponent} from '../../../../shared/components/dropdown/dropdown.component';
-import {DropdownItem} from '../../../../shared/components/dropdown/dropdown.model';
+import {DropdownComponent} from '../../../../shared/components/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../../shared/components/ui/dropdown/dropdown.model';
 import {ProjectScanPage} from '../../../../api/models/project-scan-page';
 import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectScanFilter} from '../../../../api/models/project-scan-filter';
@@ -14,6 +13,7 @@ import {delay, finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams} from '../../../../core/router';
 import {GitAction} from '../../../../api/models/git-action';
 import {ProjectStatistics} from '../../../../api/models/project-statistics';
+import {ProjectStore} from '../project-store';
 @Component({
   selector: 'app-scan',
   standalone: true,
@@ -63,7 +63,7 @@ export class ScanComponent implements OnInit, OnDestroy {
   }
   constructor(
     private projectService: ProjectService,
-    private projectStore: ProjectStoreService,
+    private projectStore: ProjectStore,
     private route: ActivatedRoute
   ) {
   }
@@ -106,10 +106,32 @@ export class ScanComponent implements OnInit, OnDestroy {
 
   }
 
+  duration(start?: string, end?: string | null): string {
+    if (end == null || start == null) {
+      return "-";
+    }
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const durationInMs = endDate.getTime() - startDate.getTime();
+    const seconds = Math.floor((durationInMs / 1000) % 60);
+    const minutes = Math.floor((durationInMs / (1000 * 60)) % 60);
+    const hours = Math.floor((durationInMs / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(durationInMs / (1000 * 60 * 60 * 24));
+    const result = [];
+    if (days > 0) result.push(`${days} days`);
+    if (hours > 0) result.push(`${hours} hours`);
+    if (minutes > 0) result.push(`${minutes} minutes`);
+    if (seconds > 0) result.push(`${seconds} seconds`);
+    return result.length > 0 ? result.join(", ") : "0 seconds";
+  }
+
+
+
   ngOnDestroy(): void {
     this.destroy$.next(null);
     this.destroy$.complete();
   }
   private destroy$ = new Subject();
   protected readonly GitAction = GitAction;
+  protected readonly Date = Date;
 }

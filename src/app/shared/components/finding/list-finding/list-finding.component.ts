@@ -1,16 +1,17 @@
-import {Component, EventEmitter, HostListener, input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {DropdownComponent} from '../../dropdown/dropdown.component';
-import {DropdownItem} from '../../dropdown/dropdown.model';
+import {DropdownComponent} from '../../ui/dropdown/dropdown.component';
 import {TimeagoModule} from 'ngx-timeago';
-import {Router, RouterLink} from '@angular/router';
-import {PaginationComponent} from '../../pagination/pagination.component';
-import {LoadingTableComponent} from '../../loading-table/loading-table.component';
-import {StatusFindingComponent} from '../../status-finding/status-finding.component';
-import {Finding} from '../finding.model';
-import {StatusFinding} from '../../status-finding/status-finding.model';
-import {NgClass} from '@angular/common';
+import {RouterLink} from '@angular/router';
+import {PaginationComponent} from '../../ui/pagination/pagination.component';
+import {LoadingTableComponent} from '../../ui/loading-table/loading-table.component';
+import {FindingStatusComponent} from '../finding-status/finding-status.component';
+import {LowerCasePipe, NgClass} from '@angular/common';
+import {ProjectFinding} from '../../../../api/models/project-finding';
+import {FindingStatus} from '../../../../api/models/finding-status';
+import {FindingSeverity} from '../../../../api/models/finding-severity';
+import {GitBranchDropdownComponent} from '../../git-branch-dropdown/git-branch-dropdown.component';
 
 @Component({
   selector: 'list-finding',
@@ -24,45 +25,55 @@ import {NgClass} from '@angular/common';
     RouterLink,
     PaginationComponent,
     LoadingTableComponent,
-    StatusFindingComponent,
-    NgClass
+    FindingStatusComponent,
+    NgClass,
+    LowerCasePipe,
+    GitBranchDropdownComponent
   ],
   templateUrl: './list-finding.component.html',
   styleUrl: './list-finding.component.scss'
 })
 export class ListFindingComponent {
-  loading = input<boolean>(true);
-  findings = input<Finding[]>([]);
+  @Input()
+  loading = false;
+  @Input()
+  findings: ProjectFinding[] = [];
   @Output()
-  openFinding = new EventEmitter<Finding>();
-  search = '';
-  exportOptions: DropdownItem[] = [
-    {
-      value: 'csv',
-      label: 'CSV'
-    },
-    {
-      value: 'json',
-      label: 'JSON'
-    },
-    {
-      value: 'pdf',
-      label: 'PDF'
-    },
-  ];
+  openFinding = new EventEmitter<string>();
+  @Output()
+  selectFindings = new EventEmitter<string[]>();
+  selectedFindings: string[] = [];
+  constructor() {}
 
-  onSearchChange() {
-
+  onOpenFinding(findingId?: string) {
+    this.openFinding.emit(findingId);
   }
 
-  onOpenFinding(finding: Finding) {
-    this.openFinding.emit(finding);
-  }
-  mStatus: Map<StatusFinding, any> = new Map<StatusFinding, any>([
-    ['open', {'label': 'Open', 'icon': 'open', 'style': ''}],
-    ['confirmed', {'label': 'Confirmed', 'icon': 'verified', 'style': 'text-yellow-500'}],
-    ['ignore', {'label': 'Accepted Risk', 'icon': 'warning', 'style': 'text-orange-500'}],
-    ['false_positive', {'label': 'False Positive', 'icon': 'dislike', 'style': ''}],
-    ['fixed', {'label': 'Fixed', 'icon': 'verified', 'style': 'text-green-500'}],
+  mStatus: Map<FindingStatus, any> = new Map<FindingStatus, any>([
+    [FindingStatus.Open, {"label": 'Open', 'icon': 'open', 'style': 'font-semibold'}],
+    [FindingStatus.Confirmed, {'label': 'Confirmed', 'icon': 'verified', 'style': 'text-yellow-500'}],
+    [FindingStatus.Ignore, {'label': 'Accepted Risk', 'icon': 'warning', 'style': 'text-orange-500'}],
+    [FindingStatus.Incorrect, {'label': 'False Positive', 'icon': 'dislike', 'style': ''}],
+    [FindingStatus.Fixed, {'label': 'Fixed', 'icon': 'verified', 'style': 'text-green-500'}],
   ]);
+
+  mSeverity: Map<FindingSeverity, string> = new Map<FindingSeverity, string>([
+    [FindingSeverity.Critical, 'text-critical'],
+    [FindingSeverity.High, 'text-high'],
+    [FindingSeverity.Medium, 'text-medium'],
+    [FindingSeverity.Low, 'text-low'],
+    [FindingSeverity.Info, 'text-info'],
+  ]);
+
+  onSelectFinding(findingId: string, event: any) {
+    if (event.target.checked) {
+      if (!this.selectedFindings.find(value => value == findingId)) {
+        this.selectedFindings.push(findingId);
+        this.selectFindings.emit(this.selectedFindings);
+      }
+    } else {
+      this.selectedFindings = this.selectedFindings.filter(value => value != findingId);
+      this.selectFindings.emit(this.selectedFindings);
+    }
+  }
 }

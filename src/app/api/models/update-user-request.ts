@@ -5,7 +5,7 @@
 import { UserStatus } from '../models/user-status';
 export interface UpdateUserRequest {
   email?: string | null;
-  name?: string | null;
-  roleId?: string | null;
+  fullName?: string | null;
+  role?: string | null;
   status?: UserStatus;
 }

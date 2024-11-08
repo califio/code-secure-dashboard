@@ -9,13 +9,13 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { CreateUserRequest } from '../../models/create-user-request';
-import { UserDetail } from '../../models/user-detail';
+import { UserInfo } from '../../models/user-info';
 
 export interface CreateUserByAdmin$Params {
       body?: CreateUserRequest
 }
 
-export function createUserByAdmin(http: HttpClient, rootUrl: string, params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
+export function createUserByAdmin(http: HttpClient, rootUrl: string, params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
   const rb = new RequestBuilder(rootUrl, createUserByAdmin.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -26,7 +26,7 @@ export function createUserByAdmin(http: HttpClient, rootUrl: string, params?: Cr
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserDetail>;
+      return r as StrictHttpResponse<UserInfo>;
     })
   );
 }

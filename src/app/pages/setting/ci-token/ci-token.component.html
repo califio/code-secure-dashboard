@@ -1,0 +1,84 @@
+<div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm">
+  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">CI Access Token</div>
+  <div class="flex min-w-full flex-col rounded-xl border border-muted/20 bg-background gap-2">
+    <!--    FILTER-->
+    <div class="flex flex-row items-center justify-between py-1 px-5">
+      <div class="px-1 py-1 whitespace-nowrap">Displaying {{tokens.length}} results</div>
+      <div class="flex flex-row w-fit ">
+        <button class="px-2 py-1 border-primary" (click)="enableCreateTokenForm = true">Add CI Token</button>
+      </div>
+    </div>
+    <div class="flex flex-col w-full border border-border gap-2 p-4" [class.hidden]="!enableCreateTokenForm">
+      <div class="text-xl">Add a CI Token</div>
+      <input type="text" class="max-w-72 py-2" [(ngModel)]="tokenName">
+      <div class="flex flex-row items-center gap-2">
+        <button class="w-fit px-2 py-1 bg-primary text-white" (click)="createCIToken()">Create CI Token</button>
+        <button class="w-fit px-2 py-1" (click)="enableCreateTokenForm = false; tokenName = ''">Cancel</button>
+      </div>
+
+    </div>
+    <!--    TABLE-->
+    <div class="overflow-x-auto">
+      <table
+        class="table w-full table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
+        <thead class="border border-muted/20 text-xs text-muted-foreground">
+        <tr>
+          <th class="w-[50px] min-w-[50px] text-center">
+            <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
+          </th>
+          <th class="min-w-[300px]">TOKEN</th>
+          <th class="min-w-[180px]">VALUE</th>
+          <th class="min-w-[180px]">CREATED AT</th>
+          <th class="flex flex-row justify-center">
+            <div>ACTION</div>
+          </th>
+        </tr>
+        </thead>
+        @if(!loading){
+          <tbody>
+            @for (token of tokens; track $index) {
+              <tr>
+                <td class="text-center">
+                  <input
+                    class="checkbox checkbox-sm"
+                    data-datatable-row-check="true"
+                    type="checkbox"
+                    value="28" />
+                </td>
+                <td>
+                  <span class="w-full">{{ token.name }}</span>
+                </td>
+                <td>
+                  <div class="flex flex-row items-center gap-2">
+                    <span class="w-fit">***********************</span>
+                    <div class="p-1 cursor-pointer">
+                      <ng-icon name="copy" (click)="copyTokenValue(token.value!)"></ng-icon>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="font-semibold text-[#00c869]" [title]="token.createdAt">
+                    {{ token.createdAt | timeago }}
+                  </div>
+                </td>
+                <td>
+                  <div class="flex flex-row p-2 cursor-pointer w-full justify-center" (click)="onDeleteToken(token.id!)">
+                    <ng-icon name="trash"></ng-icon>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        }
+      </table>
+    </div>
+    <!--  FOOTER-->
+    @if (loading) {
+      <loading-table></loading-table>
+    }
+  </div>
+</div>
+<confirm-popup [hidden]="!showConfirmPopup"
+               (cancel)="showConfirmPopup = false"
+               (confirm)="confirmDelete()">
+</confirm-popup>

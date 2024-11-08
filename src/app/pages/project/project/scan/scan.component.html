@@ -4,10 +4,10 @@
       <div class="flex flex-col font-normal">
         <div class="flex">
           <div>You have</div>
-          <div class="font-bold px-2  hover:underline hover:underline-offset-4">0</div>
+          <div class="font-bold px-2 text-primary hover:underline hover:underline-offset-4">{{statistic.openFinding}}</div>
           <div>open vulnerabilities.</div>
         </div>
-        <div class="flex gap-4">No new vulnerabilities detected last week!</div>
+<!--        <div class="flex gap-4">No new vulnerabilities detected last week!</div>-->
       </div>
     </div>
     <div class="overflow-x-auto">
@@ -16,7 +16,7 @@
           <ng-icon name="bug" class="text-rose-600" size="36"></ng-icon>
           <div class="text-2xl font-bold font-code-medium">
             @if (statisticLoading) {
-              <ng-icon name="spin"></ng-icon>
+              <ng-icon name="spin" class="animate-spin"></ng-icon>
             } @else {
               <span>{{statistic.critical}}</span>
             }
@@ -27,7 +27,7 @@
           <ng-icon name="bug" class="text-orange-600" size="36"></ng-icon>
           <div class="text-2xl font-bold font-code-medium">
             @if (statisticLoading) {
-              <ng-icon name="spin"></ng-icon>
+              <ng-icon name="spin" class="animate-spin"></ng-icon>
             } @else {
               <span>{{statistic.high}}</span>
             }
@@ -38,7 +38,7 @@
           <ng-icon name="bug" class="text-yellow-500" size="36"></ng-icon>
           <div class="text-2xl font-bold font-code-medium">
             @if (statisticLoading) {
-              <ng-icon name="spin"></ng-icon>
+              <ng-icon name="spin" class="animate-spin"></ng-icon>
             } @else {
               <span>{{statistic.medium}}</span>
             }
@@ -49,18 +49,18 @@
           <ng-icon name="bug" class="text-indigo-500" size="36"></ng-icon>
           <div class="text-2xl font-bold font-code-medium">
             @if (statisticLoading) {
-              <ng-icon name="spin"></ng-icon>
+              <ng-icon name="spin" class="animate-spin"></ng-icon>
             } @else {
               <span>{{statistic.low}}</span>
             }
           </div>
           <div class="opacity-50 text-sm uppercase">low</div>
         </div>
-        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-zinc-700 rounded-xl">
-          <ng-icon name="bug" class="text-zinc-700" size="36"></ng-icon>
+        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-green-500 rounded-xl">
+          <ng-icon name="bug" class="text-green-500" size="36"></ng-icon>
           <div class="text-2xl font-bold font-code-medium">
             @if (statisticLoading) {
-              <ng-icon name="spin"></ng-icon>
+              <ng-icon name="spin" class="animate-spin"></ng-icon>
             } @else {
               <span>{{statistic.info}}</span>
             }
@@ -86,11 +86,11 @@
           </label>
         </div>
         <!--STATUS-->
-        <dropdown defaultLabel="Status"
-                  (onSelect)="onStatusChange($event)"
-                  [options]="statuOptions">
 
-        </dropdown>
+<!--        <dropdown defaultLabel="Status"-->
+<!--                  (onSelect)="onStatusChange($event)"-->
+<!--                  [options]="statuOptions">-->
+<!--        </dropdown>-->
       </div>
     </div>
     <!--    TABLE-->
@@ -132,12 +132,10 @@
               <span>LAST SCAN</span>
             </div>
           </th>
-          <th>
-            <div class="flex flex-row items-center gap-1 w-10">
-              <span>DURATION</span>
-            </div>
+          <th class="max-w-10">
+            DURATION
           </th>
-          <th class="w-[60px]"></th>
+          <th class="max-w-10">ACTION</th>
         </tr>
         </thead>
         @if(!loading) {
@@ -152,10 +150,11 @@
                     value="28"/>
                 </td>
                 <td>
-                  <a [routerLink]="['/project', slug, 'scan']" class="flex flex-col gap-1">
+                  <a [routerLink]="['/project', slug, 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}"
+                     class="flex flex-col gap-1">
                     <div class="">{{scan.commitTitle}}</div>
                     <div class="flex flex-row items-center gap-2 text-xs">
-                      @if(scan.commitBranch) {
+                      @if(scan.gitAction == GitAction.CommitBranch) {
                         <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
                           <ng-icon name="git-branch" size="14"></ng-icon>
                           <span>{{ scan.commitBranch }}</span>
@@ -166,14 +165,14 @@
                           <ng-icon name="git-merge" size="14"></ng-icon>
                           <span>{{ scan.targetBranch }}</span>
                           <span><-</span>
-                          <span>{{ scan.sourceBranch }}</span>
+                          <span>{{ scan.commitBranch }}</span>
                         </div>
                         <div class="border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">merge request</div>
                       }
-                      @if (scan.commitTag) {
+                      @if (scan.gitAction == GitAction.CommitTag) {
                         <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
                           <ng-icon name="git-tag" size="14"></ng-icon>
-                          <span>{{ scan.commitTag }}</span>
+                          <span>{{ scan.commitBranch }}</span>
                         </div>
                         <div class="border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">tag</div>
                       }
@@ -213,8 +212,18 @@
                     {{ scan.startedAt | timeago }}
                   </div>
                 </td>
-                <td>TODO</td>
-                <td></td>
+                <td>{{duration(scan.startedAt, scan.completedAt)}}</td>
+                <td>
+                  <div class="flex flex-row items-center gap-2">
+                    <a class="cursor-pointer"
+                       [routerLink]="['/project', slug, 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}">
+                      <ng-icon name="external-link" size="18"></ng-icon>
+                    </a>
+                    <a class="cursor-pointer" [href]="scan.jobUrl" target="_blank">
+                      <ng-icon name="command-line" size="20"></ng-icon>
+                    </a>
+                  </div>
+                </td>
               </tr>
             }
           </tbody>
@@ -235,6 +244,9 @@
       </div>
     }
     <!--  FOOTER-->
-    <pagination class="sticky bottom-0 z-10"></pagination>
+    <pagination class="sticky bottom-0 z-10"
+                [currentPage]="response.currentPage!"
+                [totalPage]="response.pageCount!"
+    ></pagination>
   </div>
 </div>

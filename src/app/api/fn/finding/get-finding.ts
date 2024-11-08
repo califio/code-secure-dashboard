@@ -11,13 +11,13 @@ import { RequestBuilder } from '../../request-builder';
 import { FindingDetail } from '../../models/finding-detail';
 
 export interface GetFinding$Params {
-  sid: string;
+  id: string;
 }
 
 export function getFinding(http: HttpClient, rootUrl: string, params: GetFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingDetail>> {
   const rb = new RequestBuilder(rootUrl, getFinding.PATH, 'get');
   if (params) {
-    rb.path('sid', params.sid, {"style":"simple"});
+    rb.path('id', params.id, {"style":"simple"});
   }
 
   return http.request(
@@ -30,4 +30,4 @@ export function getFinding(http: HttpClient, rootUrl: string, params: GetFinding
   );
 }
 
-getFinding.PATH = '/api/finding/{sid}';
+getFinding.PATH = '/api/finding/{id}';

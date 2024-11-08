@@ -12,14 +12,14 @@ import { FindingActivityPage } from '../../models/finding-activity-page';
 import { QueryFilter } from '../../models/query-filter';
 
 export interface GetFindingActivities$Params {
-  sid: string;
+  id: string;
       body?: QueryFilter
 }
 
 export function getFindingActivities(http: HttpClient, rootUrl: string, params: GetFindingActivities$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingActivityPage>> {
-  const rb = new RequestBuilder(rootUrl, getFindingActivities.PATH, 'get');
+  const rb = new RequestBuilder(rootUrl, getFindingActivities.PATH, 'post');
   if (params) {
-    rb.path('sid', params.sid, {"style":"simple"});
+    rb.path('id', params.id, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function getFindingActivities(http: HttpClient, rootUrl: string, params: 
   );
 }
 
-getFindingActivities.PATH = '/api/finding/{sid}/activity';
+getFindingActivities.PATH = '/api/finding/{id}/activity';

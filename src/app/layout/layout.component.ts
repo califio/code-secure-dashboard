@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import {RouterOutlet} from "@angular/router";
 import {SidebarComponent} from "./sidebar/sidebar.component";
 import {NavbarComponent} from "./navbar/navbar.component";
+import {ProfileService} from '../api/services/profile.service';
+import {AuthStore} from '../core/auth/auth.store';
 
 @Component({
   selector: 'app-layout',
@@ -15,5 +17,12 @@ import {NavbarComponent} from "./navbar/navbar.component";
   styleUrl: './layout.component.scss'
 })
 export class LayoutComponent {
-
+  constructor(
+    private profileService: ProfileService,
+    private authStore: AuthStore
+  ) {
+    this.profileService.getProfile().subscribe(user => {
+      this.authStore.currentUser.set(user);
+    })
+  }
 }

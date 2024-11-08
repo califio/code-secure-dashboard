@@ -10,13 +10,13 @@ import {
 } from '@angular/router';
 import {Observable, of} from 'rxjs';
 import {switchMap} from "rxjs/operators";
-import {AuthStoreService} from './auth.store';
+import {AuthStore} from './auth.store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(private authStore: AuthStoreService, private router: Router) {
+  constructor(private authStore: AuthStore, private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot,

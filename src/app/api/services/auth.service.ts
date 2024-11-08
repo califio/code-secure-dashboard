@@ -14,6 +14,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 import { AuthResponse } from '../models/auth-response';
 import { login } from '../fn/auth/login';
 import { Login$Params } from '../fn/auth/login';
+import { logout } from '../fn/auth/logout';
+import { Logout$Params } from '../fn/auth/logout';
 import { refreshToken } from '../fn/auth/refresh-token';
 import { RefreshToken$Params } from '../fn/auth/refresh-token';
 
@@ -70,6 +72,31 @@ export class AuthService extends BaseService {
   refreshToken(params?: RefreshToken$Params, context?: HttpContext): Observable<AuthResponse> {
     return this.refreshToken$Response(params, context).pipe(
       map((r: StrictHttpResponse<AuthResponse>): AuthResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `logout()` */
+  static readonly LogoutPath = '/api/logout';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `logout()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  logout$Response(params?: Logout$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return logout(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `logout$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  logout(params?: Logout$Params, context?: HttpContext): Observable<boolean> {
+    return this.logout$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

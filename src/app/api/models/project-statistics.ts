@@ -8,4 +8,5 @@ export interface ProjectStatistics {
   info?: number;
   low?: number;
   medium?: number;
+  openFinding?: number;
 }

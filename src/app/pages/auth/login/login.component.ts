@@ -7,8 +7,8 @@ import {NgClass} from '@angular/common';
 import {AuthRequest} from '../../../api/models/auth-request';
 import {AuthService} from '../../../api/services/auth.service';
 import {finalize} from 'rxjs';
-import {AuthStoreService} from '../../../core/auth/auth.store';
-import {NgButtonComponent} from '../../../shared/components/ng-button/ng-button.component';
+import {AuthStore} from '../../../core/auth/auth.store';
+import {NgButtonComponent} from '../../../shared/components/ui/ng-button/ng-button.component';
 
 interface LoginForm {
   username: FormControl,
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private formService: FormService,
     private authService: AuthService,
-    private authStore: AuthStoreService,
+    private authStore: AuthStore,
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {

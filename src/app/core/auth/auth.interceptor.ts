@@ -3,7 +3,7 @@ import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest}
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {Router} from "@angular/router";
-import {AuthStoreService} from './auth.store';
+import {AuthStore} from './auth.store';
 import {AuthService} from '../../api/services';
 
 interface ErrorResponse {
@@ -17,7 +17,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private refreshToken$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   constructor(
-    private authStore: AuthStoreService,
+    private authStore: AuthStore,
     private authService: AuthService,
     private router: Router,
   ) {

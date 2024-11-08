@@ -7,11 +7,11 @@ import { ScannerType } from '../models/scanner-type';
 import { ScanStatus } from '../models/scan-status';
 export interface ProjectScan {
   commitBranch?: string | null;
-  commitTag?: string | null;
   commitTitle?: string | null;
   completedAt?: string | null;
   gitAction?: GitAction;
   id?: string;
+  jobUrl?: string | null;
   metadata?: string | null;
   scanner?: string | null;
   severityCritical?: number;
@@ -19,7 +19,6 @@ export interface ProjectScan {
   severityInfo?: number;
   severityLow?: number;
   severityMedium?: number;
-  sourceBranch?: string | null;
   startedAt?: string;
   status?: ScanStatus;
   targetBranch?: string | null;

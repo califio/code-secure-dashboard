@@ -6,10 +6,10 @@ import { FindingSeverity } from '../models/finding-severity';
 import { FindingStatus } from '../models/finding-status';
 import { ScannerType } from '../models/scanner-type';
 export interface ProjectFinding {
+  id?: string;
   name?: string | null;
   scanner?: string | null;
   severity?: FindingSeverity;
-  sid?: string;
   status?: FindingStatus;
   type?: ScannerType;
 }

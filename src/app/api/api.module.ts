@@ -7,7 +7,10 @@ import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { AuthService } from './services/auth.service';
+import { CiService } from './services/ci.service';
+import { CiTokenService } from './services/ci-token.service';
 import { FindingService } from './services/finding.service';
+import { ProfileService } from './services/profile.service';
 import { ProjectService } from './services/project.service';
 import { UserService } from './services/user.service';
 
@@ -20,7 +23,10 @@ import { UserService } from './services/user.service';
   declarations: [],
   providers: [
     AuthService,
+    CiService,
+    CiTokenService,
     FindingService,
+    ProfileService,
     ProjectService,
     UserService,
     ApiConfiguration

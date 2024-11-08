@@ -1,18 +1,18 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {PaginationComponent} from '../../../shared/components/pagination/pagination.component';
+import {PaginationComponent} from '../../../shared/components/ui/pagination/pagination.component';
 import {NgIcon} from '@ng-icons/core';
 import {FormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {LoadingTableComponent} from '../../../shared/components/loading-table/loading-table.component';
+import {LoadingTableComponent} from '../../../shared/components/ui/loading-table/loading-table.component';
 import {ProjectService} from '../../../api/services/project.service';
 import {GetProjects$Params} from '../../../api/fn/project/get-projects';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
 import {delay, finalize, of, Subject, switchMap, takeUntil} from 'rxjs';
 import {ProjectSummaryPage} from '../../../api/models/project-summary-page';
 import {ProjectSortField} from '../../../api/models/project-sort-field';
-import {DropdownComponent} from '../../../shared/components/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/components/dropdown/dropdown.model';
+import {DropdownComponent} from '../../../shared/components/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../shared/components/ui/dropdown/dropdown.model';
 
 @Component({
   selector: 'app-list',

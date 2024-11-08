@@ -6,5 +6,5 @@ export enum ScanStatus {
   Queue = 'Queue',
   Running = 'Running',
   Completed = 'Completed',
-  Abort = 'Abort'
+  Error = 'Error'
 }

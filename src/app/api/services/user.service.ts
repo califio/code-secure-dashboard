@@ -21,8 +21,8 @@ import { getUsersByAdmin } from '../fn/user/get-users-by-admin';
 import { GetUsersByAdmin$Params } from '../fn/user/get-users-by-admin';
 import { updateUserByAdmin } from '../fn/user/update-user-by-admin';
 import { UpdateUserByAdmin$Params } from '../fn/user/update-user-by-admin';
-import { UserDetail } from '../models/user-detail';
-import { UserDetailPage } from '../models/user-detail-page';
+import { UserInfo } from '../models/user-info';
+import { UserInfoPage } from '../models/user-info-page';
 import { UserSummaryPage } from '../models/user-summary-page';
 
 @Injectable({ providedIn: 'root' })
@@ -38,7 +38,7 @@ export class UserService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getUsers()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   getUsers$Response(params?: GetUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
     return getUsers(this.http, this.rootUrl, params, context);
@@ -48,7 +48,7 @@ export class UserService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getUsers$Response()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   getUsers(params?: GetUsers$Params, context?: HttpContext): Observable<UserSummaryPage> {
     return this.getUsers$Response(params, context).pipe(
@@ -65,7 +65,7 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createUserByAdmin$Response(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
+  createUserByAdmin$Response(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
     return createUserByAdmin(this.http, this.rootUrl, params, context);
   }
 
@@ -75,9 +75,9 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createUserByAdmin(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<UserDetail> {
+  createUserByAdmin(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
     return this.createUserByAdmin$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserDetail>): UserDetail => r.body)
+      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }
 
@@ -88,9 +88,9 @@ export class UserService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getUsersByAdmin()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getUsersByAdmin$Response(params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetailPage>> {
+  getUsersByAdmin$Response(params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfoPage>> {
     return getUsersByAdmin(this.http, this.rootUrl, params, context);
   }
 
@@ -98,11 +98,11 @@ export class UserService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getUsersByAdmin$Response()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getUsersByAdmin(params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<UserDetailPage> {
+  getUsersByAdmin(params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<UserInfoPage> {
     return this.getUsersByAdmin$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserDetailPage>): UserDetailPage => r.body)
+      map((r: StrictHttpResponse<UserInfoPage>): UserInfoPage => r.body)
     );
   }
 
@@ -115,7 +115,7 @@ export class UserService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getUser$Response(params: GetUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
+  getUser$Response(params: GetUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
     return getUser(this.http, this.rootUrl, params, context);
   }
 
@@ -125,9 +125,9 @@ export class UserService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getUser(params: GetUser$Params, context?: HttpContext): Observable<UserDetail> {
+  getUser(params: GetUser$Params, context?: HttpContext): Observable<UserInfo> {
     return this.getUser$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserDetail>): UserDetail => r.body)
+      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }
 
@@ -140,7 +140,7 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateUserByAdmin$Response(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
+  updateUserByAdmin$Response(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
     return updateUserByAdmin(this.http, this.rootUrl, params, context);
   }
 
@@ -150,9 +150,9 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateUserByAdmin(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<UserDetail> {
+  updateUserByAdmin(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
     return this.updateUserByAdmin$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserDetail>): UserDetail => r.body)
+      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }
 

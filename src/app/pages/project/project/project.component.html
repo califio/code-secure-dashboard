@@ -5,7 +5,7 @@
       <a class="cursor-pointer mr-3" [routerLink]="routerLink(item.route)">
         <div class="flex items-center mx-1">
           <div class="flex flex-row space-x-2 items-center px-2 py-2 text-muted-foreground text-xs font-semibold"
-               routerLinkActive="border-b-2 border-b-primary text-primary" [routerLinkActiveOptions]="{exact: true}">
+               routerLinkActive="border-b-2 border-b-primary text-primary" [routerLinkActiveOptions]="{exact: false}">
             <ng-icon [name]="item.icon" size="16" class=""></ng-icon>
             <span class="tracking-wide px-2 py-1 focus:outline-none group-hover:text-foreground">{{ item.label }}</span>
 

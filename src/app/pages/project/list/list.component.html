@@ -94,7 +94,7 @@
     }
     <!--  FOOTER-->
     <pagination class="sticky bottom-0 z-10"
-                (changePage)="onChangePage($event)"
+                (pageChange)="onChangePage($event)"
                 [currentPage]="response.currentPage!"
                 [totalPage]="response.pageCount!"
     >

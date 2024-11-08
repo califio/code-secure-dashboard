@@ -1,0 +1,41 @@
+<div class="flex flex-col items-start">
+  <button (click)="hidden = !hidden"
+          (clickOutside)="hidden = true"
+          class="flex flex-row items-center gap-1 rounded-md px-4 py-2 font-semibold w-fit">
+    @if(fixedLabel() != null) {
+      <span>{{fixedLabel()}}</span>
+    } @else {
+      <div class="flex flex-row items-center gap-1 border-none" [ngClass]="statusOption?.style">
+        <ng-icon [name]="statusOption?.icon"></ng-icon>
+        <div>{{statusOption?.label}}</div>
+      </div>
+    }
+    <ng-icon name="next" class="rotate-90"></ng-icon>
+  </button>
+  <!-- Dropdown menu -->
+  <div [class.hidden]="hidden" class="z-10 absolute mt-10 rounded-lg shadow w-fit border border-border bg-background">
+    <ul>
+      @for (option of statusOptions; track $index) {
+        <li class="flex flex-row items-center justify-between gap-2 px-4 py-2 text-sm border-border space-x-1 hover:bg-card bg-background"
+            [class.bg-card]="_status == option.status"
+            [ngClass]="option.style"
+            (click)="onSelectOption(option)"
+        >
+          <div class="max-w-72">
+            <div class="flex flex-col gap-2 text-sm">
+              <div class="font-bold flex flex-row items-center gap-2">
+                <ng-icon [name]="option.icon"></ng-icon>
+                <span>{{ option.label }}</span>
+              </div>
+              @if (showDescription()) {
+                <span class="text-[#A1A1AB]">{{option.description}}</span>
+              }
+            </div>
+          </div>
+          <div class="border-4 h-4 w-4 rounded-full border-[#6366F1]  bg-background"
+               [ngClass]="_status == option.status ? 'border-[#6366F1]' : 'border-border'"></div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

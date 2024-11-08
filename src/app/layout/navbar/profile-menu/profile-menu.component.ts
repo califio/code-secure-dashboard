@@ -1,9 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ThemeService} from "../../../core/theme";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {NgIcon} from "@ng-icons/core";
 import {NgClass} from "@angular/common";
 import {ClickOutsideDirective} from "../../../shared/directives/click-outside.directive";
+import {AuthService} from '../../../api/services/auth.service';
+import {AuthStore} from '../../../core/auth/auth.store';
+import {AvatarComponent} from '../../../shared/components/ui/avatar/avatar.component';
 
 @Component({
   selector: 'app-profile-menu',
@@ -13,25 +16,13 @@ import {ClickOutsideDirective} from "../../../shared/directives/click-outside.di
     NgIcon,
     NgClass,
     ClickOutsideDirective,
+    AvatarComponent,
   ],
   templateUrl: './profile-menu.component.html',
   styleUrl: './profile-menu.component.scss',
 })
 export class ProfileMenuComponent implements OnInit {
   isOpen = false;
-  profileMenu = [
-    {
-      title: 'Your Profile',
-      icon: 'user-circle',
-      link: '/profile',
-    },
-    {
-      title: 'Log out',
-      icon: 'logout',
-      link: '/auth',
-    },
-  ];
-
   themeColors = [
     {
       name: 'base',
@@ -65,7 +56,13 @@ export class ProfileMenuComponent implements OnInit {
 
   themeMode = ['light', 'dark'];
 
-  constructor(public themeService: ThemeService) {}
+  constructor(
+    public themeService: ThemeService,
+    private authService: AuthService,
+    public authStore: AuthStore,
+    private router: Router
+  ) {
+  }
 
   ngOnInit(): void {}
 
@@ -84,5 +81,18 @@ export class ProfileMenuComponent implements OnInit {
     this.themeService.theme.update((theme) => {
       return { ...theme, color: color };
     });
+  }
+
+  logout() {
+    this.authService.logout({
+      body: {
+        token: this.authStore.refreshToken
+      }
+    }).subscribe(success => {
+      if (success) {
+        this.authStore.clearSession();
+        this.router.navigate(["/auth", "login"]).then();
+      }
+    })
   }
 }

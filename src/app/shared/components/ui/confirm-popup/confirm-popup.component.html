@@ -1,0 +1,17 @@
+<div [class.hidden]="hidden" class="fixed flex-row top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="flex flex-row justify-center w-full p-8">
+    <div class="relative bg-background rounded-lg shadow border border-border px-5">
+      <div class="p-4 text-center flex flex-col items-center gap-2 text-sm">
+        <h3 class="mb-5">{{title}}</h3>
+        <div class="flex flex-row items-center gap-4">
+          <button type="button" (click)="onConfirm()" class="bg-primary text-white rounded-lg text-nowrap items-center px-5 py-2 text-center">
+            {{confirmText}}
+          </button>
+          <button type="button" (click)="onCancel()" class="font-medium text-nowrap rounded-lg border border-border px-5 py-2 text-center">
+            {{cancelText}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
