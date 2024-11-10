@@ -30,4 +30,4 @@ export function getUser(http: HttpClient, rootUrl: string, params: GetUser$Param
   );
 }
 
-getUser.PATH = '/api/user/{userId}';
+getUser.PATH = '/api/admin/user/{userId}';

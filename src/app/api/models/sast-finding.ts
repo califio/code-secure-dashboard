@@ -5,6 +5,7 @@
 import { FindingLocation } from '../models/finding-location';
 import { FindingSeverity } from '../models/finding-severity';
 export interface SastFinding {
+  category?: string | null;
   description: string;
   findingFlow?: Array<FindingLocation> | null;
   identity: string;

@@ -21,6 +21,7 @@
     "@angular/router": "^18.2.0",
     "@ng-icons/core": "^29.5.1",
     "@ng-icons/heroicons": "^29.5.1",
+    "ngx-markdown": "^18.1.0",
     "ngx-timeago": "^3.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

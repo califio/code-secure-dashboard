@@ -31,4 +31,4 @@ export function createCiToken(http: HttpClient, rootUrl: string, params?: Create
   );
 }
 
-createCiToken.PATH = '/api/ci-token';
+createCiToken.PATH = '/api/admin/ci-token';

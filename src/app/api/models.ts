@@ -44,6 +44,7 @@ export { ProjectUserPage } from './models/project-user-page';
 export { QueryFilter } from './models/query-filter';
 export { RefreshTokenRequest } from './models/refresh-token-request';
 export { SastFinding } from './models/sast-finding';
+export { ScanInfo } from './models/scan-info';
 export { ScannerType } from './models/scanner-type';
 export { ScanStatus } from './models/scan-status';
 export { UpdateCiScanRequest } from './models/update-ci-scan-request';

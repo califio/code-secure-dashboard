@@ -26,7 +26,7 @@ export class CiTokenService extends BaseService {
   }
 
   /** Path part for operation `getCiTokens()` */
-  static readonly GetCiTokensPath = '/api/ci-token';
+  static readonly GetCiTokensPath = '/api/admin/ci-token';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -51,7 +51,7 @@ export class CiTokenService extends BaseService {
   }
 
   /** Path part for operation `createCiToken()` */
-  static readonly CreateCiTokenPath = '/api/ci-token';
+  static readonly CreateCiTokenPath = '/api/admin/ci-token';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -76,7 +76,7 @@ export class CiTokenService extends BaseService {
   }
 
   /** Path part for operation `deleteCiToken()` */
-  static readonly DeleteCiTokenPath = '/api/ci-token/{id}';
+  static readonly DeleteCiTokenPath = '/api/admin/ci-token/{id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

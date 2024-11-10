@@ -13,6 +13,9 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { initCiScan } from '../fn/ci/init-ci-scan';
 import { InitCiScan$Params } from '../fn/ci/init-ci-scan';
+import { ping } from '../fn/ci/ping';
+import { Ping$Params } from '../fn/ci/ping';
+import { ScanInfo } from '../models/scan-info';
 import { updateCiScan } from '../fn/ci/update-ci-scan';
 import { UpdateCiScan$Params } from '../fn/ci/update-ci-scan';
 import { uploadSastFinding } from '../fn/ci/upload-sast-finding';
@@ -25,6 +28,31 @@ export class CiService extends BaseService {
     super(config, http);
   }
 
+  /** Path part for operation `ping()` */
+  static readonly PingPath = '/api/ci/ping';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `ping()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  ping$Response(params?: Ping$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+    return ping(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `ping$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  ping(params?: Ping$Params, context?: HttpContext): Observable<string> {
+    return this.ping$Response(params, context).pipe(
+      map((r: StrictHttpResponse<string>): string => r.body)
+    );
+  }
+
   /** Path part for operation `initCiScan()` */
   static readonly InitCiScanPath = '/api/ci/scan';
 
@@ -34,7 +62,7 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  initCiScan$Response(params?: InitCiScan$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  initCiScan$Response(params?: InitCiScan$Params, context?: HttpContext): Observable<StrictHttpResponse<ScanInfo>> {
     return initCiScan(this.http, this.rootUrl, params, context);
   }
 
@@ -44,9 +72,9 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  initCiScan(params?: InitCiScan$Params, context?: HttpContext): Observable<string> {
+  initCiScan(params?: InitCiScan$Params, context?: HttpContext): Observable<ScanInfo> {
     return this.initCiScan$Response(params, context).pipe(
-      map((r: StrictHttpResponse<string>): string => r.body)
+      map((r: StrictHttpResponse<ScanInfo>): ScanInfo => r.body)
     );
   }
 

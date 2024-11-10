@@ -9,12 +9,13 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { CiScanRequest } from '../../models/ci-scan-request';
+import { ScanInfo } from '../../models/scan-info';
 
 export interface InitCiScan$Params {
       body?: CiScanRequest
 }
 
-export function initCiScan(http: HttpClient, rootUrl: string, params?: InitCiScan$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+export function initCiScan(http: HttpClient, rootUrl: string, params?: InitCiScan$Params, context?: HttpContext): Observable<StrictHttpResponse<ScanInfo>> {
   const rb = new RequestBuilder(rootUrl, initCiScan.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -25,7 +26,7 @@ export function initCiScan(http: HttpClient, rootUrl: string, params?: InitCiSca
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<string>;
+      return r as StrictHttpResponse<ScanInfo>;
     })
   );
 }

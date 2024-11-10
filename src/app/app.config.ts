@@ -1,5 +1,5 @@
 import {ApplicationConfig, importProvidersFrom, inject, provideZoneChangeDetection} from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {provideRouter, withHashLocation} from '@angular/router';
 
 import { routes } from './app.routes';
 import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
@@ -8,11 +8,13 @@ import {TimeagoModule} from 'ngx-timeago';
 import {AuthInterceptor} from './core/auth/auth.interceptor';
 import {ApiModule} from './api/api.module';
 import {environment} from '../environments/environment';
+import {provideMarkdown} from 'ngx-markdown';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withHashLocation()),
+    provideMarkdown(),
     provideNgIconsConfig({}, withContentSecurityPolicy()),
     provideNgIconLoader(name => {
       const http = inject(HttpClient);

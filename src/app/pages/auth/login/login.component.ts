@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from "../../../core/forms";
 import {NgIcon} from '@ng-icons/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
@@ -9,11 +9,6 @@ import {AuthService} from '../../../api/services/auth.service';
 import {finalize} from 'rxjs';
 import {AuthStore} from '../../../core/auth/auth.store';
 import {NgButtonComponent} from '../../../shared/components/ui/ng-button/ng-button.component';
-
-interface LoginForm {
-  username: FormControl,
-  password: FormControl
-}
 
 @Component({
   selector: 'app-login',
@@ -48,10 +43,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  login() {
-    console.log(this.form.value)
   }
 
   onSignIn() {

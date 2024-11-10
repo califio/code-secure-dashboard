@@ -29,4 +29,4 @@ export function deleteCiToken(http: HttpClient, rootUrl: string, params: DeleteC
   );
 }
 
-deleteCiToken.PATH = '/api/ci-token/{id}';
+deleteCiToken.PATH = '/api/admin/ci-token/{id}';

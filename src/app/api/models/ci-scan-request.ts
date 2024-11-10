@@ -12,10 +12,10 @@ export interface CiScanRequest {
   isDefault?: boolean;
   jobUrl: string;
   mergeRequestId?: string | null;
-  name: string;
   repoId: string;
   repoName: string;
   repoUrl: string;
+  scanTitle: string;
   scanner: string;
   source: ProjectSource;
   targetBranch?: string | null;

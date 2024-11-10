@@ -12,6 +12,7 @@ import {FindingActivity} from '../../../../api/models/finding-activity';
 import {FindingActivityType, FindingBranch, FindingLocation, ProjectSource} from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
 import {AvatarComponent} from '../../ui/avatar/avatar.component';
+import {MarkdownComponent} from 'ngx-markdown';
 
 @Component({
   selector: 'finding-detail',
@@ -24,7 +25,8 @@ import {AvatarComponent} from '../../ui/avatar/avatar.component';
     GitBranchDropdownComponent,
     TimeagoModule,
     AvatarComponent,
-    LowerCasePipe
+    LowerCasePipe,
+    MarkdownComponent
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'

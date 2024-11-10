@@ -1,8 +1,8 @@
 import {Component, OnDestroy} from '@angular/core';
 import {NgIcon} from "@ng-icons/core";
-import {ActivatedRoute, NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
+import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {NavItem} from '../../core/menu';
-import {filter, Subject, takeUntil} from 'rxjs';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'app-setting',
@@ -30,18 +30,17 @@ export class SettingComponent implements OnDestroy {
     this.destroy$.next(null);
     this.destroy$.complete();
   }
+
   navItems: NavItem[] = [
     {
       label: 'CI Token',
       route: '/setting/ci-token',
       icon: 'rocket',
-      count: 1
     },
     {
-      label: 'Vulnerabilities',
-      route: '/setting/acd',
-      icon: 'bug',
-      count: 123
+      label: 'Configuration',
+      route: '/setting/configuration',
+      icon: 'setting',
     }
   ]
   private destroy$ = new Subject();

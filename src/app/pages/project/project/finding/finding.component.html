@@ -33,7 +33,7 @@
         </div>
       </div>
     </div>
-    <list-finding class="w-full"
+    <list-finding class="w-full max-h-screen overflow-y-auto"
                   [loading]="findingStore.loading()"
                   [findings]="findingStore.findings()"
                   (selectFindings)="selectFindingsChange($event)"

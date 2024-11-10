@@ -8,17 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { CreateUserRequest } from '../../models/create-user-request';
-import { UserInfo } from '../../models/user-info';
 
-export interface CreateUserByAdmin$Params {
-      body?: CreateUserRequest
+export interface Ping$Params {
 }
 
-export function createUserByAdmin(http: HttpClient, rootUrl: string, params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
-  const rb = new RequestBuilder(rootUrl, createUserByAdmin.PATH, 'post');
+export function ping(http: HttpClient, rootUrl: string, params?: Ping$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  const rb = new RequestBuilder(rootUrl, ping.PATH, 'get');
   if (params) {
-    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -26,9 +22,9 @@ export function createUserByAdmin(http: HttpClient, rootUrl: string, params?: Cr
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserInfo>;
+      return r as StrictHttpResponse<string>;
     })
   );
 }
 
-createUserByAdmin.PATH = '/api/admin/user';
+ping.PATH = '/api/ci/ping';

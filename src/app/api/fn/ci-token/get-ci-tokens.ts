@@ -28,4 +28,4 @@ export function getCiTokens(http: HttpClient, rootUrl: string, params?: GetCiTok
   );
 }
 
-getCiTokens.PATH = '/api/ci-token';
+getCiTokens.PATH = '/api/admin/ci-token';

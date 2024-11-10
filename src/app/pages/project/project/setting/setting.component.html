@@ -1,1 +1,35 @@
-<p>setting works!</p>
+<div class="flex flex-col h-full">
+  <nav class="flex w-full bg-background border-b border-border">
+    <div class="px-3 py-1 lg:px-5 lg:pl-3">
+      <div class="flex items-center justify-between">
+      </div>
+    </div>
+  </nav>
+  <div class="flex flex-row h-full">
+    <aside class="left-0 z-40 w-56 h-full transition-transform -translate-x-full sm:translate-x-0"  aria-label="Sidebar">
+      <div class="h-full py-4 overflow-y-auto bg-background border border-border">
+        <ul class="space-y-2 font-medium">
+          <li>
+            <a [routerLink]="['/project-manager',  'info']"
+               class="flex items-center hover:bg-primary py-2 px-3" routerLinkActive="text-primary">
+              <i nz-icon nzType="info"></i>
+              <span class="flex-1 ml-3 whitespace-nowrap text-sm">Information</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/project-manager', '', 'member']"
+               class="flex flex-row items-center hover:bg-primary hover:text-gray-50 group py-2 px-3" routerLinkActive="text-primary">
+              <ng-icon name="users"></ng-icon>
+              <span class="flex-1 ml-3 whitespace-nowrap text-sm">Member</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+    <div class="p-4 w-full min-h-full overflow-auto">
+      <router-outlet></router-outlet>
+      <div class="h-8"></div>
+    </div>
+  </div>
+
+</div>

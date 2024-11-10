@@ -32,7 +32,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `getUsers()` */
-  static readonly GetUsersPath = '/api/user';
+  static readonly GetUsersPath = '/api/user/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -56,33 +56,8 @@ export class UserService extends BaseService {
     );
   }
 
-  /** Path part for operation `createUserByAdmin()` */
-  static readonly CreateUserByAdminPath = '/api/user';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `createUserByAdmin()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  createUserByAdmin$Response(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
-    return createUserByAdmin(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `createUserByAdmin$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  createUserByAdmin(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
-    return this.createUserByAdmin$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
-    );
-  }
-
   /** Path part for operation `getUsersByAdmin()` */
-  static readonly GetUsersByAdminPath = '/api/user/by-admin';
+  static readonly GetUsersByAdminPath = '/api/admin/user/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -107,7 +82,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `getUser()` */
-  static readonly GetUserPath = '/api/user/{userId}';
+  static readonly GetUserPath = '/api/admin/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -132,7 +107,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `updateUserByAdmin()` */
-  static readonly UpdateUserByAdminPath = '/api/user/{userId}';
+  static readonly UpdateUserByAdminPath = '/api/admin/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -152,6 +127,31 @@ export class UserService extends BaseService {
    */
   updateUserByAdmin(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
     return this.updateUserByAdmin$Response(params, context).pipe(
+      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
+    );
+  }
+
+  /** Path part for operation `createUserByAdmin()` */
+  static readonly CreateUserByAdminPath = '/api/admin/user';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `createUserByAdmin()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  createUserByAdmin$Response(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+    return createUserByAdmin(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `createUserByAdmin$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  createUserByAdmin(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
+    return this.createUserByAdmin$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }

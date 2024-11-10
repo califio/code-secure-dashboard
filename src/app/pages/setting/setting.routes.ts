@@ -9,6 +9,10 @@ export const routes: Routes = [
       {
         path: 'ci-token',
         loadComponent: () => import('./ci-token/ci-token.component').then(x => x.CiTokenComponent)
+      },
+      {
+        path: 'configuration',
+        loadComponent: () => import('./configuration/configuration.component').then(x => x.ConfigurationComponent)
       }
     ],
   }

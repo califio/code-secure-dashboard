@@ -22,10 +22,7 @@ export class NgButtonComponent {
   size = input<number>(16);
 
   onClickEvent() {
-    console.log("ClickEvent");
-    console.log(this.disabled());
     if (!this.disabled()){
-      console.log("ClickEmit");
       this.onClick.emit();
     }
   }

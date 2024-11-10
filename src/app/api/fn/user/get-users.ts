@@ -16,7 +16,7 @@ export interface GetUsers$Params {
 }
 
 export function getUsers(http: HttpClient, rootUrl: string, params?: GetUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
-  const rb = new RequestBuilder(rootUrl, getUsers.PATH, 'get');
+  const rb = new RequestBuilder(rootUrl, getUsers.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -31,4 +31,4 @@ export function getUsers(http: HttpClient, rootUrl: string, params?: GetUsers$Pa
   );
 }
 
-getUsers.PATH = '/api/user';
+getUsers.PATH = '/api/user/filter';

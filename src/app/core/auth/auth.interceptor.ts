@@ -5,6 +5,7 @@ import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {Router} from "@angular/router";
 import {AuthStore} from './auth.store';
 import {AuthService} from '../../api/services';
+import {ToastrService} from '../../shared/components/toastr/toastr.service';
 
 interface ErrorResponse {
   status: number
@@ -20,6 +21,7 @@ export class AuthInterceptor implements HttpInterceptor {
     private authStore: AuthStore,
     private authService: AuthService,
     private router: Router,
+    private toast: ToastrService
   ) {
   }
 
@@ -80,7 +82,7 @@ export class AuthInterceptor implements HttpInterceptor {
               break
             }
             default: {
-              this.router.navigate(['/errors/', error.status]).then();
+              this.router.navigate(['/error/', error.status]).then();
             }
           }
         }
@@ -116,7 +118,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private handleError(err: ErrorResponse) {
     if (err.errors && err.errors?.length > 0) {
       err.errors.forEach(e => {
-        console.log(e);
+        this.toast.error(e);
       });
     }
   }
