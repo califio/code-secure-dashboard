@@ -37,7 +37,13 @@ export class FindingDetailComponent {
   @Input()
   set finding(value: FindingDetail) {
     this._finding = value;
-    this.currentBranch = value.findingBranches?.find(branch => branch.isDefault) ?? value.findingBranches![0];
+    var branch = value.findingBranches?.find(branch => branch.isDefault);
+    if (!branch && value.findingBranches && value.findingBranches.length > 0) {
+      branch = value.findingBranches[0];
+    }
+    if (branch) {
+      this.currentBranch = branch;
+    }
     this.selectedBranch = this.currentBranch.branch;
     if (value.id) {
       this.findingService.getFindingActivities({

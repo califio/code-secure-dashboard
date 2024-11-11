@@ -1,9 +1,10 @@
 FROM node:22 AS build
-EXPOSE 80
 WORKDIR /app
 COPY . .
 RUN npm install
 RUN npm run build --prod
 
-FROM nginx:alpine
-COPY --from=build /app/dist/code-secure-ui/browser /usr/share/nginx/html
+FROM registry.gitlab.com/code-secure/code-secure-api:1.0.1 AS api
+EXPOSE 8080
+WORKDIR /app
+COPY --from=build /app/dist/code-secure-ui/browser wwwroot
