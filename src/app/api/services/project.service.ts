@@ -30,6 +30,7 @@ import { GetProjectUsers$Params } from '../fn/project/get-project-users';
 import { ProjectFindingPage } from '../models/project-finding-page';
 import { ProjectInfo } from '../models/project-info';
 import { ProjectScanPage } from '../models/project-scan-page';
+import { ProjectScanSummary } from '../models/project-scan-summary';
 import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
 import { ProjectUser } from '../models/project-user';
@@ -225,7 +226,7 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectBranches$Response(params: GetProjectBranches$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+  getProjectBranches$Response(params: GetProjectBranches$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectScanSummary>>> {
     return getProjectBranches(this.http, this.rootUrl, params, context);
   }
 
@@ -235,9 +236,9 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectBranches(params: GetProjectBranches$Params, context?: HttpContext): Observable<Array<string>> {
+  getProjectBranches(params: GetProjectBranches$Params, context?: HttpContext): Observable<Array<ProjectScanSummary>> {
     return this.getProjectBranches$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+      map((r: StrictHttpResponse<Array<ProjectScanSummary>>): Array<ProjectScanSummary> => r.body)
     );
   }
 

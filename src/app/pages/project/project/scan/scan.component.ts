@@ -125,7 +125,17 @@ export class ScanComponent implements OnInit, OnDestroy {
     return result.length > 0 ? result.join(", ") : "0 seconds";
   }
 
-
+  getIcon(action: GitAction | undefined): string {
+    if (action) {
+      return this.mIcon.get(action) ?? '';
+    }
+    return '';
+  }
+  private mIcon: Map<GitAction, string> = new Map<GitAction, string>([
+    [GitAction.CommitTag, 'git-tag'],
+    [GitAction.CommitBranch, 'git-branch'],
+    [GitAction.MergeRequest, 'git-merge'],
+  ]);
 
   ngOnDestroy(): void {
     this.destroy$.next(null);

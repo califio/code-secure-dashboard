@@ -8,7 +8,7 @@ import {LoadingTableComponent} from '../../../shared/components/ui/loading-table
 import {ProjectService} from '../../../api/services/project.service';
 import {GetProjects$Params} from '../../../api/fn/project/get-projects';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
-import {delay, finalize, of, Subject, switchMap, takeUntil} from 'rxjs';
+import {delay, finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {ProjectSummaryPage} from '../../../api/models/project-summary-page';
 import {ProjectSortField} from '../../../api/models/project-sort-field';
 import {DropdownComponent} from '../../../shared/components/ui/dropdown/dropdown.component';
@@ -71,6 +71,9 @@ export class ListComponent implements OnInit, OnDestroy{
       switchMap(params => {
         this.loading = true;
         bindQueryParams(params, this.filter);
+        if (!this.filter.SortBy) {
+          this.filter.SortBy = ProjectSortField.CreatedAt;
+        }
         return this.projectService.getProjects(this.filter).pipe(
           delay(300),
           finalize(() => {

@@ -6,12 +6,12 @@
     <div class="flex flex-row items-center justify-between">
       <div class="flex flex-row items-center gap-4">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="font-semibold whitespace-nowrap">On {{ finding.findingBranches?.length }} branch</span>
-          <git-branch-dropdown
-            [options]="findingBranches()"
-            (select)="selectChange($event)"
-            [selected]="currentBranch.branch">
-          </git-branch-dropdown>
+          <span class="font-semibold whitespace-nowrap">On {{ finding.scans?.length }} branch</span>
+          <finding-scan-dropdown
+            [options]="finding.scans ?? []"
+            (selectChange)="onScanChange($event)"
+            [selected]="currentScan?.scanId">
+          </finding-scan-dropdown>
         </div>
         <div class="flex flex-row gap-2 items-center">
           <ng-icon [name]="finding.project?.source! | lowercase"></ng-icon>

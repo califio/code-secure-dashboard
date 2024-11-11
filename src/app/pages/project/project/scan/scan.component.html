@@ -153,28 +153,16 @@
                   <a [routerLink]="['/project', slug, 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}"
                      class="flex flex-col gap-1">
                     <div class="">{{scan.commitTitle}}</div>
-                    <div class="flex flex-row items-center gap-2 text-xs">
-                      @if(scan.gitAction == GitAction.CommitBranch) {
-                        <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
-                          <ng-icon name="git-branch" size="14"></ng-icon>
-                          <span>{{ scan.commitBranch }}</span>
-                        </div>
+                    <div class="flex flex-row w-fit items-center gap-2 text-[#00c869]">
+                      <ng-icon [name]="getIcon(scan.gitAction)"></ng-icon>
+                      <span>{{scan.commitBranch}}</span>
+                      @if(scan.gitAction == GitAction.CommitTag){
+                        <div class="text-xs border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">tag</div>
                       }
-                      @if (scan.gitAction == GitAction.MergeRequest) {
-                        <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
-                          <ng-icon name="git-merge" size="14"></ng-icon>
-                          <span>{{ scan.targetBranch }}</span>
-                          <span><-</span>
-                          <span>{{ scan.commitBranch }}</span>
-                        </div>
-                        <div class="border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">merge request</div>
-                      }
-                      @if (scan.gitAction == GitAction.CommitTag) {
-                        <div class="flex flex-row w-fit items-center gap-1 text-[#00c869] border border-border px-2 py-0.5 rounded">
-                          <ng-icon name="git-tag" size="14"></ng-icon>
-                          <span>{{ scan.commitBranch }}</span>
-                        </div>
-                        <div class="border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">tag</div>
+                      @if(scan.gitAction == GitAction.MergeRequest) {
+                        <span class="text-muted-foreground">to</span>
+                        <span>{{scan.targetBranch}}</span>
+                        <div class="text-xs border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">merge request</div>
                       }
                     </div>
                   </a>

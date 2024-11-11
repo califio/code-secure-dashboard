@@ -13,8 +13,8 @@ import {FindingService} from '../../../../api/services/finding.service';
 import {FindingDetail} from '../../../../api/models/finding-detail';
 import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
 import {
-  GitBranchDropdownComponent
-} from '../../../../shared/components/git-branch-dropdown/git-branch-dropdown.component';
+  ScanBranchDropdownComponent
+} from '../../../../shared/components/scan-branch-dropdown/scan-branch-dropdown.component';
 import {LoadingTableComponent} from '../../../../shared/components/ui/loading-table/loading-table.component';
 import {PaginationComponent} from '../../../../shared/components/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -34,7 +34,7 @@ import {ProjectStore} from '../project-store';
     DropdownComponent,
     FindingStatusComponent,
     FindingDetailComponent,
-    GitBranchDropdownComponent,
+    ScanBranchDropdownComponent,
     LoadingTableComponent,
     PaginationComponent,
     ReactiveFormsModule,
@@ -146,9 +146,8 @@ export class FindingComponent implements OnInit, OnDestroy {
     updateQueryParams(this.router, this.findingStore.filter);
   }
 
-  onSelectBranch(branch: string) {
-    this.findingStore.filter.branch = branch;
-    this.findingStore.filter.scanId = null;
+  onSelectScan(scanId: string) {
+    this.findingStore.filter.scanId = scanId;
     updateQueryParams(this.router, this.findingStore.filter);
   }
 

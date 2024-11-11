@@ -2,6 +2,7 @@ import {Injectable, signal} from '@angular/core';
 import {ProjectFinding} from '../../../../api/models/project-finding';
 import {ProjectFindingFilter} from '../../../../api/models/project-finding-filter';
 import {ProjectFindingSortField} from '../../../../api/models/project-finding-sort-field';
+import {ProjectScanSummary} from '../../../../api/models/project-scan-summary';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +21,8 @@ export class FindingStore {
     sortBy: ProjectFindingSortField.UpdatedAt,
     status: undefined,
     type: undefined,
-    branch: undefined,
     scanId: undefined,
   };
-  branches = signal<string[]>([])
+  branches = signal<ProjectScanSummary[]>([]);
   constructor() { }
 }

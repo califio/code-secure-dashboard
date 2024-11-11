@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GitBranchDropdownComponent } from './git-branch-dropdown.component';
+import { ScanBranchDropdownComponent } from './scan-branch-dropdown.component';
 
 describe('GitBranchDropdownComponent', () => {
-  let component: GitBranchDropdownComponent;
-  let fixture: ComponentFixture<GitBranchDropdownComponent>;
+  let component: ScanBranchDropdownComponent;
+  let fixture: ComponentFixture<ScanBranchDropdownComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GitBranchDropdownComponent]
+      imports: [ScanBranchDropdownComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GitBranchDropdownComponent);
+    fixture = TestBed.createComponent(ScanBranchDropdownComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

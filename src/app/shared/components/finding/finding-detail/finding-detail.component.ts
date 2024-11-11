@@ -7,12 +7,13 @@ import {FindingDetail} from '../../../../api/models/finding-detail';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../toastr/toastr.service';
-import {GitBranchDropdownComponent} from '../../git-branch-dropdown/git-branch-dropdown.component';
+import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingActivity} from '../../../../api/models/finding-activity';
-import {FindingActivityType, FindingBranch, FindingLocation, ProjectSource} from '../../../../api/models';
+import {FindingActivityType, FindingLocation, FindingScan, ProjectSource} from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
 import {AvatarComponent} from '../../ui/avatar/avatar.component';
 import {MarkdownComponent} from 'ngx-markdown';
+import {FindingScanDropdownComponent} from '../finding-scan-dropdown/finding-scan-dropdown.component';
 
 @Component({
   selector: 'finding-detail',
@@ -22,11 +23,12 @@ import {MarkdownComponent} from 'ngx-markdown';
     FindingStatusComponent,
     RouterLink,
     NgClass,
-    GitBranchDropdownComponent,
+    ScanBranchDropdownComponent,
     TimeagoModule,
     AvatarComponent,
     LowerCasePipe,
-    MarkdownComponent
+    MarkdownComponent,
+    FindingScanDropdownComponent
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'
@@ -37,14 +39,10 @@ export class FindingDetailComponent {
   @Input()
   set finding(value: FindingDetail) {
     this._finding = value;
-    var branch = value.findingBranches?.find(branch => branch.isDefault);
-    if (!branch && value.findingBranches && value.findingBranches.length > 0) {
-      branch = value.findingBranches[0];
+    this.currentScan = value.scans?.find(scan => scan.isDefault);
+    if (!this.currentScan && value.scans && value.scans.length > 0) {
+      this.currentScan = value.scans[0];
     }
-    if (branch) {
-      this.currentBranch = branch;
-    }
-    this.selectedBranch = this.currentBranch.branch;
     if (value.id) {
       this.findingService.getFindingActivities({
         id: value.id!,
@@ -54,7 +52,7 @@ export class FindingDetailComponent {
       })
     }
   }
-  currentBranch: FindingBranch = {};
+  currentScan: FindingScan | undefined;
   activities: FindingActivity[] = [];
   get finding() {
     return this._finding;
@@ -64,7 +62,6 @@ export class FindingDetailComponent {
   minimal = true;
   @Input()
   isProjectPage: boolean = false;
-  selectedBranch: string | undefined | null = undefined;
 
   constructor(
     private findingService: FindingService,
@@ -88,10 +85,6 @@ export class FindingDetailComponent {
     this.close.emit();
   }
 
-  findingBranches() {
-    return this.finding.findingBranches?.map(value => value.branch!) ?? [];
-  }
-
   @HostListener('window:resize', ['$event'])
   getScreenSize() {
     if (!this.isProjectPage) {
@@ -111,13 +104,13 @@ export class FindingDetailComponent {
 
   source(location: FindingLocation) {
     if (this._finding.project?.source == ProjectSource.GitLab) {
-      return `${this._finding.project.repoUrl}/-/blob/${this.currentBranch.commitHash}/${location.path}#L${location.startLine}`;
+      return `${this._finding.project.repoUrl}/-/blob/${this.currentScan?.commitHash}/${location.path}#L${location.startLine}`;
     }
     // todo: support other git
     return '';
   }
 
-  selectChange(branch: string) {
-    this.currentBranch = this._finding.findingBranches?.find(value => value.branch == branch)!;
+  onScanChange(scanId: string) {
+    this.currentScan = this.finding.scans?.find(value => value.scanId == scanId);
   }
 }

@@ -14,10 +14,10 @@
                    (keyup.enter)="onSearchChange()"/>
           </label>
         </div>
-        <git-branch-dropdown [options]="findingStore.branches()"
-                             [selected]="findingStore.filter.branch"
-                             (select)="onSelectBranch($event)">
-        </git-branch-dropdown>
+        <scan-branch-dropdown [options]="findingStore.branches()"
+                             [selected]="findingStore.filter.scanId"
+                             (selectChange)="onSelectScan($event)">
+        </scan-branch-dropdown>
         <finding-status-filter
           [status]="findingStore.filter.status"
           (statusChange)="onStatusChange($event)">

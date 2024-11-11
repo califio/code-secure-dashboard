@@ -11,7 +11,7 @@ import {LowerCasePipe, NgClass} from '@angular/common';
 import {ProjectFinding} from '../../../../api/models/project-finding';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingSeverity} from '../../../../api/models/finding-severity';
-import {GitBranchDropdownComponent} from '../../git-branch-dropdown/git-branch-dropdown.component';
+import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 
 @Component({
   selector: 'list-finding',
@@ -28,7 +28,7 @@ import {GitBranchDropdownComponent} from '../../git-branch-dropdown/git-branch-d
     FindingStatusComponent,
     NgClass,
     LowerCasePipe,
-    GitBranchDropdownComponent
+    ScanBranchDropdownComponent
   ],
   templateUrl: './list-finding.component.html',
   styleUrl: './list-finding.component.scss'

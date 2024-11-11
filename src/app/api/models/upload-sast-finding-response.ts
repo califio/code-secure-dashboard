@@ -6,6 +6,7 @@ import { SastFinding } from '../models/sast-finding';
 export interface UploadSastFindingResponse {
   confirmedFindings?: Array<SastFinding> | null;
   fixedFindings?: Array<SastFinding> | null;
+  isBlock?: boolean;
   newFindings?: Array<SastFinding> | null;
   openFindings?: Array<SastFinding> | null;
 }

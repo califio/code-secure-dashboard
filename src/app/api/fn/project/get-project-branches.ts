@@ -8,12 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { ProjectScanSummary } from '../../models/project-scan-summary';
 
 export interface GetProjectBranches$Params {
   slug: string;
 }
 
-export function getProjectBranches(http: HttpClient, rootUrl: string, params: GetProjectBranches$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+export function getProjectBranches(http: HttpClient, rootUrl: string, params: GetProjectBranches$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectScanSummary>>> {
   const rb = new RequestBuilder(rootUrl, getProjectBranches.PATH, 'get');
   if (params) {
     rb.path('slug', params.slug, {"style":"simple"});
@@ -24,7 +25,7 @@ export function getProjectBranches(http: HttpClient, rootUrl: string, params: Ge
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<string>>;
+      return r as StrictHttpResponse<Array<ProjectScanSummary>>;
     })
   );
 }
