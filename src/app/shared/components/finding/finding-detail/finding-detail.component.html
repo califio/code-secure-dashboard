@@ -49,12 +49,15 @@
           <div>{{ finding.location?.path }}</div>
         </div>
       </div>
-      <div class="flex flex-col gap-2">
-        <div class="font-semibold">Description</div>
-        <div class="block rounded border border-border bg-background p-2 items-center">
-          <div markdown>{{ finding.description }}</div>
+
+      @if (finding.description) {
+        <div class="flex flex-col gap-2">
+          <div class="font-semibold">Description</div>
+          <div class="block rounded border border-border bg-background p-2 items-center">
+            <div markdown>{{ finding.description }}</div>
+          </div>
         </div>
-      </div>
+      }
       @if (finding.recommendation) {
         <div class="flex flex-col gap-2">
           <div class="font-semibold">Recommendation</div>
