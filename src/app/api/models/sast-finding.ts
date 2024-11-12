@@ -8,6 +8,7 @@ export interface SastFinding {
   category?: string | null;
   description: string;
   findingFlow?: Array<FindingLocation> | null;
+  id?: string | null;
   identity: string;
   location: FindingLocation;
   name: string;

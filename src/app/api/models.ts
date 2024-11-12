@@ -20,6 +20,7 @@ export { FindingLocation } from './models/finding-location';
 export { FindingMetadata } from './models/finding-metadata';
 export { FindingProject } from './models/finding-project';
 export { FindingScan } from './models/finding-scan';
+export { FindingScanActivity } from './models/finding-scan-activity';
 export { FindingSeverity } from './models/finding-severity';
 export { FindingStatus } from './models/finding-status';
 export { GitAction } from './models/git-action';

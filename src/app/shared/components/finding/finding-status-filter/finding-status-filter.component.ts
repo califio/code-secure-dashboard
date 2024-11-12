@@ -3,6 +3,7 @@ import {NgIcon} from '@ng-icons/core';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {ClickOutsideDirective} from '../../../directives/click-outside.directive';
 import {NgClass} from '@angular/common';
+import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 
 
 interface FindingStatusOption {
@@ -19,7 +20,8 @@ interface FindingStatusOption {
   imports: [
     NgIcon,
     ClickOutsideDirective,
-    NgClass
+    NgClass,
+    FindingStatusLabelComponent
   ],
   templateUrl: './finding-status-filter.component.html',
   styleUrl: './finding-status-filter.component.scss'

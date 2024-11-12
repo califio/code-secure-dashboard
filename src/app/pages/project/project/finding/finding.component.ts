@@ -65,7 +65,7 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.slug = this.projectStore.slug();
-    this.projectService.getProjectBranches({
+    this.projectService.getProjectScansSummary({
       slug: this.slug
     }).subscribe(branches => {
       this.findingStore.branches.set(branches);

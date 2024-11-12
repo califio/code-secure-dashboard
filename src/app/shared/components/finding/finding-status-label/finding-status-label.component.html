@@ -1,0 +1,4 @@
+<div class="flex flex-row items-center gap-1 border-none"  [ngClass]="[getFindingStatusColor(status), ngClass]">
+  <ng-icon [name]="status ? getFindingStatusIcon(status) : defaultIcon"></ng-icon>
+  <div>{{ status ? getFindingStatusLabel(status) : defaultLabel}}</div>
+</div>

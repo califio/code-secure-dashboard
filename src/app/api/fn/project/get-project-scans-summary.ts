@@ -10,12 +10,12 @@ import { RequestBuilder } from '../../request-builder';
 
 import { ProjectScanSummary } from '../../models/project-scan-summary';
 
-export interface GetProjectBranches$Params {
+export interface GetProjectScansSummary$Params {
   slug: string;
 }
 
-export function getProjectBranches(http: HttpClient, rootUrl: string, params: GetProjectBranches$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectScanSummary>>> {
-  const rb = new RequestBuilder(rootUrl, getProjectBranches.PATH, 'get');
+export function getProjectScansSummary(http: HttpClient, rootUrl: string, params: GetProjectScansSummary$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectScanSummary>>> {
+  const rb = new RequestBuilder(rootUrl, getProjectScansSummary.PATH, 'get');
   if (params) {
     rb.path('slug', params.slug, {"style":"simple"});
   }
@@ -30,4 +30,4 @@ export function getProjectBranches(http: HttpClient, rootUrl: string, params: Ge
   );
 }
 
-getProjectBranches.PATH = '/api/project/{slug}/branches';
+getProjectScansSummary.PATH = '/api/project/{slug}/scan';

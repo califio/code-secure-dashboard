@@ -14,6 +14,7 @@ import {bindQueryParams} from '../../../../core/router';
 import {GitAction} from '../../../../api/models/git-action';
 import {ProjectStatistics} from '../../../../api/models/project-statistics';
 import {ProjectStore} from '../project-store';
+import {ScanBranchComponent} from '../../../../shared/components/scan-branch/scan-branch.component';
 @Component({
   selector: 'app-scan',
   standalone: true,
@@ -24,7 +25,8 @@ import {ProjectStore} from '../project-store';
     TimeagoModule,
     FormsModule,
     RouterLink,
-    DropdownComponent
+    DropdownComponent,
+    ScanBranchComponent
   ],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'

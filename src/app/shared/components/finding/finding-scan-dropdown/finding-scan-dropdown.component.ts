@@ -4,7 +4,7 @@ import {FindingScan} from '../../../../api/models/finding-scan';
 import {GitAction} from '../../../../api/models/git-action';
 import {ClickOutsideDirective} from '../../../directives/click-outside.directive';
 import {NgClass} from '@angular/common';
-import {getFindingStatusColor, getFindingStatusIcon, getGitActionIcon} from '../helper';
+import {getFindingStatusColor, getFindingStatusIcon, getGitActionIcon} from '../../../helper';
 
 @Component({
   selector: 'finding-scan-dropdown',

@@ -117,25 +117,34 @@
                   @if(activity.type == FindingActivityType.FirstSeen) {
                     <div class="flex flex-row items-center gap-1">
                       <span>seen on</span>
-                      <div class="flex flex-row items-center gap-1 text-[#00c869]">
-                        <ng-icon name="git-branch"></ng-icon>
-                        <span>{{activity.metadata?.branch}}</span>
-                      </div>
+                      @if(activity.metadata?.scanInfo) {
+                        <span>on</span>
+                        <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
+                                     [branch]="activity.metadata?.scanInfo?.branch ?? ''"
+                                     [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
+                        </scan-branch>
+                      } @else {
+                        <span>unknown</span>
+                      }
                     </div>
                   }
                   @if (activity.type == FindingActivityType.ChangeStatus) {
                     <span>change status</span>
                     <div class="flex flex-row items-center gap-2">
                       <div class="flex flex-row items-center gap-2">
-                        <div class="border border-border px-2 py-0.5 font-semibold">{{ activity.metadata?.changeStatus?.previousStatus }}</div>
+                        <finding-status-label [ngClass]="'px-1 py-0.5 border border-border'"
+                                              [status]="activity.metadata?.changeStatus?.previousStatus">
+                        </finding-status-label>
                         <span>to</span>
-                        <div class="border border-border px-2 py-0.5 font-semibold">{{activity.metadata?.changeStatus?.currentStatus}}</div>
-                        @if(activity.metadata?.branch) {
+                        <finding-status-label [ngClass]="'px-1 py-0.5 border border-border'"
+                                              [status]="activity.metadata?.changeStatus?.currentStatus">
+                        </finding-status-label>
+                        @if(activity.metadata?.scanInfo) {
                           <span>on</span>
-                          <div class="flex flex-row items-center gap-1 text-[#00c869]">
-                            <ng-icon name="git-branch"></ng-icon>
-                            <span>{{activity.metadata?.branch}}</span>
-                          </div>
+                          <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
+                                       [branch]="activity.metadata?.scanInfo?.branch ?? ''"
+                                       [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
+                          </scan-branch>
                         }
                       </div>
                     </div>

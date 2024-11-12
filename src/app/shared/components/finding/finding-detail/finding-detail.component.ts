@@ -9,11 +9,13 @@ import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../toastr/toastr.service';
 import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingActivity} from '../../../../api/models/finding-activity';
-import {FindingActivityType, FindingLocation, FindingScan, ProjectSource} from '../../../../api/models';
+import {FindingActivityType, FindingLocation, FindingScan, GitAction, ProjectSource} from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
 import {AvatarComponent} from '../../ui/avatar/avatar.component';
 import {MarkdownComponent} from 'ngx-markdown';
 import {FindingScanDropdownComponent} from '../finding-scan-dropdown/finding-scan-dropdown.component';
+import {ScanBranchComponent} from '../../scan-branch/scan-branch.component';
+import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 
 @Component({
   selector: 'finding-detail',
@@ -28,7 +30,9 @@ import {FindingScanDropdownComponent} from '../finding-scan-dropdown/finding-sca
     AvatarComponent,
     LowerCasePipe,
     MarkdownComponent,
-    FindingScanDropdownComponent
+    FindingScanDropdownComponent,
+    ScanBranchComponent,
+    FindingStatusLabelComponent
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'
@@ -113,4 +117,6 @@ export class FindingDetailComponent {
   onScanChange(scanId: string) {
     this.currentScan = this.finding.scans?.find(value => value.scanId == scanId);
   }
+
+  protected readonly GitAction = GitAction;
 }
