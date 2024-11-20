@@ -11,7 +11,7 @@ import {NgClass} from '@angular/common';
 })
 export class AvatarComponent implements OnInit {
   _text: string | undefined;
-  @Input() src: string | undefined;
+  @Input() src: string | undefined | null;
   @Input() size: number = 28;
   @Input() shape: 'square' | 'circle' = 'circle';
   @Input() ngClass = '';

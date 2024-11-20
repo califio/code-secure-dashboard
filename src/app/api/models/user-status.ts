@@ -4,6 +4,5 @@
 
 export enum UserStatus {
   Disabled = 'Disabled',
-  Active = 'Active',
-  Locked = 'Locked'
+  Active = 'Active'
 }

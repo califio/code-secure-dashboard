@@ -4,6 +4,7 @@
 
 export interface UserSummary {
   avatar?: string | null;
+  email?: string | null;
   fullName?: string | null;
   id?: string;
   userName?: string | null;

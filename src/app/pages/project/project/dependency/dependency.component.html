@@ -1,5 +1,72 @@
-<div class="w-full mt-10">
-  <div class="flex flex-row justify-center">
-    <coming-soon></coming-soon>
+<div class="mx-auto px-2 lg:px-6 flex flex-row pt-6 text-sm gap-4 w-full">
+  <div class="flex flex-col w-full">
+    <div class="flex flex-wrap w-full p-4 gap-2 items-center justify-between border-border border">
+      <div class="flex flex-row items-center gap-2">
+        <!--SEARCH-->
+        <div class="flex w-full md:max-w-80">
+          <label class="relative text-muted-foreground w-full">
+            <div class="absolute left-2.5 top-2.5">
+              <ng-icon name="search"></ng-icon>
+            </div>
+            <input class="py-2 pl-8 pr-2"
+                   placeholder="Search..." type="text"
+                   [(ngModel)]="store.filter.name"
+                   (keyup.enter)="onSearchChange()"/>
+          </label>
+        </div>
+        <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
+             (click)="onReload()">
+          <ng-icon name="reload"></ng-icon>
+        </div>
+      </div>
+    </div>
+    <table class="table w-full table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
+      @if(!store.loading()) {
+        <tbody>
+          @for (dependency of store.dependencies(); track $index) {
+            <div class="flex flex-row items-center gap-3 p-4 bg-background border-b border-border hover:bg-card">
+              <risk-level-icon [risk]="dependency.riskLevel" class="text-xl"></risk-level-icon>
+              <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency.id)">
+                <div class="flex flex-col gap-1 w-full">
+                  <div class="font-semibold">
+                    {{ getNameDependency(dependency)  }}
+                  </div>
+                  <div class="flex flex-row items-center justify-between w-full">
+                    <div class="flex flex-row items-center gap-2">
+                      <span>{{dependency.location}}</span>
+                    </div>
+                    <div class="flex flex-row items-center gap-2">
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </tbody>
+      }
+    </table>
+    @if(store.loading()) {
+      <loading-table></loading-table>
+    }
+    <pagination class="sticky bottom-0"
+                (pageChange)="onPageChange($event)"
+                [currentPage]="store.currentPage()"
+                [totalPage]="store.totalPage()">
+    </pagination>
+  </div>
+  <div class="hidden lg:block w-[800px] overflow-x-auto">
+    @if(dependency) {
+      <coming-soon></coming-soon>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-[720px] w-full">
+        @if (loadingDependency) {
+          <ng-icon name="spin" class="animate-spin" size="24"></ng-icon>
+        } @else {
+          <ng-icon name="click" size="24"></ng-icon>
+          <div>Select dependency to see its details.</div>
+        }
+      </div>
+    }
   </div>
 </div>

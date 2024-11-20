@@ -6,6 +6,7 @@ export interface CiTokens {
   createdAt?: string;
   expiredAt?: string | null;
   id?: string;
+  metadata?: string | null;
   name?: string | null;
   updatedAt?: string | null;
   value?: string | null;

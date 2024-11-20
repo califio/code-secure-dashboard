@@ -5,6 +5,9 @@
 import { ProjectRole } from '../models/project-role';
 export interface ProjectUser {
   avatar?: string | null;
+  createdAt?: string;
+  email?: string | null;
+  fullName?: string | null;
   role?: ProjectRole;
   userId?: string;
   userName?: string | null;

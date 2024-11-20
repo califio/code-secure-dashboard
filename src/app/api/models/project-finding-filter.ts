@@ -7,10 +7,10 @@ import { FindingStatus } from '../models/finding-status';
 import { ProjectFindingSortField } from '../models/project-finding-sort-field';
 import { ScannerType } from '../models/scanner-type';
 export interface ProjectFindingFilter {
+  commitId?: string | null;
   desc?: boolean;
   name?: string | null;
   page?: number;
-  scanId?: string | null;
   scanner?: string | null;
   severity?: FindingSeverity;
   size?: number;

@@ -13,6 +13,9 @@ import {ProjectSummaryPage} from '../../../api/models/project-summary-page';
 import {ProjectSortField} from '../../../api/models/project-sort-field';
 import {DropdownComponent} from '../../../shared/components/ui/dropdown/dropdown.component';
 import {DropdownItem} from '../../../shared/components/ui/dropdown/dropdown.model';
+import {LowerCasePipe} from '@angular/common';
+import {ProjectSource} from '../../../api/models/project-source';
+import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-list',
@@ -24,7 +27,9 @@ import {DropdownItem} from '../../../shared/components/ui/dropdown/dropdown.mode
     TimeagoModule,
     RouterLink,
     LoadingTableComponent,
-    DropdownComponent
+    DropdownComponent,
+    LowerCasePipe,
+    TooltipDirective
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
@@ -111,6 +116,12 @@ export class ListComponent implements OnInit, OnDestroy{
     updateQueryParams(this.router, this.filter);
   }
 
+  sourceIcon(source?: ProjectSource | undefined | null): string {
+    if (source) {
+      return source.toString().toLowerCase()
+    }
+    return ""
+  }
   private destroy$ = new Subject();
 
 }

@@ -10,18 +10,24 @@
               type="checkbox"/>
           </div>
           <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenFinding(finding.id)">
-            <div class="w-8 items-center" [ngClass]="mSeverity.get(finding.severity!)">
-              <ng-icon name="bug" size="20"></ng-icon>
-            </div>
-            <div class="flex flex-col gap-1">
+            <finding-severity [severity]="finding.severity!"></finding-severity>
+            <div class="flex flex-col gap-1 w-full">
               <div class="font-semibold">
                 {{ finding.name }}
               </div>
-              <div class="flex flex-row gap-2 border border-border rounded w-fit px-3 py-1"
-                   [ngClass]="mStatus.get(finding.status!)['style']">
-                <div class="flex flex-row items-center gap-1">
-                  <ng-icon [name]="mStatus.get(finding.status!)['icon']"></ng-icon>
-                  <span>{{mStatus.get(finding.status!)['label']}}</span>
+              <div class="flex flex-row items-center justify-between w-full">
+                <div class="flex flex-row items-center gap-2">
+                  <finding-status-label
+                    class="border border-border rounded w-fit px-3 py-1"
+                    [status]="finding.status">
+                  </finding-status-label>
+                </div>
+                <div class="flex flex-row items-center gap-2">
+                  <div class="flex flex-row items-center gap-1 text-[#00c869]">
+                    <div class="text-xs border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+                      {{finding.scanner}}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

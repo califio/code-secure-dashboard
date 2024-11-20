@@ -38,9 +38,14 @@ export class SettingComponent implements OnDestroy {
       icon: 'rocket',
     },
     {
-      label: 'Configuration',
-      route: '/setting/configuration',
-      icon: 'setting',
+      label: 'Mail',
+      route: '/setting/mail',
+      icon: 'envelope',
+    },
+    {
+      label: 'Authentication',
+      route: '/setting/authentication',
+      icon: 'key',
     }
   ]
   private destroy$ = new Subject();

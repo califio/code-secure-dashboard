@@ -1,0 +1,8 @@
+<div class="flex flex-row items-center gap-2">
+  <ng-icon [name]="getIcon(status)"
+           [ngClass]="getStyle(status)">
+  </ng-icon>
+  @if(showLabel) {
+    <span class="lowercase">{{status}}</span>
+  }
+</div>

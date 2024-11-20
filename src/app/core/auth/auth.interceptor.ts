@@ -82,7 +82,9 @@ export class AuthInterceptor implements HttpInterceptor {
               break
             }
             default: {
-              this.router.navigate(['/error/', error.status]).then();
+              if (req.url.includes("/api")) {
+                this.router.navigate(['/error/', error.status]).then();
+              }
             }
           }
         }

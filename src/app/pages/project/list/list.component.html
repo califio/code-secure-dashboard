@@ -9,7 +9,7 @@
             <div class="absolute left-2.5 top-2.5">
               <ng-icon name="search"></ng-icon>
             </div>
-            <input class="py-2 pl-8 pr-2" placeholder="Search..." type="text" [(ngModel)]="filter.Name" (keyup.enter)="onSearchChange()"/>
+            <input class="py-2 pl-8 pr-2 w-full" placeholder="Search..." type="text" [(ngModel)]="filter.Name" (keyup.enter)="onSearchChange()"/>
           </label>
         </div>
         <div class="flex flex-row space-x-2 items-center">
@@ -52,7 +52,8 @@
                     value="28" />
                 </td>
                 <td>
-                  <a [routerLink]="['/project', project.slug, 'scan']">
+                  <a [routerLink]="['/project', project.slug, 'scan']" class="flex flex-row items-center gap-2">
+                    <ng-icon [name]="sourceIcon(project.source)"></ng-icon>
                     <span class="w-full">{{ project.name }}</span>
                   </a>
                 </td>
@@ -76,8 +77,8 @@
                   </div>
                 </td>
                 <td>
-                  <div class="font-semibold text-[#00c869]" [title]="project.createdAt">
-                    {{ project.createdAt | timeago }}
+                  <div class="font-semibold text-[#00c869]">
+                    <span [tooltip]="project.createdAt">{{ project.createdAt | timeago }}</span>
                   </div>
                 </td>
 

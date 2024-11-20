@@ -1,0 +1,16 @@
+<div class="flex-row flex items-center">
+  <div class="w-10 shrink-0">
+    <avatar [src]="avatar"
+            [shape]="'square'"
+            [ngClass]="'rounded-lg'"
+            [size]="avatarSize"
+            [text]="username">
+    </avatar>
+  </div>
+  <div class="overflow-hidden px-2 text-sm font-semibold text-foreground flex flex-col items-start">
+    {{fullName || username}}
+    @if(email) {
+      <p class="truncate text-ellipsis text-xs font-semibold text-muted-foreground">{{email}}</p>
+    }
+  </div>
+</div>

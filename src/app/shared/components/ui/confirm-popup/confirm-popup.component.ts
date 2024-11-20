@@ -15,7 +15,7 @@ export class ConfirmPopupComponent {
   @Input() title = 'Are you sure you want to delete this?';
   @Input() confirmText = 'Yes';
   @Input() cancelText = 'Cancel';
-  @Output() cancel = new EventEmitter()
+  @Output() cancel = new EventEmitter();
   @Output() confirm = new EventEmitter();
 
   onCancel() {

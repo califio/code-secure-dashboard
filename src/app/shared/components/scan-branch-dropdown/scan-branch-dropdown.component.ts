@@ -2,8 +2,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {ClickOutsideDirective} from '../../directives/click-outside.directive';
 import {NgClass} from '@angular/common';
-import {GitAction} from '../../../api/models/git-action';
-import {ProjectScanSummary} from '../../../api/models/project-scan-summary';
+import {ProjectCommitSummary} from '../../../api/models/project-commit-summary';
+import {getGitActionIcon} from '../../helper';
+import {GitAction} from '../../../api/models';
 
 @Component({
   selector: 'scan-branch-dropdown',
@@ -19,34 +20,23 @@ import {ProjectScanSummary} from '../../../api/models/project-scan-summary';
 export class ScanBranchDropdownComponent {
   hidden = true;
   label = 'Branch';
-  selectedOption: ProjectScanSummary | undefined;
+  selectedOption: ProjectCommitSummary | undefined;
 
   @Input()
-  set selected(scanId: string | null | undefined) {
-    this.selectedOption = this.options.find(option => option.scanId == scanId);
+  set selected(commitId: string | null | undefined) {
+    this.selectedOption = this.options.find(option => option.commitId == commitId);
   }
 
   @Input()
-  options: ProjectScanSummary[] = [];
+  options: ProjectCommitSummary[] = [];
   @Output()
   selectChange = new EventEmitter<string>();
 
-  onClick(option: ProjectScanSummary) {
+  onClick(option: ProjectCommitSummary) {
     this.selectedOption = option;
-    this.selectChange.emit(option.scanId);
+    this.selectChange.emit(option.commitId);
   }
 
-  getIcon(action: GitAction | undefined): string {
-    if (action) {
-      return this.mIcon.get(action) ?? '';
-    }
-    return '';
-  }
-  private mIcon: Map<GitAction, string> = new Map<GitAction, string>([
-    [GitAction.CommitTag, 'git-tag'],
-    [GitAction.CommitBranch, 'git-branch'],
-    [GitAction.MergeRequest, 'git-merge'],
-  ]);
-
+  protected readonly getGitActionIcon = getGitActionIcon;
   protected readonly GitAction = GitAction;
 }

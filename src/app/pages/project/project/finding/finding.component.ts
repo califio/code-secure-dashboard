@@ -24,6 +24,8 @@ import {
   FindingStatusFilterComponent
 } from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
 import {ProjectStore} from '../project-store';
+import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dropdown/scanner-dropdown.component';
+import {ProjectScanner} from '../../../../api/models/project-scanner';
 
 @Component({
   selector: 'app-finding',
@@ -40,17 +42,18 @@ import {ProjectStore} from '../project-store';
     ReactiveFormsModule,
     FormsModule,
     FindingStatusFilterComponent,
+    ScannerDropdownComponent,
   ],
   templateUrl: './finding.component.html',
   styleUrl: './finding.component.scss'
 })
 export class FindingComponent implements OnInit, OnDestroy {
-
   slug = '';
   finding: FindingDetail | null = null;
   showDetailFinding = false;
   loadingFinding = false;
   selectedFindings: string[] = [];
+  commitId: string | null | undefined = null;
 
   constructor(
     private projectService: ProjectService,
@@ -65,10 +68,18 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.slug = this.projectStore.slug();
-    this.projectService.getProjectScansSummary({
+    this.projectService.getProjectCommits({
       slug: this.slug
     }).subscribe(branches => {
-      this.findingStore.branches.set(branches);
+      this.findingStore.commits.set(branches);
+      this.commitId = this.findingStore.filter.commitId;
+    });
+    this.projectService.getProjectScanners({
+      slug: this.slug
+    }).subscribe(scanners => {
+      this.findingStore.scanners.set(scanners);
+      this.scanner = scanners.find(scanner => scanner.name == this.findingStore.filter.scanner
+        && this.findingStore.filter.type == scanner.type);
     })
     this.route.queryParams.pipe(
       switchMap(params => {
@@ -109,6 +120,7 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject();
   search = '';
+  scanner: ProjectScanner | null | undefined;
 
   ngOnDestroy(): void {
     this.destroy$.next(null);
@@ -147,7 +159,7 @@ export class FindingComponent implements OnInit, OnDestroy {
   }
 
   onSelectScan(scanId: string) {
-    this.findingStore.filter.scanId = scanId;
+    this.findingStore.filter.commitId = scanId;
     updateQueryParams(this.router, this.findingStore.filter);
   }
 
@@ -176,5 +188,16 @@ export class FindingComponent implements OnInit, OnDestroy {
     } else {
       this.toastrService.warning('select at least one finding to change status', 5000);
     }
+  }
+
+  onChangeScanner(scanner: ProjectScanner | null) {
+    if (scanner != null) {
+      this.findingStore.filter.scanner = scanner.name;
+      this.findingStore.filter.type = scanner.type;
+    } else {
+      this.findingStore.filter.scanner = undefined;
+      this.findingStore.filter.type = undefined;
+    }
+    updateQueryParams(this.router, this.findingStore.filter);
   }
 }

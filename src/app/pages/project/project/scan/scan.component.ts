@@ -15,6 +15,9 @@ import {GitAction} from '../../../../api/models/git-action';
 import {ProjectStatistics} from '../../../../api/models/project-statistics';
 import {ProjectStore} from '../project-store';
 import {ScanBranchComponent} from '../../../../shared/components/scan-branch/scan-branch.component';
+import {ScanStatusComponent} from '../../../../shared/components/scan-status/scan-status.component';
+import {ScanStatus} from '../../../../api/models';
+import {TooltipDirective} from '../../../../shared/components/ui/tooltip/tooltip.directive';
 @Component({
   selector: 'app-scan',
   standalone: true,
@@ -26,7 +29,9 @@ import {ScanBranchComponent} from '../../../../shared/components/scan-branch/sca
     FormsModule,
     RouterLink,
     DropdownComponent,
-    ScanBranchComponent
+    ScanBranchComponent,
+    ScanStatusComponent,
+    TooltipDirective
   ],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'
@@ -65,7 +70,7 @@ export class ScanComponent implements OnInit, OnDestroy {
   }
   constructor(
     private projectService: ProjectService,
-    private projectStore: ProjectStore,
+    public projectStore: ProjectStore,
     private route: ActivatedRoute
   ) {
   }
@@ -146,4 +151,5 @@ export class ScanComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject();
   protected readonly GitAction = GitAction;
   protected readonly Date = Date;
+  protected readonly ScanStatus = ScanStatus;
 }

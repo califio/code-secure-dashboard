@@ -9,6 +9,7 @@ import {CiTokenService} from '../../../api/services/ci-token.service';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
 import {ConfirmPopupComponent} from '../../../shared/components/ui/confirm-popup/confirm-popup.component';
 import {finalize} from 'rxjs';
+import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-ci-token',
@@ -20,7 +21,8 @@ import {finalize} from 'rxjs';
     ReactiveFormsModule,
     TimeagoModule,
     FormsModule,
-    ConfirmPopupComponent
+    ConfirmPopupComponent,
+    TooltipDirective
   ],
   templateUrl: './ci-token.component.html',
   styleUrl: './ci-token.component.scss'

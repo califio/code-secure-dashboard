@@ -1,0 +1,49 @@
+<div class="flex flex-col items-start">
+  <button
+    (click)="hidden = !hidden"
+    class="flex flex-row gap-1 items-center rounded-md px-3 py-2 font-semibold w-fit">
+    @if(selectedOption) {
+      <user-info [username]="selectedOption.userName ?? 'Unknown'"
+                 [fullName]="selectedOption.fullName"
+                 [email]="selectedOption.email"
+                 [avatar]="selectedOption.avatar"></user-info>
+    } @else {
+      <span>Select User</span>
+    }
+    <ng-icon name="next" class="rotate-90"></ng-icon>
+  </button>
+  <!-- Dropdown menu -->
+  <div [class.hidden]="hidden" class="z-10 absolute mt-14 rounded shadow w-fit border border-border bg-background overflow-y-auto max-h-96">
+    <div class="flex w-full rounded-t p-2">
+      <label class="relative text-muted-foreground w-full">
+        <div class="absolute left-2.5 top-2">
+          @if(loading) {
+            <ng-icon name="spin" class="animate-spin"></ng-icon>
+          } @else {
+            <ng-icon name="search"></ng-icon>
+          }
+        </div>
+        <input class="py-2 pl-8 pr-2 rounded-none w-full border" placeholder="Search..." type="text"
+               [(ngModel)]="name"
+               (keyup.enter)="onSearch()"/>
+      </label>
+    </div>
+    @if(options.length > 0) {
+      <ul class="py-2">
+        @for(option of options; track $index) {
+          <li
+            (click)="onClick(option)"
+            [ngClass]="option.id == selectedOption?.id ?  'bg-gray-100 dark:bg-card' : ''"
+            class="cursor-pointer mx-2 px-2 py-1 rounded bg-background placeholder-muted-foreground hover:bg-gray-100 dark:hover:bg-card">
+            <user-info [username]="option.userName ?? 'Unknown'"
+                       [avatar]="option.avatar"></user-info>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="flex flex-row justify-center w-full py-4">
+        <span class="text-xs">No results found</span>
+      </div>
+    }
+  </div>
+</div>

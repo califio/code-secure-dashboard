@@ -11,8 +11,12 @@ export const routes: Routes = [
         loadComponent: () => import('./ci-token/ci-token.component').then(x => x.CiTokenComponent)
       },
       {
-        path: 'configuration',
-        loadComponent: () => import('./configuration/configuration.component').then(x => x.ConfigurationComponent)
+        path: 'authentication',
+        loadComponent: () => import('./authentication/authentication.component').then(x => x.AuthenticationComponent)
+      },
+      {
+        path: 'mail',
+        loadComponent: () => import('./mail/mail.component').then(x => x.MailComponent)
       }
     ],
   }

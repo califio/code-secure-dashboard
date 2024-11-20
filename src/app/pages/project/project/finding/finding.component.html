@@ -14,17 +14,20 @@
                    (keyup.enter)="onSearchChange()"/>
           </label>
         </div>
-        <scan-branch-dropdown [options]="findingStore.branches()"
-                             [selected]="findingStore.filter.scanId"
-                             (selectChange)="onSelectScan($event)">
+        <scan-branch-dropdown [options]="findingStore.commits()"
+                              [selected]="commitId"
+                              (selectChange)="onSelectScan($event)">
         </scan-branch-dropdown>
         <finding-status-filter
           [status]="findingStore.filter.status"
           (statusChange)="onStatusChange($event)">
         </finding-status-filter>
-      </div>
-      <div class="flex flex-row items-center gap-2">
-<!--        <dropdown defaultLabel="Export" [options]="[]"></dropdown>-->
+        <scanner-dropdown [options]="findingStore.scanners()"
+                          [scanner]="scanner"
+                          (scannerChange)="onChangeScanner($event)">
+        </scanner-dropdown>
+
+        <!--        <dropdown defaultLabel="Export" [options]="[]"></dropdown>-->
         <finding-status [fixedLabel]="'Mark as'" (statusChange)="onMarkAs($event)">
         </finding-status>
         <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"

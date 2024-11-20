@@ -1,0 +1,48 @@
+<div [class.hidden]="!store.showUpdateUserPopup()" class="fixed top-0 right-0 left-0 z-50 h-screen w-screen text-sm">
+  <div class="flex flex-col w-full h-full items-center justify-center">
+    <div class="flex flex-row justify-center w-full h-fit">
+      <div class="flex flex-col gap-3 w-fit h-fit min-w-[480px] border border-border bg-background shadow-lg p-4 rounded-lg" >
+        <div class="flex flex-col gap-1 w-full">
+          <span class="font-semibold">User</span>
+          <user-info [username]="_user?.userName ?? 'Unknown'"
+                     [avatar]="_user?.avatar"
+                     [fullName]="form.controls.fullName?.value"
+                     [email]="form.controls.email?.value">
+          </user-info>
+        </div>
+        <div class="flex flex-col gap-1 w-full">
+          <div class="font-semibold">Email</div>
+          <input type="text" name="email" [formControl]="form.controls.email!">
+        </div>
+        <div class="flex flex-col gap-1 w-full">
+          <div class="font-semibold">Role</div>
+          <dropdown [options]="store.roleOptions()" class="w-fit text-sm"
+                    [selected]="form.controls.role?.value"
+                    (selectedChange)="changeRoleUser($event)"></dropdown>
+        </div>
+        <div class="flex flex-col gap-1 w-full">
+          <div class="font-semibold">Status</div>
+          <dropdown [options]="statusOptions" class="w-fit text-sm"
+                    [selected]="form.controls.status?.value"
+                    (selectedChange)="changeStatusUser($event)"></dropdown>
+        </div>
+        <div class="flex flex-row items-center gap-4 justify-end">
+          <div class="flex flex-row items-center gap-4 w-fit">
+            <button app-button
+                    type="primary"
+                    [loading]="form.disabled"
+                    (click)="onUpdateUser()">
+              Update
+            </button>
+            <button app-button
+                    type="default"
+                    (click)="onCancel()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

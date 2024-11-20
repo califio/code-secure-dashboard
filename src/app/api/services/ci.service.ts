@@ -11,16 +11,19 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { CiScanInfo } from '../models/ci-scan-info';
+import { CiUploadDependencyResponse } from '../models/ci-upload-dependency-response';
+import { CiUploadFindingResponse } from '../models/ci-upload-finding-response';
 import { initCiScan } from '../fn/ci/init-ci-scan';
 import { InitCiScan$Params } from '../fn/ci/init-ci-scan';
 import { ping } from '../fn/ci/ping';
 import { Ping$Params } from '../fn/ci/ping';
-import { ScanInfo } from '../models/scan-info';
 import { updateCiScan } from '../fn/ci/update-ci-scan';
 import { UpdateCiScan$Params } from '../fn/ci/update-ci-scan';
-import { uploadSastFinding } from '../fn/ci/upload-sast-finding';
-import { UploadSastFinding$Params } from '../fn/ci/upload-sast-finding';
-import { UploadSastFindingResponse } from '../models/upload-sast-finding-response';
+import { uploadCiDependency } from '../fn/ci/upload-ci-dependency';
+import { UploadCiDependency$Params } from '../fn/ci/upload-ci-dependency';
+import { uploadCiFinding } from '../fn/ci/upload-ci-finding';
+import { UploadCiFinding$Params } from '../fn/ci/upload-ci-finding';
 
 @Injectable({ providedIn: 'root' })
 export class CiService extends BaseService {
@@ -62,7 +65,7 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  initCiScan$Response(params?: InitCiScan$Params, context?: HttpContext): Observable<StrictHttpResponse<ScanInfo>> {
+  initCiScan$Response(params?: InitCiScan$Params, context?: HttpContext): Observable<StrictHttpResponse<CiScanInfo>> {
     return initCiScan(this.http, this.rootUrl, params, context);
   }
 
@@ -72,9 +75,9 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  initCiScan(params?: InitCiScan$Params, context?: HttpContext): Observable<ScanInfo> {
+  initCiScan(params?: InitCiScan$Params, context?: HttpContext): Observable<CiScanInfo> {
     return this.initCiScan$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ScanInfo>): ScanInfo => r.body)
+      map((r: StrictHttpResponse<CiScanInfo>): CiScanInfo => r.body)
     );
   }
 
@@ -103,28 +106,53 @@ export class CiService extends BaseService {
     );
   }
 
-  /** Path part for operation `uploadSastFinding()` */
-  static readonly UploadSastFindingPath = '/api/ci/sast-finding';
+  /** Path part for operation `uploadCiFinding()` */
+  static readonly UploadCiFindingPath = '/api/ci/finding';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `uploadSastFinding()` instead.
+   * To access only the response body, use `uploadCiFinding()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  uploadSastFinding$Response(params?: UploadSastFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<UploadSastFindingResponse>> {
-    return uploadSastFinding(this.http, this.rootUrl, params, context);
+  uploadCiFinding$Response(params?: UploadCiFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<CiUploadFindingResponse>> {
+    return uploadCiFinding(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `uploadSastFinding$Response()` instead.
+   * To access the full response (for headers, for example), `uploadCiFinding$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  uploadSastFinding(params?: UploadSastFinding$Params, context?: HttpContext): Observable<UploadSastFindingResponse> {
-    return this.uploadSastFinding$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UploadSastFindingResponse>): UploadSastFindingResponse => r.body)
+  uploadCiFinding(params?: UploadCiFinding$Params, context?: HttpContext): Observable<CiUploadFindingResponse> {
+    return this.uploadCiFinding$Response(params, context).pipe(
+      map((r: StrictHttpResponse<CiUploadFindingResponse>): CiUploadFindingResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `uploadCiDependency()` */
+  static readonly UploadCiDependencyPath = '/api/ci/dependency';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `uploadCiDependency()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  uploadCiDependency$Response(params?: UploadCiDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<CiUploadDependencyResponse>> {
+    return uploadCiDependency(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `uploadCiDependency$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  uploadCiDependency(params?: UploadCiDependency$Params, context?: HttpContext): Observable<CiUploadDependencyResponse> {
+    return this.uploadCiDependency$Response(params, context).pipe(
+      map((r: StrictHttpResponse<CiUploadDependencyResponse>): CiUploadDependencyResponse => r.body)
     );
   }
 

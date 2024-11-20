@@ -12,6 +12,8 @@ import {ProjectFinding} from '../../../../api/models/project-finding';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingSeverity} from '../../../../api/models/finding-severity';
 import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
+import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
+import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
 
 @Component({
   selector: 'list-finding',
@@ -28,7 +30,9 @@ import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branc
     FindingStatusComponent,
     NgClass,
     LowerCasePipe,
-    ScanBranchDropdownComponent
+    ScanBranchDropdownComponent,
+    FindingStatusLabelComponent,
+    FindingSeverityComponent
   ],
   templateUrl: './list-finding.component.html',
   styleUrl: './list-finding.component.scss'

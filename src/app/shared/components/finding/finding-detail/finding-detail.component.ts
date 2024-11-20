@@ -16,6 +16,8 @@ import {MarkdownComponent} from 'ngx-markdown';
 import {FindingScanDropdownComponent} from '../finding-scan-dropdown/finding-scan-dropdown.component';
 import {ScanBranchComponent} from '../../scan-branch/scan-branch.component';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
+import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
+import {TooltipDirective} from '../../ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'finding-detail',
@@ -32,7 +34,9 @@ import {FindingStatusLabelComponent} from '../finding-status-label/finding-statu
     MarkdownComponent,
     FindingScanDropdownComponent,
     ScanBranchComponent,
-    FindingStatusLabelComponent
+    FindingStatusLabelComponent,
+    FindingSeverityComponent,
+    TooltipDirective
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'
@@ -108,7 +112,7 @@ export class FindingDetailComponent {
 
   source(location: FindingLocation) {
     if (this._finding.project?.source == ProjectSource.GitLab) {
-      return `${this._finding.project.repoUrl}/-/blob/${this.currentScan?.commitHash}/${location.path}#L${location.startLine}`;
+      return `${this._finding.project.repoUrl}/-/blob/${this.currentScan?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
     }
     // todo: support other git
     return '';
@@ -119,4 +123,5 @@ export class FindingDetailComponent {
   }
 
   protected readonly GitAction = GitAction;
+  protected readonly FindingStatus = FindingStatus;
 }

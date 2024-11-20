@@ -4,18 +4,23 @@ import {NgIcon} from "@ng-icons/core";
 import {PaginationComponent} from "../../shared/components/ui/pagination/pagination.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TimeagoModule} from "ngx-timeago";
-import {ProjectSortField} from '../../api/models/project-sort-field';
 import {DropdownItem} from '../../shared/components/ui/dropdown/dropdown.model';
-import {ProjectSummaryPage} from '../../api/models/project-summary-page';
-import {GetProjects$Params} from '../../api/fn/project/get-projects';
-import {ProjectService} from '../../api/services/project.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {delay, finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../core/router';
-import {UserSortField} from '../../api/models';
+import {UserInfo, UserSortField, UserStatus} from '../../api/models';
 import {UserService} from '../../api/services/user.service';
 import {UserStore} from './user.store';
 import {AvatarComponent} from '../../shared/components/ui/avatar/avatar.component';
+import {UserInfoComponent} from '../../shared/components/user-info/user-info.component';
+import {DropdownComponent} from '../../shared/components/ui/dropdown/dropdown.component';
+import {ButtonDirective} from '../../shared/directives/button.directive';
+import {AddUserPopupComponent} from './add-user-popup/add-user-popup.component';
+import {UpdateUserPopupComponent} from './update-user-popup/update-user-popup.component';
+import {RoleService} from '../../api/services/role.service';
+import {ConfirmPopupComponent} from '../../shared/components/ui/confirm-popup/confirm-popup.component';
+import {ToastrService} from '../../shared/components/toastr/toastr.service';
+import {TooltipDirective} from '../../shared/components/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-user',
@@ -27,12 +32,19 @@ import {AvatarComponent} from '../../shared/components/ui/avatar/avatar.componen
     ReactiveFormsModule,
     TimeagoModule,
     FormsModule,
-    AvatarComponent
+    AvatarComponent,
+    UserInfoComponent,
+    DropdownComponent,
+    ButtonDirective,
+    AddUserPopupComponent,
+    UpdateUserPopupComponent,
+    ConfirmPopupComponent,
+    TooltipDirective
   ],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
-export class UserComponent implements OnInit, OnDestroy{
+export class UserComponent implements OnInit, OnDestroy {
   loading = false;
   sortOptions: UserSortField[] = [UserSortField.Status, UserSortField.CreatedAt, UserSortField.UpdatedAt];
   sorts: DropdownItem[] = [
@@ -49,13 +61,17 @@ export class UserComponent implements OnInit, OnDestroy{
       label: 'Status'
     }
   ];
+  user: UserInfo | undefined = undefined;
 
   constructor(
     private userService: UserService,
     public store: UserStore,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private roleService: RoleService,
+    private toastr: ToastrService
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.queryParams.pipe(
@@ -78,6 +94,13 @@ export class UserComponent implements OnInit, OnDestroy{
       this.store.totalPage.set(response.pageCount!);
       this.store.count.set(response.count!);
     })
+    this.roleService.getRoles().subscribe(roles => {
+      const options = roles.map(value => <DropdownItem>{
+        value: value.name,
+        label: value.name
+      });
+      this.store.roleOptions.set(options);
+    })
   }
 
   onSearchChange() {
@@ -89,8 +112,8 @@ export class UserComponent implements OnInit, OnDestroy{
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onSortChange(sortBy: UserSortField) {
-    this.store.filter.sortBy = sortBy;
+  onSortChange(value: any) {
+    this.store.filter.sortBy = value;
     updateQueryParams(this.router, this.store.filter);
   }
 
@@ -106,4 +129,38 @@ export class UserComponent implements OnInit, OnDestroy{
 
   private destroy$ = new Subject();
 
+  addUser() {
+    this.store.showAddUserPopup.set(true);
+  }
+
+  showConfirmDisableUserPopup(user: UserInfo) {
+    this.user = user;
+    this.store.showDisableUserPopup.set(true);
+  }
+
+  showUpdateUserPopup(user: UserInfo) {
+    this.user = user;
+    this.store.showUpdateUserPopup.set(true);
+  }
+
+  disableUser() {
+    if (this.user) {
+      this.userService.updateUserByAdmin({
+        userId: this.user.id!,
+        body: {
+          status: UserStatus.Disabled
+        }
+      }).subscribe(user => {
+        const users = this.store.users().map(value => {
+          if (value.id == user.id) {
+            return user;
+          }
+          return value;
+        });
+        this.store.users.set(users);
+        this.store.showDisableUserPopup.set(false);
+        this.toastr.success('Disabled user success!');
+      })
+    }
+  }
 }

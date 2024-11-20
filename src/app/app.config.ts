@@ -1,7 +1,7 @@
 import {ApplicationConfig, importProvidersFrom, inject, provideZoneChangeDetection} from '@angular/core';
 import {provideRouter, withHashLocation} from '@angular/router';
 
-import { routes } from './app.routes';
+import {routes} from './app.routes';
 import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
 import {provideNgIconLoader, provideNgIconsConfig, withContentSecurityPolicy} from "@ng-icons/core";
 import {TimeagoModule} from 'ngx-timeago';
@@ -12,13 +12,13 @@ import {provideMarkdown} from 'ngx-markdown';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes, withHashLocation()),
     provideMarkdown(),
     provideNgIconsConfig({}, withContentSecurityPolicy()),
     provideNgIconLoader(name => {
       const http = inject(HttpClient);
-      return http.get(`/icons/${name}.svg`, { responseType: 'text' });
+      return http.get(`/icons/${name}.svg`, {responseType: 'text'});
     }),
     importProvidersFrom(
       TimeagoModule.forRoot(),

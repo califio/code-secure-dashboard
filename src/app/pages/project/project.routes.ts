@@ -25,7 +25,7 @@ export const routes: Routes = [
       },
       {
         path: 'setting',
-        loadComponent: () => import('./project/setting/setting.component').then(x => x.SettingComponent)
+        loadChildren: () => import('./project/setting/setting.routes').then((x) => x.routes),
       }
     ]
   }

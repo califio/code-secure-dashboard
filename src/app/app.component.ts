@@ -1,7 +1,8 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ViewContainerRef} from '@angular/core';
 import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {DOCUMENT} from "@angular/common";
 import {filter, take} from "rxjs";
+import {ModalService} from './core/modal/modal.service';
 
 @Component({
   selector: 'app-root',

@@ -4,7 +4,10 @@
       <div class="flex flex-col font-normal">
         <div class="flex">
           <div>You have</div>
-          <div class="font-bold px-2 text-primary hover:underline hover:underline-offset-4">{{statistic.openFinding}}</div>
+          <a class="font-bold px-2 text-primary hover:underline hover:underline-offset-4"
+             [routerLink]="['/project', projectStore.slug(), 'finding']"
+             [queryParams]="{'status': 'Open'}">{{statistic.openFinding}}
+          </a>
           <div>open vulnerabilities.</div>
         </div>
 <!--        <div class="flex gap-4">No new vulnerabilities detected last week!</div>-->
@@ -150,7 +153,8 @@
                     value="28"/>
                 </td>
                 <td>
-                  <a [routerLink]="['/project', slug, 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}"
+                  <a [routerLink]="['/project', slug, 'finding']"
+                     [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scanner, 'type': scan.type}"
                      class="flex flex-col gap-1">
                     <div class="">{{scan.commitTitle}}</div>
                     <scan-branch [action]="scan.gitAction ?? GitAction.CommitBranch"
@@ -160,8 +164,11 @@
                   </a>
                 </td>
                 <td>{{ scan.scanner }}</td>
-                <td>{{ scan.type }}</td>
-                <td>{{ scan.status }}</td>
+                <td class="lowercase">{{ scan.type }}</td>
+                <td>
+                  <scan-status [status]="scan.status ?? ScanStatus.Error">
+                  </scan-status>
+                </td>
                 <td>
                   <div
                     class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
@@ -188,8 +195,9 @@
                   </div>
                 </td>
                 <td>
-                  <div class="text-[#00c869]" [title]="scan.startedAt">
-                    {{ scan.startedAt | timeago }}
+                  <div class="text-[#00c869]">
+                    <span [tooltip]="scan.startedAt">{{ scan.startedAt | timeago }}</span>
+
                   </div>
                 </td>
                 <td>{{duration(scan.startedAt, scan.completedAt)}}</td>

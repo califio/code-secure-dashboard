@@ -57,8 +57,10 @@
                   </div>
                 </td>
                 <td>
-                  <div class="font-semibold text-[#00c869]" [title]="token.createdAt">
-                    {{ token.createdAt | timeago }}
+                  <div class="font-semibold text-[#00c869]">
+                    <span [tooltip]="token.createdAt">
+                      {{ token.createdAt | timeago }}
+                    </span>
                   </div>
                 </td>
                 <td>

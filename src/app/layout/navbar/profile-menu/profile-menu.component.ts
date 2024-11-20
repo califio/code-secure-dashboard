@@ -89,10 +89,8 @@ export class ProfileMenuComponent implements OnInit {
         token: this.authStore.refreshToken
       }
     }).subscribe(success => {
-      if (success) {
-        this.authStore.clearSession();
-        this.router.navigate(["/auth", "login"]).then();
-      }
+      this.authStore.clearSession();
+      this.router.navigate(["/auth", "login"]).then();
     })
   }
 }

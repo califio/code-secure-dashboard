@@ -7,6 +7,7 @@ import { ScannerType } from '../models/scanner-type';
 import { ScanStatus } from '../models/scan-status';
 export interface ProjectScan {
   commitBranch?: string | null;
+  commitId?: string;
   commitTitle?: string | null;
   completedAt?: string | null;
   gitAction?: GitAction;

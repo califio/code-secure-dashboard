@@ -1,6 +1,7 @@
 <div class="flex flex-col gap-4 w-full">
   <div class="flex flex-col border-b border-border pb-4 gap-4">
-    <div class="flex flex-row justify-between items-center w-full">
+    <div class="flex flex-row items-center w-full gap-2">
+      <finding-severity [severity]="finding.severity!"></finding-severity>
       <div class="text-xl">{{ finding.name }}</div>
     </div>
     <div class="flex flex-row items-center justify-between">
@@ -36,20 +37,24 @@
         [status]="finding.status!"
         (statusChange)="onChangeStatus($event)">
       </finding-status>
-      <div class="px-4 py-1.5 rounded bg-background border border-border items-center">
-        <ng-icon name="trash"></ng-icon>
-      </div>
     </div>
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
     <div class="flex flex-col gap-4 w-full border border-border p-4 h-fit">
-      <div class="flex flex-col gap-2">
-        <div class="font-semibold">Found at</div>
-        <div class="block rounded border border-border bg-background h-10 p-2 items-center">
-          <div>{{ finding.location?.path }}</div>
+      @if (finding.location) {
+        <div class="flex flex-col gap-2">
+          <div class="font-semibold">Found at</div>
+          <a [href]="source(finding.location)" target="_blank" class="flex flex-row items-center gap-1">
+            <span>{{ finding.location.path }}</span>
+            <ng-icon name="external-link"></ng-icon>
+          </a>
+          @if(finding.location.snippet) {
+            <div class="block rounded border border-border bg-background p-2 items-center">
+              <div>{{ finding.location.snippet}}</div>
+            </div>
+          }
         </div>
-      </div>
-
+      }
       @if (finding.description) {
         <div class="flex flex-col gap-2">
           <div class="font-semibold">Description</div>
@@ -62,7 +67,7 @@
         <div class="flex flex-col gap-2">
           <div class="font-semibold">Recommendation</div>
           <div class="block rounded border border-border bg-background p-2 items-center">
-            <div>{{ finding.recommendation }}</div>
+            <div markdown>{{ finding.recommendation }}</div>
           </div>
         </div>
       }
@@ -100,7 +105,7 @@
                   </div>
                 } @else {
                   <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 dark:bg-blue-900">
-                    <ng-icon [name]="activity.type == FindingActivityType.FirstSeen ? 'clock' : activity.type == FindingActivityType.ChangeStatus ? 'open' : 'open'"></ng-icon>
+                    <ng-icon [name]="activity.type == FindingActivityType.Open ? 'clock' : activity.type == FindingActivityType.ChangeStatus ? 'open' : 'open'"></ng-icon>
                   </span>
                 }
                 <div class="flex flex-row items-center justify-between gap-2 mb-1">
@@ -111,23 +116,9 @@
                       <span class="font-semibold">system</span>
                     }
                   </div>
-                  <time class="block text-xs" [title]="activity.createdAt">{{activity.createdAt | timeago}}</time>
+                  <time class="block text-xs" [tooltip]="activity.createdAt">{{activity.createdAt | timeago}}</time>
                 </div>
                 <div class="flex flex-row items-center gap-2">
-                  @if(activity.type == FindingActivityType.FirstSeen) {
-                    <div class="flex flex-row items-center gap-1">
-                      <span>seen on</span>
-                      @if(activity.metadata?.scanInfo) {
-                        <span>on</span>
-                        <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
-                                     [branch]="activity.metadata?.scanInfo?.branch ?? ''"
-                                     [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
-                        </scan-branch>
-                      } @else {
-                        <span>unknown</span>
-                      }
-                    </div>
-                  }
                   @if (activity.type == FindingActivityType.ChangeStatus) {
                     <span>change status</span>
                     <div class="flex flex-row items-center gap-2">
@@ -147,6 +138,25 @@
                           </scan-branch>
                         }
                       </div>
+                    </div>
+                  } @else {
+                    <div class="flex flex-row items-center gap-1">
+                      @if(activity.type == FindingActivityType.Open) {
+                        <span>first seen</span>
+                      } @else if (activity.type == FindingActivityType.Fixed) {
+                        <finding-status-label [status]="FindingStatus.Fixed"></finding-status-label>
+                      } @else if (activity.type == FindingActivityType.Reopen) {
+                        <span>seen again</span>
+                      }
+                      @if(activity.metadata?.scanInfo) {
+                        <span>on</span>
+                        <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
+                                     [branch]="activity.metadata?.scanInfo?.branch ?? ''"
+                                     [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
+                        </scan-branch>
+                      } @else {
+                        <span>unknown</span>
+                      }
                     </div>
                   }
                 </div>

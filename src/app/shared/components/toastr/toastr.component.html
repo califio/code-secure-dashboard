@@ -1,6 +1,8 @@
-<div class="fixed bottom-10 right-10 p-4 w-72 rounded border border-border shadow-lg bg-background text-xs" [ngClass]="mClass.get(type)">
+<div class="fixed bottom-10 right-10 p-4 min-w-64 max-w-96 rounded border border-border shadow-lg bg-background text-xs" [ngClass]="mClass.get(type)">
   <div class="flex flex-row items-center gap-2">
-    <ng-icon [name]="icon"></ng-icon>
+    <div class="px-2">
+      <ng-icon [name]="icon" size="18"></ng-icon>
+    </div>
     <div class="flex flex-col">
       <span>{{message}}</span>
     </div>
