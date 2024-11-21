@@ -11,6 +11,11 @@ import {ConfirmPopupComponent} from '../../../shared/components/ui/confirm-popup
 import {finalize} from 'rxjs';
 import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.directive';
 
+interface CiTokenView {
+  token: CiTokens
+  hidden: boolean
+}
+
 @Component({
   selector: 'app-ci-token',
   standalone: true,
@@ -29,7 +34,7 @@ import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.di
 })
 export class CiTokenComponent {
   loading = false;
-  tokens: CiTokens[] = [];
+  tokens: CiTokenView[] = [];
   enableCreateTokenForm = false;
   tokenName = '';
   showConfirmPopup = false;
@@ -38,8 +43,12 @@ export class CiTokenComponent {
     private ciTokenService: CiTokenService,
     private toastr: ToastrService,
   ) {
+
     this.ciTokenService.getCiTokens().subscribe(tokens => {
-      this.tokens = tokens;
+      this.tokens = tokens.map(value => <CiTokenView>{
+        hidden: true,
+        token: value
+      });
     })
   }
 
@@ -50,7 +59,7 @@ export class CiTokenComponent {
           name: this.tokenName.trim()
         }
       }).subscribe(token => {
-        this.tokens = [token].concat(...this.tokens);
+        this.tokens = [<CiTokenView>{hidden: true, token: token}].concat(...this.tokens);
         this.toastr.success('create success');
         this.enableCreateTokenForm = false;
       })
@@ -76,7 +85,7 @@ export class CiTokenComponent {
       ).subscribe(success => {
         if (success) {
           this.toastr.success('Delete success');
-          this.tokens = this.tokens.filter(value => value.id != this.deleteTokenId);
+          this.tokens = this.tokens.filter(value => value.token.id != this.deleteTokenId);
         }
       })
     }

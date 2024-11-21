@@ -46,25 +46,29 @@
                     value="28" />
                 </td>
                 <td>
-                  <span class="w-full">{{ token.name }}</span>
+                  <span class="w-full">{{ token.token.name }}</span>
                 </td>
                 <td>
                   <div class="flex flex-row items-center gap-2">
-                    <span class="w-fit">***********************</span>
+                    @if(token.hidden) {
+                      <span class="w-fit">***********************</span>
+                    } @else {
+                      <span class="w-fit">{{token.token.value}}</span>
+                    }
                     <div class="p-1 cursor-pointer">
-                      <ng-icon name="copy" (click)="copyTokenValue(token.value!)"></ng-icon>
+                      <ng-icon [name]="token.hidden ? 'eye-off' : 'eye'" (click)="token.hidden = !token.hidden"></ng-icon>
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="font-semibold text-[#00c869]">
-                    <span [tooltip]="token.createdAt">
-                      {{ token.createdAt | timeago }}
+                    <span [tooltip]="token.token.createdAt">
+                      {{ token.token.createdAt | timeago }}
                     </span>
                   </div>
                 </td>
                 <td>
-                  <div class="flex flex-row p-2 cursor-pointer w-full justify-center" (click)="onDeleteToken(token.id!)">
+                  <div class="flex flex-row p-2 cursor-pointer w-full justify-center" (click)="onDeleteToken(token.token.id!)">
                     <ng-icon name="trash"></ng-icon>
                   </div>
                 </td>
