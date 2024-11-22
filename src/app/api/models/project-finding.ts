@@ -7,6 +7,7 @@ import { FindingStatus } from '../models/finding-status';
 import { ScannerType } from '../models/scanner-type';
 export interface ProjectFinding {
   id?: string;
+  identity?: string | null;
   name?: string | null;
   scanner?: string | null;
   severity?: FindingSeverity;

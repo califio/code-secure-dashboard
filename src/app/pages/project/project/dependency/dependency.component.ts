@@ -27,6 +27,7 @@ import {LoadingTableComponent} from '../../../../shared/components/ui/loading-ta
 import {ProjectPackage} from '../../../../api/models/project-package';
 import {RiskLevelIconComponent} from '../../../../shared/components/risk-level-icon/risk-level-icon.component';
 import {RiskLevel} from '../../../../api/models/risk-level';
+import {TooltipDirective} from '../../../../shared/components/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-dependency',
@@ -45,7 +46,8 @@ import {RiskLevel} from '../../../../api/models/risk-level';
     FormsModule,
     FindingStatusLabelComponent,
     LoadingTableComponent,
-    RiskLevelIconComponent
+    RiskLevelIconComponent,
+    TooltipDirective
   ],
   templateUrl: './dependency.component.html',
   styleUrl: './dependency.component.scss'
@@ -119,7 +121,10 @@ export class DependencyComponent implements OnInit, OnDestroy {
   }
 
   getNameDependency(dependency: ProjectPackage) {
-    return `${dependency.group}.${dependency.name} version ${dependency.version}`;
+    if (dependency.group) {
+      return `${dependency.group}.${dependency.name}@${dependency.version}`;
+    }
+    return `${dependency.name}@${dependency.version}`;
   }
 
   protected readonly RiskLevel = RiskLevel;

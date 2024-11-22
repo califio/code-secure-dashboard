@@ -26,6 +26,8 @@ import {
 import {ProjectStore} from '../project-store';
 import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dropdown/scanner-dropdown.component';
 import {ProjectScanner} from '../../../../api/models/project-scanner';
+import {DropdownItem} from '../../../../shared/components/ui/dropdown/dropdown.model';
+import {ProjectFindingSortField} from '../../../../api/models';
 
 @Component({
   selector: 'app-finding',
@@ -61,7 +63,7 @@ export class FindingComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private findingService: FindingService,
-    public findingStore: FindingStore,
+    public store: FindingStore,
     private toastrService: ToastrService
   ) {
   }
@@ -71,19 +73,19 @@ export class FindingComponent implements OnInit, OnDestroy {
     this.projectService.getProjectCommits({
       slug: this.slug
     }).subscribe(branches => {
-      this.findingStore.commits.set(branches);
-      this.commitId = this.findingStore.filter.commitId;
+      this.store.commits.set(branches);
+      this.commitId = this.store.filter.commitId;
     });
     this.projectService.getProjectScanners({
       slug: this.slug
     }).subscribe(scanners => {
-      this.findingStore.scanners.set(scanners);
-      this.scanner = scanners.find(scanner => scanner.name == this.findingStore.filter.scanner
-        && this.findingStore.filter.type == scanner.type);
+      this.store.scanners.set(scanners);
+      this.scanner = scanners.find(scanner => scanner.name == this.store.filter.scanner
+        && this.store.filter.type == scanner.type);
     })
     this.route.queryParams.pipe(
       switchMap(params => {
-        bindQueryParams(params, this.findingStore.filter);
+        bindQueryParams(params, this.store.filter);
         return this.getProjectFindings();
       }),
       takeUntil(this.destroy$)
@@ -121,6 +123,28 @@ export class FindingComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject();
   search = '';
   scanner: ProjectScanner | null | undefined;
+  sortOptions: DropdownItem[] = [
+    {
+      value: ProjectFindingSortField.Name,
+      label: 'Name'
+    },
+    {
+      value: ProjectFindingSortField.UpdatedAt,
+      label: 'Updated'
+    },
+    {
+      value: ProjectFindingSortField.CreatedAt,
+      label: 'Created'
+    },
+    {
+      value: ProjectFindingSortField.Status,
+      label: 'Status'
+    },
+    {
+      value: ProjectFindingSortField.Severity,
+      label: 'Severity'
+    }
+  ];
 
   ngOnDestroy(): void {
     this.destroy$.next(null);
@@ -132,40 +156,40 @@ export class FindingComponent implements OnInit, OnDestroy {
   }
 
   private getProjectFindings(): Observable<ProjectFindingPage> {
-    this.findingStore.loading.set(true);
+    this.store.loading.set(true);
     return this.projectService.getProjectFindings({
       slug: this.slug,
-      body: this.findingStore.filter
+      body: this.store.filter
     }).pipe(
       delay(300),
       finalize(() => {
-        this.findingStore.loading.set(false);
+        this.store.loading.set(false);
       }),
       tap(response => {
-        this.findingStore.findings.set(response.items!);
-        this.findingStore.currentPage.set(response.currentPage!);
-        this.findingStore.totalPage.set(response.pageCount!);
+        this.store.findings.set(response.items!);
+        this.store.currentPage.set(response.currentPage!);
+        this.store.totalPage.set(response.pageCount!);
       })
     );
   }
 
   onSearchChange() {
-    updateQueryParams(this.router, this.findingStore.filter);
+    updateQueryParams(this.router, this.store.filter);
   }
 
   onStatusChange(status: FindingStatus | undefined) {
-    this.findingStore.filter.status = status;
-    updateQueryParams(this.router, this.findingStore.filter);
+    this.store.filter.status = status;
+    updateQueryParams(this.router, this.store.filter);
   }
 
   onSelectScan(scanId: string) {
-    this.findingStore.filter.commitId = scanId;
-    updateQueryParams(this.router, this.findingStore.filter);
+    this.store.filter.commitId = scanId;
+    updateQueryParams(this.router, this.store.filter);
   }
 
   onPageChange(page: number) {
-    this.findingStore.filter.page = page;
-    updateQueryParams(this.router, this.findingStore.filter);
+    this.store.filter.page = page;
+    updateQueryParams(this.router, this.store.filter);
   }
 
   selectFindingsChange(findingIds: string[]) {
@@ -192,12 +216,22 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   onChangeScanner(scanner: ProjectScanner | null) {
     if (scanner != null) {
-      this.findingStore.filter.scanner = scanner.name;
-      this.findingStore.filter.type = scanner.type;
+      this.store.filter.scanner = scanner.name;
+      this.store.filter.type = scanner.type;
     } else {
-      this.findingStore.filter.scanner = undefined;
-      this.findingStore.filter.type = undefined;
+      this.store.filter.scanner = undefined;
+      this.store.filter.type = undefined;
     }
-    updateQueryParams(this.router, this.findingStore.filter);
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onOrderChange() {
+    this.store.filter.desc = !this.store.filter.desc;
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onSortChange(sortBy: any) {
+    this.store.filter.sortBy = sortBy;
+    updateQueryParams(this.router, this.store.filter);
   }
 }

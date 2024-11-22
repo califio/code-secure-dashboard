@@ -10,42 +10,50 @@
             </div>
             <input class="py-2 pl-8 pr-2"
                    placeholder="Search..." type="text"
-                   [(ngModel)]="findingStore.filter.name"
+                   [(ngModel)]="store.filter.name"
                    (keyup.enter)="onSearchChange()"/>
           </label>
         </div>
-        <scan-branch-dropdown [options]="findingStore.commits()"
+        <scan-branch-dropdown [options]="store.commits()"
                               [selected]="commitId"
                               (selectChange)="onSelectScan($event)">
         </scan-branch-dropdown>
         <finding-status-filter
-          [status]="findingStore.filter.status"
+          [status]="store.filter.status"
           (statusChange)="onStatusChange($event)">
         </finding-status-filter>
-        <scanner-dropdown [options]="findingStore.scanners()"
+        <scanner-dropdown [options]="store.scanners()"
                           [scanner]="scanner"
                           (scannerChange)="onChangeScanner($event)">
         </scanner-dropdown>
 
-        <!--        <dropdown defaultLabel="Export" [options]="[]"></dropdown>-->
-        <finding-status [fixedLabel]="'Mark as'" (statusChange)="onMarkAs($event)">
-        </finding-status>
+        <div class="flex flex-row gap-2 items-center">
+          <dropdown [options]="sortOptions"
+                    [defaultLabel]="'Sort By'"
+                    [selected]="store.filter.sortBy" (selectedChange)="onSortChange($event)">
+          </dropdown>
+          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
+                   (click)="onOrderChange()"></ng-icon>
+        </div>
+      </div>
+      <div class="flex flex-row items-center gap-2">
         <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
              (click)="onReload()">
           <ng-icon name="reload"></ng-icon>
         </div>
+        <finding-status [fixedLabel]="'Mark as'" (statusChange)="onMarkAs($event)"></finding-status>
       </div>
     </div>
     <list-finding class="w-full max-h-screen overflow-y-auto"
-                  [loading]="findingStore.loading()"
-                  [findings]="findingStore.findings()"
+                  [loading]="store.loading()"
+                  [findings]="store.findings()"
                   (selectFindings)="selectFindingsChange($event)"
                   (openFinding)="onOpenFinding($event)">
     </list-finding>
     <pagination class="sticky bottom-0"
                 (pageChange)="onPageChange($event)"
-                [currentPage]="findingStore.currentPage()"
-                [totalPage]="findingStore.totalPage()">
+                [currentPage]="store.currentPage()"
+                [totalPage]="store.totalPage()">
     </pagination>
   </div>
   <div class="hidden lg:block w-[800px] overflow-x-auto">

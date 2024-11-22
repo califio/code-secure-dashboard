@@ -21,7 +21,7 @@ export class FindingStore {
     page: 1,
     scanner: undefined,
     severity: undefined,
-    sortBy: ProjectFindingSortField.UpdatedAt,
+    sortBy: ProjectFindingSortField.CreatedAt,
     status: undefined,
     type: undefined,
     commitId: undefined,

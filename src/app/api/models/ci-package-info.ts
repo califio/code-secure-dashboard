@@ -4,7 +4,7 @@
 
 import { CiPackage } from '../models/ci-package';
 import { CiVulnerability } from '../models/ci-vulnerability';
-export interface CiPackageVulnerabilities {
+export interface CiPackageInfo {
   package?: CiPackage;
   vulnerabilities?: Array<CiVulnerability> | null;
 }

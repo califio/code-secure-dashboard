@@ -28,11 +28,16 @@
               <risk-level-icon [risk]="dependency.riskLevel" class="text-xl"></risk-level-icon>
               <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency.id)">
                 <div class="flex flex-col gap-1 w-full">
-                  <div class="font-semibold">
-                    {{ getNameDependency(dependency)  }}
+                  <div class="flex flex-row items-center gap-2">
+                    <div class="font-semibold">
+                      {{ getNameDependency(dependency)  }}
+                    </div>
+                    <ng-icon [name]="dependency.type ?? 'unknown'"
+                             size="18"
+                             [tooltip]="dependency.type"></ng-icon>
                   </div>
                   <div class="flex flex-row items-center justify-between w-full">
-                    <div class="flex flex-row items-center gap-2">
+                    <div class="flex flex-row items-center gap-1">
                       <span>{{dependency.location}}</span>
                     </div>
                     <div class="flex flex-row items-center gap-2">

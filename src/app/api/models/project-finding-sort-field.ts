@@ -6,5 +6,6 @@ export enum ProjectFindingSortField {
   Severity = 'Severity',
   Status = 'Status',
   CreatedAt = 'CreatedAt',
-  UpdatedAt = 'UpdatedAt'
+  UpdatedAt = 'UpdatedAt',
+  Name = 'Name'
 }

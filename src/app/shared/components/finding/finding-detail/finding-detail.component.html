@@ -71,6 +71,27 @@
           </div>
         </div>
       }
+      @if (finding.metadata && finding.metadata.cwes) {
+        <div class="flex flex-col gap-2">
+          <div class="font-semibold">CWEs</div>
+          <ul class="list-disc">
+            @for (cwe of finding.metadata.cwes; track $index) {
+              <li class="ml-4">{{cwe}}</li>
+            }
+          </ul>
+        </div>
+      }
+      @if (finding.metadata && finding.metadata.references) {
+        <div class="flex flex-col gap-2">
+          <div class="font-semibold">References</div>
+          <ul class="list-disc">
+            @for (reference of finding.metadata.references; track $index) {
+              <li class="ml-4" markdown>{{reference}}</li>
+            }
+          </ul>
+        </div>
+      }
+
       @if (findingFlow(finding).length > 0) {
         <div class="flex flex-col gap-2">
           <div class="font-semibold">Finding Flow</div>
