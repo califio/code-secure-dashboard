@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {ButtonDirective} from "../../../shared/directives/button.directive";
+import {ButtonDirective} from "../../../shared/ui/button/button.directive";
 import {FormsModule} from "@angular/forms";
 import {ConfigService} from '../../../api/services/config.service';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
@@ -16,7 +16,9 @@ import {MailConfig} from '../../../api/models/mail-config';
   styleUrl: './mail.component.scss'
 })
 export class MailComponent {
-  config: MailConfig = {};
+  config: MailConfig = {
+    password: "", port: 0, server: "", ssl: false, username: ""
+  };
   constructor(
     private configService: ConfigService,
     private toastr: ToastrService

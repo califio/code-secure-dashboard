@@ -1,17 +1,16 @@
 import {Component, Input} from '@angular/core';
-import {AvatarComponent} from '../../../../../../shared/components/ui/avatar/avatar.component';
+import {AvatarComponent} from '../../../../../../shared/ui/avatar/avatar.component';
 import {ProjectUser} from '../../../../../../api/models/project-user';
-import {DropdownComponent} from '../../../../../../shared/components/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../../../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownComponent} from '../../../../../../shared/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectRole} from '../../../../../../api/models';
-import {NgButtonComponent} from '../../../../../../shared/components/ui/ng-button/ng-button.component';
-import {ButtonDirective} from '../../../../../../shared/directives/button.directive';
+import {ButtonDirective} from '../../../../../../shared/ui/button/button.directive';
 import {ProjectService} from '../../../../../../api/services/project.service';
-import {ProjectStore} from '../../../project-store';
 import {MemberStore} from '../member.store';
 import {ToastrService} from '../../../../../../shared/components/toastr/toastr.service';
 import {finalize} from 'rxjs';
 import {UserInfoComponent} from "../../../../../../shared/components/user-info/user-info.component";
+import {ProjectStore} from '../../../project.store';
 
 @Component({
   selector: 'app-update-member-popup',
@@ -19,7 +18,6 @@ import {UserInfoComponent} from "../../../../../../shared/components/user-info/u
     imports: [
         AvatarComponent,
         DropdownComponent,
-        NgButtonComponent,
         ButtonDirective,
         UserInfoComponent
     ],

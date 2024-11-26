@@ -17,6 +17,10 @@ export const routes: Routes = [
       {
         path: 'mail',
         loadComponent: () => import('./mail/mail.component').then(x => x.MailComponent)
+      },
+      {
+        path: 'sla',
+        loadComponent: () => import('./sla/sla.component').then(x => x.SlaComponent)
       }
     ],
   }

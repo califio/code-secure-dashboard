@@ -1,14 +1,14 @@
 import {Component, Input} from '@angular/core';
-import {AvatarComponent} from "../../../../../../shared/components/ui/avatar/avatar.component";
-import {ButtonDirective} from "../../../../../../shared/directives/button.directive";
-import {DropdownComponent} from "../../../../../../shared/components/ui/dropdown/dropdown.component";
+import {AvatarComponent} from "../../../../../../shared/ui/avatar/avatar.component";
+import {ButtonDirective} from "../../../../../../shared/ui/button/button.directive";
+import {DropdownComponent} from "../../../../../../shared/ui/dropdown/dropdown.component";
 import {UserDropdownComponent} from '../../../../../../shared/components/user-dropdown/user-dropdown.component';
 import {UserSummary} from '../../../../../../api/models/user-summary';
-import {DropdownItem} from '../../../../../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownItem} from '../../../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectRole} from '../../../../../../api/models/project-role';
 import {MemberStore} from '../member.store';
 import {ProjectService} from '../../../../../../api/services/project.service';
-import {ProjectStore} from '../../../project-store';
+import {ProjectStore} from '../../../project.store';
 import {ToastrService} from '../../../../../../shared/components/toastr/toastr.service';
 import {finalize} from 'rxjs';
 

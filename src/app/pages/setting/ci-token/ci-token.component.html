@@ -4,16 +4,16 @@
     <!--    FILTER-->
     <div class="flex flex-row items-center justify-between py-1 px-5">
       <div class="px-1 py-1 whitespace-nowrap">Displaying {{tokens.length}} results</div>
-      <div class="flex flex-row w-fit ">
-        <button class="px-2 py-1 border-primary" (click)="enableCreateTokenForm = true">Add CI Token</button>
+      <div class="flex flex-row w-fit pt-4">
+        <button app-button type="primary" (click)="enableCreateTokenForm = true">Add CI Token</button>
       </div>
     </div>
     <div class="flex flex-col w-full border border-border gap-2 p-4" [class.hidden]="!enableCreateTokenForm">
-      <div class="text-xl">Add a CI Token</div>
+      <div class="text-base">Add a CI Token</div>
       <input type="text" class="max-w-72 py-2" [(ngModel)]="tokenName">
       <div class="flex flex-row items-center gap-2">
-        <button class="w-fit px-2 py-1 bg-primary text-white" (click)="createCIToken()">Create CI Token</button>
-        <button class="w-fit px-2 py-1" (click)="enableCreateTokenForm = false; tokenName = ''">Cancel</button>
+        <button app-button type="primary" (click)="createCIToken()">Create CI Token</button>
+        <button app-button type="default" (click)="enableCreateTokenForm = false; tokenName = ''">Cancel</button>
       </div>
 
     </div>

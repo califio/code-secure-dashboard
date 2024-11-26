@@ -1,1 +1,42 @@
-<coming-soon></coming-soon>
+<div class="mx-auto flex flex-col text-sm">
+  <div class="flex flex-col overflow-hidden w-full border border-white/5 gap-4 rounded-xl bg-background p-6">
+    <div class="flex flex-wrap gap-4 w-full">
+      <div class="flex flex-col gap-4 w-full">
+        <div class="flex flex-row items-center font-semibold text-lg gap-2">
+          <span>Static Application Security Testing (SAST)</span>
+          @if(loadingSast) {
+            <ng-icon name="spin" class="animate-spin"></ng-icon>
+          }
+        </div>
+        @if (!loadingSast) {
+          <div class="flex flex-wrap gap-4 w-full">
+            <div severity-chart [severity]="sastStatistic.severity"></div>
+            <finding-status-chart [status]="sastStatistic.status"></finding-status-chart>
+            <top-finding-chart
+              class="max-w-screen-sm min-w-[300px] w-full"
+              [categories]="sastStatistic.topFindings">
+            </top-finding-chart>
+          </div>
+        }
+      </div>
+      <div class="flex flex-col gap-4 w-full">
+        <div class="flex flex-row items-center font-semibold text-lg gap-2">
+          <span>Software Composition Analysis (SCA)</span>
+          @if(loadingSca) {
+            <ng-icon name="spin" class="animate-spin"></ng-icon>
+          }
+        </div>
+        @if(!loadingSca){
+          <div class="flex flex-wrap gap-4 w-full">
+            <div severity-chart [severity]="scaStatistic.severity"></div>
+            <finding-status-chart [status]="scaStatistic.status"></finding-status-chart>
+            <top-dependency-chart
+              class="max-w-screen-sm min-w-[300px] w-full"
+              [dependencies]="scaStatistic.topDependencies">
+            </top-dependency-chart>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

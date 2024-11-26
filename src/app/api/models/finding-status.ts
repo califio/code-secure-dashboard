@@ -5,7 +5,7 @@
 export enum FindingStatus {
   Open = 'Open',
   Confirmed = 'Confirmed',
-  Ignore = 'Ignore',
-  Incorrect = 'Incorrect',
-  Fixed = 'Fixed'
+  AcceptedRisk = 'AcceptedRisk',
+  Fixed = 'Fixed',
+  Incorrect = 'Incorrect'
 }

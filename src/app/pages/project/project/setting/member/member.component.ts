@@ -1,25 +1,25 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ComingSoonComponent} from '../../../../../shared/components/ui/coming-soon/coming-soon.component';
-import {AvatarComponent} from '../../../../../shared/components/ui/avatar/avatar.component';
+import {ComingSoonComponent} from '../../../../../shared/ui/coming-soon/coming-soon.component';
+import {AvatarComponent} from '../../../../../shared/ui/avatar/avatar.component';
 import {FormsModule} from '@angular/forms';
-import {LoadingTableComponent} from '../../../../../shared/components/ui/loading-table/loading-table.component';
+import {LoadingTableComponent} from '../../../../../shared/ui/loading-table/loading-table.component';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../../shared/components/ui/pagination/pagination.component';
+import {PaginationComponent} from '../../../../../shared/ui/pagination/pagination.component';
 import {TimeagoModule} from 'ngx-timeago';
 import {MemberStore} from './member.store';
 import {bindQueryParams, updateQueryParams} from '../../../../../core/router';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectStore} from '../../project-store';
+import {ProjectStore} from '../../project.store';
 import {ProjectService} from '../../../../../api/services/project.service';
 import {finalize, Subject, switchMap, takeUntil, tap} from 'rxjs';
-import {ConfirmPopupComponent} from '../../../../../shared/components/ui/confirm-popup/confirm-popup.component';
+import {ConfirmPopupComponent} from '../../../../../shared/ui/confirm-popup/confirm-popup.component';
 import {ProjectUser} from '../../../../../api/models/project-user';
 import {ToastrService} from '../../../../../shared/components/toastr/toastr.service';
 import {UpdateMemberPopupComponent} from './update-member-popup/update-member-popup.component';
-import {ButtonDirective} from '../../../../../shared/directives/button.directive';
+import {ButtonDirective} from '../../../../../shared/ui/button/button.directive';
 import {ModalService} from '../../../../../core/modal/modal.service';
 import {AddMemberPopupComponent} from './add-member-popup/add-member-popup.component';
-import {TooltipDirective} from '../../../../../shared/components/ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../../../../shared/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-member',

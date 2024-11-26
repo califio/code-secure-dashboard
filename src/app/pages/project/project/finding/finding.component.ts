@@ -1,12 +1,12 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {ListFindingComponent} from '../../../../shared/components/finding/list-finding/list-finding.component';
 import {NgIcon} from '@ng-icons/core';
-import {DropdownComponent} from '../../../../shared/components/ui/dropdown/dropdown.component';
+import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
 import {FindingStatusComponent} from '../../../../shared/components/finding/finding-status/finding-status.component';
 import {FindingDetailComponent} from '../../../../shared/components/finding/finding-detail/finding-detail.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectService} from '../../../../api/services/project.service';
-import {delay, finalize, forkJoin, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {finalize, forkJoin, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
 import {ProjectFindingPage} from '../../../../api/models/project-finding-page';
 import {FindingService} from '../../../../api/services/finding.service';
@@ -15,18 +15,18 @@ import {ToastrService} from '../../../../shared/components/toastr/toastr.service
 import {
   ScanBranchDropdownComponent
 } from '../../../../shared/components/scan-branch-dropdown/scan-branch-dropdown.component';
-import {LoadingTableComponent} from '../../../../shared/components/ui/loading-table/loading-table.component';
-import {PaginationComponent} from '../../../../shared/components/ui/pagination/pagination.component';
+import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
+import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingStore} from './finding.store';
 import {
   FindingStatusFilterComponent
 } from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
-import {ProjectStore} from '../project-store';
+import {ProjectStore} from '../project.store';
 import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dropdown/scanner-dropdown.component';
 import {ProjectScanner} from '../../../../api/models/project-scanner';
-import {DropdownItem} from '../../../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectFindingSortField} from '../../../../api/models';
 
 @Component({
@@ -101,7 +101,6 @@ export class FindingComponent implements OnInit, OnDestroy {
       this.findingService.getFinding({
         id: findingId
       }).pipe(
-        delay(200),
         finalize(() => {
           this.loadingFinding = false
         })
@@ -161,7 +160,6 @@ export class FindingComponent implements OnInit, OnDestroy {
       slug: this.slug,
       body: this.store.filter
     }).pipe(
-      delay(300),
       finalize(() => {
         this.store.loading.set(false);
       }),

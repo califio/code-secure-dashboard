@@ -1,12 +1,12 @@
 import {Component, Input} from '@angular/core';
 import {UserInfo} from '../../../api/models/user-info';
-import {AvatarComponent} from '../../../shared/components/ui/avatar/avatar.component';
+import {AvatarComponent} from '../../../shared/ui/avatar/avatar.component';
 import {UserStore} from '../user.store';
 import {UserInfoComponent} from '../../../shared/components/user-info/user-info.component';
-import {DropdownComponent} from '../../../shared/components/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
 import {UpdateUserRequest} from '../../../api/models/update-user-request';
-import {ButtonDirective} from '../../../shared/directives/button.directive';
+import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {UserService} from '../../../api/services/user.service';
 import {finalize} from 'rxjs';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';

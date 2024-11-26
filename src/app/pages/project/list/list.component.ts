@@ -1,21 +1,21 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {PaginationComponent} from '../../../shared/components/ui/pagination/pagination.component';
+import {PaginationComponent} from '../../../shared/ui/pagination/pagination.component';
 import {NgIcon} from '@ng-icons/core';
 import {FormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {LoadingTableComponent} from '../../../shared/components/ui/loading-table/loading-table.component';
+import {LoadingTableComponent} from '../../../shared/ui/loading-table/loading-table.component';
 import {ProjectService} from '../../../api/services/project.service';
 import {GetProjects$Params} from '../../../api/fn/project/get-projects';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
-import {delay, finalize, Subject, switchMap, takeUntil} from 'rxjs';
+import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {ProjectSummaryPage} from '../../../api/models/project-summary-page';
 import {ProjectSortField} from '../../../api/models/project-sort-field';
-import {DropdownComponent} from '../../../shared/components/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
 import {LowerCasePipe} from '@angular/common';
 import {ProjectSource} from '../../../api/models/project-source';
-import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-list',
@@ -34,7 +34,7 @@ import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.di
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
-export class ListComponent implements OnInit, OnDestroy{
+export class ListComponent implements OnInit, OnDestroy {
   loading = false;
   sortOptions: ProjectSortField[] = [ProjectSortField.Name, ProjectSortField.CreatedAt, ProjectSortField.UpdatedAt];
   sorts: DropdownItem[] = [
@@ -65,11 +65,13 @@ export class ListComponent implements OnInit, OnDestroy{
     Page: 1,
     Desc: true
   }
+
   constructor(
     private projectService: ProjectService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.queryParams.pipe(
@@ -80,7 +82,6 @@ export class ListComponent implements OnInit, OnDestroy{
           this.filter.SortBy = ProjectSortField.CreatedAt;
         }
         return this.projectService.getProjects(this.filter).pipe(
-          delay(300),
           finalize(() => {
             this.loading = false;
           }),
@@ -122,6 +123,7 @@ export class ListComponent implements OnInit, OnDestroy{
     }
     return ""
   }
+
   private destroy$ = new Subject();
 
 }

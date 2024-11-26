@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {DropdownComponent} from '../../ui/dropdown/dropdown.component';
+import {DropdownComponent} from '../../../ui/dropdown/dropdown.component';
 import {TimeagoModule} from 'ngx-timeago';
 import {RouterLink} from '@angular/router';
-import {PaginationComponent} from '../../ui/pagination/pagination.component';
-import {LoadingTableComponent} from '../../ui/loading-table/loading-table.component';
+import {PaginationComponent} from '../../../ui/pagination/pagination.component';
+import {LoadingTableComponent} from '../../../ui/loading-table/loading-table.component';
 import {FindingStatusComponent} from '../finding-status/finding-status.component';
 import {LowerCasePipe, NgClass} from '@angular/common';
 import {ProjectFinding} from '../../../../api/models/project-finding';
@@ -52,22 +52,6 @@ export class ListFindingComponent {
   onOpenFinding(findingId?: string) {
     this.openFinding.emit(findingId);
   }
-
-  mStatus: Map<FindingStatus, any> = new Map<FindingStatus, any>([
-    [FindingStatus.Open, {"label": 'Open', 'icon': 'open', 'style': 'font-semibold'}],
-    [FindingStatus.Confirmed, {'label': 'Confirmed', 'icon': 'verified', 'style': 'text-yellow-500'}],
-    [FindingStatus.Ignore, {'label': 'Accepted Risk', 'icon': 'warning', 'style': 'text-orange-500'}],
-    [FindingStatus.Incorrect, {'label': 'False Positive', 'icon': 'dislike', 'style': ''}],
-    [FindingStatus.Fixed, {'label': 'Fixed', 'icon': 'verified', 'style': 'text-green-500'}],
-  ]);
-
-  mSeverity: Map<FindingSeverity, string> = new Map<FindingSeverity, string>([
-    [FindingSeverity.Critical, 'text-critical'],
-    [FindingSeverity.High, 'text-high'],
-    [FindingSeverity.Medium, 'text-medium'],
-    [FindingSeverity.Low, 'text-low'],
-    [FindingSeverity.Info, 'text-info'],
-  ]);
 
   onSelectFinding(findingId: string, event: any) {
     if (event.target.checked) {

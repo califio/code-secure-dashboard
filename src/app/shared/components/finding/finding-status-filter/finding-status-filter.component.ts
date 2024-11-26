@@ -76,7 +76,7 @@ export class FindingStatusFilterComponent {
       style: 'border-b cursor-pointer'
     },
     {
-      status: FindingStatus.Ignore,
+      status: FindingStatus.AcceptedRisk,
       label: 'Accepted Risk',
       icon: 'warning',
       style: 'border-b text-orange-500 cursor-pointer'

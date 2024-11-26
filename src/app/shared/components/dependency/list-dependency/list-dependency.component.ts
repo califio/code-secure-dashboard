@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {FindingStatusLabelComponent} from "../../finding/finding-status-label/finding-status-label.component";
-import {LoadingTableComponent} from "../../ui/loading-table/loading-table.component";
+import {LoadingTableComponent} from "../../../ui/loading-table/loading-table.component";
 import {NgIcon} from "@ng-icons/core";
 
 @Component({

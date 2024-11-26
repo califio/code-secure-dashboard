@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {UserStore} from '../user.store';
-import {ButtonDirective} from '../../../shared/directives/button.directive';
-import {DropdownComponent} from '../../../shared/components/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/components/ui/dropdown/dropdown.model';
+import {ButtonDirective} from '../../../shared/ui/button/button.directive';
+import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
 import {UserService} from '../../../api/services/user.service';
 import {CreateUserRequest} from '../../../api/models/create-user-request';
 import {RoleService} from '../../../api/services/role.service';

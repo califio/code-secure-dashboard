@@ -1,23 +1,29 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../shared/components/ui/pagination/pagination.component';
+import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, RouterLink} from '@angular/router';
-import {DropdownComponent} from '../../../../shared/components/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectScanPage} from '../../../../api/models/project-scan-page';
 import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectScanFilter} from '../../../../api/models/project-scan-filter';
-import {delay, finalize, Subject, switchMap, takeUntil} from 'rxjs';
+import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams} from '../../../../core/router';
 import {GitAction} from '../../../../api/models/git-action';
 import {ProjectStatistics} from '../../../../api/models/project-statistics';
-import {ProjectStore} from '../project-store';
+import {ProjectStore} from '../project.store';
 import {ScanBranchComponent} from '../../../../shared/components/scan-branch/scan-branch.component';
 import {ScanStatusComponent} from '../../../../shared/components/scan-status/scan-status.component';
 import {ScanStatus} from '../../../../api/models';
-import {TooltipDirective} from '../../../../shared/components/ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive';
+import {SeverityChartComponent} from '../../../../shared/components/chart/severity-chart/severity-chart.component';
+import {
+  FindingStatusChartComponent
+} from '../../../../shared/components/chart/finding-status-chart/finding-status-chart.component';
+import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
+
 @Component({
   selector: 'app-scan',
   standalone: true,
@@ -31,7 +37,10 @@ import {TooltipDirective} from '../../../../shared/components/ui/tooltip/tooltip
     DropdownComponent,
     ScanBranchComponent,
     ScanStatusComponent,
-    TooltipDirective
+    TooltipDirective,
+    SeverityChartComponent,
+    FindingStatusChartComponent,
+    LoadingTableComponent
   ],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'
@@ -39,21 +48,34 @@ import {TooltipDirective} from '../../../../shared/components/ui/tooltip/tooltip
 export class ScanComponent implements OnInit, OnDestroy {
   loading = true;
   slug = '';
-  statuOptions: DropdownItem[] = [
-    {
-      value: null,
-      label: 'All'
+  statistic: ProjectStatistics = {
+    severitySast: {
+      critical: 0,
+      high: 0,
+      info: 0,
+      low: 0,
+      medium: 0
     },
-    {
-      value: "running",
-      label: 'Running'
+    severitySca: {
+      critical: 0,
+      high: 0,
+      info: 0,
+      low: 0,
+      medium: 0
     },
-    {
-      value: "completed",
-      label: 'Completed'
+    statusSast: {
+      acceptedRisk: 0,
+      confirmed: 0,
+      fixed: 0,
+      open: 0
+    },
+    statusSca: {
+      acceptedRisk: 0,
+      confirmed: 0,
+      fixed: 0,
+      open: 0
     }
-  ]
-  statistic: ProjectStatistics = {};
+  };
   statisticLoading = false;
   response: ProjectScanPage = {
     count: 0,
@@ -68,6 +90,7 @@ export class ScanComponent implements OnInit, OnDestroy {
     desc: true,
     scanner: null,
   }
+
   constructor(
     private projectService: ProjectService,
     public projectStore: ProjectStore,
@@ -81,7 +104,6 @@ export class ScanComponent implements OnInit, OnDestroy {
     this.projectService.getProjectStatistic({
       slug: this.slug
     }).pipe(
-      delay(500),
       finalize(() => {
         this.statisticLoading = false;
       })
@@ -96,8 +118,9 @@ export class ScanComponent implements OnInit, OnDestroy {
           slug: this.slug,
           body: this.filter
         }).pipe(
-          delay(200),
-          finalize(() => { this.loading = false})
+          finalize(() => {
+            this.loading = false
+          })
         );
       }),
       takeUntil(this.destroy$)
@@ -105,6 +128,7 @@ export class ScanComponent implements OnInit, OnDestroy {
       this.response = response;
     })
   }
+
   onSearchChange() {
 
   }
@@ -132,12 +156,6 @@ export class ScanComponent implements OnInit, OnDestroy {
     return result.length > 0 ? result.join(", ") : "0 seconds";
   }
 
-  getIcon(action: GitAction | undefined): string {
-    if (action) {
-      return this.mIcon.get(action) ?? '';
-    }
-    return '';
-  }
   private mIcon: Map<GitAction, string> = new Map<GitAction, string>([
     [GitAction.CommitTag, 'git-tag'],
     [GitAction.CommitBranch, 'git-branch'],
@@ -148,6 +166,7 @@ export class ScanComponent implements OnInit, OnDestroy {
     this.destroy$.next(null);
     this.destroy$.complete();
   }
+
   private destroy$ = new Subject();
   protected readonly GitAction = GitAction;
   protected readonly Date = Date;

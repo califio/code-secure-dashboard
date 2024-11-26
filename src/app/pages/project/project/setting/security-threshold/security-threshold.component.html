@@ -1,1 +1,87 @@
-<coming-soon></coming-soon>
+<div class="mx-auto flex flex-col text-sm">
+  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Security Threshold</div>
+  <div class="flex flex-col rounded-xl border border-muted/20 bg-background gap-4 p-4">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <div class="text-xl">Static Application Security Testing (SAST)</div>
+        <div class="flex flex-col gap-1">
+          <table class="border-none w-fit">
+            <tr>
+              <td class="uppercase">MODE</td>
+              <td class="px-4">
+                <dropdown [options]="thresholdModeOptions"
+                          [defaultLabel]="'Mode'"
+                          (selectedChange)="changeSastMode($event)"
+                          [selected]="form.controls.sastSetting.controls.mode.value"></dropdown>
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">Critical</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.critical">
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">High</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.high">
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">MEDIUM</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.medium">
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">LOW</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.low">
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <div class="text-xl">Software Composition Analysis (SCA)</div>
+        <div class="flex flex-col gap-1">
+          <table class="border-none w-fit">
+            <tr>
+              <td class="uppercase">MODE</td>
+              <td class="px-4">
+                <dropdown [options]="thresholdModeOptions"
+                          [defaultLabel]="'Mode'"
+                          [selected]="form.controls.scaSetting.controls.mode.value"></dropdown>
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">Critical</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.critical">
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">High</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.high">
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">MEDIUM</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.medium">
+              </td>
+            </tr>
+            <tr>
+              <td class="uppercase">LOW</td>
+              <td class="px-4">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.low">
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <button app-button type="primary" class="w-fit" (click)="updateSecurityThreshold()">Update</button>
+  </div>
+</div>

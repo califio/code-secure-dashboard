@@ -60,7 +60,7 @@ export class FindingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateFinding$Response(params: UpdateFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+  updateFinding$Response(params: UpdateFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingDetail>> {
     return updateFinding(this.http, this.rootUrl, params, context);
   }
 
@@ -70,9 +70,9 @@ export class FindingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateFinding(params: UpdateFinding$Params, context?: HttpContext): Observable<boolean> {
+  updateFinding(params: UpdateFinding$Params, context?: HttpContext): Observable<FindingDetail> {
     return this.updateFinding$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+      map((r: StrictHttpResponse<FindingDetail>): FindingDetail => r.body)
     );
   }
 

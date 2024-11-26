@@ -1,15 +1,16 @@
 import {Component} from '@angular/core';
-import {LoadingTableComponent} from '../../../shared/components/ui/loading-table/loading-table.component';
+import {LoadingTableComponent} from '../../../shared/ui/loading-table/loading-table.component';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../shared/components/ui/pagination/pagination.component';
+import {PaginationComponent} from '../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {CiTokens} from '../../../api/models/ci-tokens';
 import {CiTokenService} from '../../../api/services/ci-token.service';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
-import {ConfirmPopupComponent} from '../../../shared/components/ui/confirm-popup/confirm-popup.component';
+import {ConfirmPopupComponent} from '../../../shared/ui/confirm-popup/confirm-popup.component';
 import {finalize} from 'rxjs';
-import {TooltipDirective} from '../../../shared/components/ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
+import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 
 interface CiTokenView {
   token: CiTokens
@@ -27,7 +28,8 @@ interface CiTokenView {
     TimeagoModule,
     FormsModule,
     ConfirmPopupComponent,
-    TooltipDirective
+    TooltipDirective,
+    ButtonDirective
   ],
   templateUrl: './ci-token.component.html',
   styleUrl: './ci-token.component.scss'

@@ -1,10 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {NgIcon} from "@ng-icons/core";
 import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {NavItem} from '../../../core/menu';
 import {getPathParam} from '../../../core/router';
-import {Subject, takeUntil} from 'rxjs';
-import {ProjectStore} from './project-store';
+import {Subject, switchMap, takeUntil} from 'rxjs';
+import {ProjectStore} from './project.store';
+import {ProjectService} from '../../../api/services';
 
 @Component({
   selector: 'app-project',
@@ -44,31 +45,41 @@ export class ProjectComponent implements OnInit, OnDestroy {
       icon: 'setting',
     }
   ]
-  slug = '';
+
   constructor(
     private router: Router,
-    private projectStore: ProjectStore
+    private store: ProjectStore,
+    private projectService: ProjectService,
   ) {
     getPathParam('slug').pipe(
+      switchMap(slug => {
+        this.store.slug.set(slug);
+        return this.projectService.getProjectInfo({
+          slug: slug
+        })
+      }),
       takeUntil(this.destroy$)
-    ).subscribe(slug => {
-      this.slug = slug;
-      this.projectStore.slug.set(slug);
-      if (this.regexBaseUrl.test(this.router.url)) {
-        this.router.navigate(['/project', slug, 'scan']).then();
-      }
+    ).subscribe(project => {
+      this.store.project.set(project);
     })
+    if (this.regexBaseUrl.test(this.router.url)) {
+      this.router.navigate(['/project', this.store.slug(), 'scan']).then();
+    }
   }
+
   ngOnDestroy(): void {
     this.destroy$.next(null);
     this.destroy$.complete();
   }
+
   ngOnInit(): void {
 
   }
+
   routerLink(route: string): string {
-    return `/project/${this.slug}/${route}`;
+    return `/project/${this.store.slug()}/${route}`;
   }
+
   private destroy$ = new Subject();
   private regexBaseUrl = new RegExp('^\\/project\\/[^\\/]+$');
 }

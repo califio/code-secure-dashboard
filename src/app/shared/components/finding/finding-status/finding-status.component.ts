@@ -64,7 +64,7 @@ export class FindingStatusComponent {
       style: 'border-b cursor-pointer'
     },
     {
-      status: FindingStatus.Ignore,
+      status: FindingStatus.AcceptedRisk,
       label: 'Accepted Risk',
       description: 'Vulnerabilities acknowledged but deemed low risk. Accepted without a fix and excluded from future scans.',
       icon: 'warning',

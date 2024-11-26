@@ -6,7 +6,7 @@ import {NgClass} from "@angular/common";
 import {ClickOutsideDirective} from "../../../shared/directives/click-outside.directive";
 import {AuthService} from '../../../api/services/auth.service';
 import {AuthStore} from '../../../core/auth/auth.store';
-import {AvatarComponent} from '../../../shared/components/ui/avatar/avatar.component';
+import {AvatarComponent} from '../../../shared/ui/avatar/avatar.component';
 
 @Component({
   selector: 'app-profile-menu',

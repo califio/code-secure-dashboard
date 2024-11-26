@@ -3,7 +3,7 @@ import {UserFilter} from '../../api/models/user-filter';
 import {UserSortField} from '../../api/models/user-sort-field';
 import {UserInfo} from '../../api/models/user-info';
 import {RoleSummary} from '../../api/models/role-summary';
-import {DropdownItem} from '../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownItem} from '../../shared/ui/dropdown/dropdown.model';
 
 @Injectable({
   providedIn: 'root'

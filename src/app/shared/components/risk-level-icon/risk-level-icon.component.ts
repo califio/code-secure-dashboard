@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {RiskLevel} from '../../../api/models/risk-level';
 import {NgIcon} from '@ng-icons/core';
-import {TooltipDirective} from '../ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../ui/tooltip/tooltip.directive';
 import {LowerCasePipe} from '@angular/common';
 
 @Component({

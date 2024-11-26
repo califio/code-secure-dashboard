@@ -11,7 +11,7 @@ export const mFindingStatusIcon: Map<FindingStatus, string> = new Map<FindingSta
   [FindingStatus.Open, 'open'],
   [FindingStatus.Confirmed, 'verified'],
   [FindingStatus.Incorrect, 'dislike'],
-  [FindingStatus.Ignore, 'warning'],
+  [FindingStatus.AcceptedRisk, 'warning'],
   [FindingStatus.Fixed, 'verified'],
 ]);
 
@@ -19,7 +19,7 @@ export const mFindingStatusLabel: Map<FindingStatus, string> = new Map<FindingSt
   [FindingStatus.Open, 'Open'],
   [FindingStatus.Confirmed, 'Confirmed'],
   [FindingStatus.Incorrect, 'False Positive'],
-  [FindingStatus.Ignore, 'Accepted Risk'],
+  [FindingStatus.AcceptedRisk, 'Accepted Risk'],
   [FindingStatus.Fixed, 'Fixed'],
 ]);
 
@@ -27,7 +27,7 @@ export const mFindingStatusColor: Map<FindingStatus, string> = new Map<FindingSt
   [FindingStatus.Open, ''],
   [FindingStatus.Confirmed, 'text-yellow-500'],
   [FindingStatus.Incorrect, ''],
-  [FindingStatus.Ignore, 'text-orange-500'],
+  [FindingStatus.AcceptedRisk, 'text-orange-500'],
   [FindingStatus.Fixed, 'text-green-500'],
 ]);
 

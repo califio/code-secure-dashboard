@@ -1,9 +1,0 @@
-<button
-  (click)="onClickEvent()"
-  class="flex flex-row items-center gap-1 bg-primary text-nowrap text-center"
-  [ngClass]="[ngClass(), disabled() ? 'bg-primary/50 cursor-not-allowed' : '']" >
-  @if(loading()) {
-    <ng-icon name="spin" class="animate-spin" [size]="size().toString()"></ng-icon>
-  }
-  <span>{{label()}}</span>
-</button>

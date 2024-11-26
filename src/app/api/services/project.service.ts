@@ -29,6 +29,8 @@ import { getProjectScanners } from '../fn/project/get-project-scanners';
 import { GetProjectScanners$Params } from '../fn/project/get-project-scanners';
 import { getProjectScans } from '../fn/project/get-project-scans';
 import { GetProjectScans$Params } from '../fn/project/get-project-scans';
+import { getProjectSetting } from '../fn/project/get-project-setting';
+import { GetProjectSetting$Params } from '../fn/project/get-project-setting';
 import { getProjectStatistic } from '../fn/project/get-project-statistic';
 import { GetProjectStatistic$Params } from '../fn/project/get-project-statistic';
 import { getProjectUsers } from '../fn/project/get-project-users';
@@ -39,12 +41,15 @@ import { ProjectInfo } from '../models/project-info';
 import { ProjectPackagePage } from '../models/project-package-page';
 import { ProjectScanner } from '../models/project-scanner';
 import { ProjectScanPage } from '../models/project-scan-page';
+import { ProjectSettingMetadata } from '../models/project-setting-metadata';
 import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
 import { ProjectUser } from '../models/project-user';
 import { ProjectUserPage } from '../models/project-user-page';
 import { updateProjectMember } from '../fn/project/update-project-member';
 import { UpdateProjectMember$Params } from '../fn/project/update-project-member';
+import { updateProjectSetting } from '../fn/project/update-project-setting';
+import { UpdateProjectSetting$Params } from '../fn/project/update-project-setting';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService extends BaseService {
@@ -349,6 +354,56 @@ export class ProjectService extends BaseService {
   deleteProjectMember(params: DeleteProjectMember$Params, context?: HttpContext): Observable<void> {
     return this.deleteProjectMember$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectSetting()` */
+  static readonly GetProjectSettingPath = '/api/project/{slug}/setting';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectSetting$Response(params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
+    return getProjectSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectSetting(params: GetProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
+    return this.getProjectSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
+    );
+  }
+
+  /** Path part for operation `updateProjectSetting()` */
+  static readonly UpdateProjectSettingPath = '/api/project/{slug}/setting';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateProjectSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectSetting$Response(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
+    return updateProjectSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateProjectSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectSetting(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
+    return this.updateProjectSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
     );
   }
 

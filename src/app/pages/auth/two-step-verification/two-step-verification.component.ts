@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ButtonDirective} from '../../../shared/directives/button.directive';
+import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {NgClass} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 

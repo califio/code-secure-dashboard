@@ -1,26 +1,26 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LoadingTableComponent} from "../../shared/components/ui/loading-table/loading-table.component";
+import {LoadingTableComponent} from "../../shared/ui/loading-table/loading-table.component";
 import {NgIcon} from "@ng-icons/core";
-import {PaginationComponent} from "../../shared/components/ui/pagination/pagination.component";
+import {PaginationComponent} from "../../shared/ui/pagination/pagination.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TimeagoModule} from "ngx-timeago";
-import {DropdownItem} from '../../shared/components/ui/dropdown/dropdown.model';
+import {DropdownItem} from '../../shared/ui/dropdown/dropdown.model';
 import {ActivatedRoute, Router} from '@angular/router';
-import {delay, finalize, Subject, switchMap, takeUntil} from 'rxjs';
+import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../core/router';
 import {UserInfo, UserSortField, UserStatus} from '../../api/models';
 import {UserService} from '../../api/services/user.service';
 import {UserStore} from './user.store';
-import {AvatarComponent} from '../../shared/components/ui/avatar/avatar.component';
+import {AvatarComponent} from '../../shared/ui/avatar/avatar.component';
 import {UserInfoComponent} from '../../shared/components/user-info/user-info.component';
-import {DropdownComponent} from '../../shared/components/ui/dropdown/dropdown.component';
-import {ButtonDirective} from '../../shared/directives/button.directive';
+import {DropdownComponent} from '../../shared/ui/dropdown/dropdown.component';
+import {ButtonDirective} from '../../shared/ui/button/button.directive';
 import {AddUserPopupComponent} from './add-user-popup/add-user-popup.component';
 import {UpdateUserPopupComponent} from './update-user-popup/update-user-popup.component';
 import {RoleService} from '../../api/services/role.service';
-import {ConfirmPopupComponent} from '../../shared/components/ui/confirm-popup/confirm-popup.component';
+import {ConfirmPopupComponent} from '../../shared/ui/confirm-popup/confirm-popup.component';
 import {ToastrService} from '../../shared/components/toastr/toastr.service';
-import {TooltipDirective} from '../../shared/components/ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../shared/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-user',
@@ -81,7 +81,6 @@ export class UserComponent implements OnInit, OnDestroy {
         return this.userService.getUsersByAdmin({
           body: this.store.filter
         }).pipe(
-          delay(300),
           finalize(() => {
             this.loading = false;
           }),

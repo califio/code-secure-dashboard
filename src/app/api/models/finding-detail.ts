@@ -11,6 +11,7 @@ import { FindingStatus } from '../models/finding-status';
 import { ScannerType } from '../models/scanner-type';
 export interface FindingDetail {
   description?: string | null;
+  fixDeadline?: string | null;
   id?: string;
   identity?: string | null;
   location?: FindingLocation;

@@ -32,11 +32,34 @@
         </div>
       }
     </div>
-    <div class="flex flex-row items-center gap-2">
+    <div class="flex flex-row items-center gap-2 text-xs">
       <finding-status
         [status]="finding.status!"
         (statusChange)="onChangeStatus($event)">
       </finding-status>
+      @if(finding.status == FindingStatus.Confirmed) {
+        <date-picker [titleTemplate]="datePickerTitle"
+                     [afterDateTemplate]="afterDateTemplate"
+                     [date]="fixDeadline()"
+                     [format]="dateFormat"
+                     (dateChange)="onChangeFixDeadline($event)">
+        </date-picker>
+        <ng-template #datePickerTitle>
+          <button app-button type="dashed" class="border-primary">Add Deadline</button>
+        </ng-template>
+        <ng-template #afterDateTemplate>
+          <div class="text-white bg-primary rounded px-1">deadline</div>
+        </ng-template>
+      } @else {
+        @if(finding.fixDeadline){
+          <div class="flex flex-row items-center text-nowrap gap-2 border border-border px-3 py-2 rounded-md cursor-pointer">
+            <span>
+              {{finding.fixDeadline | date : dateFormat}}
+            </span>
+            <div class="text-white bg-primary rounded px-1">deadline</div>
+          </div>
+        }
+      }
     </div>
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
@@ -116,75 +139,7 @@
         <div class="flex flex-col overflow-y-auto max-h-96">
           <ol class="relative border-s border-border ml-5">
             @for (activity of activities; track $index) {
-              <li class="mt-10 ms-6">
-                @if(activity.username) {
-                  <div class="absolute -start-5">
-                    <avatar [text]="activity.username"
-                            [size]="38"
-                            [src]="activity.avatar ?? undefined">
-                    </avatar>
-                  </div>
-                } @else {
-                  <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 dark:bg-blue-900">
-                    <ng-icon [name]="activity.type == FindingActivityType.Open ? 'clock' : activity.type == FindingActivityType.ChangeStatus ? 'open' : 'open'"></ng-icon>
-                  </span>
-                }
-                <div class="flex flex-row items-center justify-between gap-2 mb-1">
-                  <div class="flex flex-row items-center gap-2">
-                    @if(activity.username) {
-                      <span class="font-semibold">{{activity.username}}</span>
-                    } @else {
-                      <span class="font-semibold">system</span>
-                    }
-                  </div>
-                  <time class="block text-xs" [tooltip]="activity.createdAt">{{activity.createdAt | timeago}}</time>
-                </div>
-                <div class="flex flex-row items-center gap-2">
-                  @if (activity.type == FindingActivityType.ChangeStatus) {
-                    <span>change status</span>
-                    <div class="flex flex-row items-center gap-2">
-                      <div class="flex flex-row items-center gap-2">
-                        <finding-status-label [ngClass]="'px-1 py-0.5 border border-border'"
-                                              [status]="activity.metadata?.changeStatus?.previousStatus">
-                        </finding-status-label>
-                        <span>to</span>
-                        <finding-status-label [ngClass]="'px-1 py-0.5 border border-border'"
-                                              [status]="activity.metadata?.changeStatus?.currentStatus">
-                        </finding-status-label>
-                        @if(activity.metadata?.scanInfo) {
-                          <span>on</span>
-                          <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
-                                       [branch]="activity.metadata?.scanInfo?.branch ?? ''"
-                                       [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
-                          </scan-branch>
-                        }
-                      </div>
-                    </div>
-                  } @else {
-                    <div class="flex flex-row items-center gap-1">
-                      @if(activity.type == FindingActivityType.Open) {
-                        <span>first seen</span>
-                      } @else if (activity.type == FindingActivityType.Fixed) {
-                        <finding-status-label [status]="FindingStatus.Fixed"></finding-status-label>
-                      } @else if (activity.type == FindingActivityType.Reopen) {
-                        <span>seen again</span>
-                      }
-                      @if(activity.metadata?.scanInfo) {
-                        <span>on</span>
-                        <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
-                                     [branch]="activity.metadata?.scanInfo?.branch ?? ''"
-                                     [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
-                        </scan-branch>
-                      } @else {
-                        <span>unknown</span>
-                      }
-                    </div>
-                  }
-                </div>
-                @if(activity.comment) {
-                  <p>{{activity.comment}}</p>
-                }
-              </li>
+              <finding-activity [activity]="activity"></finding-activity>
             }
           </ol>
         </div>

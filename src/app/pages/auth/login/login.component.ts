@@ -8,8 +8,7 @@ import {AuthRequest} from '../../../api/models/auth-request';
 import {AuthService} from '../../../api/services/auth.service';
 import {finalize} from 'rxjs';
 import {AuthStore} from '../../../core/auth/auth.store';
-import {NgButtonComponent} from '../../../shared/components/ui/ng-button/ng-button.component';
-import {ButtonDirective} from '../../../shared/directives/button.directive';
+import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {environment} from '../../../../environments/environment';
 import {AuthResponse} from '../../../api/models/auth-response';
 import {bindQueryParams} from '../../../core/router';
@@ -25,7 +24,6 @@ import {OidcConfig} from '../../../api/models/oidc-config';
     NgIcon,
     RouterLink,
     NgClass,
-    NgButtonComponent,
     ButtonDirective
   ],
   templateUrl: './login.component.html',

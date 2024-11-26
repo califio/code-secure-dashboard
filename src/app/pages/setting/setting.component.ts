@@ -35,7 +35,7 @@ export class SettingComponent implements OnDestroy {
     {
       label: 'CI Token',
       route: '/setting/ci-token',
-      icon: 'rocket',
+      icon: 'cicd',
     },
     {
       label: 'Mail',
@@ -46,6 +46,11 @@ export class SettingComponent implements OnDestroy {
       label: 'Authentication',
       route: '/setting/authentication',
       icon: 'key',
+    },
+    {
+      label: 'Service Level Agreement (SLA)',
+      route: '/setting/sla',
+      icon: 'scale',
     }
   ]
   private destroy$ = new Subject();

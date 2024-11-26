@@ -2,7 +2,7 @@ import {Component, effect, EffectRef, EventEmitter, Input, input, OnDestroy, OnI
 import {NgIcon} from '@ng-icons/core';
 import {DropdownItem} from './dropdown.model';
 import {NgClass} from '@angular/common';
-import {ClickOutsideDirective} from '../../../directives/click-outside.directive';
+import {ClickOutsideDirective} from '../../directives/click-outside.directive';
 
 @Component({
   selector: 'dropdown',

@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {FindingSeverity} from '../../../../api/models/finding-severity';
 import {NgIcon} from '@ng-icons/core';
 import {LowerCasePipe, NgClass} from '@angular/common';
-import {TooltipDirective} from '../../ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../../ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'finding-severity',
@@ -34,5 +34,11 @@ export class FindingSeverityComponent {
       return 'bg-low';
     }
     return 'bg-info';
+  }
+  severityLabel() {
+    if (this.severity && this.severity.length > 0) {
+      return this.severity.charAt(0);
+    }
+    return 'U';
   }
 }

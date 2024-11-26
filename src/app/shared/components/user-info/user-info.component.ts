@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {AvatarComponent} from "../ui/avatar/avatar.component";
+import {AvatarComponent} from "../../ui/avatar/avatar.component";
 
 @Component({
   selector: 'user-info',

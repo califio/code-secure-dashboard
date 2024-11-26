@@ -143,6 +143,7 @@
 <confirm-popup [hidden]="!store.showDisableUserPopup()"
                (cancel)="store.showDisableUserPopup.set(false)"
                (confirm)="disableUser()" [title]="'Are you sure you want to disable this user?'">
+</confirm-popup>
 <!--add user-->
 <app-add-user-popup></app-add-user-popup>
 <app-update-user-popup [user]="user"></app-update-user-popup>

@@ -4,5 +4,6 @@
 
 import { FindingStatus } from '../models/finding-status';
 export interface UpdateFindingRequest {
+  fixDeadline?: string | null;
   status?: FindingStatus;
 }

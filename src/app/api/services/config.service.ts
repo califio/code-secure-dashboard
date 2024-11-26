@@ -18,12 +18,17 @@ import { getMailConfig } from '../fn/config/get-mail-config';
 import { GetMailConfig$Params } from '../fn/config/get-mail-config';
 import { getOidcConfig } from '../fn/config/get-oidc-config';
 import { GetOidcConfig$Params } from '../fn/config/get-oidc-config';
+import { getSlaConfig } from '../fn/config/get-sla-config';
+import { GetSlaConfig$Params } from '../fn/config/get-sla-config';
 import { MailConfig } from '../models/mail-config';
 import { OidcConfig } from '../models/oidc-config';
+import { SlaConfig } from '../models/sla-config';
 import { updateAuthConfig } from '../fn/config/update-auth-config';
 import { UpdateAuthConfig$Params } from '../fn/config/update-auth-config';
 import { updateMailConfig } from '../fn/config/update-mail-config';
 import { UpdateMailConfig$Params } from '../fn/config/update-mail-config';
+import { updateSlaConfig } from '../fn/config/update-sla-config';
+import { UpdateSlaConfig$Params } from '../fn/config/update-sla-config';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService extends BaseService {
@@ -153,6 +158,56 @@ export class ConfigService extends BaseService {
   updateAuthConfig(params?: UpdateAuthConfig$Params, context?: HttpContext): Observable<AuthConfig> {
     return this.updateAuthConfig$Response(params, context).pipe(
       map((r: StrictHttpResponse<AuthConfig>): AuthConfig => r.body)
+    );
+  }
+
+  /** Path part for operation `getSlaConfig()` */
+  static readonly GetSlaConfigPath = '/api/config/sla';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSlaConfig()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSlaConfig$Response(params?: GetSlaConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaConfig>> {
+    return getSlaConfig(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSlaConfig$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSlaConfig(params?: GetSlaConfig$Params, context?: HttpContext): Observable<SlaConfig> {
+    return this.getSlaConfig$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SlaConfig>): SlaConfig => r.body)
+    );
+  }
+
+  /** Path part for operation `updateSlaConfig()` */
+  static readonly UpdateSlaConfigPath = '/api/config/sla';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateSlaConfig()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateSlaConfig$Response(params?: UpdateSlaConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaConfig>> {
+    return updateSlaConfig(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateSlaConfig$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateSlaConfig(params?: UpdateSlaConfig$Params, context?: HttpContext): Observable<SlaConfig> {
+    return this.updateSlaConfig$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SlaConfig>): SlaConfig => r.body)
     );
   }
 

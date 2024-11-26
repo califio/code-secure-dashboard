@@ -1,0 +1,88 @@
+<div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm">
+  <div class="font-semibold text-foreground text-xl">Service Level Agreement (SLA)</div>
+  <div class="text-sm mb-2">Define timeframe for your development and IT teams to resolve the finding</div>
+  <div class="flex flex-col rounded-xl border border-muted/20 bg-background gap-4 p-4 w-full">
+    <div class="flex flex-col gap-2 lg:max-w-lg">
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-1">
+          <table class="border-none w-fit">
+            <tr>
+              <td class="py-2">
+                <div class="flex flex-col">
+                  <div class="uppercase">Critical</div>
+                  <span class="text-xs">duration frequency</span>
+                </div>
+              </td>
+              <td class="px-4">
+                <div class="flex flex-row gap-2 items-center">
+                  <input type="number" class="max-w-20" min="0" [(ngModel)]="sla.slaCritical">
+                  <span>days</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-2">
+                <div class="flex flex-col">
+                  <div class="uppercase">High</div>
+                  <span class="text-xs">duration frequency</span>
+                </div>
+              </td>
+              <td class="px-4">
+                <div class="flex flex-row gap-2 items-center">
+                  <input type="number" class="max-w-20" min="0" [(ngModel)]="sla.slaHigh">
+                  <span>days</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-2">
+                <div class="flex flex-col">
+                  <div class="uppercase">Medium</div>
+                  <span class="text-xs">duration frequency</span>
+                </div>
+              </td>
+              <td class="px-4">
+                <div class="flex flex-row gap-2 items-center">
+                  <input type="number" class="max-w-20" min="0" [(ngModel)]="sla.slaMedium">
+                  <span>days</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="py-2">
+                <div class="flex flex-col">
+                  <div class="uppercase">Low</div>
+                  <span class="text-xs">duration frequency</span>
+                </div>
+              </td>
+              <td class="px-4">
+                <div class="flex flex-row gap-2 items-center">
+                  <input type="number" class="max-w-20" min="0" [(ngModel)]="sla.slaLow">
+                  <span>days</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-2">
+                <div class="flex flex-col">
+                  <div class="uppercase">Info</div>
+                  <span class="text-xs">duration frequency</span>
+                </div>
+              </td>
+              <td class="px-4">
+                <div class="flex flex-row gap-2 items-center">
+                  <input type="number" class="max-w-20" min="0" [(ngModel)]="sla.slaInfo">
+                  <span>days</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <button app-button type="primary" class="w-fit"
+            [loading]="loading"
+            (click)="saveSla()">Update</button>
+  </div>
+</div>

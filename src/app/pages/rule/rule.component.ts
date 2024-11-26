@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {ComingSoonComponent} from '../../shared/components/ui/coming-soon/coming-soon.component';
-import {ConfirmPopupComponent} from '../../shared/components/ui/confirm-popup/confirm-popup.component';
+import {ComingSoonComponent} from '../../shared/ui/coming-soon/coming-soon.component';
+import {ConfirmPopupComponent} from '../../shared/ui/confirm-popup/confirm-popup.component';
 
 @Component({
   selector: 'app-rule',

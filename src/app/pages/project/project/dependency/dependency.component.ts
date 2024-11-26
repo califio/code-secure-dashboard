@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ComingSoonComponent} from '../../../../shared/components/ui/coming-soon/coming-soon.component';
+import {ComingSoonComponent} from '../../../../shared/ui/coming-soon/coming-soon.component';
 import {ProjectService} from '../../../../api/services/project.service';
-import {ProjectStore} from '../project-store';
+import {ProjectStore} from '../project.store';
 import {FindingDetailComponent} from '../../../../shared/components/finding/finding-detail/finding-detail.component';
 import {FindingStatusComponent} from '../../../../shared/components/finding/finding-status/finding-status.component';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
 import {ListFindingComponent} from '../../../../shared/components/finding/list-finding/list-finding.component';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../shared/components/ui/pagination/pagination.component';
+import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   ScanBranchDropdownComponent
@@ -18,16 +18,16 @@ import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dr
 import {DependencyStore} from './dependency.store';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
 import {ActivatedRoute, Router} from '@angular/router';
-import {delay, finalize, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {finalize, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import {ProjectPackagePage} from '../../../../api/models/project-package-page';
 import {
   FindingStatusLabelComponent
 } from '../../../../shared/components/finding/finding-status-label/finding-status-label.component';
-import {LoadingTableComponent} from '../../../../shared/components/ui/loading-table/loading-table.component';
+import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
 import {ProjectPackage} from '../../../../api/models/project-package';
 import {RiskLevelIconComponent} from '../../../../shared/components/risk-level-icon/risk-level-icon.component';
 import {RiskLevel} from '../../../../api/models/risk-level';
-import {TooltipDirective} from '../../../../shared/components/ui/tooltip/tooltip.directive';
+import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-dependency',
@@ -101,7 +101,6 @@ export class DependencyComponent implements OnInit, OnDestroy {
       slug: this.slug,
       body: this.store.filter
     }).pipe(
-      delay(300),
       finalize(() => this.store.loading.set(false)),
       tap(response => {
         this.store.dependencies.set(response.items!);

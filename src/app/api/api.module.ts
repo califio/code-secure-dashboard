@@ -10,6 +10,7 @@ import { AuthService } from './services/auth.service';
 import { CiService } from './services/ci.service';
 import { CiTokenService } from './services/ci-token.service';
 import { ConfigService } from './services/config.service';
+import { DashboardService } from './services/dashboard.service';
 import { DependencyService } from './services/dependency.service';
 import { FindingService } from './services/finding.service';
 import { OidcService } from './services/oidc.service';
@@ -30,6 +31,7 @@ import { UserService } from './services/user.service';
     CiService,
     CiTokenService,
     ConfigService,
+    DashboardService,
     DependencyService,
     FindingService,
     OidcService,

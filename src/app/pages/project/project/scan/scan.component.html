@@ -2,75 +2,41 @@
   <div class="flex flex-col overflow-hidden w-full border border-white/5 gap-4 rounded-xl bg-background p-6">
     <div class="flex w-full items-center">
       <div class="flex flex-col font-normal">
-        <div class="flex">
+        <div class="flex flex-row items-center gap-1">
           <div>You have</div>
-          <a class="font-bold px-2 text-primary hover:underline hover:underline-offset-4"
-             [routerLink]="['/project', projectStore.slug(), 'finding']"
-             [queryParams]="{'status': 'Open'}">{{statistic.openFinding}}
-          </a>
+          @if(statisticLoading) {
+            <ng-icon name="spin" class="animate-spin"></ng-icon>
+          } @else {
+            <a class="font-bold text-primary hover:underline hover:underline-offset-4"
+               [routerLink]="['/project', projectStore.slug(), 'finding']"
+               [queryParams]="{'status': 'Open'}">
+              {{statistic.openFinding}}
+            </a>
+          }
           <div>open vulnerabilities.</div>
         </div>
 <!--        <div class="flex gap-4">No new vulnerabilities detected last week!</div>-->
       </div>
     </div>
-    <div class="overflow-x-auto">
-      <div class="flex flex-row gap-2 w-full justify-between items-center min-w-[1024px]">
-        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-rose-600 rounded-xl">
-          <ng-icon name="bug" class="text-rose-600" size="36"></ng-icon>
-          <div class="text-2xl font-bold font-code-medium">
-            @if (statisticLoading) {
-              <ng-icon name="spin" class="animate-spin"></ng-icon>
-            } @else {
-              <span>{{statistic.critical}}</span>
-            }
+    <div class="flex flex-wrap">
+      @if(statisticLoading) {
+        <loading-table [row]="5"></loading-table>
+      } @else {
+        <div class="flex flex-col items-center gap-4">
+          <div class="font-semibold">Static Application Security Testing (SAST)</div>
+          <div class="flex flex-wrap gap-4">
+            <div severity-chart [severity]="statistic.severitySast"></div>
+            <finding-status-chart [status]="statistic.statusSast"></finding-status-chart>
           </div>
-          <div class="opacity-50 text-sm uppercase">critical</div>
         </div>
-        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-orange-600 rounded-xl">
-          <ng-icon name="bug" class="text-orange-600" size="36"></ng-icon>
-          <div class="text-2xl font-bold font-code-medium">
-            @if (statisticLoading) {
-              <ng-icon name="spin" class="animate-spin"></ng-icon>
-            } @else {
-              <span>{{statistic.high}}</span>
-            }
+        <div class="flex flex-col items-center gap-4">
+          <div class="font-semibold">Software Composition Analysis (SCA)</div>
+          <div class="flex flex-wrap gap-4">
+            <div severity-chart [severity]="statistic.severitySca"></div>
+            <finding-status-chart [status]="statistic.statusSca"></finding-status-chart>
           </div>
-          <div class="opacity-50 text-sm uppercase">high</div>
         </div>
-        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-yellow-500 rounded-xl">
-          <ng-icon name="bug" class="text-yellow-500" size="36"></ng-icon>
-          <div class="text-2xl font-bold font-code-medium">
-            @if (statisticLoading) {
-              <ng-icon name="spin" class="animate-spin"></ng-icon>
-            } @else {
-              <span>{{statistic.medium}}</span>
-            }
-          </div>
-          <div class="opacity-50 text-sm uppercase">medium</div>
-        </div>
-        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-indigo-500 rounded-xl">
-          <ng-icon name="bug" class="text-indigo-500" size="36"></ng-icon>
-          <div class="text-2xl font-bold font-code-medium">
-            @if (statisticLoading) {
-              <ng-icon name="spin" class="animate-spin"></ng-icon>
-            } @else {
-              <span>{{statistic.low}}</span>
-            }
-          </div>
-          <div class="opacity-50 text-sm uppercase">low</div>
-        </div>
-        <div class="flex flex-col py-2 w-48 gap-2 justify-center items-center border border-green-500 rounded-xl">
-          <ng-icon name="bug" class="text-green-500" size="36"></ng-icon>
-          <div class="text-2xl font-bold font-code-medium">
-            @if (statisticLoading) {
-              <ng-icon name="spin" class="animate-spin"></ng-icon>
-            } @else {
-              <span>{{statistic.info}}</span>
-            }
-          </div>
-          <div class="opacity-50 text-sm uppercase">Informative</div>
-        </div>
-      </div>
+      }
     </div>
   </div>
   <!--  SCANS-->
