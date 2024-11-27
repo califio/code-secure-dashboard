@@ -53,7 +53,7 @@ export class TopFindingChartComponent implements OnDestroy {
               enabled: true,
               offsetX: 5,
               style: {
-                color: 'black',
+                color: 'white',
                 fontWeight: "normal"
               }
             }
