@@ -8,16 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { AuthConfig } from '../../models/auth-config';
+import { MailSetting } from '../../models/mail-setting';
 
-export interface UpdateAuthConfig$Params {
-      body?: AuthConfig
+export interface GetMailSetting$Params {
 }
 
-export function updateAuthConfig(http: HttpClient, rootUrl: string, params?: UpdateAuthConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthConfig>> {
-  const rb = new RequestBuilder(rootUrl, updateAuthConfig.PATH, 'post');
+export function getMailSetting(http: HttpClient, rootUrl: string, params?: GetMailSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<MailSetting>> {
+  const rb = new RequestBuilder(rootUrl, getMailSetting.PATH, 'get');
   if (params) {
-    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -25,9 +23,9 @@ export function updateAuthConfig(http: HttpClient, rootUrl: string, params?: Upd
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<AuthConfig>;
+      return r as StrictHttpResponse<MailSetting>;
     })
   );
 }
 
-updateAuthConfig.PATH = '/api/config/auth';
+getMailSetting.PATH = '/api/config/mail';

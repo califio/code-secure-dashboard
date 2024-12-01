@@ -8,14 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { MailConfig } from '../../models/mail-config';
+import { SlaSetting } from '../../models/sla-setting';
 
-export interface UpdateMailConfig$Params {
-      body?: MailConfig
+export interface UpdateSlaSetting$Params {
+      body?: SlaSetting
 }
 
-export function updateMailConfig(http: HttpClient, rootUrl: string, params?: UpdateMailConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<MailConfig>> {
-  const rb = new RequestBuilder(rootUrl, updateMailConfig.PATH, 'post');
+export function updateSlaSetting(http: HttpClient, rootUrl: string, params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaSetting>> {
+  const rb = new RequestBuilder(rootUrl, updateSlaSetting.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -25,9 +25,9 @@ export function updateMailConfig(http: HttpClient, rootUrl: string, params?: Upd
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<MailConfig>;
+      return r as StrictHttpResponse<SlaSetting>;
     })
   );
 }
 
-updateMailConfig.PATH = '/api/config/mail';
+updateSlaSetting.PATH = '/api/config/sla';

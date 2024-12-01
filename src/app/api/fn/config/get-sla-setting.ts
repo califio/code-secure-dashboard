@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { SlaConfig } from '../../models/sla-config';
+import { SlaSetting } from '../../models/sla-setting';
 
-export interface GetSlaConfig$Params {
+export interface GetSlaSetting$Params {
 }
 
-export function getSlaConfig(http: HttpClient, rootUrl: string, params?: GetSlaConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaConfig>> {
-  const rb = new RequestBuilder(rootUrl, getSlaConfig.PATH, 'get');
+export function getSlaSetting(http: HttpClient, rootUrl: string, params?: GetSlaSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaSetting>> {
+  const rb = new RequestBuilder(rootUrl, getSlaSetting.PATH, 'get');
   if (params) {
   }
 
@@ -23,9 +23,9 @@ export function getSlaConfig(http: HttpClient, rootUrl: string, params?: GetSlaC
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<SlaConfig>;
+      return r as StrictHttpResponse<SlaSetting>;
     })
   );
 }
 
-getSlaConfig.PATH = '/api/config/sla';
+getSlaSetting.PATH = '/api/config/sla';

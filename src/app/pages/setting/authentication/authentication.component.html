@@ -1,5 +1,5 @@
 <div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm">
-  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Authentication Config</div>
+  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Authentication Setting</div>
   <div class="flex flex-col rounded-xl border border-muted/20 bg-background gap-4 p-4 w-full">
     <div class="flex flex-col gap-2 w-full lg:max-w-[600px]">
       <table class="w-full border-none">
@@ -17,31 +17,31 @@
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">Enable OIDC</td>
             <td class="w-full pl-6">
-              <input type="checkbox" name="oidcEnable" [(ngModel)]="config.oidcEnable">
+              <input type="checkbox" name="oidcEnable" [formControl]="form.controls.oidcEnable">
             </td>
           </tr>
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">Disable Password Logon</td>
             <td class="w-full pl-6">
-              <input type="checkbox" name="disablePasswordLogon" [(ngModel)]="config.disablePasswordLogon">
+              <input type="checkbox" name="disablePasswordLogon" [formControl]="form.controls.disablePasswordLogon">
             </td>
           </tr>
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">OIDC Provider</td>
             <td class="w-full pl-6">
-              <input type="text" class="w-full" name="oidcProvider" [(ngModel)]="config.oidcProvider">
+              <input type="text" class="w-full" name="oidcProvider" [formControl]="form.controls.oidcProvider">
             </td>
           </tr>
           <tr class="w-full">
-            <td class="text-nowrap font-semibold py-4">OIDC Endpoint</td>
+            <td class="text-nowrap font-semibold py-4">OIDC Authority</td>
             <td class="w-full pl-6">
-              <input type="text" class="w-full" name="oidc-enpoint" [(ngModel)]="config.oidcEndpoint">
+              <input type="text" class="w-full" name="oidc-authority" [formControl]="form.controls.oidcAuthority">
             </td>
           </tr>
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">OIDC Client ID</td>
             <td class="w-full pl-6">
-              <input type="text" class="w-full" name="oidc-client-id" [(ngModel)]="config.oidcClientId">
+              <input type="text" class="w-full" name="oidc-client-id" [formControl]="form.controls.oidcClientId">
             </td>
           </tr>
           <tr class="w-full py-10">
@@ -50,7 +50,7 @@
               <div class="relative">
                 <input
                   [type]="secretTextType ? 'text' : 'password'"
-                  [(ngModel)]="config.oidcClientSecret"
+                  [formControl]="form.controls.oidcClientSecret"
                   id="password"
                   class="peer block w-full"
                   placeholder=" "/>
@@ -60,17 +60,12 @@
               </div>
             </td>
           </tr>
-          <tr class="w-full">
-            <td class="text-nowrap font-semibold py-4">OIDC Scope</td>
-            <td class="w-full pl-6">
-              <input type="text" disabled class="w-full" name="oidc-scope" [(ngModel)]="config.oidcScope">
-            </td>
-          </tr>
         }
       </table>
     </div>
     <button app-button
-            [loading]="loading"
+            [loading]="form.disabled"
+            [disabled]="form.disabled"
             type="primary"
             class="w-fit"
             (click)="saveConfig()">Update

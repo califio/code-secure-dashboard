@@ -17,7 +17,12 @@ export class TopFindingChartComponent implements OnDestroy {
   @Input()
   set categories(value: TopFinding[]) {
     this.chartOptions.xaxis!.categories = value.map(item => item.category);
-    this.chartOptions.series![0].data = value.map(item => item.count);
+    this.chartOptions.series = [
+      {
+        name: 'count',
+        data: value.map(item => item.count)
+      }
+    ];
   }
 
   chartOptions: Partial<ChartOptions>;
@@ -25,20 +30,18 @@ export class TopFindingChartComponent implements OnDestroy {
   constructor(
     private themeService: ThemeService
   ) {
-    let baseColor = '#FFFFFF';
+    let primaryColor = HSLToHex(getComputedStyle(document.documentElement).getPropertyValue('--primary'));
+    let bgColor = HSLToHex(getComputedStyle(document.documentElement).getPropertyValue('--background'));
+    let textColor = this.themeService.isDark ? 'white' : 'black';
     this.chartOptions = {
+      theme: {
+        mode: this.themeService.isDark ? 'dark' : 'light',
+      },
       chart: {
         type: 'bar',
         stacked: true,
-        width: 600,
-        height: 380
-      },
-      legend: {
-        position: "right",
-        show: true,
-        labels: {
-          useSeriesColors: true
-        }
+        height: 450,
+        background: bgColor
       },
       dataLabels: {
         enabled: false,
@@ -53,19 +56,14 @@ export class TopFindingChartComponent implements OnDestroy {
               enabled: true,
               offsetX: 5,
               style: {
-                color: 'white',
-                fontWeight: "normal"
+                fontWeight: 'normal',
+                color: textColor
               }
             }
           }
         },
       },
-      series: [
-        {
-          name: 'count',
-          data: []
-        }
-      ],
+      series: [],
       grid: {
         yaxis: {
           lines: {
@@ -74,8 +72,8 @@ export class TopFindingChartComponent implements OnDestroy {
           },
         },
         padding: {
-          top: 5,
-          bottom: 5
+          top: 10,
+          bottom: 10
         }
       },
       xaxis: {
@@ -83,7 +81,7 @@ export class TopFindingChartComponent implements OnDestroy {
         labels: {
           show: true,
           style: {
-            colors: [baseColor]
+            colors: [textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor]
           }
         },
       },
@@ -96,7 +94,7 @@ export class TopFindingChartComponent implements OnDestroy {
           offsetY: 15,
           maxWidth: 500,
           style: {
-            colors: [],
+            colors: [textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor]
           }
         },
         floating: true
@@ -104,33 +102,14 @@ export class TopFindingChartComponent implements OnDestroy {
       title: {
         text: 'Top Findings',
         style: {
-          color: baseColor,
+          color: primaryColor,
         }
       },
       colors: ['#FF0000'],
     };
-    this.effectRef = effect(() => {
-      let primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary');
-      primaryColor = HSLToHex(primaryColor);
-      this.chartOptions.tooltip = {
-        theme: this.themeService.theme().mode,
-      };
-      this.chartOptions.title!.style!.color = primaryColor;
-      if (this.themeService.isDark) {
-        this.chartOptions.yaxis!.labels!.style!.colors = ['white'];
-        this.chartOptions.xaxis!.labels!.style!.colors = ['white'];
-        this.chartOptions.plotOptions!.bar!.dataLabels!.total!.style!.color = 'white';
-      } else {
-        this.chartOptions.yaxis!.labels!.style!.colors = ['black'];
-        this.chartOptions.xaxis!.labels!.style!.colors = ['black'];
-        this.chartOptions.plotOptions!.bar!.dataLabels!.total!.style!.color = 'black';
-      }
-    });
   }
 
   ngOnDestroy(): void {
-    this.effectRef.destroy();
   }
 
-  private effectRef: EffectRef;
 }

@@ -1,28 +1,31 @@
 <div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm">
-  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Mail Config</div>
+  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Mail Setting</div>
   <div class="flex flex-col rounded-xl border border-muted/20 bg-background gap-4 p-4 w-full">
     <div class="flex flex-col gap-2 lg:max-w-lg">
       <div class="flex flex-col gap-1">
         <span>Server</span>
-        <input type="text" [(ngModel)]="config.server">
+        <input type="text" [formControl]="form.controls.server">
       </div>
       <div class="flex flex-col gap-1">
         <span>Port</span>
-        <input type="text"  [(ngModel)]="config.port">
+        <input type="text" [formControl]="form.controls.port">
       </div>
       <div class="flex flex-col gap-1">
         <span>UserName</span>
-        <input type="text"  [(ngModel)]="config.username">
+        <input type="text" [formControl]="form.controls.userName">
       </div>
       <div class="flex flex-col gap-1">
         <span>Password</span>
-        <input type="text"  [(ngModel)]="config.password">
+        <input type="text" [formControl]="form.controls.password">
       </div>
       <div class="flex flex-row items-center gap-2">
         <span>SSL</span>
-        <input type="checkbox"  [(ngModel)]="config.ssl">
+        <input type="checkbox" [formControl]="form.controls.useSsl">
       </div>
     </div>
-    <button app-button type="primary" class="w-fit" (click)="saveConfig()">Update</button>
+    <button app-button type="primary" class="w-fit"
+            [loading]="form.disabled"
+            [disabled]="form.disabled"
+            (click)="saveConfig()">Update</button>
   </div>
 </div>

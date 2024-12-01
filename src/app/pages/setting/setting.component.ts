@@ -17,7 +17,6 @@ import {Subject} from 'rxjs';
   styleUrl: './setting.component.scss'
 })
 export class SettingComponent implements OnDestroy {
-
   constructor(
     private router: Router,
   ) {

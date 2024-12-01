@@ -1,13 +1,14 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ButtonDirective} from '../../../shared/ui/button/button.directive';
-import {FormsModule} from '@angular/forms';
+import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
 import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
-import {AuthConfig} from '../../../api/models';
 import {ConfigService} from '../../../api/services/config.service';
 import {finalize} from 'rxjs';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
 import {NgIcon} from '@ng-icons/core';
+import {AuthSetting} from '../../../api/models/auth-setting';
+import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../core/forms';
 
 type AuthMode = 'local' | 'oidc'
 
@@ -18,12 +19,13 @@ type AuthMode = 'local' | 'oidc'
     ButtonDirective,
     FormsModule,
     DropdownComponent,
-    NgIcon
+    NgIcon,
+    ReactiveFormsModule
   ],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss'
 })
-export class AuthenticationComponent {
+export class AuthenticationComponent implements OnInit {
   authMode: AuthMode = 'local';
   authOptions: DropdownItem[] = [
     {
@@ -35,36 +37,46 @@ export class AuthenticationComponent {
       label: 'OIDC'
     },
   ];
-  config: AuthConfig = {};
-  loading = false;
+  formConfig = new FormSection<ConfigOf<AuthSetting>>({
+    disablePasswordLogon: new FormField(false),
+    oidcAuthority: new FormField(''),
+    oidcClientId: new FormField(''),
+    oidcClientSecret: new FormField(''),
+    oidcEnable: new FormField(false),
+    oidcProvider: new FormField(''),
+    whiteListEmails: new FormField('')
+  })
+  form: FormGroup<ControlsOf<AuthSetting>>;
   constructor(
+    private formService: FormService,
     private configService: ConfigService,
     private toastr: ToastrService
   ) {
-    configService.getAuthConfig().subscribe(config => {
-      this.config = config;
-      if (this.config.oidcEnable) {
+    this.form = this.formService.group(this.formConfig);
+  }
+
+  ngOnInit(): void {
+    this.configService.getAuthSetting().subscribe(setting => {
+      this.form.patchValue(setting);
+      if (setting.oidcEnable) {
         this.authMode = 'oidc';
       } else {
         this.authMode = 'local';
-      }
-      if (!this.config.oidcScope) {
-        this.config.oidcScope = "openid profile email";
       }
     })
   }
 
   saveConfig() {
-    this.loading = true;
+    this.form.disable()
     if (this.authMode == 'local') {
-      this.config.disablePasswordLogon = false;
+      this.form.controls.disablePasswordLogon.setValue(false);
     }
-    this.configService.updateAuthConfig({
-      body: this.config
+    this.configService.updateAuthSetting({
+      body: this.form.getRawValue()
     }).pipe(
-      finalize(() => this.loading = false)
+      finalize(() => this.form.enable())
     ).subscribe(config => {
-      this.config = config;
+      this.form.patchValue(config);
       this.toastr.success('Update config success!');
     })
   }

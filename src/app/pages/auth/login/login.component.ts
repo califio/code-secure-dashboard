@@ -14,7 +14,7 @@ import {AuthResponse} from '../../../api/models/auth-response';
 import {bindQueryParams} from '../../../core/router';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
 import {ConfigService} from '../../../api/services/config.service';
-import {OidcConfig} from '../../../api/models/oidc-config';
+import {AuthInfo} from '../../../api/models/auth-info';
 
 @Component({
   selector: 'app-login',
@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
     requireConfirmEmail: null,
     requireTwoFactor: null,
   }
-  oidcConfig: OidcConfig = {};
+  authInfo: AuthInfo = {};
   constructor(
     private formService: FormService,
     private authService: AuthService,
@@ -72,8 +72,8 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl(returnUrl).then();
       }
     } else {
-      this.configService.getOidcConfig().subscribe(config => {
-        this.oidcConfig = config;
+      this.configService.getAuthInfo().subscribe(authInfo => {
+        this.authInfo = authInfo;
       });
     }
   }
@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit {
   }
 
   onPasswordSignIn() {
-    if (this.oidcConfig.disablePasswordLogon) {
+    if (this.authInfo.disablePasswordLogon) {
       this.toastr.warning('The administrator disabled password logon');
       return;
     }

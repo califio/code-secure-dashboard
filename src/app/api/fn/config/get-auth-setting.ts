@@ -8,16 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { SlaConfig } from '../../models/sla-config';
+import { AuthSetting } from '../../models/auth-setting';
 
-export interface UpdateSlaConfig$Params {
-      body?: SlaConfig
+export interface GetAuthSetting$Params {
 }
 
-export function updateSlaConfig(http: HttpClient, rootUrl: string, params?: UpdateSlaConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaConfig>> {
-  const rb = new RequestBuilder(rootUrl, updateSlaConfig.PATH, 'post');
+export function getAuthSetting(http: HttpClient, rootUrl: string, params?: GetAuthSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthSetting>> {
+  const rb = new RequestBuilder(rootUrl, getAuthSetting.PATH, 'get');
   if (params) {
-    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -25,9 +23,9 @@ export function updateSlaConfig(http: HttpClient, rootUrl: string, params?: Upda
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<SlaConfig>;
+      return r as StrictHttpResponse<AuthSetting>;
     })
   );
 }
 
-updateSlaConfig.PATH = '/api/config/sla';
+getAuthSetting.PATH = '/api/config/auth';

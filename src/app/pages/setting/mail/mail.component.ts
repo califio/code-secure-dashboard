@@ -1,38 +1,54 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ButtonDirective} from "../../../shared/ui/button/button.directive";
-import {FormsModule} from "@angular/forms";
+import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ConfigService} from '../../../api/services/config.service';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
-import {MailConfig} from '../../../api/models/mail-config';
+import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../core/forms';
+import {MailSetting} from '../../../api/models/mail-setting';
+import {finalize} from 'rxjs';
 
 @Component({
   selector: 'app-mail',
   standalone: true,
-    imports: [
-        ButtonDirective,
-        FormsModule
-    ],
+  imports: [
+    ButtonDirective,
+    FormsModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './mail.component.html',
   styleUrl: './mail.component.scss'
 })
-export class MailComponent {
-  config: MailConfig = {
-    password: "", port: 0, server: "", ssl: false, username: ""
-  };
+export class MailComponent implements OnInit {
+  formConfig = new FormSection<ConfigOf<MailSetting>>({
+    password: new FormField(''),
+    port: new FormField(0),
+    server: new FormField(''),
+    userName: new FormField(''),
+    useSsl: new FormField(false),
+  })
+  form: FormGroup<ControlsOf<MailSetting>>
   constructor(
+    private formService: FormService,
     private configService: ConfigService,
     private toastr: ToastrService
   ) {
-    configService.getMailConfig().subscribe(config => {
-      this.config = config;
+    this.form = this.formService.group(this.formConfig);
+  }
+
+  ngOnInit(): void {
+    this.configService.getMailSetting().subscribe(mailSetting => {
+      this.form.patchValue(mailSetting);
     })
   }
 
   saveConfig() {
-    this.configService.updateMailConfig({
-      body: this.config
-    }).subscribe(config => {
-      this.config = config;
+    this.form.disable();
+
+    this.configService.updateMailSetting({
+      body: this.form.getRawValue()
+    }).pipe(
+      finalize(() => this.form.enable())
+    ).subscribe(config => {
       this.toastr.success('Update config success!');
     })
   }

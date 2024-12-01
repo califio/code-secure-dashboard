@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { OidcConfig } from '../../models/oidc-config';
+import { AuthInfo } from '../../models/auth-info';
 
-export interface GetOidcConfig$Params {
+export interface GetAuthInfo$Params {
 }
 
-export function getOidcConfig(http: HttpClient, rootUrl: string, params?: GetOidcConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<OidcConfig>> {
-  const rb = new RequestBuilder(rootUrl, getOidcConfig.PATH, 'get');
+export function getAuthInfo(http: HttpClient, rootUrl: string, params?: GetAuthInfo$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthInfo>> {
+  const rb = new RequestBuilder(rootUrl, getAuthInfo.PATH, 'get');
   if (params) {
   }
 
@@ -23,9 +23,9 @@ export function getOidcConfig(http: HttpClient, rootUrl: string, params?: GetOid
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<OidcConfig>;
+      return r as StrictHttpResponse<AuthInfo>;
     })
   );
 }
 
-getOidcConfig.PATH = '/api/config/oidc';
+getAuthInfo.PATH = '/api/config/authInfo';

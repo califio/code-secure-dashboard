@@ -45,23 +45,24 @@ export class TopDependencyChartComponent implements OnDestroy {
   constructor(
     private themeService: ThemeService
   ) {
-    let baseColor = '#FFFFFF';
+    let primaryColor = HSLToHex(getComputedStyle(document.documentElement).getPropertyValue('--primary'));
+    let bgColor = HSLToHex(getComputedStyle(document.documentElement).getPropertyValue('--background'));
+    let textColor = this.themeService.isDark ? 'white' : 'black';
     this.chartOptions = {
+      theme: {
+        mode: this.themeService.isDark ? 'dark' : 'light',
+      },
       chart: {
         type: 'bar',
         stacked: true,
-        width: 600,
-        height: 380
-      },
-      legend: {
-        position: "right",
-        show: true,
-        labels: {
-          useSeriesColors: true
-        }
+        height: 450,
+        background: bgColor
       },
       dataLabels: {
         enabled: false,
+      },
+      legend: {
+        show: false
       },
       plotOptions: {
         bar: {
@@ -73,8 +74,8 @@ export class TopDependencyChartComponent implements OnDestroy {
               enabled: true,
               offsetX: 5,
               style: {
-                color: 'black',
-                fontWeight: "normal"
+                fontWeight: 'normal',
+                color: textColor
               }
             }
           }
@@ -87,10 +88,6 @@ export class TopDependencyChartComponent implements OnDestroy {
             show: false,
             offsetY: 10,
           },
-        },
-        padding: {
-          top: 5,
-          bottom: 5
         }
       },
       xaxis: {
@@ -98,48 +95,32 @@ export class TopDependencyChartComponent implements OnDestroy {
         labels: {
           show: true,
           style: {
-            colors: [baseColor]
+            colors: [textColor, textColor, textColor]
           }
-        }
+        },
       },
       yaxis: {
         show: true,
         labels: {
+          show: true,
           align: 'left',
           offsetX: 5,
           offsetY: 15,
-          maxWidth: 1400,
+          maxWidth: 500,
           style: {
-            colors: [baseColor],
-          },
+            colors: [textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor, textColor]
+          }
         },
         floating: true
       },
       title: {
         text: 'Top Vulnerable Packages',
         style: {
-          color: baseColor,
+          color: primaryColor,
         }
       },
       colors: ['#8F243D', '#DC1E27', '#FF8E3D', '#FFC800', '#bef264'],
-    }
-    this.effectRef = effect(() => {
-      let primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary');
-      primaryColor = HSLToHex(primaryColor);
-      this.chartOptions.tooltip = {
-        theme: this.themeService.theme().mode,
-      };
-      this.chartOptions.title!.style!.color = primaryColor;
-      if (this.themeService.isDark) {
-        this.chartOptions.yaxis!.labels!.style!.colors = ['white'];
-        this.chartOptions.xaxis!.labels!.style!.colors = ['white'];
-        this.chartOptions.plotOptions!.bar!.dataLabels!.total!.style!.color = 'white';
-      } else {
-        this.chartOptions.yaxis!.labels!.style!.colors = ['black'];
-        this.chartOptions.xaxis!.labels!.style!.colors = ['black'];
-        this.chartOptions.plotOptions!.bar!.dataLabels!.total!.style!.color = 'black';
-      }
-    });
+    };
   }
 
   private dependencyName(dependency: TopDependency) {
@@ -151,8 +132,5 @@ export class TopDependencyChartComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.effectRef.destroy();
   }
-
-  private effectRef: EffectRef;
 }

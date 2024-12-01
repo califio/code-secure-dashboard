@@ -1,8 +1,8 @@
 <!-- login form -->
 <form class="my-10 space-y-6 text-white" [formGroup]="form" (ngSubmit)="onPasswordSignIn()">
-  @if(oidcConfig.enable) {
+  @if(authInfo.oidcEnable) {
     <div (click)="onOidcLogin()" class="flex flex-row justify-center items-center rounded-lg bg-gray-700 gap-2 py-1 cursor-pointer text-gray-300 font-semibold h-10">
-      <span>Log in with {{oidcConfig.provider}}</span>
+      <span>Log in with {{authInfo.oidcProvider}}</span>
     </div>
     <div
       class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-muted after:mt-0.5 after:flex-1 after:border-t after:border-muted">
