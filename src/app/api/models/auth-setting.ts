@@ -9,5 +9,5 @@ export interface AuthSetting {
   oidcClientSecret: string;
   oidcEnable: boolean;
   oidcProvider: string;
-  whiteListEmails: string;
+  whiteListEmails?: string | null;
 }

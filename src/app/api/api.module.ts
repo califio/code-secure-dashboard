@@ -13,7 +13,7 @@ import { ConfigService } from './services/config.service';
 import { DashboardService } from './services/dashboard.service';
 import { DependencyService } from './services/dependency.service';
 import { FindingService } from './services/finding.service';
-import { OidcService } from './services/oidc.service';
+import { OpenIdConnectService } from './services/open-id-connect.service';
 import { ProfileService } from './services/profile.service';
 import { ProjectService } from './services/project.service';
 import { RoleService } from './services/role.service';
@@ -34,7 +34,7 @@ import { UserService } from './services/user.service';
     DashboardService,
     DependencyService,
     FindingService,
-    OidcService,
+    OpenIdConnectService,
     ProfileService,
     ProjectService,
     RoleService,

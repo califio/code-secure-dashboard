@@ -9,7 +9,7 @@ export { ConfigService } from './services/config.service';
 export { DashboardService } from './services/dashboard.service';
 export { DependencyService } from './services/dependency.service';
 export { FindingService } from './services/finding.service';
-export { OidcService } from './services/oidc.service';
+export { OpenIdConnectService } from './services/open-id-connect.service';
 export { ProfileService } from './services/profile.service';
 export { ProjectService } from './services/project.service';
 export { RoleService } from './services/role.service';

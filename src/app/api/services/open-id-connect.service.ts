@@ -11,11 +11,11 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { loginOidc } from '../fn/oidc/login-oidc';
-import { LoginOidc$Params } from '../fn/oidc/login-oidc';
+import { loginOidc } from '../fn/open-id-connect/login-oidc';
+import { LoginOidc$Params } from '../fn/open-id-connect/login-oidc';
 
 @Injectable({ providedIn: 'root' })
-export class OidcService extends BaseService {
+export class OpenIdConnectService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

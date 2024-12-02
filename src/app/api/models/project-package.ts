@@ -5,6 +5,7 @@
 import { RiskImpact } from '../models/risk-impact';
 import { RiskLevel } from '../models/risk-level';
 export interface ProjectPackage {
+  fixedVersion?: string | null;
   group?: string | null;
   id?: string;
   location?: string | null;

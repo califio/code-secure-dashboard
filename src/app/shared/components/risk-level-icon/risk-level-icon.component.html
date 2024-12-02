@@ -1,7 +1,11 @@
 <div class="px-1" [tooltip]="risk | lowercase">
   @switch (risk) {
     @case (RiskLevel.None) {
-      <ng-icon name="shield-check" class="text-green-500"></ng-icon>
+      @if(impact == RiskImpact.Indirect) {
+        <ng-icon name="shield-exclamation" class="text-green-500"></ng-icon>
+      } @else {
+        <ng-icon name="shield-check" class="text-green-500"></ng-icon>
+      }
     }
     @case (RiskLevel.Low) {
       <ng-icon name="shield-exclamation" class="text-low"></ng-icon>

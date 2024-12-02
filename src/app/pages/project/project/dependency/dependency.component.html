@@ -25,7 +25,9 @@
         <tbody>
           @for (dependency of store.dependencies(); track $index) {
             <div class="flex flex-row items-center gap-3 p-4 bg-background border-b border-border hover:bg-card">
-              <risk-level-icon [risk]="dependency.riskLevel" class="text-xl"></risk-level-icon>
+              <risk-level-icon [risk]="dependency.riskLevel"
+                               [impact]="dependency.riskImpact"
+                               class="text-xl"></risk-level-icon>
               <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency.id)">
                 <div class="flex flex-col gap-1 w-full">
                   <div class="flex flex-row items-center gap-2">
@@ -41,7 +43,12 @@
                       <span>{{dependency.location}}</span>
                     </div>
                     <div class="flex flex-row items-center gap-2">
-
+                      @if(dependency.fixedVersion) {
+                        <span class="lowercase">fixed version</span>
+                        <div class="text-xs border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+                          {{dependency.fixedVersion}}
+                        </div>
+                      }
                     </div>
                   </div>
                 </div>

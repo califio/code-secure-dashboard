@@ -8,6 +8,7 @@ import { FindingSeverity } from '../models/finding-severity';
 export interface CiFinding {
   category?: string | null;
   description: string;
+  fixDeadline?: string | null;
   id?: string | null;
   identity: string;
   location?: FindingLocation;
