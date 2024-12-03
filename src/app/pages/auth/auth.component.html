@@ -1,11 +1,51 @@
 <div class="flex h-screen w-screen">
   <div class="auth-bg hidden flex-1 items-center justify-center bg-primary bg-cover lg:flex">
-    <div class="max-w-2xl space-y-4 p-8 text-center text-white">
+    <div class="max-w-2xl space-y-4 p-8 text-white">
 <!--      <img src="./assets/images/auth-screens.png" alt="dashboard widget" />-->
-      <h1 class="text-4xl font-bold">"Fast, Secure and Productive"</h1>
-      <p class="text-xs font-light">
-        Description here
-      </p>
+      <div class="flex flex-col items-start h-full p-8">
+        <!-- Title -->
+        <div class="text-4xl font-bold mb-4 text-center">Welcome to Code Secure</div>
+        <!-- Description -->
+        <div class="mb-8 text-sm">
+          Code Secure helps you protect your source code from security vulnerabilities.
+        </div>
+        <!-- Features -->
+        <div class="flex flex-col gap-4 w-full">
+          <div class="flex flex-row items-start gap-4">
+            <div class="p-2">
+              <ng-icon name="rectangle-group" size="36" class=""></ng-icon>
+            </div>
+            <div class="flex flex-col items-start">
+              <span class="font-semibold ">Effectively manage security vulnerabilities</span>
+              <p class="text-sm">
+                Track, categorize, and remediate security issues in your projects.
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-row items-start gap-4">
+            <div class="p-2">
+              <ng-icon name="cicd" size="36" class=""></ng-icon>
+            </div>
+            <div class="flex flex-col items-start">
+              <span class="font-semibold ">Seamless CI/CD integration</span>
+              <p class="text-sm">
+                Automate security scans in your software development pipeline.
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-row items-start gap-4">
+            <div class="p-2">
+              <ng-icon name="share" size="36" class=""></ng-icon>
+            </div>
+            <div class="flex flex-col items-start">
+              <div class="font-semibold ">Easily integrate with other security analyzer</div>
+              <p class="text-sm">
+                Connect with a wide range of security tools to enhance your analysis and workflows.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="flex flex-1 items-center justify-center bg-background">

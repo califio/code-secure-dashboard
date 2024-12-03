@@ -162,4 +162,21 @@ export class UserComponent implements OnInit, OnDestroy {
       })
     }
   }
+
+  showSendEmailConfirmPopup(user: UserInfo) {
+    this.user = user;
+    this.store.showSendEmailConfirmPopup.set(true);
+  }
+
+  sendEmailConfirmUser() {
+    if (this.user) {
+      this.userService.sendConfirmEmail({
+        userId: this.user.id!,
+      }).pipe(
+        finalize(() => this.store.showSendEmailConfirmPopup.set(false))
+      ).subscribe(() => {
+        this.toastr.success('Send confirm email success!');
+      })
+    }
+  }
 }

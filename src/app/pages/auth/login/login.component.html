@@ -20,7 +20,7 @@
           type="text"
           id="username"
           [ngClass]="{ 'is__invalid-input': submitted && form.controls }"
-          class="peer block w-full"
+          class="peer block w-full text-muted-foreground py-3"
           placeholder=" "
           [formControl]="form.controls.userName" />
         <label
@@ -42,7 +42,7 @@
           [type]="passwordTextType ? 'text' : 'password'"
           id="password"
           [ngClass]="{ 'is__invalid-input': submitted && form.controls.userName.getError('required') }"
-          class="peer block w-full"
+          class="peer block w-full text-muted-foreground py-3"
           placeholder=" "
           [formControl]="form.controls.password" />
         <label

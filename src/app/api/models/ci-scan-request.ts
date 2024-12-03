@@ -8,6 +8,7 @@ import { ScannerType } from '../models/scanner-type';
 export interface CiScanRequest {
   commitBranch?: string | null;
   commitHash: string;
+  containerImage?: string | null;
   gitAction: GitAction;
   isDefault?: boolean;
   jobUrl: string;

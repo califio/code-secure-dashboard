@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OidcCallbackComponent } from './oidc-callback.component';
+import { ResetPasswordComponent } from './reset-password.component';
 
-describe('OidcCallbackComponent', () => {
-  let component: OidcCallbackComponent;
-  let fixture: ComponentFixture<OidcCallbackComponent>;
+describe('ResetPasswordComponent', () => {
+  let component: ResetPasswordComponent;
+  let fixture: ComponentFixture<ResetPasswordComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OidcCallbackComponent]
+      imports: [ResetPasswordComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OidcCallbackComponent);
+    fixture = TestBed.createComponent(ResetPasswordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

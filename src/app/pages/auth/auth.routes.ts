@@ -6,8 +6,16 @@ export const routes: Routes = [
     loadComponent: () => import('./login/login.component').then(x => x.LoginComponent),
   },
   {
-    path: 'oidc/callback',
-    loadComponent: () => import('./oidc-callback/oidc-callback.component').then(x => x.OidcCallbackComponent),
+    path: 'confirm-email',
+    loadComponent: () => import('./confirm-email/confirm-email.component').then(x => x.ConfirmEmailComponent),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./forgot-password/forgot-password.component').then(x => x.ForgotPasswordComponent),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./reset-password/reset-password.component').then(x => x.ResetPasswordComponent),
   },
   {
     path: 'two-step',

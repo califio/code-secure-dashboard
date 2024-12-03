@@ -112,10 +112,15 @@
 
                 <td>
                   <div class="w-full flex flex-row items-center justify-center text-lg gap-2">
+                    @if(!user.verified) {
+                      <ng-icon name="airplane" class="cursor-pointer" [tooltip]="'send email confirm'"
+                               (click)="showSendEmailConfirmPopup(user)">
+                      </ng-icon>
+                    }
                     <ng-icon name="pencil-square" class="cursor-pointer"
                              (click)="showUpdateUserPopup(user)">
                     </ng-icon>
-                    <ng-icon name="x-circle" class="cursor-pointer"
+                    <ng-icon name="x-circle" class="cursor-pointer" [tooltip]="'disable user'"
                              (click)="showConfirmDisableUserPopup(user)">
                     </ng-icon>
                   </div>
@@ -143,6 +148,11 @@
 <confirm-popup [hidden]="!store.showDisableUserPopup()"
                (cancel)="store.showDisableUserPopup.set(false)"
                (confirm)="disableUser()" [title]="'Are you sure you want to disable this user?'">
+</confirm-popup>
+<!--send confirm email-->
+<confirm-popup [hidden]="!store.showSendEmailConfirmPopup()"
+               (cancel)="store.showSendEmailConfirmPopup.set(false)"
+               (confirm)="sendEmailConfirmUser()" [title]="'Are you sure you want to send a confirming email to active this account?'">
 </confirm-popup>
 <!--add user-->
 <app-add-user-popup></app-add-user-popup>

@@ -25,6 +25,7 @@ export class UserStore {
   showAddUserPopup = signal(false);
   showUpdateUserPopup = signal(false);
   showDisableUserPopup = signal(false);
+  showSendEmailConfirmPopup = signal(false);
   roleOptions = signal<DropdownItem[]>([]);
   constructor() { }
 }

@@ -19,6 +19,8 @@ import { getUsers } from '../fn/user/get-users';
 import { GetUsers$Params } from '../fn/user/get-users';
 import { getUsersByAdmin } from '../fn/user/get-users-by-admin';
 import { GetUsersByAdmin$Params } from '../fn/user/get-users-by-admin';
+import { sendConfirmEmail } from '../fn/user/send-confirm-email';
+import { SendConfirmEmail$Params } from '../fn/user/send-confirm-email';
 import { updateUserByAdmin } from '../fn/user/update-user-by-admin';
 import { UpdateUserByAdmin$Params } from '../fn/user/update-user-by-admin';
 import { UserInfo } from '../models/user-info';
@@ -153,6 +155,31 @@ export class UserService extends BaseService {
   createUserByAdmin(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
     return this.createUserByAdmin$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
+    );
+  }
+
+  /** Path part for operation `sendConfirmEmail()` */
+  static readonly SendConfirmEmailPath = '/api/admin/user/{userId}/send-confirm-email';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `sendConfirmEmail()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  sendConfirmEmail$Response(params: SendConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return sendConfirmEmail(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `sendConfirmEmail$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  sendConfirmEmail(params: SendConfirmEmail$Params, context?: HttpContext): Observable<void> {
+    return this.sendConfirmEmail$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

@@ -27,6 +27,7 @@ export class MailComponent implements OnInit {
     useSsl: new FormField(false),
   })
   form: FormGroup<ControlsOf<MailSetting>>
+  loadingTestMail = false;
   constructor(
     private formService: FormService,
     private configService: ConfigService,
@@ -50,6 +51,17 @@ export class MailComponent implements OnInit {
       finalize(() => this.form.enable())
     ).subscribe(config => {
       this.toastr.success('Update config success!');
+    })
+  }
+
+  testMail() {
+    this.loadingTestMail = true;
+    this.configService.testMailSetting({
+      email: undefined
+    }).pipe(
+      finalize(() => this.loadingTestMail = false)
+    ).subscribe(email => {
+      this.toastr.success('An email sent to ' + email);
     })
   }
 }

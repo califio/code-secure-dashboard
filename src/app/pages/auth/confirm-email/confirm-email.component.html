@@ -1,0 +1,14 @@
+<div class="my-10 space-y-6">
+  <div class="text-center">
+    <h2 class="mb-1 text-3xl font-semibold text-foreground">Active Account<span class="text-primary">?</span></h2>
+    @if (!result.succeeded) {
+      <p class="text-sm text-red-500">{{result.error}}</p>
+    } @else {
+      <p class="text-sm text-muted-foreground">Your account has been activated!</p>
+    }
+  </div>
+  <div class="flex justify-between gap-2">
+    <button app-button type="primary" class="w-full font-semibold"
+            routerLink="/auth/login">Login Now</button>
+  </div>
+</div>

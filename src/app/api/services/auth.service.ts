@@ -12,12 +12,19 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { AuthResponse } from '../models/auth-response';
+import { confirmEmail } from '../fn/auth/confirm-email';
+import { ConfirmEmail$Params } from '../fn/auth/confirm-email';
+import { ConfirmEmailResult } from '../models/confirm-email-result';
+import { forgotPassword } from '../fn/auth/forgot-password';
+import { ForgotPassword$Params } from '../fn/auth/forgot-password';
 import { login } from '../fn/auth/login';
 import { Login$Params } from '../fn/auth/login';
 import { logout } from '../fn/auth/logout';
 import { Logout$Params } from '../fn/auth/logout';
 import { refreshToken } from '../fn/auth/refresh-token';
 import { RefreshToken$Params } from '../fn/auth/refresh-token';
+import { resetPassword } from '../fn/auth/reset-password';
+import { ResetPassword$Params } from '../fn/auth/reset-password';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -97,6 +104,81 @@ export class AuthService extends BaseService {
   logout(params?: Logout$Params, context?: HttpContext): Observable<boolean> {
     return this.logout$Response(params, context).pipe(
       map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `forgotPassword()` */
+  static readonly ForgotPasswordPath = '/api/forgot-password';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `forgotPassword()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  forgotPassword$Response(params?: ForgotPassword$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return forgotPassword(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `forgotPassword$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  forgotPassword(params?: ForgotPassword$Params, context?: HttpContext): Observable<void> {
+    return this.forgotPassword$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `resetPassword()` */
+  static readonly ResetPasswordPath = '/api/reset-password';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `resetPassword()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  resetPassword$Response(params?: ResetPassword$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return resetPassword(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `resetPassword$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  resetPassword(params?: ResetPassword$Params, context?: HttpContext): Observable<void> {
+    return this.resetPassword$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `confirmEmail()` */
+  static readonly ConfirmEmailPath = '/api/confirm-email';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `confirmEmail()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  confirmEmail$Response(params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<ConfirmEmailResult>> {
+    return confirmEmail(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `confirmEmail$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  confirmEmail(params?: ConfirmEmail$Params, context?: HttpContext): Observable<ConfirmEmailResult> {
+    return this.confirmEmail$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ConfirmEmailResult>): ConfirmEmailResult => r.body)
     );
   }
 

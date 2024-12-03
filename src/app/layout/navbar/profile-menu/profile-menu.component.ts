@@ -7,6 +7,7 @@ import {ClickOutsideDirective} from "../../../shared/directives/click-outside.di
 import {AuthService} from '../../../api/services/auth.service';
 import {AuthStore} from '../../../core/auth/auth.store';
 import {AvatarComponent} from '../../../shared/ui/avatar/avatar.component';
+import {finalize} from 'rxjs';
 
 @Component({
   selector: 'app-profile-menu',
@@ -88,9 +89,9 @@ export class ProfileMenuComponent implements OnInit {
       body: {
         token: this.authStore.refreshToken
       }
-    }).subscribe(success => {
+    }).pipe(finalize(() => {
       this.authStore.clearSession();
       this.router.navigate(["/auth", "login"]).then();
-    })
+    })).subscribe()
   }
 }

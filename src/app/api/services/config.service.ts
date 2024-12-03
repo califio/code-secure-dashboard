@@ -23,6 +23,8 @@ import { getSlaSetting } from '../fn/config/get-sla-setting';
 import { GetSlaSetting$Params } from '../fn/config/get-sla-setting';
 import { MailSetting } from '../models/mail-setting';
 import { SlaSetting } from '../models/sla-setting';
+import { testMailSetting } from '../fn/config/test-mail-setting';
+import { TestMailSetting$Params } from '../fn/config/test-mail-setting';
 import { updateAuthSetting } from '../fn/config/update-auth-setting';
 import { UpdateAuthSetting$Params } from '../fn/config/update-auth-setting';
 import { updateMailSetting } from '../fn/config/update-mail-setting';
@@ -108,6 +110,31 @@ export class ConfigService extends BaseService {
   updateMailSetting(params?: UpdateMailSetting$Params, context?: HttpContext): Observable<MailSetting> {
     return this.updateMailSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<MailSetting>): MailSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `testMailSetting()` */
+  static readonly TestMailSettingPath = '/api/config/mail/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testMailSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testMailSetting$Response(params?: TestMailSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+    return testMailSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testMailSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testMailSetting(params?: TestMailSetting$Params, context?: HttpContext): Observable<string> {
+    return this.testMailSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<string>): string => r.body)
     );
   }
 

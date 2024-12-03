@@ -23,9 +23,16 @@
         <input type="checkbox" [formControl]="form.controls.useSsl">
       </div>
     </div>
-    <button app-button type="primary" class="w-fit"
-            [loading]="form.disabled"
-            [disabled]="form.disabled"
-            (click)="saveConfig()">Update</button>
+    <div class="flex flex-row gap-2 items-center">
+      <button app-button type="primary" class="w-fit"
+              [loading]="form.disabled"
+              [disabled]="form.disabled"
+              (click)="saveConfig()">Update</button>
+      <button app-button type="primary" class="w-fit"
+              [loading]="loadingTestMail"
+              [disabled]="loadingTestMail"
+              (click)="testMail()">Test Mail</button>
+    </div>
+
   </div>
 </div>
