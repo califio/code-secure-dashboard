@@ -39,6 +39,8 @@ semgrep-sast-scan:
  image: registry.gitlab.com/code-secure/semgrep-analyzer
  variables:
    SEMGREP_RULES: ""
+   SEMGREP_APP_TOKEN: "foo"
+   SEMGREP_PRO: "true"
  rules:
  - if: $CI_PIPELINE_SOURCE == "web"
  - if: $CI_MERGE_REQUEST_IID
