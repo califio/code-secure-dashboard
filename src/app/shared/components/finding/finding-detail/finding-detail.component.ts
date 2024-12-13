@@ -9,7 +9,7 @@ import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../toastr/toastr.service';
 import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingActivity} from '../../../../api/models/finding-activity';
-import {FindingLocation, FindingScan, GitAction, ProjectSource} from '../../../../api/models';
+import {FindingLocation, FindingScan, GitAction, SourceType} from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
 import {AvatarComponent} from '../../../ui/avatar/avatar.component';
 import {MarkdownComponent} from 'ngx-markdown';
@@ -74,7 +74,7 @@ export class FindingDetailComponent {
     return this._finding;
   }
 
-  private _finding: FindingDetail = {};
+  private _finding: FindingDetail = {project: {}, scans: []};
   @Input()
   minimal = true;
   @Input()
@@ -121,8 +121,8 @@ export class FindingDetailComponent {
   }
 
   source(location: FindingLocation) {
-    if (this._finding.project?.source == ProjectSource.GitLab) {
-      return `${this._finding.project.repoUrl}/-/blob/${this.currentScan?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
+    if (this._finding.project?.sourceType == SourceType.GitLab) {
+      return `${this._finding.project!.repoUrl}/-/blob/${this.currentScan?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
     }
     // todo: support other git
     return '';

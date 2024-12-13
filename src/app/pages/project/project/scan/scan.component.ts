@@ -47,7 +47,6 @@ import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading
 })
 export class ScanComponent implements OnInit, OnDestroy {
   loading = true;
-  slug = '';
   statistic: ProjectStatistics = {
     severitySast: {
       critical: 0,
@@ -93,16 +92,15 @@ export class ScanComponent implements OnInit, OnDestroy {
 
   constructor(
     private projectService: ProjectService,
-    public projectStore: ProjectStore,
+    public store: ProjectStore,
     private route: ActivatedRoute
   ) {
   }
 
   ngOnInit(): void {
-    this.slug = this.projectStore.slug();
     this.statisticLoading = true;
     this.projectService.getProjectStatistic({
-      slug: this.slug
+      projectId: this.store.projectId()
     }).pipe(
       finalize(() => {
         this.statisticLoading = false;
@@ -115,7 +113,7 @@ export class ScanComponent implements OnInit, OnDestroy {
         this.loading = true;
         bindQueryParams(params, this.filter);
         return this.projectService.getProjectScans({
-          slug: this.slug,
+          projectId: this.store.projectId(),
           body: this.filter
         }).pipe(
           finalize(() => {

@@ -10,14 +10,14 @@ import { RequestBuilder } from '../../request-builder';
 
 
 export interface DeleteProjectMember$Params {
-  slug: string;
+  projectId: string;
   userId: string;
 }
 
 export function deleteProjectMember(http: HttpClient, rootUrl: string, params: DeleteProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
   const rb = new RequestBuilder(rootUrl, deleteProjectMember.PATH, 'delete');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.path('userId', params.userId, {"style":"simple"});
   }
 
@@ -31,4 +31,4 @@ export function deleteProjectMember(http: HttpClient, rootUrl: string, params: D
   );
 }
 
-deleteProjectMember.PATH = '/api/project/{slug}/member/{userId}';
+deleteProjectMember.PATH = '/api/project/{projectId}/member/{userId}';

@@ -12,14 +12,14 @@ import { ProjectPackageFilter } from '../../models/project-package-filter';
 import { ProjectPackagePage } from '../../models/project-package-page';
 
 export interface GetProjectPackages$Params {
-  slug: string;
+  projectId: string;
       body?: ProjectPackageFilter
 }
 
 export function getProjectPackages(http: HttpClient, rootUrl: string, params: GetProjectPackages$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackagePage>> {
   const rb = new RequestBuilder(rootUrl, getProjectPackages.PATH, 'post');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function getProjectPackages(http: HttpClient, rootUrl: string, params: Ge
   );
 }
 
-getProjectPackages.PATH = '/api/project/{slug}/package/filter';
+getProjectPackages.PATH = '/api/project/{projectId}/package/filter';

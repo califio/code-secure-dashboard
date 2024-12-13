@@ -65,7 +65,7 @@ export class AddMemberPopupComponent {
   onAddUser() {
     this.loading = true;
     this.projectService.addMember({
-      slug: this.projectStore.slug(),
+      projectId: this.projectStore.projectId(),
       body: {
         userId: this.user?.id!,
         role: this.role

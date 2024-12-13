@@ -14,8 +14,8 @@ import {ProjectSortField} from '../../../api/models/project-sort-field';
 import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
 import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
 import {LowerCasePipe} from '@angular/common';
-import {ProjectSource} from '../../../api/models/project-source';
 import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
+import {SourceType} from '../../../api/models/source-type';
 
 @Component({
   selector: 'app-list',
@@ -36,7 +36,6 @@ import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
 })
 export class ListComponent implements OnInit, OnDestroy {
   loading = false;
-  sortOptions: ProjectSortField[] = [ProjectSortField.Name, ProjectSortField.CreatedAt, ProjectSortField.UpdatedAt];
   sorts: DropdownItem[] = [
     {
       value: ProjectSortField.Name,
@@ -117,7 +116,7 @@ export class ListComponent implements OnInit, OnDestroy {
     updateQueryParams(this.router, this.filter);
   }
 
-  sourceIcon(source?: ProjectSource | undefined | null): string {
+  sourceIcon(source?: SourceType | undefined | null): string {
     if (source) {
       return source.toString().toLowerCase()
     }

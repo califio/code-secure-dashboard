@@ -12,14 +12,14 @@ import { ProjectScanFilter } from '../../models/project-scan-filter';
 import { ProjectScanPage } from '../../models/project-scan-page';
 
 export interface GetProjectScans$Params {
-  slug: string;
+  projectId: string;
       body?: ProjectScanFilter
 }
 
 export function getProjectScans(http: HttpClient, rootUrl: string, params: GetProjectScans$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectScanPage>> {
   const rb = new RequestBuilder(rootUrl, getProjectScans.PATH, 'post');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function getProjectScans(http: HttpClient, rootUrl: string, params: GetPr
   );
 }
 
-getProjectScans.PATH = '/api/project/{slug}/scan/filter';
+getProjectScans.PATH = '/api/project/{projectId}/scan/filter';

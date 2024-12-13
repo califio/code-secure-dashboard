@@ -16,17 +16,17 @@ import {ProjectStore} from '../project.store';
   styleUrl: './setting.component.scss'
 })
 export class SettingComponent {
-  slug = '';
+  projectId = '';
   constructor(
     private projectStore: ProjectStore,
     private router: Router,
   ) {
-    this.slug = projectStore.slug();
+    this.projectId = this.projectStore.projectId();
     if (this.router.url.endsWith("/setting")) {
-      this.router.navigate(['/project', this.slug, 'setting', 'member']).then();
+      this.router.navigate(['/project', this.projectId, 'setting', 'member']).then();
     }
   }
   routerLink(route: string): string {
-    return `/project/${this.slug}/setting/${route}`;
+    return `/project/${this.projectId}/setting/${route}`;
   }
 }

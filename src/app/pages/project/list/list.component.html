@@ -52,8 +52,8 @@
                     value="28" />
                 </td>
                 <td>
-                  <a [routerLink]="['/project', project.slug, 'scan']" class="flex flex-row items-center gap-2">
-                    <ng-icon [name]="sourceIcon(project.source)"></ng-icon>
+                  <a [routerLink]="['/project', project.id, 'scan']" class="flex flex-row items-center gap-2">
+                    <ng-icon [name]="sourceIcon(project.sourceType)"></ng-icon>
                     <span class="w-full">{{ project.name }}</span>
                   </a>
                 </td>

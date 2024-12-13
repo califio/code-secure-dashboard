@@ -58,7 +58,7 @@ export class UpdateMemberPopupComponent {
   onUpdateRole() {
     this.loading = true;
     this.projectService.updateProjectMember({
-      slug: this.projectStore.slug(),
+      projectId: this.projectStore.projectId(),
       userId: this.user.userId ?? '',
       body: {
         role: this.user.role

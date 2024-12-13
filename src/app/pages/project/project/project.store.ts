@@ -6,6 +6,6 @@ import {ProjectInfo} from '../../../api/models/project-info';
 })
 export class ProjectStore {
   project = signal<ProjectInfo>({});
-  slug = signal('')
+  projectId = signal('')
   constructor() { }
 }

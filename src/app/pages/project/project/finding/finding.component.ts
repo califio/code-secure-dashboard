@@ -50,7 +50,6 @@ import {ProjectFindingSortField} from '../../../../api/models';
   styleUrl: './finding.component.scss'
 })
 export class FindingComponent implements OnInit, OnDestroy {
-  slug = '';
   finding: FindingDetail | null = null;
   showDetailFinding = false;
   loadingFinding = false;
@@ -69,15 +68,14 @@ export class FindingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.slug = this.projectStore.slug();
     this.projectService.getProjectCommits({
-      slug: this.slug
+      projectId: this.projectStore.projectId()
     }).subscribe(branches => {
       this.store.commits.set(branches);
       this.commitId = this.store.filter.commitId;
     });
     this.projectService.getProjectScanners({
-      slug: this.slug
+      projectId: this.projectStore.projectId()
     }).subscribe(scanners => {
       this.store.scanners.set(scanners);
       this.scanner = scanners.find(scanner => scanner.name == this.store.filter.scanner
@@ -157,7 +155,7 @@ export class FindingComponent implements OnInit, OnDestroy {
   private getProjectFindings(): Observable<ProjectFindingPage> {
     this.store.loading.set(true);
     return this.projectService.getProjectFindings({
-      slug: this.slug,
+      projectId: this.projectStore.projectId(),
       body: this.store.filter
     }).pipe(
       finalize(() => {
@@ -196,7 +194,7 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   onMarkAs(status: FindingStatus) {
     if (this.selectedFindings.length > 0) {
-      var requests = this.selectedFindings.map(findingId => this.findingService.updateFinding({
+      const requests = this.selectedFindings.map(findingId => this.findingService.updateFinding({
         id: findingId,
         body: {
           status: status

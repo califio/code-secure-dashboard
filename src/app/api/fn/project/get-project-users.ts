@@ -12,14 +12,14 @@ import { ProjectUserFilter } from '../../models/project-user-filter';
 import { ProjectUserPage } from '../../models/project-user-page';
 
 export interface GetProjectUsers$Params {
-  slug: string;
+  projectId: string;
       body?: ProjectUserFilter
 }
 
 export function getProjectUsers(http: HttpClient, rootUrl: string, params: GetProjectUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUserPage>> {
   const rb = new RequestBuilder(rootUrl, getProjectUsers.PATH, 'post');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function getProjectUsers(http: HttpClient, rootUrl: string, params: GetPr
   );
 }
 
-getProjectUsers.PATH = '/api/project/{slug}/member/filter';
+getProjectUsers.PATH = '/api/project/{projectId}/member/filter';

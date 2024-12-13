@@ -8,7 +8,7 @@
             <ng-icon name="spin" class="animate-spin"></ng-icon>
           } @else {
             <a class="font-bold text-primary hover:underline hover:underline-offset-4"
-               [routerLink]="['/project', projectStore.slug(), 'finding']"
+               [routerLink]="['/project', store.projectId(), 'finding']"
                [queryParams]="{'status': 'Open'}">
               {{statistic.openFinding}}
             </a>
@@ -119,7 +119,7 @@
                     value="28"/>
                 </td>
                 <td>
-                  <a [routerLink]="['/project', slug, 'finding']"
+                  <a [routerLink]="['/project', store.projectId(), 'finding']"
                      [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scanner, 'type': scan.type}"
                      class="flex flex-col gap-1">
                     <div class="">{{scan.commitTitle}}</div>
@@ -170,7 +170,7 @@
                 <td>
                   <div class="flex flex-row items-center gap-2">
                     <a class="cursor-pointer"
-                       [routerLink]="['/project', slug, 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}">
+                       [routerLink]="['/project', store.projectId(), 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}">
                       <ng-icon name="external-link" size="18"></ng-icon>
                     </a>
                     <a class="cursor-pointer" [href]="scan.jobUrl" target="_blank">

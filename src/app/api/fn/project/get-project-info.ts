@@ -11,13 +11,13 @@ import { RequestBuilder } from '../../request-builder';
 import { ProjectInfo } from '../../models/project-info';
 
 export interface GetProjectInfo$Params {
-  slug: string;
+  projectId: string;
 }
 
 export function getProjectInfo(http: HttpClient, rootUrl: string, params: GetProjectInfo$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectInfo>> {
   const rb = new RequestBuilder(rootUrl, getProjectInfo.PATH, 'get');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
   }
 
   return http.request(
@@ -30,4 +30,4 @@ export function getProjectInfo(http: HttpClient, rootUrl: string, params: GetPro
   );
 }
 
-getProjectInfo.PATH = '/api/project/{slug}';
+getProjectInfo.PATH = '/api/project/{projectId}';

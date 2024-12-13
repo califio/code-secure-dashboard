@@ -11,13 +11,13 @@ import { RequestBuilder } from '../../request-builder';
 import { ProjectSettingMetadata } from '../../models/project-setting-metadata';
 
 export interface GetProjectSetting$Params {
-  slug: string;
+  projectId: string;
 }
 
 export function getProjectSetting(http: HttpClient, rootUrl: string, params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
   const rb = new RequestBuilder(rootUrl, getProjectSetting.PATH, 'get');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
   }
 
   return http.request(
@@ -30,4 +30,4 @@ export function getProjectSetting(http: HttpClient, rootUrl: string, params: Get
   );
 }
 
-getProjectSetting.PATH = '/api/project/{slug}/setting';
+getProjectSetting.PATH = '/api/project/{projectId}/setting';

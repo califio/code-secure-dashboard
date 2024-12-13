@@ -12,7 +12,7 @@ import { ProjectUser } from '../../models/project-user';
 import { UpdateMemberRequest } from '../../models/update-member-request';
 
 export interface UpdateProjectMember$Params {
-  slug: string;
+  projectId: string;
   userId: string;
       body?: UpdateMemberRequest
 }
@@ -20,7 +20,7 @@ export interface UpdateProjectMember$Params {
 export function updateProjectMember(http: HttpClient, rootUrl: string, params: UpdateProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUser>> {
   const rb = new RequestBuilder(rootUrl, updateProjectMember.PATH, 'put');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.path('userId', params.userId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
@@ -35,4 +35,4 @@ export function updateProjectMember(http: HttpClient, rootUrl: string, params: U
   );
 }
 
-updateProjectMember.PATH = '/api/project/{slug}/member/{userId}';
+updateProjectMember.PATH = '/api/project/{projectId}/member/{userId}';

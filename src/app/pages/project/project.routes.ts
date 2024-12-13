@@ -8,7 +8,7 @@ export const routes: Routes = [
     component: ListComponent,
   },
   {
-    path: ':slug',
+    path: ':projectId',
     component: ProjectComponent,
     children: [
       {

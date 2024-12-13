@@ -15,8 +15,8 @@
           </finding-scan-dropdown>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <ng-icon [name]="finding.project?.source! | lowercase"></ng-icon>
-          <a [routerLink]="['/project', finding.project?.projectSlug, 'scan']" class="hover:underline">{{finding.project?.projectName}}</a>
+          <ng-icon [name]="finding.project?.sourceType! | lowercase"></ng-icon>
+          <a [routerLink]="['/project', finding.project?.id, 'scan']" class="hover:underline">{{finding.project?.name}}</a>
         </div>
       </div>
       @if (minimal) {

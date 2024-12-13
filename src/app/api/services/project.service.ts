@@ -83,7 +83,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectInfo()` */
-  static readonly GetProjectInfoPath = '/api/project/{slug}';
+  static readonly GetProjectInfoPath = '/api/project/{projectId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -108,7 +108,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectStatistic()` */
-  static readonly GetProjectStatisticPath = '/api/project/{slug}/statistic';
+  static readonly GetProjectStatisticPath = '/api/project/{projectId}/statistic';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -133,7 +133,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectCommits()` */
-  static readonly GetProjectCommitsPath = '/api/project/{slug}/commit';
+  static readonly GetProjectCommitsPath = '/api/project/{projectId}/commit';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -158,7 +158,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectScanners()` */
-  static readonly GetProjectScannersPath = '/api/project/{slug}/scanner';
+  static readonly GetProjectScannersPath = '/api/project/{projectId}/scanner';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -183,7 +183,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectScans()` */
-  static readonly GetProjectScansPath = '/api/project/{slug}/scan/filter';
+  static readonly GetProjectScansPath = '/api/project/{projectId}/scan/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -208,7 +208,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectFindings()` */
-  static readonly GetProjectFindingsPath = '/api/project/{slug}/finding/filter';
+  static readonly GetProjectFindingsPath = '/api/project/{projectId}/finding/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -233,7 +233,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectPackages()` */
-  static readonly GetProjectPackagesPath = '/api/project/{slug}/package/filter';
+  static readonly GetProjectPackagesPath = '/api/project/{projectId}/package/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -258,7 +258,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectUsers()` */
-  static readonly GetProjectUsersPath = '/api/project/{slug}/member/filter';
+  static readonly GetProjectUsersPath = '/api/project/{projectId}/member/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -283,7 +283,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `addMember()` */
-  static readonly AddMemberPath = '/api/project/{slug}/member';
+  static readonly AddMemberPath = '/api/project/{projectId}/member';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -308,7 +308,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `updateProjectMember()` */
-  static readonly UpdateProjectMemberPath = '/api/project/{slug}/member/{userId}';
+  static readonly UpdateProjectMemberPath = '/api/project/{projectId}/member/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -333,7 +333,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `deleteProjectMember()` */
-  static readonly DeleteProjectMemberPath = '/api/project/{slug}/member/{userId}';
+  static readonly DeleteProjectMemberPath = '/api/project/{projectId}/member/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -358,7 +358,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjectSetting()` */
-  static readonly GetProjectSettingPath = '/api/project/{slug}/setting';
+  static readonly GetProjectSettingPath = '/api/project/{projectId}/setting';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -383,7 +383,7 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `updateProjectSetting()` */
-  static readonly UpdateProjectSettingPath = '/api/project/{slug}/setting';
+  static readonly UpdateProjectSettingPath = '/api/project/{projectId}/setting';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

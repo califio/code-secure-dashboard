@@ -53,7 +53,6 @@ import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive'
   styleUrl: './dependency.component.scss'
 })
 export class DependencyComponent implements OnInit, OnDestroy {
-  slug = '';
   private destroy$ = new Subject();
   loadingDependency = false;
   dependency = false;
@@ -73,9 +72,8 @@ export class DependencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.slug = this.projectStore.slug();
     this.projectService.getProjectPackages({
-      slug: this.slug,
+      projectId: this.projectStore.projectId(),
       body: this.store.filter
     })
     this.route.queryParams.pipe(
@@ -98,7 +96,7 @@ export class DependencyComponent implements OnInit, OnDestroy {
   private getProjectDependencies(): Observable<ProjectPackagePage> {
     this.store.loading.set(true);
     return this.projectService.getProjectPackages({
-      slug: this.slug,
+      projectId: this.projectStore.projectId(),
       body: this.store.filter
     }).pipe(
       finalize(() => this.store.loading.set(false)),

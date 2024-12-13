@@ -51,11 +51,11 @@ export class ProjectComponent implements OnInit, OnDestroy {
     private store: ProjectStore,
     private projectService: ProjectService,
   ) {
-    getPathParam('slug').pipe(
-      switchMap(slug => {
-        this.store.slug.set(slug);
+    getPathParam('projectId').pipe(
+      switchMap(projectId => {
+        this.store.projectId.set(projectId);
         return this.projectService.getProjectInfo({
-          slug: slug
+          projectId: projectId
         })
       }),
       takeUntil(this.destroy$)
@@ -63,7 +63,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       this.store.project.set(project);
     })
     if (this.regexBaseUrl.test(this.router.url)) {
-      this.router.navigate(['/project', this.store.slug(), 'scan']).then();
+      this.router.navigate(['/project', this.store.projectId(), 'scan']).then();
     }
   }
 
@@ -77,7 +77,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   routerLink(route: string): string {
-    return `/project/${this.store.slug()}/${route}`;
+    return `/project/${this.store.projectId()}/${route}`;
   }
 
   private destroy$ = new Subject();

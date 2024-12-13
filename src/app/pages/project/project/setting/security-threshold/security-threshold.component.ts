@@ -87,7 +87,7 @@ export class SecurityThresholdComponent implements OnInit {
 
   ngOnInit(): void {
     this.projectService.getProjectSetting({
-      slug: this.store.slug()
+      projectId: this.store.projectId()
     }).subscribe(setting => {
       this.form.patchValue(setting);
     });
@@ -99,7 +99,7 @@ export class SecurityThresholdComponent implements OnInit {
 
   updateSecurityThreshold() {
     this.projectService.updateProjectSetting({
-      slug: this.store.slug(),
+      projectId: this.store.projectId(),
       body: this.form.getRawValue()
     }).subscribe(data => {
       this.form.patchValue(data);

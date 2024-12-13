@@ -4,6 +4,6 @@
 
 export enum GitAction {
   CommitBranch = 'CommitBranch',
-  MergeRequest = 'MergeRequest',
-  CommitTag = 'CommitTag'
+  CommitTag = 'CommitTag',
+  MergeRequest = 'MergeRequest'
 }

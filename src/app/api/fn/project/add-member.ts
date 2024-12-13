@@ -12,14 +12,14 @@ import { AddMemberRequest } from '../../models/add-member-request';
 import { ProjectUser } from '../../models/project-user';
 
 export interface AddMember$Params {
-  slug: string;
+  projectId: string;
       body?: AddMemberRequest
 }
 
 export function addMember(http: HttpClient, rootUrl: string, params: AddMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUser>> {
   const rb = new RequestBuilder(rootUrl, addMember.PATH, 'post');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function addMember(http: HttpClient, rootUrl: string, params: AddMember$P
   );
 }
 
-addMember.PATH = '/api/project/{slug}/member';
+addMember.PATH = '/api/project/{projectId}/member';

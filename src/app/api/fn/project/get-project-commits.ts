@@ -11,13 +11,13 @@ import { RequestBuilder } from '../../request-builder';
 import { ProjectCommitSummary } from '../../models/project-commit-summary';
 
 export interface GetProjectCommits$Params {
-  slug: string;
+  projectId: string;
 }
 
 export function getProjectCommits(http: HttpClient, rootUrl: string, params: GetProjectCommits$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectCommitSummary>>> {
   const rb = new RequestBuilder(rootUrl, getProjectCommits.PATH, 'get');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
   }
 
   return http.request(
@@ -30,4 +30,4 @@ export function getProjectCommits(http: HttpClient, rootUrl: string, params: Get
   );
 }
 
-getProjectCommits.PATH = '/api/project/{slug}/commit';
+getProjectCommits.PATH = '/api/project/{projectId}/commit';

@@ -81,7 +81,7 @@ export class MemberComponent implements OnInit, OnDestroy {
   private getProjectUsers() {
     this.store.loading.set(true)
     return this.projectService.getProjectUsers({
-      slug: this.projectStore.slug(),
+      projectId: this.projectStore.projectId(),
       body: this.store.filter
     }).pipe(
       finalize(() => this.store.loading.set(false)),
@@ -96,7 +96,7 @@ export class MemberComponent implements OnInit, OnDestroy {
 
   deleteMember() {
     this.projectService.deleteProjectMember({
-      slug: this.projectStore.slug(),
+      projectId: this.projectStore.projectId(),
       userId: this.member.userId ?? ''
     }).subscribe(() => {
       const members = this.store.members().filter(value => value.userId != this.member?.userId);

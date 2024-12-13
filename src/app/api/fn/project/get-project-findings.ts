@@ -12,14 +12,14 @@ import { ProjectFindingFilter } from '../../models/project-finding-filter';
 import { ProjectFindingPage } from '../../models/project-finding-page';
 
 export interface GetProjectFindings$Params {
-  slug: string;
+  projectId: string;
       body?: ProjectFindingFilter
 }
 
 export function getProjectFindings(http: HttpClient, rootUrl: string, params: GetProjectFindings$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectFindingPage>> {
   const rb = new RequestBuilder(rootUrl, getProjectFindings.PATH, 'post');
   if (params) {
-    rb.path('slug', params.slug, {"style":"simple"});
+    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function getProjectFindings(http: HttpClient, rootUrl: string, params: Ge
   );
 }
 
-getProjectFindings.PATH = '/api/project/{slug}/finding/filter';
+getProjectFindings.PATH = '/api/project/{projectId}/finding/filter';
