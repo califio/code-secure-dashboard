@@ -4,7 +4,6 @@
 
 | ENV               | Description                                                                                                                                                                 |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| FRONTEND_URL      | The URL of code secure dashboard. Example: https://finding.example.com                                                                                                      |
 | SYSTEM_PASSWORD   | The password for the system user. Use this user for the first login. If the password is blank, Code Secure will automatically generate a random password.                   |
 | ACCESS_TOKEN_KEY  | The access token key used to verify JWT access tokens. Example: 3afd551d-6882-4a59-8027-09d2f0f723ac                                                                        |
 | REFRESH_TOKEN_KEY | The refresh token key used to verify JWT refresh tokens. The refresh token key should be different from the access token key. Example: 5cf90573-d3ad-4ce8-8801-59f9bc93c703 |
@@ -21,7 +20,6 @@ services:
       DB_USERNAME: codesecure
       DB_PASSWORD: codesecure
       DB_NAME: codesecure
-      FRONTEND_URL: "" # change frontend url
       SYSTEM_PASSWORD: "" # change system's password. Example: S3cur3Pa$$w0rd
       ACCESS_TOKEN_KEY: "" # change me
       REFRESH_TOKEN_KEY: "" # change refresh tokenkey. example: 5cf90573-d3ad-4ce8-8801-59f9bc93c703
