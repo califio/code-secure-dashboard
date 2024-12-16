@@ -14,6 +14,9 @@ import { StrictHttpResponse } from '../strict-http-response';
 import { CiScanInfo } from '../models/ci-scan-info';
 import { CiUploadDependencyResponse } from '../models/ci-upload-dependency-response';
 import { CiUploadFindingResponse } from '../models/ci-upload-finding-response';
+import { EnvironmentVariable } from '../models/environment-variable';
+import { getScanEnvironmentVariables } from '../fn/ci/get-scan-environment-variables';
+import { GetScanEnvironmentVariables$Params } from '../fn/ci/get-scan-environment-variables';
 import { initCiScan } from '../fn/ci/init-ci-scan';
 import { InitCiScan$Params } from '../fn/ci/init-ci-scan';
 import { ping } from '../fn/ci/ping';
@@ -78,6 +81,31 @@ export class CiService extends BaseService {
   initCiScan(params?: InitCiScan$Params, context?: HttpContext): Observable<CiScanInfo> {
     return this.initCiScan$Response(params, context).pipe(
       map((r: StrictHttpResponse<CiScanInfo>): CiScanInfo => r.body)
+    );
+  }
+
+  /** Path part for operation `getScanEnvironmentVariables()` */
+  static readonly GetScanEnvironmentVariablesPath = '/api/ci/scan/{scanId}/env';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getScanEnvironmentVariables()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getScanEnvironmentVariables$Response(params: GetScanEnvironmentVariables$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<EnvironmentVariable>>> {
+    return getScanEnvironmentVariables(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getScanEnvironmentVariables$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getScanEnvironmentVariables(params: GetScanEnvironmentVariables$Params, context?: HttpContext): Observable<Array<EnvironmentVariable>> {
+    return this.getScanEnvironmentVariables$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<EnvironmentVariable>>): Array<EnvironmentVariable> => r.body)
     );
   }
 

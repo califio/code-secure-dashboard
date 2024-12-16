@@ -3,6 +3,14 @@
   <div class="flex flex-col rounded-xl border border-muted/20 bg-background gap-4 p-4 w-full">
     <div class="flex flex-col gap-2 w-full lg:max-w-[600px]">
       <table class="w-full border-none">
+        @if(authMode != 'local'){
+          <tr class="w-full">
+            <td class="text-nowrap font-semibold py-4">Disable Password Logon</td>
+            <td class="w-full pl-6">
+              <input type="checkbox" name="disablePasswordLogon" [formControl]="form.controls.disablePasswordLogon">
+            </td>
+          </tr>
+        }
         <tr class="w-fit">
           <td class="text-nowrap font-semibold py-4">Auth Mode</td>
           <td class="w-fit pl-6">
@@ -17,31 +25,28 @@
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">Enable OIDC</td>
             <td class="w-full pl-6">
-              <input type="checkbox" name="oidcEnable" [formControl]="form.controls.oidcEnable">
-            </td>
-          </tr>
-          <tr class="w-full">
-            <td class="text-nowrap font-semibold py-4">Disable Password Logon</td>
-            <td class="w-full pl-6">
-              <input type="checkbox" name="disablePasswordLogon" [formControl]="form.controls.disablePasswordLogon">
+              <input type="checkbox" name="oidcEnable" [formControl]="form.controls.openIdConnectSetting.controls.enable!">
             </td>
           </tr>
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">OIDC Provider</td>
             <td class="w-full pl-6">
-              <input type="text" class="w-full" name="oidcProvider" [formControl]="form.controls.oidcProvider">
+              <input type="text" class="w-full" name="oidcProvider"
+                     [formControl]="form.controls.openIdConnectSetting.controls.displayName!">
             </td>
           </tr>
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">OIDC Authority</td>
             <td class="w-full pl-6">
-              <input type="text" class="w-full" name="oidc-authority" [formControl]="form.controls.oidcAuthority">
+              <input type="text" class="w-full" name="oidc-authority"
+                     [formControl]="form.controls.openIdConnectSetting.controls.authority!">
             </td>
           </tr>
           <tr class="w-full">
             <td class="text-nowrap font-semibold py-4">OIDC Client ID</td>
             <td class="w-full pl-6">
-              <input type="text" class="w-full" name="oidc-client-id" [formControl]="form.controls.oidcClientId">
+              <input type="text" class="w-full" name="oidc-client-id"
+                     [formControl]="form.controls.openIdConnectSetting.controls.clientId!">
             </td>
           </tr>
           <tr class="w-full py-10">
@@ -50,7 +55,7 @@
               <div class="relative">
                 <input
                   [type]="secretTextType ? 'text' : 'password'"
-                  [formControl]="form.controls.oidcClientSecret"
+                  [formControl]="form.controls.openIdConnectSetting.controls.clientSecret!"
                   id="password"
                   class="peer block w-full"
                   placeholder=" "/>

@@ -15,8 +15,12 @@ import { addMember } from '../fn/project/add-member';
 import { AddMember$Params } from '../fn/project/add-member';
 import { deleteProjectMember } from '../fn/project/delete-project-member';
 import { DeleteProjectMember$Params } from '../fn/project/delete-project-member';
+import { EnvironmentVariable } from '../models/environment-variable';
+import { EnvironmentVariablePage } from '../models/environment-variable-page';
 import { getProjectCommits } from '../fn/project/get-project-commits';
 import { GetProjectCommits$Params } from '../fn/project/get-project-commits';
+import { getProjectEnvironment } from '../fn/project/get-project-environment';
+import { GetProjectEnvironment$Params } from '../fn/project/get-project-environment';
 import { getProjectFindings } from '../fn/project/get-project-findings';
 import { GetProjectFindings$Params } from '../fn/project/get-project-findings';
 import { getProjectInfo } from '../fn/project/get-project-info';
@@ -46,6 +50,10 @@ import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
 import { ProjectUser } from '../models/project-user';
 import { ProjectUserPage } from '../models/project-user-page';
+import { removeProjectEnvironment } from '../fn/project/remove-project-environment';
+import { RemoveProjectEnvironment$Params } from '../fn/project/remove-project-environment';
+import { setProjectEnvironment } from '../fn/project/set-project-environment';
+import { SetProjectEnvironment$Params } from '../fn/project/set-project-environment';
 import { updateProjectMember } from '../fn/project/update-project-member';
 import { UpdateProjectMember$Params } from '../fn/project/update-project-member';
 import { updateProjectSetting } from '../fn/project/update-project-setting';
@@ -404,6 +412,81 @@ export class ProjectService extends BaseService {
   updateProjectSetting(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
     return this.updateProjectSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectEnvironment()` */
+  static readonly GetProjectEnvironmentPath = '/api/project/{projectId}/env/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectEnvironment()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectEnvironment$Response(params: GetProjectEnvironment$Params, context?: HttpContext): Observable<StrictHttpResponse<EnvironmentVariablePage>> {
+    return getProjectEnvironment(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectEnvironment$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectEnvironment(params: GetProjectEnvironment$Params, context?: HttpContext): Observable<EnvironmentVariablePage> {
+    return this.getProjectEnvironment$Response(params, context).pipe(
+      map((r: StrictHttpResponse<EnvironmentVariablePage>): EnvironmentVariablePage => r.body)
+    );
+  }
+
+  /** Path part for operation `setProjectEnvironment()` */
+  static readonly SetProjectEnvironmentPath = '/api/project/{projectId}/env';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `setProjectEnvironment()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  setProjectEnvironment$Response(params: SetProjectEnvironment$Params, context?: HttpContext): Observable<StrictHttpResponse<EnvironmentVariable>> {
+    return setProjectEnvironment(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `setProjectEnvironment$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  setProjectEnvironment(params: SetProjectEnvironment$Params, context?: HttpContext): Observable<EnvironmentVariable> {
+    return this.setProjectEnvironment$Response(params, context).pipe(
+      map((r: StrictHttpResponse<EnvironmentVariable>): EnvironmentVariable => r.body)
+    );
+  }
+
+  /** Path part for operation `removeProjectEnvironment()` */
+  static readonly RemoveProjectEnvironmentPath = '/api/project/{projectId}/env/{name}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `removeProjectEnvironment()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  removeProjectEnvironment$Response(params: RemoveProjectEnvironment$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return removeProjectEnvironment(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `removeProjectEnvironment$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  removeProjectEnvironment(params: RemoveProjectEnvironment$Params, context?: HttpContext): Observable<void> {
+    return this.removeProjectEnvironment$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

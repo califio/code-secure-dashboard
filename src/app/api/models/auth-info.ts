@@ -4,6 +4,6 @@
 
 export interface AuthInfo {
   disablePasswordLogon?: boolean;
-  oidcEnable?: boolean;
-  oidcProvider?: string | null;
+  openIdConnectEnable?: boolean;
+  openIdConnectProvider?: string | null;
 }

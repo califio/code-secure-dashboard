@@ -18,8 +18,7 @@ export interface CiScanRequest {
   repoUrl: string;
   scanTitle: string;
   scanner: string;
-  sourceType: SourceType;
-  sourceUrl: string;
+  source: SourceType;
   targetBranch?: string | null;
   type: ScannerType;
 }

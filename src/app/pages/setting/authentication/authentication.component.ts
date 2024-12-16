@@ -9,6 +9,7 @@ import {ToastrService} from '../../../shared/components/toastr/toastr.service';
 import {NgIcon} from '@ng-icons/core';
 import {AuthSetting} from '../../../api/models/auth-setting';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../core/forms';
+import {OpenIdConnectSetting} from '../../../api/models/open-id-connect-setting';
 
 type AuthMode = 'local' | 'oidc'
 
@@ -39,11 +40,13 @@ export class AuthenticationComponent implements OnInit {
   ];
   formConfig = new FormSection<ConfigOf<AuthSetting>>({
     disablePasswordLogon: new FormField(false),
-    oidcAuthority: new FormField(''),
-    oidcClientId: new FormField(''),
-    oidcClientSecret: new FormField(''),
-    oidcEnable: new FormField(false),
-    oidcProvider: new FormField(''),
+    openIdConnectSetting: new FormSection<ConfigOf<OpenIdConnectSetting>>({
+      displayName: new FormField(''),
+      authority: new FormField(''),
+      clientId: new FormField(''),
+      clientSecret: new FormField(''),
+      enable: new FormField(false)
+    }),
     whiteListEmails: new FormField('')
   })
   form: FormGroup<ControlsOf<AuthSetting>>;
@@ -58,7 +61,7 @@ export class AuthenticationComponent implements OnInit {
   ngOnInit(): void {
     this.configService.getAuthSetting().subscribe(setting => {
       this.form.patchValue(setting);
-      if (setting.oidcEnable) {
+      if (setting.openIdConnectSetting.enable) {
         this.authMode = 'oidc';
       } else {
         this.authMode = 'local';
