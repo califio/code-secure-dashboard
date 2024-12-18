@@ -28,6 +28,9 @@ import {ProjectPackage} from '../../../../api/models/project-package';
 import {RiskLevelIconComponent} from '../../../../shared/components/risk-level-icon/risk-level-icon.component';
 import {RiskLevel} from '../../../../api/models/risk-level';
 import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive';
+import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
+import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
+import {ProjectPackageSortField} from '../../../../api/models';
 
 @Component({
   selector: 'app-dependency',
@@ -47,7 +50,8 @@ import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive'
     FindingStatusLabelComponent,
     LoadingTableComponent,
     RiskLevelIconComponent,
-    TooltipDirective
+    TooltipDirective,
+    DropdownComponent
   ],
   templateUrl: './dependency.component.html',
   styleUrl: './dependency.component.scss'
@@ -125,4 +129,24 @@ export class DependencyComponent implements OnInit, OnDestroy {
   }
 
   protected readonly RiskLevel = RiskLevel;
+  sortOptions: DropdownItem[] = [
+    {
+      label: 'Name',
+      value: ProjectPackageSortField.Name
+    },
+    {
+      label: 'Impact',
+      value: ProjectPackageSortField.RiskLevel
+    }
+  ];
+
+  onSortChange(sortBy: any) {
+    this.store.filter.sortBy = sortBy;
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onOrderChange() {
+    this.store.filter.desc = !this.store.filter.desc;
+    updateQueryParams(this.router, this.store.filter);
+  }
 }

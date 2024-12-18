@@ -21,15 +21,15 @@ export class ToastrService {
   ) {
   }
 
-  success(message: string, duration: number = 3000) {
+  success(message: string, duration: number = 5000) {
     this.notify(message, ToastrType.Success, 'success', duration);
   }
 
-  warning(message: string, duration: number = 3000) {
+  warning(message: string, duration: number = 5000) {
     this.notify(message, ToastrType.Warning, 'warning', duration);
   }
 
-  error(message: string, duration: number = 3000) {
+  error(message: string, duration: number = 5000) {
     this.notify(message, ToastrType.Error, 'error', duration);
   }
 
@@ -49,10 +49,12 @@ export class ToastrService {
     // Append to the body or any other global container
     document.body.appendChild(domElem);
     // Set timeout to remove the component after duration
-    setTimeout(() => {
-      componentRef.instance.hidden = false;
-      this.appRef.detachView(componentRef.hostView);
-      componentRef.destroy();
-    }, duration);
+    if (duration > 0) {
+      setTimeout(() => {
+        componentRef.instance.hidden = false;
+        this.appRef.detachView(componentRef.hostView);
+        componentRef.destroy();
+      }, duration);
+    }
   }
 }

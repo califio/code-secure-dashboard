@@ -14,6 +14,14 @@
                    (keyup.enter)="onSearchChange()"/>
           </label>
         </div>
+        <div class="flex flex-row gap-2 items-center">
+          <dropdown [options]="sortOptions"
+                    [defaultLabel]="'Sort By'"
+                    [selected]="store.filter.sortBy" (selectedChange)="onSortChange($event)">
+          </dropdown>
+          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
+                   (click)="onOrderChange()"></ng-icon>
+        </div>
         <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
              (click)="onReload()">
           <ng-icon name="reload"></ng-icon>

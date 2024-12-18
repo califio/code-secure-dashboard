@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
     if (oidc) {
       bindQueryParams(params, this.authResponse);
       if (params['message']){
-        this.toastr.warning(params['message'], 5000);
+        this.toastr.warning(params['message'], 0);
       }
       if (this.authResponse.accessToken && this.authResponse.refreshToken) {
         this.authStore.accessToken = this.authResponse.accessToken;
@@ -71,11 +71,10 @@ export class LoginComponent implements OnInit {
         const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl') || '/dashboard';
         this.router.navigateByUrl(returnUrl).then();
       }
-    } else {
-      this.configService.getAuthInfo().subscribe(authInfo => {
-        this.authInfo = authInfo;
-      });
     }
+    this.configService.getAuthInfo().subscribe(authInfo => {
+      this.authInfo = authInfo;
+    });
   }
 
   onOidcLogin() {

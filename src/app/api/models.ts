@@ -55,6 +55,7 @@ export { ProjectInfo } from './models/project-info';
 export { ProjectPackage } from './models/project-package';
 export { ProjectPackageFilter } from './models/project-package-filter';
 export { ProjectPackagePage } from './models/project-package-page';
+export { ProjectPackageSortField } from './models/project-package-sort-field';
 export { ProjectRole } from './models/project-role';
 export { ProjectScan } from './models/project-scan';
 export { ProjectScanFilter } from './models/project-scan-filter';

@@ -1,6 +1,7 @@
 import {Injectable, signal} from '@angular/core';
 import {ProjectPackage} from '../../../../api/models/project-package';
 import {ProjectPackageFilter} from '../../../../api/models/project-package-filter';
+import {ProjectPackageSortField} from '../../../../api/models/project-package-sort-field';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class DependencyStore {
     desc: true,
     name: '',
     page: 1,
-    size: 20
+    size: 20,
+    sortBy: ProjectPackageSortField.RiskLevel
   }
 }

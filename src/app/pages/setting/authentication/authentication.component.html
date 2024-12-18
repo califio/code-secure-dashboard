@@ -11,6 +11,12 @@
             </td>
           </tr>
         }
+        <tr class="w-full">
+          <td class="text-nowrap font-semibold py-4">Allow Register</td>
+          <td class="w-full pl-6">
+            <input type="checkbox" name="disablePasswordLogon" [formControl]="form.controls.allowRegister">
+          </td>
+        </tr>
         <tr class="w-fit">
           <td class="text-nowrap font-semibold py-4">Auth Mode</td>
           <td class="w-fit pl-6">

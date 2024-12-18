@@ -40,7 +40,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       count: 53
     },
     {
-      label: 'Configurations',
+      label: 'Settings',
       route: 'setting',
       icon: 'setting',
     }

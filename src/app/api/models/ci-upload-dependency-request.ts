@@ -7,7 +7,7 @@ import { CiPackageDependency } from '../models/ci-package-dependency';
 import { CiVulnerability } from '../models/ci-vulnerability';
 export interface CiUploadDependencyRequest {
   packageDependencies?: Array<CiPackageDependency> | null;
-  packages: Array<CiPackage>;
+  packages?: Array<CiPackage> | null;
   scanId: string;
   vulnerabilities?: Array<CiVulnerability> | null;
 }

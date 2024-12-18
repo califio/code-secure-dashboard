@@ -1,7 +1,11 @@
 <div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm gap-4">
   <div class="flex flex-col overflow-hidden w-full border border-white/5 gap-4 rounded-xl bg-background p-6">
     <div class="flex w-full items-center">
-      <div class="flex flex-col font-normal">
+      <div class="flex flex-col font-normal gap-2">
+        <div class="flex flex-row gap-2 items-center text-base">
+          <ng-icon [name]="store.project().sourceType! | lowercase"></ng-icon>
+          <a [href]="store.project().repoUrl" target="_blank" class="hover:underline">{{store.project().name}}</a>
+        </div>
         <div class="flex flex-row items-center gap-1">
           <div>You have</div>
           @if(statisticLoading) {

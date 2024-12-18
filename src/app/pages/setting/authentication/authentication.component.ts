@@ -47,6 +47,7 @@ export class AuthenticationComponent implements OnInit {
       clientSecret: new FormField(''),
       enable: new FormField(false)
     }),
+    allowRegister: new FormField(false),
     whiteListEmails: new FormField('')
   })
   form: FormGroup<ControlsOf<AuthSetting>>;
