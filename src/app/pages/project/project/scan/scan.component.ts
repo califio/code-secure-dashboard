@@ -24,6 +24,7 @@ import {
 } from '../../../../shared/components/chart/finding-status-chart/finding-status-chart.component';
 import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
 import {LowerCasePipe} from '@angular/common';
+import {TruncatePipe} from '../../../../shared/pipes/truncate.pipe';
 
 @Component({
   selector: 'app-scan',
@@ -42,7 +43,8 @@ import {LowerCasePipe} from '@angular/common';
     SeverityChartComponent,
     FindingStatusChartComponent,
     LoadingTableComponent,
-    LowerCasePipe
+    LowerCasePipe,
+    TruncatePipe
   ],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'

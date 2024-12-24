@@ -96,7 +96,7 @@
             </div>
           </th>
           <th>
-            <div class="flex flex-row items-center gap-1">
+            <div class="flex flex-row items-center gap-1 min-w-32">
               <span>FINDING</span>
             </div>
           </th>
@@ -126,7 +126,7 @@
                   <a [routerLink]="['/project', store.projectId(), 'finding']"
                      [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scanner, 'type': scan.type}"
                      class="flex flex-col gap-1">
-                    <div class="">{{scan.commitTitle}}</div>
+                    <div [tooltip]="scan.commitTitle" position="dynamic">{{scan.commitTitle! | truncate:50 }}</div>
                     <scan-branch [action]="scan.gitAction ?? GitAction.CommitBranch"
                                  [branch]="scan.commitBranch ?? ''"
                                  [targetBranch]="scan.targetBranch">
@@ -139,7 +139,7 @@
                   <scan-status [status]="scan.status ?? ScanStatus.Error">
                   </scan-status>
                 </td>
-                <td>
+                <td class="min-w-32">
                   <div
                     class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
                     <p
