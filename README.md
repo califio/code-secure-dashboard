@@ -15,3 +15,9 @@ Code Secure is a comprehensive tool for DevSecOps, ASPM (Application Security Po
 
 2. Project Findings
 ![](docs/images/project_finding.png)
+
+3. Comment On Merge Request
+![](docs/images/comment_finding_on_merge_request.png)
+
+4. Weekly security alert
+![](docs/images/weekly_security_alert.png)
