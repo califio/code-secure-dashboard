@@ -37,8 +37,8 @@ export class SettingComponent implements OnDestroy {
       icon: 'cicd',
     },
     {
-      label: 'Mail',
-      route: '/setting/mail',
+      label: 'Notification',
+      route: '/setting/notification',
       icon: 'envelope',
     },
     {

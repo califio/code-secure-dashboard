@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ButtonDirective} from "../../../shared/ui/button/button.directive";
+import {ButtonDirective} from "../../../../shared/ui/button/button.directive";
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ConfigService} from '../../../api/services/config.service';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../core/forms';
-import {MailSetting} from '../../../api/models/mail-setting';
+import {ConfigService} from '../../../../api/services/config.service';
+import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
+import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../core/forms';
 import {finalize} from 'rxjs';
+import {MailSettingRequest} from '../../../../api/models/mail-setting-request';
 
 @Component({
   selector: 'app-mail',
@@ -19,14 +19,14 @@ import {finalize} from 'rxjs';
   styleUrl: './mail.component.scss'
 })
 export class MailComponent implements OnInit {
-  formConfig = new FormSection<ConfigOf<MailSetting>>({
+  formConfig = new FormSection<ConfigOf<MailSettingRequest>>({
     password: new FormField(''),
     port: new FormField(0),
     server: new FormField(''),
     userName: new FormField(''),
     useSsl: new FormField(false),
   })
-  form: FormGroup<ControlsOf<MailSetting>>
+  form: FormGroup<ControlsOf<MailSettingRequest>>
   loadingTestMail = false;
   constructor(
     private formService: FormService,
@@ -44,7 +44,6 @@ export class MailComponent implements OnInit {
 
   saveConfig() {
     this.form.disable();
-
     this.configService.updateMailSetting({
       body: this.form.getRawValue()
     }).pipe(

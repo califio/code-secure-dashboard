@@ -27,17 +27,24 @@ import { getMailSetting } from '../fn/config/get-mail-setting';
 import { GetMailSetting$Params } from '../fn/config/get-mail-setting';
 import { getSlaSetting } from '../fn/config/get-sla-setting';
 import { GetSlaSetting$Params } from '../fn/config/get-sla-setting';
+import { getTeamsSetting } from '../fn/config/get-teams-setting';
+import { GetTeamsSetting$Params } from '../fn/config/get-teams-setting';
 import { MailSetting } from '../models/mail-setting';
 import { SlaSetting } from '../models/sla-setting';
 import { StringPage } from '../models/string-page';
+import { TeamsNotificationSetting } from '../models/teams-notification-setting';
 import { testMailSetting } from '../fn/config/test-mail-setting';
 import { TestMailSetting$Params } from '../fn/config/test-mail-setting';
+import { testTeamsSetting } from '../fn/config/test-teams-setting';
+import { TestTeamsSetting$Params } from '../fn/config/test-teams-setting';
 import { updateAuthSetting } from '../fn/config/update-auth-setting';
 import { UpdateAuthSetting$Params } from '../fn/config/update-auth-setting';
 import { updateMailSetting } from '../fn/config/update-mail-setting';
 import { UpdateMailSetting$Params } from '../fn/config/update-mail-setting';
 import { updateSlaSetting } from '../fn/config/update-sla-setting';
 import { UpdateSlaSetting$Params } from '../fn/config/update-sla-setting';
+import { updateTeamsSetting } from '../fn/config/update-teams-setting';
+import { UpdateTeamsSetting$Params } from '../fn/config/update-teams-setting';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService extends BaseService {
@@ -142,6 +149,81 @@ export class ConfigService extends BaseService {
   testMailSetting(params?: TestMailSetting$Params, context?: HttpContext): Observable<string> {
     return this.testMailSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>): string => r.body)
+    );
+  }
+
+  /** Path part for operation `getTeamsSetting()` */
+  static readonly GetTeamsSettingPath = '/api/config/teams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getTeamsSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsSetting$Response(params?: GetTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsNotificationSetting>> {
+    return getTeamsSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getTeamsSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsSetting(params?: GetTeamsSetting$Params, context?: HttpContext): Observable<TeamsNotificationSetting> {
+    return this.getTeamsSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<TeamsNotificationSetting>): TeamsNotificationSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateTeamsSetting()` */
+  static readonly UpdateTeamsSettingPath = '/api/config/teams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateTeamsSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateTeamsSetting$Response(params?: UpdateTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsNotificationSetting>> {
+    return updateTeamsSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateTeamsSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateTeamsSetting(params?: UpdateTeamsSetting$Params, context?: HttpContext): Observable<TeamsNotificationSetting> {
+    return this.updateTeamsSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<TeamsNotificationSetting>): TeamsNotificationSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `testTeamsSetting()` */
+  static readonly TestTeamsSettingPath = '/api/config/teams/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testTeamsSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testTeamsSetting$Response(params?: TestTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return testTeamsSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testTeamsSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testTeamsSetting(params?: TestTeamsSetting$Params, context?: HttpContext): Observable<void> {
+    return this.testTeamsSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

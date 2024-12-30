@@ -7,6 +7,6 @@ export interface CiUploadFindingResponse {
   confirmedFindings?: Array<CiFinding> | null;
   fixedFindings?: Array<CiFinding> | null;
   isBlock?: boolean;
+  needsTriageFindings?: Array<CiFinding> | null;
   newFindings?: Array<CiFinding> | null;
-  openFindings?: Array<CiFinding> | null;
 }

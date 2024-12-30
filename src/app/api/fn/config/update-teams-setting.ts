@@ -8,15 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { MailSetting } from '../../models/mail-setting';
-import { MailSettingRequest } from '../../models/mail-setting-request';
+import { TeamsNotificationSetting } from '../../models/teams-notification-setting';
+import { TeamsNotificationSettingRequest } from '../../models/teams-notification-setting-request';
 
-export interface UpdateMailSetting$Params {
-      body?: MailSettingRequest
+export interface UpdateTeamsSetting$Params {
+      body?: TeamsNotificationSettingRequest
 }
 
-export function updateMailSetting(http: HttpClient, rootUrl: string, params?: UpdateMailSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<MailSetting>> {
-  const rb = new RequestBuilder(rootUrl, updateMailSetting.PATH, 'post');
+export function updateTeamsSetting(http: HttpClient, rootUrl: string, params?: UpdateTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsNotificationSetting>> {
+  const rb = new RequestBuilder(rootUrl, updateTeamsSetting.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -26,9 +26,9 @@ export function updateMailSetting(http: HttpClient, rootUrl: string, params?: Up
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<MailSetting>;
+      return r as StrictHttpResponse<TeamsNotificationSetting>;
     })
   );
 }
 
-updateMailSetting.PATH = '/api/config/mail';
+updateTeamsSetting.PATH = '/api/config/teams';
