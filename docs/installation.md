@@ -12,7 +12,7 @@ docker-compose.yml
 ```yaml
 services:
   codesecure:
-    image: registry.gitlab.com/code-secure/code-secure-dashboard
+    image: ghcr.io/califio/code-secure-dashboard:latest
     depends_on:
       - db
     environment:

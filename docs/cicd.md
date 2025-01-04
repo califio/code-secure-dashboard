@@ -36,7 +36,7 @@ GitLab pipeline example:
 
 ```yaml
 semgrep-sast-scan:
- image: registry.gitlab.com/code-secure/semgrep-analyzer
+ image: ghcr.io/califio/code-secure-semgrep:latest
  variables:
    SEMGREP_RULES: ""
    SEMGREP_APP_TOKEN: "foo"
@@ -60,7 +60,7 @@ trivy-dependency-scan:
  - if: $CI_MERGE_REQUEST_IID
  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
  - if: $CI_COMMIT_TAG
- image: registry.gitlab.com/code-secure/trivy-analyzer:1.0.0
+ image: ghcr.io/califio/code-secure-trivy:latest
  script:
    - /analyzer dependency
 ```
@@ -69,7 +69,7 @@ trivy-dependency-scan:
 
 ```yaml
 secret-detection:
-  image: registry.gitlab.com/code-secure/gitleaks-analyzer:1.0.0
+  image: ghcr.io/califio/code-secure-gitleaks:latest
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"

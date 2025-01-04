@@ -4,7 +4,7 @@ COPY . .
 RUN npm install
 RUN npm run build --prod
 
-FROM registry.gitlab.com/code-secure/code-secure-api:1.0.7 AS api
+FROM ghcr.io/califio/code-secure-api:latest AS api
 EXPOSE 8080
 WORKDIR /app
 COPY --from=build /app/dist/code-secure-dashboard/browser wwwroot
