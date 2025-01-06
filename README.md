@@ -4,20 +4,17 @@ Code Secure is a comprehensive tool for DevSecOps, ASPM (Application Security Po
 
 ## Documentation
 
-- [Installation](docs/installation.md)
-- [Authentication](docs/authentication.md)
-- [Notification](docs/notification.md)
-- [CICD Integration](docs/cicd.md)
+https://califio.github.io/code-secure-dashboard
 
 ## Demo
 1. Project Overview
-![](docs/images/project_overview.png)
+![](docs/assets/images/project_overview.png)
 
 2. Project Findings
-![](docs/images/project_finding.png)
+![](docs/assets/images/project_finding.png)
 
 3. Comment On Merge Request
-![](docs/images/comment_finding_on_merge_request.png)
+![](docs/assets/images/comment_finding_on_merge_request.png)
 
 4. Weekly security alert
-![](docs/images/weekly_security_alert.png)
+![](docs/assets/images/weekly_security_alert.png)
