@@ -2,7 +2,9 @@
 
 Your application’s repository typically includes source code, dependency configurations. 
 By performing repository scanning, vulnerabilities across these components can be identified.
-We utilize open-source tools to integrate security scanning.
+
+We utilize open-source tools to integrate security scanning like: Semgrep, Gitleaks, Trivy. 
+If you need to integrate another tool, feel free to create a request here: https://github.com/califio/code-secure-dashboard/issues
 
 Security scanning tools include:
 
