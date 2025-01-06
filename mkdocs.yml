@@ -1,0 +1,68 @@
+site_name: Code Secure
+site_url: https://califio.github.io/code-secure-dashboard
+site_author: Duo
+site_description: >-
+  Code Secure Dashboard
+repo_name: Code Secure
+repo_url: https://github.com/califio/code-secure-dashboard
+edit_uri: "blob/main/docs/"
+copyright: Copyright &copy; 2025 calif.io
+
+theme:
+  name: material
+  features:
+    - navigation.tabs.sticky
+    - navigation.footer
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - content.action.edit
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+  highlightjs: true
+  hljs_languages:
+    - yaml
+  font:
+    text: Inter
+
+plugins:
+  - blog
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+
+nav:
+  - Getting Started:
+    - Installation: installation.md
+    - Setting:
+      - Notification: setting/notification.md
+      - Authentication: setting/authentication.md
+      - CI Access Token: setting/ci-token.md
+    - Security Integration:
+      - security-integration/index.md
+      - Environment Variables: security-integration/environment-variables.md
+      - Static Application Security Testing (SAST):
+        - Semgrep: security-integration/sast/semgrep.md
+        - Gitleaks: security-integration/sast/gitleaks.md
+      - Software Composition Analysis (SCA):
+        - Trivy: security-integration/sca/trivy.md
