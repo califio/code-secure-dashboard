@@ -5,6 +5,7 @@
 import { CiFinding } from '../models/ci-finding';
 export interface CiUploadFindingResponse {
   confirmedFindings?: Array<CiFinding> | null;
+  findingUrl?: string | null;
   fixedFindings?: Array<CiFinding> | null;
   isBlock?: boolean;
   needsTriageFindings?: Array<CiFinding> | null;

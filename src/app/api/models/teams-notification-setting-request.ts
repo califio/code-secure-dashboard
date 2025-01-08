@@ -8,5 +8,5 @@ export interface TeamsNotificationSettingRequest {
   newFindingEvent: boolean;
   scanResultEvent: boolean;
   securityAlertEvent: boolean;
-  webhook: string;
+  webhook?: string | null;
 }
