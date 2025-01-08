@@ -11,6 +11,9 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { addComment } from '../fn/finding/add-comment';
+import { AddComment$Params } from '../fn/finding/add-comment';
+import { FindingActivity } from '../models/finding-activity';
 import { FindingActivityPage } from '../models/finding-activity-page';
 import { FindingDetail } from '../models/finding-detail';
 import { getFinding } from '../fn/finding/get-finding';
@@ -98,6 +101,31 @@ export class FindingService extends BaseService {
   getFindingActivities(params: GetFindingActivities$Params, context?: HttpContext): Observable<FindingActivityPage> {
     return this.getFindingActivities$Response(params, context).pipe(
       map((r: StrictHttpResponse<FindingActivityPage>): FindingActivityPage => r.body)
+    );
+  }
+
+  /** Path part for operation `addComment()` */
+  static readonly AddCommentPath = '/api/finding/{id}/comment';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `addComment()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  addComment$Response(params: AddComment$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingActivity>> {
+    return addComment(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `addComment$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  addComment(params: AddComment$Params, context?: HttpContext): Observable<FindingActivity> {
+    return this.addComment$Response(params, context).pipe(
+      map((r: StrictHttpResponse<FindingActivity>): FindingActivity => r.body)
     );
   }
 

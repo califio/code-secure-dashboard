@@ -32,6 +32,7 @@ export { FindingActivity } from './models/finding-activity';
 export { FindingActivityMetadata } from './models/finding-activity-metadata';
 export { FindingActivityPage } from './models/finding-activity-page';
 export { FindingActivityType } from './models/finding-activity-type';
+export { FindingCommentRequest } from './models/finding-comment-request';
 export { FindingDetail } from './models/finding-detail';
 export { FindingLocation } from './models/finding-location';
 export { FindingMetadata } from './models/finding-metadata';

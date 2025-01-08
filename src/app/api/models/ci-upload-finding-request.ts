@@ -4,6 +4,6 @@
 
 import { CiFinding } from '../models/ci-finding';
 export interface CiUploadFindingRequest {
-  findings: Array<CiFinding>;
+  findings?: Array<CiFinding> | null;
   scanId: string;
 }

@@ -21,6 +21,8 @@ import {TooltipDirective} from '../../../ui/tooltip/tooltip.directive';
 import {ButtonDirective} from '../../../ui/button/button.directive';
 import {DatePickerComponent} from '../../../ui/date-picker/date-picker.component';
 import {FindingActivityComponent} from '../finding-activity/finding-activity.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {finalize} from 'rxjs';
 
 @Component({
   selector: 'finding-detail',
@@ -45,6 +47,8 @@ import {FindingActivityComponent} from '../finding-activity/finding-activity.com
     DatePickerComponent,
     NgTemplateOutlet,
     FindingActivityComponent,
+    ReactiveFormsModule,
+    FormsModule,
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'
@@ -80,7 +84,8 @@ export class FindingDetailComponent {
   @Input()
   isProjectPage: boolean = false;
   fixDeadline = signal<Date | null>(null);
-
+  comment = '';
+  commentLoading = false;
   constructor(
     private findingService: FindingService,
     private toastr: ToastrService
@@ -169,5 +174,25 @@ export class FindingDetailComponent {
       return new Date(date);
     }
     return null;
+  }
+
+  postComment() {
+    if (this.comment) {
+      this.commentLoading = true;
+      this.findingService.addComment({
+        id: this.finding.id!,
+        body: {
+          comment: this.comment
+        }
+      }).pipe(
+        finalize(() => this.commentLoading = false)
+      ).subscribe(commentActivity => {
+        const activities = [commentActivity];
+        activities.push(...this.activities);
+        this.activities = activities;
+        this.comment = '';
+        this.toastr.success('Add comment success!');
+      });
+    }
   }
 }

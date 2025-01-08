@@ -16,7 +16,8 @@
         </div>
         <div class="flex flex-row gap-2 items-center">
           <ng-icon [name]="finding.project?.sourceType! | lowercase"></ng-icon>
-          <a [routerLink]="['/project', finding.project?.id, 'scan']" class="hover:underline">{{finding.project?.name}}</a>
+          <a [routerLink]="['/project', finding.project?.id, 'scan']"
+             class="hover:underline">{{ finding.project?.name }}</a>
         </div>
       </div>
       @if (minimal) {
@@ -37,7 +38,7 @@
         [status]="finding.status!"
         (statusChange)="onChangeStatus($event)">
       </finding-status>
-      @if(finding.status == FindingStatus.Confirmed) {
+      @if (finding.status == FindingStatus.Confirmed) {
         <date-picker [titleTemplate]="datePickerTitle"
                      [afterDateTemplate]="afterDateTemplate"
                      [date]="fixDeadline()"
@@ -51,10 +52,11 @@
           <div class="text-white bg-primary rounded px-1">deadline</div>
         </ng-template>
       } @else {
-        @if(finding.fixDeadline){
-          <div class="flex flex-row items-center text-nowrap gap-2 border border-border px-3 py-2 rounded-md cursor-pointer">
+        @if (finding.fixDeadline) {
+          <div
+            class="flex flex-row items-center text-nowrap gap-2 border border-border px-3 py-2 rounded-md cursor-pointer">
             <span>
-              {{finding.fixDeadline | date : dateFormat}}
+              {{ finding.fixDeadline | date : dateFormat }}
             </span>
             <div class="text-white bg-primary rounded px-1">deadline</div>
           </div>
@@ -71,9 +73,9 @@
             <span>{{ finding.location.path }}</span>
             <ng-icon name="external-link"></ng-icon>
           </a>
-          @if(finding.location.snippet) {
+          @if (finding.location.snippet) {
             <div class="block rounded border border-border bg-background p-2 items-center">
-              <div>{{ finding.location.snippet}}</div>
+              <div>{{ finding.location.snippet }}</div>
             </div>
           }
         </div>
@@ -99,7 +101,7 @@
           <div class="font-semibold">CWEs</div>
           <ul class="list-disc">
             @for (cwe of finding.metadata.cwes; track $index) {
-              <li class="ml-4">{{cwe}}</li>
+              <li class="ml-4">{{ cwe }}</li>
             }
           </ul>
         </div>
@@ -109,7 +111,7 @@
           <div class="font-semibold">References</div>
           <ul class="list-disc">
             @for (reference of finding.metadata.references; track $index) {
-              <li class="ml-4" markdown>{{reference}}</li>
+              <li class="ml-4" markdown>{{ reference }}</li>
             }
           </ul>
         </div>
@@ -120,8 +122,9 @@
           <div class="font-semibold">Finding Flow</div>
           <div class="flex flex-col justify-between items-center">
             @for (location of findingFlow(finding); track $index; let isLast = $last) {
-              <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer" target="_blank" [href]="source(location)">
-                {{location.snippet}}
+              <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer"
+                 target="_blank" [href]="source(location)">
+                {{ location.snippet }}
               </a>
               @if (!isLast) {
                 <div class="bg-primary w-0.5 h-10"></div>
@@ -133,11 +136,30 @@
     </div>
     <!--    ACTIVITIES-->
     <div class="flex flex-col gap-2"
-         [ngClass]="minimal ? '' : 'min-w-[550px]'">
+         [ngClass]="minimal ? '' : 'min-w-[550px] max-w-[600px]'">
       <div class="flex flex-col rounded border border-border p-4 gap-2">
         <div class="font-semibold">Activity</div>
-        <div class="flex flex-col overflow-y-auto max-h-96">
+        <div class="flex flex-col overflow-y-auto h-full max-h-screen">
           <ol class="relative border-s border-border ml-5">
+            <li class="mt-10 ms-6">
+              <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 dark:bg-blue-900">
+                <ng-icon name="plus-circle" size="20"></ng-icon>
+              </span>
+              <div class="flex flex-row items-center justify-between gap-2 mb-1">
+                <div class="flex flex-col w-full gap-2">
+                  <textarea [(ngModel)]="comment"></textarea>
+                  <div class="flex flex-row gap-2 items-center justify-end">
+                    <button app-button type="default" (click)="comment = ''">Cancel</button>
+                    <button app-button type="primary"
+                            [loading]="commentLoading"
+                            [disabled]="commentLoading"
+                            (click)="postComment()">Comment
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+
             @for (activity of activities; track $index) {
               <finding-activity [activity]="activity"></finding-activity>
             }
