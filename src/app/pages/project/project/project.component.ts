@@ -28,7 +28,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       count: 1
     },
     {
-      label: 'Vulnerabilities',
+      label: 'Finding',
       route: 'finding',
       icon: 'bug',
       count: 123
@@ -40,7 +40,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       count: 53
     },
     {
-      label: 'Settings',
+      label: 'Setting',
       route: 'setting',
       icon: 'setting',
     }
