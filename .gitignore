@@ -6,7 +6,6 @@
 /out-tsc
 /bazel-out
 
-code-secure-ui/.angular/cache
 # Node
 node_modules/
 npm-debug.log
@@ -34,6 +33,7 @@ bin/
 .history/*
 
 # Miscellaneous
+.angular
 .sass-cache/
 /connect.lock
 /coverage
