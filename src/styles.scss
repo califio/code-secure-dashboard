@@ -6,118 +6,117 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    --card: 210 40% 96%;
-    --card-foreground: 240 0% 0%;
-    --primary: 347 77% 50%;
-    --primary-foreground: 0 0% 100%;
-    --muted: 213 27% 84%;
-    --muted-foreground: 215 16% 47%;
-    --destructive: 350 100% 40%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 214 32% 91%;
+    --background: rgb(255, 255, 255);
+    --foreground: rgb(15, 23, 41);
+    --card: rgb(241, 245, 249);
+    --card-foreground: rgb(0, 0, 0);
+    --primary: rgb(226, 29, 72);
+    --primary-foreground: rgb(255, 255, 255);
+    --muted: rgb(203, 213, 225);
+    --muted-foreground: rgb(101, 117, 139);
+    --destructive: rgb(204, 0, 34);
+    --destructive-foreground: rgb(250, 250, 250);
+    --border: rgb(225, 231, 229);
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 93%;
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 14.9%;
-    --primary: 347 77% 50%;
-    --primary-foreground: 0 0% 100%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --destructive: 350 100% 40%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
+    --background: rgb(9, 9, 11);
+    --foreground: rgb(237, 237, 237);
+    --card: rgb(20, 20, 20);
+    --card-foreground: rgb(38, 38, 38);
+    --primary: rgb(226, 29, 72);
+    --primary-foreground: rgb(255, 255, 255);
+    --muted: rgb(38, 38, 38);
+    --muted-foreground: rgb(163, 163, 163);
+    --destructive: rgb(204, 0, 34);
+    --destructive-foreground: rgb(250, 250, 250);
+    --border: rgb(39, 39, 42);
   }
 
   :root[data-theme='violet'] {
-    --primary: 262.1 83.3% 57.8%;
+    --primary: rgb(124, 58, 237);
   }
 
   .dark[data-theme='violet'] {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 222 47% 7%;
-    --card-foreground: 210 20% 98%;
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --destructive: 350 100% 40%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
+    --background: rgb(3, 7, 18);
+    --foreground: rgb(249, 250, 251);
+    --card: rgb(9, 14, 26);
+    --card-foreground: rgb(249, 250, 251);
+    --primary: rgb(109, 40, 217);
+    --primary-foreground: rgb(249, 250, 251);
+    --muted: rgb(31, 41, 55);
+    --muted-foreground: rgb(156, 163, 175);
+    --destructive: rgb(204, 0, 34);
+    --destructive-foreground: rgb(249, 250, 251);
+    --border: rgb(31, 41, 55);
   }
 
   :root[data-theme='red'] {
-    --primary: 350 100% 40%;
+    --primary: rgb(204, 0, 34);
   }
 
   .dark[data-theme='red'] {
-    --primary: 350 100% 40%;
-    --primary-foreground: 0 85.7% 97.3%;
+    --primary: rgb(204, 0, 34);
+    --primary-foreground: rgb(254, 242, 242);
   }
 
   :root[data-theme='blue'] {
-    --primary: 221.2 83.2% 53.3%;
+    --primary: rgb(37, 99, 235);
   }
 
   .dark[data-theme='blue'] {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 7%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --destructive: 350 100% 40%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
+    --background: rgb(2, 8, 23);
+    --foreground: rgb(248, 250, 252);
+    --card: rgb(9, 14, 26);
+    --card-foreground: rgb(248, 250, 252);
+    --primary: rgb(59, 130, 246);
+    --primary-foreground: rgb(15, 23, 42);
+    --muted: rgb(30, 41, 59);
+    --muted-foreground: rgb(148, 163, 184);
+    --destructive: rgb(204, 0, 34);
+    --destructive-foreground: rgb(248, 250, 252);
   }
 
   :root[data-theme='orange'] {
-    --primary: 24.6 95% 53.1%;
+    --primary: rgb(249, 115, 22);
   }
 
   .dark[data-theme='orange'] {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 24 10% 7%;
-    --card-foreground: 60 9.1% 97.8%;
-    --primary: 20.5 90.2% 48.2%;
-    --primary-foreground: 60 9.1% 97.8%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-    --border: 12 6.5% 15.1%;
+    --background: rgb(12, 10, 9);
+    --foreground: rgb(250, 250, 249);
+    --card: rgb(20, 17, 16);
+    --card-foreground: rgb(250, 250, 249);
+    --primary: rgb(234, 88, 12);
+    --primary-foreground: rgb(250, 250, 249);
+    --muted: rgb(41, 37, 36);
+    --muted-foreground: rgb(168, 162, 158);
+    --border: rgb(41, 37, 36);
   }
 
   :root[data-theme='yellow'] {
-    --primary: 47.9 95.8% 53.1%;
+    --primary: rgb(250, 204, 21);
   }
 
   .dark[data-theme='yellow'] {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 24 10% 7%;
-    --card-foreground: 60 9.1% 97.8%;
-    --primary: 47.9 95.8% 53.1%;
-    --primary-foreground: 26 83.3% 14.1%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 12 6.5% 15.1%;
+    --background: rgb(12, 10, 9);
+    --foreground: rgb(250, 250, 249);
+    --card: rgb(20, 17, 16);
+    --card-foreground: rgb(250, 250, 249);
+    --primary: rgb(250, 204, 21);
+    --primary-foreground: rgb(66, 32, 6);
+    --muted: rgb(41, 37, 36);
+    --muted-foreground: rgb(168, 162, 158);
+    --destructive-foreground: rgb(250, 250, 249);
+    --border: rgb(41, 37, 36);
   }
 
   :root[data-theme='green'] {
-    --primary: 142.1 76.2% 36.3%;
+    --primary: rgb(22, 163, 74);
   }
 
   .dark[data-theme='green'] {
-    --primary: 142.1 70.6% 45.3%;
-    --primary-foreground: 144.9 80.4% 10%;
+    --primary: rgb(34, 197, 94);
+    --primary-foreground: rgb(5, 46, 22);
   }
 
   [type='text'],
