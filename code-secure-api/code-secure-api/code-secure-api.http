@@ -1,0 +1,6 @@
+@code_secure_api_HostAddress = http://localhost:5272
+
+GET {{code_secure_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

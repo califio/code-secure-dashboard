@@ -1,0 +1,152 @@
+<div width="100%" style="margin:0;background-color:#f6f7fb; font-family: Helvetica, sans-serif, 'Times New Roman'">
+    <div style="padding:0;overflow:hidden;width:100%;max-width:100%">
+        <table role="presentation" cellspacing="0" cellpadding="0"
+               border="0" align="center" width="100%" style="margin:auto">
+            <tbody>
+            <tr>
+                <td align="center" valign="top">
+                    <table border="0" cellpadding="0" cellspacing="0" style="background-color:#fff;margin:15px">
+                        <tbody>
+                        <tr>
+                            <td align="center" valign="top">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:640px; min-width: 640px">
+                                    <tbody>
+                                    <tr style="padding-bottom:5px;background:#461d9f;background:linear-gradient(to right,#7530a6 0%,#461d9f 50%)">
+                                        <td align="left" valign="top">
+                                            <div style="font-weight:bold; color: white; padding: 24px; text-transform: uppercase;">Code Secure</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style='padding:24px 24px;'>
+                                            <b>Hello,</b>
+                                            <p>We are notifying you that the latest {{ ScannerName }} scan has detected {{ Findings.size }} new security findings.</p>
+                                            <p>Please verify and resolve the follow findings as soon as possible to maintain the security and integrity of the project.</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0 24px">
+                                            <table border="1" cellpadding="0" cellspacing="0" width="100%"
+                                                   style="margin-bottom:15px;padding-bottom:5px;border:1px solid #c5c5c5;border-collapse: collapse;font-family:Helvetica,Arial,sans-serif">
+                                                <tbody style="padding: 10px">
+                                                <tr valign="top" style="font-weight: bold">
+                                                    <td width="45" style="padding:5px">
+                                                        ID
+                                                    </td>
+                                                    <td style="padding:5px">
+                                                        Name
+                                                    </td>
+                                                    <td style="padding:5px">
+                                                        Severity
+                                                    </td>
+                                                </tr>
+                                                {% for finding in Findings %}
+                                                <tr valign="top">
+                                                    <td style="padding:5px; width: 40px">
+                                                        {{ forloop.index }}
+                                                    </td>
+                                                    <td style="padding:5px">
+                                                        <a href="{{ finding.Url }}">
+                                                            {{ finding.Name }}
+                                                        </a>
+                                                    </td>
+                                                    <td style="padding:5px; width: 60px;text-align:center;">
+                                                        {% assign color = "#22C55E" %}
+                                                        {% assign label = "N" %}
+                                                        {% case finding.Severity %}
+                                                        {% when 4 %}
+                                                        {% assign color = "#ab1a1a" %}
+                                                        {% assign label = "C" %}
+                                                        {% when 3 %}
+                                                        {% assign color = "#ce5019" %}
+                                                        {% assign label = "H" %}
+                                                        {% when 2 %}
+                                                        {% assign color = "#d68000" %}
+                                                        {% assign label = "M" %}
+                                                        {% when 1 %}
+                                                        {% assign color = "#88879e" %}
+                                                        {% assign label = "L" %}
+                                                        {% else %}
+                                                        {% assign color = "#22C55E" %}
+                                                        {% assign label = "N" %}
+                                                        {% endcase %}
+                                                        <div style="background-color:{{ color }};color:#fff;display:block;text-align:center;width:30px">
+                                                            {{label}}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0 24px 24px 24px">
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div style="padding:0;margin:0;line-height:1.1;font-size:15px; white-space: nowrap;">
+                                                            <a href="{{OpenFindingUrl}}"
+                                                               style="background-color:#148888;background-image:linear-gradient(-180deg,#148888 0,#096969 100%);border-radius:0;font-size:14px;color:#fff;text-decoration:none;display:block;float:right"
+                                                               target="_blank">
+                                                                <span style="margin:8px 16px;display:block">View Detail</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="padding:0;margin:0;line-height:1.1;font-size:15px; white-space: nowrap;">
+                                                            <a href="{{CommitUrl}}"
+                                                               style="background-color:#148888;background-image:linear-gradient(-180deg,#148888 0,#096969 100%);border-radius:0;font-size:14px;color:#fff;text-decoration:none;display:block;float:right"
+                                                               target="_blank">
+                                                                <span style="margin:8px 16px;display:block">View Commit</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    {% if Action == 2 %}
+                                                    <td>
+                                                        <div style="padding:0;margin:0;line-height:1.1;font-size:15px; white-space: nowrap;">
+                                                            <a href="{{MergeRequestUrl}}"
+                                                               style="background-color:#148888;background-image:linear-gradient(-180deg,#148888 0,#096969 100%);border-radius:0;font-size:14px;color:#fff;text-decoration:none;display:block;float:right"
+                                                               target="_blank">
+                                                                <span style="margin:8px 16px;display:block">View Merge Request</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%"
+           style="background:#f6f7fb;color:#000;font-size:15px;line-height:140%;text-align:center;max-width:600px">
+        <tbody>
+        <tr>
+            <td style="font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0">
+                <div>
+                    You're receiving this email because of your account on
+                    <a href="{{FrontendUrl}}"
+                       style="color:#3777b0;text-decoration:none"
+                       target="_blank">Code Secure</a>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
