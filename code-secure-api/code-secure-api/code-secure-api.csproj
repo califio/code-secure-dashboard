@@ -12,6 +12,7 @@
     <ItemGroup>
         <PackageReference Include="Aguacongas.AspNetCore.Authentication" Version="5.0.0" />
         <PackageReference Include="Aguacongas.AspNetCore.Authentication.EntityFramework" Version="5.0.0" />
+        <PackageReference Include="Atlassian.SDK" Version="13.0.0" />
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="Fluid.Core" Version="2.13.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10"/>
