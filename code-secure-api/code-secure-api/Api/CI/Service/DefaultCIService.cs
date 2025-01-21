@@ -572,20 +572,14 @@ public class DefaultCiService(
         if (newBranchFindings.Count > 0)
         {
             // add new scan findings
-            var newScanFindings = newBranchFindings.Select(finding => new ScanFindings
-            {
-                ScanId = scan.Id,
-                FindingId = finding.Id,
-                Status = finding.Status,
-                CommitHash = scan.CommitHash
-            }).ToList();
+            var newScanFindings = new List<ScanFindings>();
             foreach (var finding in newBranchFindings)
             {
                 var entry = context.ChangeTracker.Entries<ScanFindings>().FirstOrDefault(entity =>
                     entity.Entity.ScanId == scanId && entity.Entity.FindingId == finding.Id);
                 if (entry == null)
                 {
-                    context.ScanFindings.Add(new ScanFindings
+                    newScanFindings.Add(new ScanFindings
                     {
                         ScanId = scan.Id,
                         FindingId = finding.Id,
