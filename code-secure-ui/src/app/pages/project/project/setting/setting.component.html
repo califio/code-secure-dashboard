@@ -15,6 +15,13 @@
           <span class="flex-1 ml-3 whitespace-nowrap text-sm">Security Threshold</span>
         </a>
       </li>
+      <li>
+        <a [routerLink]="routerLink('integration')"
+           class="flex flex-row items-center hover:text-primary hover:bg-card group py-2 px-3" routerLinkActive="text-primary bg-card">
+          <ng-icon name="threshold"></ng-icon>
+          <span class="flex-1 ml-3 whitespace-nowrap text-sm">Integration</span>
+        </a>
+      </li>
     </ul>
     <div class="px-2 lg:px-6 overflow-auto">
       <router-outlet></router-outlet>

@@ -13,6 +13,10 @@ export const routes: Routes = [
       {
         path: 'threshold',
         loadComponent: () => import('./security-threshold/security-threshold.component').then(x => x.SecurityThresholdComponent)
+      },
+      {
+        path: 'integration',
+        loadComponent: () => import('./integration/integration.component').then(x => x.IntegrationComponent)
       }
     ]
   }

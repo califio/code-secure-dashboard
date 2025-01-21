@@ -1,0 +1,40 @@
+<div class="mx-auto flex flex-col text-sm">
+  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Integrations</div>
+  <div class="flex flex-col rounded-xl border border-border bg-background gap-4 p-4 w-full">
+    <div class="overflow-x-auto">
+      <div class="flex flex-col w-full">
+        <div class="flex flex-col border-b border-border p-2 gap-2">
+          <div class="flex flex-row gap-2">
+            <div class="w-full">
+              <div class="flex flex-row gap-2 items-center">
+                <div class="border border-border w-10 h-10 rounded text-center">
+                  <ng-icon name="jira" size="36"></ng-icon>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex flex-row items-center gap-2">
+                    <div class="font-semibold">Jira Issues</div>
+                    @if (config.jira) {
+                      <div class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        <ng-icon name="check-circle" size="18"></ng-icon>
+                        <span>Active</span>
+                      </div>
+                    }
+                  </div>
+                  <div>Push project's issues to Jira.</div>
+                </div>
+              </div>
+            </div>
+            <div class="w-fit px-6">
+              <button app-button type="default" class="w-fit" (click)="config.jira = !config.jira">
+                Configure
+              </button>
+            </div>
+          </div>
+          @if(config.jira) {
+            <jira-integration></jira-integration>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
