@@ -583,7 +583,7 @@ public class DefaultCiService(
             {
                 var entry = context.ChangeTracker.Entries<ScanFindings>().FirstOrDefault(entity =>
                     entity.Entity.ScanId == scanId && entity.Entity.FindingId == finding.Id);
-                if (entry == null || entry.State != EntityState.Added)
+                if (entry == null)
                 {
                     context.ScanFindings.Add(new ScanFindings
                     {
