@@ -1,5 +1,8 @@
 using CodeSecure.Api.Auth.Model;
 using CodeSecure.Api.Auth.Service;
+using CodeSecure.Database;
+using CodeSecure.Database.Entity;
+using CodeSecure.Enum;
 using CodeSecure.Extension;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +13,7 @@ namespace CodeSecure.Api.Auth;
 [Produces("application/json")]
 [Consumes("application/json")]
 [AllowAnonymous]
-public class AuthController(IAuthService authService) : Controller
+public class AuthController(IAuthService authService, AppDbContext context) : Controller
 {
     
     [HttpGet]

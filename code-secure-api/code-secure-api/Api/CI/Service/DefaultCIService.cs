@@ -15,6 +15,7 @@ using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Scanner;
 using CodeSecure.Manager.SourceControl;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace CodeSecure.Api.CI.Service;
 
@@ -527,8 +528,11 @@ public class DefaultCiService(
         else
             branchFindings = [];
 
-        var mBranchFindings = branchFindings.Select(item =>
-            new KeyValuePair<string, Findings>(item.Identity, item)).ToDictionary();
+        var mBranchFindings = new Dictionary<string, Findings>();
+        foreach (var finding in branchFindings)
+        {
+            mBranchFindings[finding.Identity] = finding;
+        }
         // new branch findings 
         var newBranchFindings = new List<Findings>();
         foreach (var newBranchFinding in ciFindings.Where(finding => !mBranchFindings.ContainsKey(finding.Identity)))
@@ -616,9 +620,11 @@ public class DefaultCiService(
         }
 
         // fixed findings
-        var mCiFindings = ciFindings.Select(finding =>
-                new KeyValuePair<string, CiFinding>(finding.Identity, finding))
-            .ToDictionary();
+        var mCiFindings = new Dictionary<string, CiFinding>();
+        foreach (var finding in ciFindings)
+        {
+            mCiFindings[finding.Identity] = finding;
+        }
         var fixedBranchFindings = branchFindings.FindAll(finding =>
             finding.Status != FindingStatus.Fixed && !mCiFindings.ContainsKey(finding.Identity)).ToList();
         if (fixedBranchFindings.Count > 0)
