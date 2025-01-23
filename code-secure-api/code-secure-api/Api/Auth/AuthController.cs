@@ -12,15 +12,13 @@ namespace CodeSecure.Api.Auth;
 [AllowAnonymous]
 public class AuthController(IAuthService authService) : Controller
 {
-    
     [HttpGet]
     [Route("/api/server")]
     public string Server()
     {
-        
         return Request.FrontendUrl();
     }
-    
+
     [HttpPost]
     [Route("/api/login")]
     public async Task<AuthResponse> Login(AuthRequest request)
