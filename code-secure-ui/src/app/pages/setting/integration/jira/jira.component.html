@@ -7,6 +7,12 @@
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Jira URL</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.webUrl!">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Email or username</span>
       <div class="w-full max-w-md">
         <input type="text" class="w-full" [formControl]="form.controls.userName!">

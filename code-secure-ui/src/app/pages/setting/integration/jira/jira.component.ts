@@ -54,13 +54,15 @@ export class JiraComponent implements OnInit {
       this.integrationService.getJiraSetting()
     ]).subscribe(result => {
       const jiraSetting = result[1];
-      this.loadIssueType(jiraSetting.projectKey!).pipe(
-        finalize(() => {
-          this.form.patchValue(jiraSetting);
-        })
-      ).subscribe(issueTypes => {
-        this.issueTypes.set(issueTypes);
-      });
+      if (jiraSetting.projectKey) {
+        this.loadIssueType(jiraSetting.projectKey!).pipe(
+          finalize(() => {
+            this.form.patchValue(jiraSetting);
+          })
+        ).subscribe(issueTypes => {
+          this.issueTypes.set(issueTypes);
+        });
+      }
     });
   }
 
