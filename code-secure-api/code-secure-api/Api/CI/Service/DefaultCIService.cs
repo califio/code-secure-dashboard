@@ -29,7 +29,7 @@ public class DefaultCiService(
     IContainerManager containerManager,
     IProjectManager projectManager,
     ISourceControlManager sourceControlManager,
-    IAlert alert,
+    IAlertManager alertManager,
     ITicketTrackerManager ticketTrackerManager,
     ILogger<DefaultCiService> logger) : ICiService
 {
@@ -201,7 +201,6 @@ public class DefaultCiService(
         var project = await context.Projects
             .Include(record => record.SourceControl)
             .FirstAsync(record => record.Id == scan.ProjectId);
-        var members = await projectManager.GetMembersAsync(scan.ProjectId);
         var frontendUrl = contextAccessor.FrontendUrl();
         var projectUrl = $"{frontendUrl}/#/project/{project.Id.ToString()}";
         var findingUrl =
@@ -211,11 +210,8 @@ public class DefaultCiService(
         // send notification for security team
         if (response.NewFindings.Any())
         {
-            alert.AlertNewFinding(
-                members.FindAll(item => item.Role != ProjectRole.Developer)
-                    .Select(item => item.Email).ToList(),
-                new NewFindingInfoModel
-                {
+            await alertManager.AlertNewFinding(new NewFindingInfoModel
+            {
                     ProjectName = project.Name,
                     ScannerName = scan.Scanner.Name,
                     ScannerType = scan.Scanner.Type.ToString(),
@@ -232,38 +228,37 @@ public class DefaultCiService(
                     TargetBranch = scan.Commit.TargetBranch,
                     ScanName = scan.Scanner.Name,
                     CommitUrl = commitUrl,
-                    MergeRequestUrl = mergeRequestUrl
-                });
+                    MergeRequestUrl = mergeRequestUrl,
+                    ProjectId = project.Id
+            });
         }
 
         if (response.FixedFindings.Any())
         {
-            alert.AlertFixedFinding(
-                members.FindAll(item => item.Role != ProjectRole.Developer)
-                    .Select(item => item.Email).ToList(),
-                new FixedFindingInfoModel
-                {
-                    ProjectName = project.Name,
-                    Findings = response.NewFindings.Select(item => new FindingModel
-                        {
-                            Name = item.Name,
-                            Url = $"{Application.Config.FrontendUrl}/#/finding/{item.Id}",
-                            Severity = item.Severity
-                        })
-                        .ToList(),
-                    FixedFindingUrl = $"{findingUrl}&status=Fixed",
-                    Action = scan.Commit!.Action,
-                    CommitBranch = scan.Commit.Branch,
-                    TargetBranch = scan.Commit.TargetBranch,
-                    ScanName = scan.Scanner.Name,
-                    CommitUrl = commitUrl,
-                    MergeRequestUrl = mergeRequestUrl
-                });
+            await alertManager.AlertFixedFinding(new FixedFindingInfoModel
+            {
+                ProjectName = project.Name,
+                Findings = response.NewFindings.Select(item => new FindingModel
+                    {
+                        Name = item.Name,
+                        Url = $"{Application.Config.FrontendUrl}/#/finding/{item.Id}",
+                        Severity = item.Severity
+                    })
+                    .ToList(),
+                FixedFindingUrl = $"{findingUrl}&status=Fixed",
+                Action = scan.Commit!.Action,
+                CommitBranch = scan.Commit.Branch,
+                TargetBranch = scan.Commit.TargetBranch,
+                ScanName = scan.Scanner.Name,
+                CommitUrl = commitUrl,
+                MergeRequestUrl = mergeRequestUrl,
+                ProjectId = project.Id
+            });
         }
 
         if (response.IsBlock)
         {
-            alert.AlertScanCompletedInfo(members.Select(item => item.Email), new ScanInfoModel
+            await alertManager.AlertScanCompletedInfo(new ScanInfoModel
             {
                 ProjectUrl = projectUrl,
                 ProjectName = project.Name,
@@ -283,7 +278,8 @@ public class DefaultCiService(
                 NewFinding = response.NewFindings.Count(),
                 NeedsTriage = response.NeedsTriageFindings.Count(),
                 Confirmed = response.ConfirmedFindings.Count(),
-                CommitUrl = commitUrl
+                CommitUrl = commitUrl,
+                ProjectId = project.Id
             });
         }
 
@@ -468,22 +464,19 @@ public class DefaultCiService(
             var report = (await projectManager.DependencyReportAsync(scan.ProjectId))!;
             if (report.Critical + report.High + report.Medium + report.Low > 0 && report.Packages.Any())
             {
-                var members = await projectManager.GetMembersAsync(scan.ProjectId);
-                await alert.PushDependencyReport(
-                    members.Select(item => item.Email),
-                    new DependencyReportModel
-                    {
-                        RepoUrl = report.RepoUrl,
-                        RepoName = report.RepoName,
-                        ProjectDependencyUrl = report.ProjectDependencyUrl,
-                        Critical = report.Critical,
-                        High = report.High,
-                        Medium = report.Medium,
-                        Low = report.Low,
-                        Packages = report.Packages
-                    }, null);
+                await alertManager.AlertVulnerableDependencies(new DependencyReportModel
+                {
+                    RepoUrl = report.RepoUrl,
+                    RepoName = report.RepoName,
+                    ProjectDependencyUrl = report.ProjectDependencyUrl,
+                    Critical = report.Critical,
+                    High = report.High,
+                    Medium = report.Medium,
+                    Low = report.Low,
+                    Packages = report.Packages,
+                    ProjectId = scan.ProjectId
+                });
             }
-
             await CreateIssueTracker(scan.ProjectId);
         }
 
@@ -773,15 +766,6 @@ public class DefaultCiService(
             IsBlock = false,
             FindingUrl = ""
         };
-    }
-
-    private string GetGitAction(GitAction action)
-    {
-        if (action == GitAction.CommitTag) return "commit_tag";
-
-        if (action == GitAction.MergeRequest) return "merge_request";
-
-        return "commit_branch";
     }
 
     private string? GetMergeRequestUrl(SourceType sourceType, string repoUrl, string? mergeRequestId)

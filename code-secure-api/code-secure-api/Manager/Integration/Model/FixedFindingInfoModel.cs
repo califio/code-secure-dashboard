@@ -4,6 +4,7 @@ namespace CodeSecure.Manager.Integration.Model;
 
 public class FixedFindingInfoModel
 {
+    public required Guid ProjectId { get; set; }
     public required string ScanName { get; set; }
     public required string CommitUrl { get; set; }
     public required string? MergeRequestUrl { get; set; }

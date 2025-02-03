@@ -4,6 +4,7 @@ using CodeSecure.Database.Extension;
 using CodeSecure.Manager.EnvVariable;
 using CodeSecure.Manager.EnvVariable.Model;
 using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Setting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Project;
@@ -102,30 +103,72 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
 
     [HttpPost]
     [Route("{projectId}/setting/sast")]
-    public async Task UpdateProjectSastSetting(Guid projectId, ThresholdSetting request)
+    public async Task UpdateSastSettingProject(Guid projectId, ThresholdSetting request)
     {
         await projectService.UpdateSastSettingAsync(projectId, request);
     }
 
     [HttpPost]
     [Route("{projectId}/setting/sca")]
-    public async Task UpdateProjectScaSetting(Guid projectId, ThresholdSetting request)
+    public async Task UpdateScaSettingProject(Guid projectId, ThresholdSetting request)
     {
         await projectService.UpdateScaSettingAsync(projectId, request);
     }
+    
+    [HttpGet]
+    [Route("{projectId}/integration")]
+    public async Task<ProjectIntegration> GetIntegrationProject(Guid projectId)
+    {
+        return await projectService.GetIntegrationSettingAsync(projectId);
+    }
 
     [HttpGet]
-    [Route("{projectId}/setting/jira")]
-    public async Task<JiraProjectSettingResponse> GetJiraProjectSetting(Guid projectId, bool reload)
+    [Route("{projectId}/integration/jira")]
+    public async Task<JiraProjectSettingResponse> GetJiraIntegrationProject(Guid projectId, bool reload)
     {
-        return await projectService.GetJiraProjectSettingAsync(projectId, reload);
+        return await projectService.GetJiraIntegrationSettingAsync(projectId, reload);
     }
 
     [HttpPost]
-    [Route("{projectId}/setting/jira")]
-    public async Task UpdateJiraProjectSetting(Guid projectId, [FromBody] JiraProjectSetting setting)
+    [Route("{projectId}/integration/jira")]
+    public async Task UpdateJiraIntegrationProject(Guid projectId, [FromBody] JiraProjectSetting setting)
     {
-        await projectService.UpdateJiraProjectSettingAsync(projectId, setting);
+        await projectService.UpdateJiraIntegrationSettingAsync(projectId, setting);
+    }
+    
+    [HttpGet]
+    [Route("{projectId}/integration/teams")]
+    public async Task<TeamsSetting> GetTeamsIntegrationProject(Guid projectId)
+    {
+        return await projectService.GetTeamsIntegrationSettingAsync(projectId);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/integration/teams")]
+    public async Task UpdateTeamsIntegrationProject(Guid projectId, [FromBody] TeamsSetting setting)
+    {
+        await projectService.UpdateTeamsIntegrationSettingAsync(projectId, setting);
+    }
+    
+    [HttpPost]
+    [Route("{projectId}/integration/teams/test")]
+    public async Task TestTeamsIntegrationProject(Guid projectId)
+    {
+        await projectService.TestTeamsIntegrationSettingAsync(projectId);
+    }
+    
+    [HttpGet]
+    [Route("{projectId}/integration/mail")]
+    public async Task<AlertSetting> GetMailIntegrationProject(Guid projectId)
+    {
+        return await projectService.GetMailIntegrationSettingAsync(projectId);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/integration/mail")]
+    public async Task UpdateMailIntegrationProject(Guid projectId, [FromBody] AlertSetting setting)
+    {
+        await projectService.UpdateMailIntegrationSettingAsync(projectId, setting);
     }
 
     [HttpPost]

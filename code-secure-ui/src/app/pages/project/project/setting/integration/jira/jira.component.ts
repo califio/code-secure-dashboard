@@ -16,7 +16,7 @@ import {map} from 'rxjs/operators';
 import {IntegrationService} from '../../../../../../api/services/integration.service';
 
 @Component({
-  selector: 'jira-integration',
+  selector: 'jira-integration-project',
   standalone: true,
   imports: [
     ButtonDirective,
@@ -88,7 +88,7 @@ export class JiraComponent implements OnInit {
 
   saveJiraSetting() {
     this.form.disable();
-    this.projectService.updateJiraProjectSetting({
+    this.projectService.updateJiraIntegrationProject({
       projectId: this.projectStore.projectId(),
       body: this.form.getRawValue()
     }).pipe(
@@ -100,7 +100,7 @@ export class JiraComponent implements OnInit {
 
   private getJiraSetting(reload = false) {
     this.loading = true;
-    return this.projectService.getJiraProjectSetting({
+    return this.projectService.getJiraIntegrationProject({
       projectId: this.projectStore.projectId(),
       reload: reload
     }).pipe(

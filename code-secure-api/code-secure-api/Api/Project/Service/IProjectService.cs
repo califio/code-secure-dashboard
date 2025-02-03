@@ -1,6 +1,7 @@
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Database.Extension;
 using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Setting;
 
 namespace CodeSecure.Api.Project.Service;
 
@@ -21,7 +22,16 @@ public interface IProjectService
     Task<ProjectSetting> GetProjectSettingAsync(Guid projectId);
     Task UpdateSastSettingAsync(Guid projectId, ThresholdSetting request);
     Task UpdateScaSettingAsync(Guid projectId, ThresholdSetting request);
-    Task<JiraProjectSettingResponse> GetJiraProjectSettingAsync(Guid projectId, bool reload);
-    Task UpdateJiraProjectSettingAsync(Guid projectId, JiraProjectSetting request);
+    
+    Task<ProjectIntegration> GetIntegrationSettingAsync(Guid projectId);
+    Task<JiraProjectSettingResponse> GetJiraIntegrationSettingAsync(Guid projectId, bool reload);
+    Task UpdateJiraIntegrationSettingAsync(Guid projectId, JiraProjectSetting request);
+    
+    Task<TeamsSetting> GetTeamsIntegrationSettingAsync(Guid projectId);
+    Task UpdateTeamsIntegrationSettingAsync(Guid projectId, TeamsSetting request);
+    Task TestTeamsIntegrationSettingAsync(Guid projectId);
+    
+    Task<AlertSetting> GetMailIntegrationSettingAsync(Guid projectId);
+    Task UpdateMailIntegrationSettingAsync(Guid projectId, AlertSetting request);
     
 }

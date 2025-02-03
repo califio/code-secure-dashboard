@@ -234,6 +234,44 @@ public class ProjectManager(
         await context.SaveChangesAsync();
     }
 
+    public async Task<AlertSetting> GetMailSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        return JSONSerializer.DeserializeOrDefault(setting.MailSetting, new AlertSetting
+        {
+            Active = true,
+            SecurityAlertEvent = true,
+            NewFindingEvent = true,
+            FixedFindingEvent = true,
+            ScanCompletedEvent = false,
+            ScanFailedEvent = true
+        });
+    }
+
+    public async Task UpdateMailSettingAsync(Guid projectId, AlertSetting request)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        // always active by default
+        request.Active = true;
+        projectSetting.MailSetting = JSONSerializer.Serialize(request);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<TeamsSetting> GetTeamsSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        return JSONSerializer.DeserializeOrDefault(setting.TeamsSetting, new TeamsSetting());
+    }
+
+    public async Task UpdateTeamsSettingAsync(Guid projectId, TeamsSetting request)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        projectSetting.TeamsSetting = JSONSerializer.Serialize(request);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
     private async Task<ProjectSettings> FindProjectSettingsAsync(Guid projectId)
     {
         return await context.ProjectSettings

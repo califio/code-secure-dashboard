@@ -8,17 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ThresholdSetting } from '../../models/threshold-setting';
+import { MailAlertSetting } from '../../models/mail-alert-setting';
 
-export interface UpdateProjectSastSetting$Params {
-  projectId: string;
-      body?: ThresholdSetting
+export interface UpdateMailIntegrationSetting$Params {
+      body?: MailAlertSetting
 }
 
-export function updateProjectSastSetting(http: HttpClient, rootUrl: string, params: UpdateProjectSastSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, updateProjectSastSetting.PATH, 'post');
+export function updateMailIntegrationSetting(http: HttpClient, rootUrl: string, params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateMailIntegrationSetting.PATH, 'post');
   if (params) {
-    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -32,4 +30,4 @@ export function updateProjectSastSetting(http: HttpClient, rootUrl: string, para
   );
 }
 
-updateProjectSastSetting.PATH = '/api/project/{projectId}/setting/sast';
+updateMailIntegrationSetting.PATH = '/api/integration/mail';

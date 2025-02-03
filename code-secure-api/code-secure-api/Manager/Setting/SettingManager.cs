@@ -6,10 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeSecure.Manager.Setting;
 
-public class SettingManager(
-    AppDbContext context) : ISettingManager
+public class SettingManager(AppDbContext context) : ISettingManager
 {
-    private static AppSetting? appSetting;
+    private static AuthSetting? authSetting;
     private static MailSetting? mailSetting;
     private static MailAlertSetting? mailAlertSetting;
     private static JiraSetting? jiraSetting;
@@ -17,48 +16,24 @@ public class SettingManager(
     private static SLA? slaSastSetting;
     private static SLA? slaScaSetting;
 
-    public async Task<AppSetting> AppSettingAsync()
+    public async Task<AuthSetting> GetAuthSettingAsync()
     {
-        if (appSetting == null)
+        if (authSetting == null)
         {
-            appSetting = await CurrentAppSettingAsync();
+            var setting = await GetAppSettingsAsync();
+            authSetting = JSONSerializer.DeserializeOrDefault(setting.AuthSetting, new AuthSetting());
         }
 
-        Application.Setting = appSetting;
-        return appSetting;
+        return authSetting;
     }
 
-    public async Task<AppSetting> UpdateAppSettingAsync(AppSetting setting)
+    public async Task UpdateAuthSettingAsync(AuthSetting request)
     {
-        var config = await context.AppSettings
-            .OrderBy(record => record.Id)
-            .FirstOrDefaultAsync();
-        if (config == null)
-        {
-            config = new AppSettings
-            {
-                Id = Guid.NewGuid(),
-                MailSetting = JSONSerializer.Serialize(setting.MailSetting),
-                AuthSetting = JSONSerializer.Serialize(setting.AuthSetting),
-                SlaScaSetting = JSONSerializer.Serialize(setting.SlaScaSetting),
-                SlaSastSetting = JSONSerializer.Serialize(setting.SlaSastSetting),
-            };
-            context.AppSettings.Add(config);
-            await context.SaveChangesAsync();
-        }
-        else
-        {
-            config.MailSetting = JSONSerializer.Serialize(setting.MailSetting);
-            config.AuthSetting = JSONSerializer.Serialize(setting.AuthSetting);
-            config.SlaSastSetting = JSONSerializer.Serialize(setting.SlaSastSetting);
-            config.SlaScaSetting = JSONSerializer.Serialize(setting.SlaScaSetting);
-            context.AppSettings.Update(config);
-            await context.SaveChangesAsync();
-        }
-
-        appSetting = await CurrentAppSettingAsync();
-        Application.Setting = appSetting;
-        return await AppSettingAsync();
+        var setting = await GetAppSettingsAsync();
+        setting.AuthSetting = JSONSerializer.Serialize(request);
+        context.AppSettings.Update(setting);
+        await context.SaveChangesAsync();
+        authSetting = request;
     }
 
     public async Task<SLA> GetSlaSastSettingAsync()
@@ -72,6 +47,15 @@ public class SettingManager(
         return slaSastSetting;
     }
 
+    public async Task UpdateSlaSastSettingAsync(SLA request)
+    {
+        var setting = await GetAppSettingsAsync();
+        setting.SlaSastSetting = JSONSerializer.Serialize(request);
+        context.AppSettings.Update(setting);
+        await context.SaveChangesAsync();
+        slaSastSetting = request;
+    }
+
     public async Task<SLA> GetSlaScaSettingAsync()
     {
         if (slaScaSetting == null)
@@ -82,7 +66,16 @@ public class SettingManager(
 
         return slaScaSetting;
     }
-    
+
+    public async Task UpdateSlaScaSettingAsync(SLA request)
+    {
+        var setting = await GetAppSettingsAsync();
+        setting.SlaScaSetting = JSONSerializer.Serialize(request);
+        context.AppSettings.Update(setting);
+        await context.SaveChangesAsync();
+        slaScaSetting = request;
+    }
+
     public async Task<JiraSetting> GetJiraSettingAsync()
     {
         if (jiraSetting == null)
@@ -90,6 +83,7 @@ public class SettingManager(
             var setting = await GetAppSettingsAsync();
             jiraSetting = JSONSerializer.DeserializeOrDefault(setting.JiraSetting, new JiraSetting());
         }
+
         return jiraSetting;
     }
 
@@ -160,28 +154,6 @@ public class SettingManager(
         context.AppSettings.Update(setting);
         await context.SaveChangesAsync();
         teamsSetting = request;
-    }
-
-    private async Task<AppSetting> CurrentAppSettingAsync()
-    {
-        var config = await GetAppSettingsAsync();
-        return new AppSetting
-        {
-            MailSetting = JSONSerializer.DeserializeOrDefault(config.MailSetting,
-                new MailSetting()),
-            AuthSetting = JSONSerializer.DeserializeOrDefault(config.AuthSetting,
-                new AuthSetting
-                {
-                    OpenIdConnectSetting = new OpenIdConnectSetting()
-                }),
-            SlaSastSetting = JSONSerializer.DeserializeOrDefault(config.SlaSastSetting,
-                new SLA()),
-            SlaScaSetting = JSONSerializer.DeserializeOrDefault(config.SlaScaSetting,
-                new SLA()),
-            TeamsNotificationSetting = JSONSerializer.DeserializeOrDefault(config.TeamsSetting,
-                new TeamsSetting()),
-            JiraSetting = JSONSerializer.DeserializeOrDefault(config.JiraSetting, new JiraSetting()),
-        };
     }
 
     private async Task<AppSettings> GetAppSettingsAsync()

@@ -13,6 +13,11 @@ public class JiraManager(JiraSetting setting) : IJiraManager
             EnableUserPrivacyMode = true,
         });
 
+    public async Task TestConnection()
+    {
+        await jiraClient.Users.GetMyselfAsync();
+    }
+
     public async Task<List<Atlassian.Jira.Project>> GetProjectsAsync(bool reload = false)
     {
         if (reload || jiraProjects == null)
@@ -46,7 +51,7 @@ public class JiraManager(JiraSetting setting) : IJiraManager
             var issueTypes = await jiraClient.IssueTypes.GetIssueTypesForProjectAsync(projectKey);
             return issueTypes.Select(item => item.Name).ToList();
         }
-        catch (System.Exception e)
+        catch (System.Exception)
         {
             return [];
         }

@@ -79,9 +79,8 @@ export class AuthenticationComponent implements OnInit {
       body: this.form.getRawValue()
     }).pipe(
       finalize(() => this.form.enable())
-    ).subscribe(config => {
-      this.form.patchValue(config);
-      this.toastr.success('Update config success!');
+    ).subscribe(() => {
+      this.toastr.success('Update success!');
     })
   }
   secretTextType = false;

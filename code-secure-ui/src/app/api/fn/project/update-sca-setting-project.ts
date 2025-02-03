@@ -8,13 +8,18 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { ThresholdSetting } from '../../models/threshold-setting';
 
-export interface TestTeamsSetting$Params {
+export interface UpdateScaSettingProject$Params {
+  projectId: string;
+      body?: ThresholdSetting
 }
 
-export function testTeamsSetting(http: HttpClient, rootUrl: string, params?: TestTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, testTeamsSetting.PATH, 'post');
+export function updateScaSettingProject(http: HttpClient, rootUrl: string, params: UpdateScaSettingProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateScaSettingProject.PATH, 'post');
   if (params) {
+    rb.path('projectId', params.projectId, {"style":"simple"});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -27,4 +32,4 @@ export function testTeamsSetting(http: HttpClient, rootUrl: string, params?: Tes
   );
 }
 
-testTeamsSetting.PATH = '/api/integration/teams/test';
+updateScaSettingProject.PATH = '/api/project/{projectId}/setting/sca';

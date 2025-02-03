@@ -1,6 +1,7 @@
 using CodeSecure.Database.Entity;
 using CodeSecure.Enum;
 using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Setting;
 
 namespace CodeSecure.Manager.Project;
 
@@ -18,4 +19,9 @@ public interface IProjectManager
     Task UpdateScaSettingAsync(Guid projectId, ThresholdSetting setting);
     Task<JiraProjectSetting> GetJiraSettingAsync(Guid projectId);
     Task UpdateJiraSettingAsync(Guid projectId, JiraProjectSetting setting);
+    
+    Task<AlertSetting> GetMailSettingAsync(Guid projectId);
+    Task UpdateMailSettingAsync(Guid projectId, AlertSetting request);
+    Task<TeamsSetting> GetTeamsSettingAsync(Guid projectId);
+    Task UpdateTeamsSettingAsync(Guid projectId, TeamsSetting request);
 }

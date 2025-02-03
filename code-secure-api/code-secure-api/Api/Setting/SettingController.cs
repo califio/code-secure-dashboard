@@ -5,7 +5,6 @@ using CodeSecure.Authentication.Jwt;
 using CodeSecure.Database.Extension;
 using CodeSecure.Exception;
 using CodeSecure.Manager.EnvVariable;
-using CodeSecure.Manager.Integration;
 using CodeSecure.Manager.Integration.Mail;
 using CodeSecure.Manager.Setting;
 using Microsoft.AspNetCore.Mvc;
@@ -65,9 +64,9 @@ public class SettingController(
     [HttpPost]
     [Route("auth")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<AuthSetting> UpdateAuthSetting([FromBody] AuthSetting request)
+    public async Task UpdateAuthSetting([FromBody] AuthSetting request)
     {
-        return await settingService.UpdateAuthSettingAsync(request);
+        await settingService.UpdateAuthSettingAsync(request);
     }
 
     [HttpGet]
@@ -81,9 +80,9 @@ public class SettingController(
     [HttpPost]
     [Route("sla")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<SlaSetting> UpdateSlaSetting([FromBody] SlaSetting request)
-    {
-        return await settingService.UpdateSlaSettingAsync(request);
+    public async Task UpdateSlaSetting([FromBody] SlaSetting request)
+    { 
+        await settingService.UpdateSlaSettingAsync(request);
     }
 
     [HttpPost]

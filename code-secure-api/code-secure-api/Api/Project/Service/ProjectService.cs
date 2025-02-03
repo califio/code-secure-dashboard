@@ -6,12 +6,13 @@ using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
-using CodeSecure.Manager.Integration;
 using CodeSecure.Manager.Integration.Mail;
 using CodeSecure.Manager.Integration.Model;
+using CodeSecure.Manager.Integration.Teams;
 using CodeSecure.Manager.Integration.TicketTracker.Jira;
 using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Setting;
 using CodeSecure.Manager.Statistic;
 using Microsoft.EntityFrameworkCore;
 
@@ -353,7 +354,18 @@ public class ProjectService(
         await projectManager.UpdateScaSettingAsync(projectId, request);
     }
 
-    public async Task<JiraProjectSettingResponse> GetJiraProjectSettingAsync(Guid projectId, bool reload)
+    public async Task<ProjectIntegration> GetIntegrationSettingAsync(Guid projectId)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
+        return new ProjectIntegration
+        {
+            Jira = (await projectManager.GetJiraSettingAsync(projectId)).Active,
+            Teams = (await projectManager.GetTeamsSettingAsync(projectId)).Active
+        };
+    }
+
+    public async Task<JiraProjectSettingResponse> GetJiraIntegrationSettingAsync(Guid projectId, bool reload)
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
@@ -368,7 +380,7 @@ public class ProjectService(
         };
     }
 
-    public async Task UpdateJiraProjectSettingAsync(Guid projectId, JiraProjectSetting request)
+    public async Task UpdateJiraIntegrationSettingAsync(Guid projectId, JiraProjectSetting request)
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
@@ -377,6 +389,54 @@ public class ProjectService(
             throw new BadRequestException("Jira project not found");
         }
         await projectManager.UpdateJiraSettingAsync(projectId, request);
+    }
+
+    public async Task<TeamsSetting> GetTeamsIntegrationSettingAsync(Guid projectId)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        var teamsIntegrationSetting = await projectManager.GetTeamsSettingAsync(projectId);
+        return teamsIntegrationSetting with { Webhook = string.Empty };
+    }
+
+    public async Task UpdateTeamsIntegrationSettingAsync(Guid projectId, TeamsSetting request)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        var teamsIntegrationSetting = await projectManager.GetTeamsSettingAsync(projectId);
+        if (string.IsNullOrEmpty(request.Webhook))
+        {
+            request.Webhook = teamsIntegrationSetting.Webhook;
+        }
+
+        await projectManager.UpdateTeamsSettingAsync(projectId, request);
+    }
+
+    public async Task TestTeamsIntegrationSettingAsync(Guid projectId)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        var setting = await projectManager.GetTeamsSettingAsync(projectId);
+        var teamsAlert = new TeamsAlert(setting);
+        var result = await teamsAlert.TestAlert(CurrentUser().UserName);
+        if (!result.Succeeded)
+        {
+            throw new BadRequestException(result.Error);
+        }
+    }
+
+    public async Task<AlertSetting> GetMailIntegrationSettingAsync(Guid projectId)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        return await projectManager.GetMailSettingAsync(projectId);
+    }
+
+    public async Task UpdateMailIntegrationSettingAsync(Guid projectId, AlertSetting request)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        await projectManager.UpdateMailSettingAsync(projectId, request);
     }
 
     protected override bool HasPermission(Projects entity, string action)

@@ -7,15 +7,74 @@
           <div class="flex flex-row gap-2">
             <div class="w-full">
               <div class="flex flex-row gap-2 items-center">
+                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
+                  <ng-icon name="heroEnvelope" size="28"></ng-icon>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex flex-row items-center gap-2">
+                    <div class="font-semibold">Mail</div>
+                    <div class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                      <span>Default</span>
+                    </div>
+                  </div>
+                  <div class="hidden md:block">Send mail alert to project's members.</div>
+                </div>
+              </div>
+            </div>
+            <div class="w-fit">
+              <button app-button type="default" class="w-fit" (click)="config.mail = !config.mail">
+                Configure
+              </button>
+            </div>
+          </div>
+          @if (config.mail) {
+            <mail-integration-project class="ml-12 mt-4"></mail-integration-project>
+          }
+        </div>
+        <div class="flex flex-col border-b border-border p-2 gap-2">
+          <div class="flex flex-row gap-2">
+            <div class="w-full">
+              <div class="flex flex-row gap-2 items-center">
+                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
+                  <ng-icon name="teams" size="28"></ng-icon>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex flex-row items-center gap-2">
+                    <div class="font-semibold">Microsoft Teams</div>
+                    @if (integrationSetting.teams) {
+                      <div class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        <ng-icon name="heroCheckCircle" size="18"></ng-icon>
+                        <span>Active</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="hidden md:block">Send project's notifications to Microsoft Teams channels.</div>
+                </div>
+              </div>
+            </div>
+            <div class="w-fit">
+              <button app-button type="default" class="w-fit" (click)="config.teams = !config.teams">
+                Configure
+              </button>
+            </div>
+          </div>
+          @if (config.teams) {
+            <teams-integration-project class="ml-12 mt-4"></teams-integration-project>
+          }
+        </div>
+        <div class="flex flex-col border-b border-border p-2 gap-2">
+          <div class="flex flex-row gap-2">
+            <div class="w-full">
+              <div class="flex flex-row gap-2 items-center">
                 <div class="border border-border w-10 h-10 rounded text-center">
                   <ng-icon name="jira" size="36"></ng-icon>
                 </div>
                 <div class="flex flex-col">
                   <div class="flex flex-row items-center gap-2">
                     <div class="font-semibold">Jira Issues</div>
-                    @if (projectStore.projectSetting().jiraSetting?.active) {
+                    @if (integrationSetting.jira) {
                       <div class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                        <ng-icon name="check-circle" size="18"></ng-icon>
+                        <ng-icon name="heroCheckCircle" size="18"></ng-icon>
                         <span>Active</span>
                       </div>
                     }
@@ -24,14 +83,14 @@
                 </div>
               </div>
             </div>
-            <div class="w-fit px-6">
+            <div class="w-fit">
               <button app-button type="default" class="w-fit" (click)="config.jira = !config.jira">
                 Configure
               </button>
             </div>
           </div>
           @if(config.jira) {
-            <jira-integration class="ml-12 mt-4"></jira-integration>
+            <jira-integration-project class="ml-12 mt-4"></jira-integration-project>
           }
         </div>
       </div>

@@ -5,10 +5,10 @@ namespace CodeSecure.Manager.Integration;
 public interface IAlert
 {
     public Task<NotificationResult> TestAlert(string receiver);
-    public Task AlertScanCompletedInfo(IEnumerable<string> receivers, ScanInfoModel model);
-    public Task AlertNewFinding(IEnumerable<string> receivers, NewFindingInfoModel model);
-    public Task AlertFixedFinding(IEnumerable<string> receivers, FixedFindingInfoModel model);
-    public Task AlertNeedsTriageFinding(IEnumerable<string> receivers, NeedsTriageFindingInfoModel model);
-    public Task PushDependencyReport(IEnumerable<string> receivers, DependencyReportModel model, string? subject);
-    public Task AlertProjectWithoutMember(IEnumerable<string> receivers, AlertProjectWithoutMemberModel model);
+    public Task AlertScanCompletedInfo(ScanInfoModel model, List<string>? receivers = null);
+    public Task AlertNewFinding(NewFindingInfoModel model, List<string>? receivers = null);
+    public Task AlertFixedFinding(FixedFindingInfoModel model, List<string>? receivers = null);
+    public Task AlertNeedsTriageFinding(NeedsTriageFindingInfoModel model, List<string>? receivers = null);
+    public Task AlertVulnerableDependencies(DependencyReportModel model, string? subject, List<string>? receivers = null);
+    public Task AlertProjectWithoutMember(AlertProjectWithoutMemberModel model, List<string>? receivers = null);
 }

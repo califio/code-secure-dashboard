@@ -10,4 +10,5 @@ public class ProjectSettings
     public string? ScaSetting { get; set; }
     public string? JiraSetting { get; set; }
     public string? TeamsSetting { get; set; }
+    public string? MailSetting { get; set; }
 }

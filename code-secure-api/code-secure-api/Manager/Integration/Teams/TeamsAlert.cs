@@ -39,7 +39,7 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         }
     }
 
-    public async Task AlertScanCompletedInfo(IEnumerable<string> receivers, ScanInfoModel model)
+    public async Task AlertScanCompletedInfo(ScanInfoModel model, List<string>? receivers = null)
     {
         if (!setting.ScanCompletedEvent)
         {
@@ -77,15 +77,18 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         await PushMessage(message);
     }
 
-    public async Task AlertNewFinding(IEnumerable<string> receivers, NewFindingInfoModel model)
+    public async Task AlertNewFinding(NewFindingInfoModel model, List<string>? receivers = null)
     {
         if (!setting.NewFindingEvent || model.Findings.Count == 0)
         {
             return;
         }
+
         model.Findings.Sort((first, two) => two.Severity - first.Severity);
-        var title = $"Security Alert: Found new finding on \"{model.ProjectName}\" project by {model.ScannerName} - {model.ScannerType}";
-        var text = $"We are notifying you that the latest {model.ScannerName} scan has detected {model.Findings.Count()} new security findings.<br>";
+        var title =
+            $"Security Alert: Found new finding on \"{model.ProjectName}\" project by {model.ScannerName} - {model.ScannerType}";
+        var text =
+            $"We are notifying you that the latest {model.ScannerName} scan has detected {model.Findings.Count()} new security findings.<br>";
         text += $"**Commit:** {model.ScanName}<br>";
         if (model.Action == GitAction.CommitBranch)
         {
@@ -99,19 +102,23 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         {
             text += $"**Merge Request:** **{model.CommitBranch}** to **{model.TargetBranch}**<br><br>";
         }
+
         text += "**List Finding**<br>";
         text += "<table><thead><tr><td>**ID**</td><td>**NAME**</td><td>**SEVERITY**</td></tr></thread><tbody>";
         for (int i = 0; i < model.Findings.Count; i++)
         {
-            text += $"<tr><td style='width: 30px;'>{i + 1}</td><td>[{ model.Findings[i].Name }]({model.Findings[i].Url})</td><td style='width: 100px'>{ model.Findings[i].Severity.ToString().ToUpper() }</td></tr>";
+            text +=
+                $"<tr><td style='width: 30px;'>{i + 1}</td><td>[{model.Findings[i].Name}]({model.Findings[i].Url})</td><td style='width: 100px'>{model.Findings[i].Severity.ToString().ToUpper()}</td></tr>";
         }
 
         text += "</tbody></table><br>";
-        text += "Please verify and resolve the finding as soon as possible to maintain the security and integrity of the project.<br>";
-        if (receivers.Any())
+        text +=
+            "Please verify and resolve the finding as soon as possible to maintain the security and integrity of the project.<br>";
+        if (receivers != null && receivers.Any())
         {
             text += $"**Assignee:** {string.Join(", ", receivers)}";
         }
+
         var message = new MessageCard(title)
         {
             Text = text
@@ -119,22 +126,25 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         // action
         message.AddAction(new OpenUriAction("View Detail", model.OpenFindingUrl));
         message.AddAction(new OpenUriAction("View Commit", model.CommitUrl));
-        if (model.Action ==  GitAction.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
+        if (model.Action == GitAction.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
         {
             message.AddAction(new OpenUriAction("View Merge Request", model.MergeRequestUrl!));
         }
+
         await PushMessage(message);
     }
 
-    public async Task AlertFixedFinding(IEnumerable<string> receivers, FixedFindingInfoModel model)
+    public async Task AlertFixedFinding(FixedFindingInfoModel model, List<string>? receivers = null)
     {
         if (!setting.FixedFindingEvent || model.Findings.Count == 0)
         {
             return;
         }
+
         model.Findings.Sort((first, two) => two.Severity - first.Severity);
         var title = $"Notification: Some findings have been fixed on \"{model.ProjectName}\" project";
-        var text = $"We are pleased to inform you that some previously reported findings have been fixed in **{model.ProjectName}** project.\n\n";
+        var text =
+            $"We are pleased to inform you that some previously reported findings have been fixed in **{model.ProjectName}** project.\n\n";
         text += $"**Commit:** {model.ScanName}<br>";
         if (model.Action == GitAction.CommitBranch)
         {
@@ -148,16 +158,18 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         {
             text += $"**Merge Request:** **{model.CommitBranch}** to **{model.TargetBranch}**<br><br>";
         }
+
         text += "**Fixed Findings**<br>";
         text += "<table><thead><tr><td>**ID**</td><td>**NAME**</td><td>**SEVERITY**</td></tr></thread><tbody>";
         for (int i = 0; i < model.Findings.Count; i++)
         {
-            text += $"<tr><td style='width: 30px;'>{i + 1}</td><td>[{ model.Findings[i].Name }]({model.Findings[i].Url})</td><td style='width: 100px'>{ model.Findings[i].Severity.ToString().ToUpper() }</td></tr>";
+            text +=
+                $"<tr><td style='width: 30px;'>{i + 1}</td><td>[{model.Findings[i].Name}]({model.Findings[i].Url})</td><td style='width: 100px'>{model.Findings[i].Severity.ToString().ToUpper()}</td></tr>";
         }
 
         text += "</tbody></table><br>";
         text += $"Please verify the patch to ensure they align with the expected behavior.<br>";
-        if (receivers.Any())
+        if (receivers != null && receivers.Count != 0)
         {
             text += $"**Assignee:** {string.Join(", ", receivers)}";
         }
@@ -169,14 +181,15 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         // action
         message.AddAction(new OpenUriAction("View Detail", model.FixedFindingUrl));
         message.AddAction(new OpenUriAction("View Commit", model.CommitUrl));
-        if (model.Action ==  GitAction.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
+        if (model.Action == GitAction.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
         {
             message.AddAction(new OpenUriAction("View Merge Request", model.MergeRequestUrl!));
         }
+
         await PushMessage(message);
     }
 
-    public async Task AlertNeedsTriageFinding(IEnumerable<string> receivers, NeedsTriageFindingInfoModel model)
+    public async Task AlertNeedsTriageFinding(NeedsTriageFindingInfoModel model, List<string>? receivers = null)
     {
         if (!setting.SecurityAlertEvent)
         {
@@ -187,7 +200,7 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         var text =
             $"This is a reminder that {model.NeedsTriage} unconfirmed security findings have been detected in **{model.ProjectName}** project and require your verification.\n\n" +
             $"Please verify and resolve these findings as soon as possible to maintain the security and integrity of the project.\n\n";
-        if (receivers.Any())
+        if (receivers != null && receivers.Count != 0)
         {
             text += $"**Assignee:** {string.Join(", ", receivers)}";
         }
@@ -203,8 +216,8 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         await PushMessage(message);
     }
 
-    public async Task PushDependencyReport(IEnumerable<string> receivers, DependencyReportModel model,
-        string? subject = null)
+    public async Task AlertVulnerableDependencies(DependencyReportModel model, string? subject = null,
+        List<string>? receivers = null)
     {
         if (!setting.SecurityAlertEvent || model.Packages.Count == 0)
         {
@@ -231,7 +244,7 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         await PushMessage(message);
     }
 
-    public async Task AlertProjectWithoutMember(IEnumerable<string> receivers, AlertProjectWithoutMemberModel model)
+    public async Task AlertProjectWithoutMember(AlertProjectWithoutMemberModel model, List<string>? receivers = null)
     {
         var action = new OpenUriAction("View Project");
         action.AddTarget(TargetOs.@default, model.ProjectUrl);

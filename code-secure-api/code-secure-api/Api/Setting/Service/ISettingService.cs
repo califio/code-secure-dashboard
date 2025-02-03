@@ -6,10 +6,10 @@ namespace CodeSecure.Api.Setting.Service;
 public interface ISettingService
 {
     Task<AuthSetting> GetAuthSettingAsync();
-    Task<AuthSetting> UpdateAuthSettingAsync(AuthSetting request);
+    Task UpdateAuthSettingAsync(AuthSetting request);
 
     Task<SlaSetting> GetSlaSettingAsync();
-    Task<SlaSetting> UpdateSlaSettingAsync(SlaSetting request);
+    Task UpdateSlaSettingAsync(SlaSetting request);
 
     // mail
     Task<MailSetting> GetMailSettingAsync();

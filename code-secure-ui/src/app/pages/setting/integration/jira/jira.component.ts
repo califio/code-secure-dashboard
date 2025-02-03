@@ -39,7 +39,7 @@ export class JiraComponent implements OnInit {
   issueTypes = signal<DropdownItem[]>([]);
   loadingJiraProject = false;
   loadingIssueType = false;
-
+  loadingTest = false;
   constructor(
     private integrationService: IntegrationService,
     private formService: FormService,
@@ -51,7 +51,7 @@ export class JiraComponent implements OnInit {
   ngOnInit(): void {
     forkJoin([
       this.loadJiraProject(),
-      this.integrationService.getJiraSetting()
+      this.integrationService.getJiraIntegrationSetting()
     ]).subscribe(result => {
       const jiraSetting = result[1];
       if (jiraSetting.projectKey) {
@@ -116,12 +116,21 @@ export class JiraComponent implements OnInit {
 
   saveSetting() {
     this.form.disable()
-    this.integrationService.updateJiraSetting({
+    this.integrationService.updateJiraIntegrationSetting({
       body: this.form.getRawValue()
     }).pipe(
       finalize(() => this.form.enable())
     ).subscribe(() => {
       this.toastr.success('Update success!');
+    })
+  }
+
+  testConnection() {
+    this.loadingTest = true;
+    this.integrationService.testJiraIntegrationSetting().pipe(
+      finalize(() => this.loadingTest = false)
+    ).subscribe(() => {
+      this.toastr.success('Success!');
     })
   }
 }

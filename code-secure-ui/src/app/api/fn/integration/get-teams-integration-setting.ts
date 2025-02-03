@@ -10,11 +10,11 @@ import { RequestBuilder } from '../../request-builder';
 
 import { TeamsSetting } from '../../models/teams-setting';
 
-export interface GetTeamsSetting$Params {
+export interface GetTeamsIntegrationSetting$Params {
 }
 
-export function getTeamsSetting(http: HttpClient, rootUrl: string, params?: GetTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
-  const rb = new RequestBuilder(rootUrl, getTeamsSetting.PATH, 'get');
+export function getTeamsIntegrationSetting(http: HttpClient, rootUrl: string, params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
+  const rb = new RequestBuilder(rootUrl, getTeamsIntegrationSetting.PATH, 'get');
   if (params) {
   }
 
@@ -28,4 +28,4 @@ export function getTeamsSetting(http: HttpClient, rootUrl: string, params?: GetT
   );
 }
 
-getTeamsSetting.PATH = '/api/integration/teams';
+getTeamsIntegrationSetting.PATH = '/api/integration/teams';

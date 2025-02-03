@@ -10,13 +10,13 @@ import { RequestBuilder } from '../../request-builder';
 
 import { JiraProjectSetting } from '../../models/jira-project-setting';
 
-export interface UpdateJiraProjectSetting$Params {
+export interface UpdateJiraIntegrationProject$Params {
   projectId: string;
       body?: JiraProjectSetting
 }
 
-export function updateJiraProjectSetting(http: HttpClient, rootUrl: string, params: UpdateJiraProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, updateJiraProjectSetting.PATH, 'post');
+export function updateJiraIntegrationProject(http: HttpClient, rootUrl: string, params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateJiraIntegrationProject.PATH, 'post');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
@@ -32,4 +32,4 @@ export function updateJiraProjectSetting(http: HttpClient, rootUrl: string, para
   );
 }
 
-updateJiraProjectSetting.PATH = '/api/project/{projectId}/setting/jira';
+updateJiraIntegrationProject.PATH = '/api/project/{projectId}/integration/jira';

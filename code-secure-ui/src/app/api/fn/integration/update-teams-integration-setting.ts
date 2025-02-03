@@ -10,12 +10,12 @@ import { RequestBuilder } from '../../request-builder';
 
 import { TeamsSetting } from '../../models/teams-setting';
 
-export interface UpdateTeamsSetting$Params {
+export interface UpdateTeamsIntegrationSetting$Params {
       body?: TeamsSetting
 }
 
-export function updateTeamsSetting(http: HttpClient, rootUrl: string, params?: UpdateTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, updateTeamsSetting.PATH, 'post');
+export function updateTeamsIntegrationSetting(http: HttpClient, rootUrl: string, params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateTeamsIntegrationSetting.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -30,4 +30,4 @@ export function updateTeamsSetting(http: HttpClient, rootUrl: string, params?: U
   );
 }
 
-updateTeamsSetting.PATH = '/api/integration/teams';
+updateTeamsIntegrationSetting.PATH = '/api/integration/teams';

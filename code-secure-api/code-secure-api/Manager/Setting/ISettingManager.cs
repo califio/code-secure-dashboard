@@ -2,10 +2,12 @@ namespace CodeSecure.Manager.Setting;
 
 public interface ISettingManager
 {
-    Task<AppSetting> AppSettingAsync();
-    Task<AppSetting> UpdateAppSettingAsync(AppSetting setting);
+    Task<AuthSetting> GetAuthSettingAsync();
+    Task UpdateAuthSettingAsync(AuthSetting request);
     Task<SLA> GetSlaSastSettingAsync();
+    Task UpdateSlaSastSettingAsync(SLA request);
     Task<SLA> GetSlaScaSettingAsync();
+    Task UpdateSlaScaSettingAsync(SLA request);
     
     Task<MailSetting> GetMailSettingAsync();
     Task UpdateMailSettingAsync(MailSetting request);

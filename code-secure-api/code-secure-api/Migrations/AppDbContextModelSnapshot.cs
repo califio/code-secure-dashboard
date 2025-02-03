@@ -493,6 +493,9 @@ namespace CodeSecure.Migrations
                     b.Property<string>("JiraSetting")
                         .HasColumnType("text");
 
+                    b.Property<string>("MailSetting")
+                        .HasColumnType("text");
+
                     b.Property<string>("SastSetting")
                         .HasColumnType("text");
 

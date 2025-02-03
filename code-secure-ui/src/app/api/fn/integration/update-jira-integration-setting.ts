@@ -8,17 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ThresholdSetting } from '../../models/threshold-setting';
+import { JiraSetting } from '../../models/jira-setting';
 
-export interface UpdateProjectScaSetting$Params {
-  projectId: string;
-      body?: ThresholdSetting
+export interface UpdateJiraIntegrationSetting$Params {
+      body?: JiraSetting
 }
 
-export function updateProjectScaSetting(http: HttpClient, rootUrl: string, params: UpdateProjectScaSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, updateProjectScaSetting.PATH, 'post');
+export function updateJiraIntegrationSetting(http: HttpClient, rootUrl: string, params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateJiraIntegrationSetting.PATH, 'post');
   if (params) {
-    rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -32,4 +30,4 @@ export function updateProjectScaSetting(http: HttpClient, rootUrl: string, param
   );
 }
 
-updateProjectScaSetting.PATH = '/api/project/{projectId}/setting/sca';
+updateJiraIntegrationSetting.PATH = '/api/integration/jira';

@@ -4,6 +4,7 @@ namespace CodeSecure.Manager.Integration.TicketTracker.Jira;
 
 public interface IJiraManager
 {
+    Task TestConnection();
     Task<List<Atlassian.Jira.Project>> GetProjectsAsync(bool reload);
     Task<List<JiraProject>> GetProjectsSummaryAsync(bool reload = false);
     Task<List<string>> GetIssueTypesForProjectAsync(string projectKey);

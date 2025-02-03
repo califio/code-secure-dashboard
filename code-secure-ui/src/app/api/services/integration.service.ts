@@ -11,26 +11,36 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { getIntegrationSetting } from '../fn/integration/get-integration-setting';
+import { GetIntegrationSetting$Params } from '../fn/integration/get-integration-setting';
+import { getJiraIntegrationSetting } from '../fn/integration/get-jira-integration-setting';
+import { GetJiraIntegrationSetting$Params } from '../fn/integration/get-jira-integration-setting';
 import { getJiraIssueTypes } from '../fn/integration/get-jira-issue-types';
 import { GetJiraIssueTypes$Params } from '../fn/integration/get-jira-issue-types';
 import { getJiraProjects } from '../fn/integration/get-jira-projects';
 import { GetJiraProjects$Params } from '../fn/integration/get-jira-projects';
-import { getJiraSetting } from '../fn/integration/get-jira-setting';
-import { GetJiraSetting$Params } from '../fn/integration/get-jira-setting';
-import { getTeamsSetting } from '../fn/integration/get-teams-setting';
-import { GetTeamsSetting$Params } from '../fn/integration/get-teams-setting';
+import { getMailIntegrationSetting } from '../fn/integration/get-mail-integration-setting';
+import { GetMailIntegrationSetting$Params } from '../fn/integration/get-mail-integration-setting';
+import { getTeamsIntegrationSetting } from '../fn/integration/get-teams-integration-setting';
+import { GetTeamsIntegrationSetting$Params } from '../fn/integration/get-teams-integration-setting';
 import { getTicketTrackers } from '../fn/integration/get-ticket-trackers';
 import { GetTicketTrackers$Params } from '../fn/integration/get-ticket-trackers';
+import { IntegrationSetting } from '../models/integration-setting';
 import { JiraProject } from '../models/jira-project';
 import { JiraSetting } from '../models/jira-setting';
+import { MailAlertSetting } from '../models/mail-alert-setting';
 import { TeamsSetting } from '../models/teams-setting';
-import { testTeamsSetting } from '../fn/integration/test-teams-setting';
-import { TestTeamsSetting$Params } from '../fn/integration/test-teams-setting';
+import { testJiraIntegrationSetting } from '../fn/integration/test-jira-integration-setting';
+import { TestJiraIntegrationSetting$Params } from '../fn/integration/test-jira-integration-setting';
+import { testTeamsIntegrationSetting } from '../fn/integration/test-teams-integration-setting';
+import { TestTeamsIntegrationSetting$Params } from '../fn/integration/test-teams-integration-setting';
 import { TicketTracker } from '../models/ticket-tracker';
-import { updateJiraSetting } from '../fn/integration/update-jira-setting';
-import { UpdateJiraSetting$Params } from '../fn/integration/update-jira-setting';
-import { updateTeamsSetting } from '../fn/integration/update-teams-setting';
-import { UpdateTeamsSetting$Params } from '../fn/integration/update-teams-setting';
+import { updateJiraIntegrationSetting } from '../fn/integration/update-jira-integration-setting';
+import { UpdateJiraIntegrationSetting$Params } from '../fn/integration/update-jira-integration-setting';
+import { updateMailIntegrationSetting } from '../fn/integration/update-mail-integration-setting';
+import { UpdateMailIntegrationSetting$Params } from '../fn/integration/update-mail-integration-setting';
+import { updateTeamsIntegrationSetting } from '../fn/integration/update-teams-integration-setting';
+import { UpdateTeamsIntegrationSetting$Params } from '../fn/integration/update-teams-integration-setting';
 
 @Injectable({ providedIn: 'root' })
 export class IntegrationService extends BaseService {
@@ -38,127 +48,227 @@ export class IntegrationService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getTeamsSetting()` */
-  static readonly GetTeamsSettingPath = '/api/integration/teams';
+  /** Path part for operation `getIntegrationSetting()` */
+  static readonly GetIntegrationSettingPath = '/api/integration';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getTeamsSetting()` instead.
+   * To access only the response body, use `getIntegrationSetting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getTeamsSetting$Response(params?: GetTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
-    return getTeamsSetting(this.http, this.rootUrl, params, context);
+  getIntegrationSetting$Response(params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<IntegrationSetting>> {
+    return getIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getTeamsSetting$Response()` instead.
+   * To access the full response (for headers, for example), `getIntegrationSetting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getTeamsSetting(params?: GetTeamsSetting$Params, context?: HttpContext): Observable<TeamsSetting> {
-    return this.getTeamsSetting$Response(params, context).pipe(
+  getIntegrationSetting(params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<IntegrationSetting> {
+    return this.getIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<IntegrationSetting>): IntegrationSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `getMailIntegrationSetting()` */
+  static readonly GetMailIntegrationSettingPath = '/api/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getMailIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMailIntegrationSetting$Response(params?: GetMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<MailAlertSetting>> {
+    return getMailIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getMailIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMailIntegrationSetting(params?: GetMailIntegrationSetting$Params, context?: HttpContext): Observable<MailAlertSetting> {
+    return this.getMailIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<MailAlertSetting>): MailAlertSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateMailIntegrationSetting()` */
+  static readonly UpdateMailIntegrationSettingPath = '/api/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateMailIntegrationSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationSetting$Response(params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateMailIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateMailIntegrationSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationSetting(params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateMailIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getTeamsIntegrationSetting()` */
+  static readonly GetTeamsIntegrationSettingPath = '/api/integration/teams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getTeamsIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsIntegrationSetting$Response(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
+    return getTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getTeamsIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsIntegrationSetting(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<TeamsSetting> {
+    return this.getTeamsIntegrationSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<TeamsSetting>): TeamsSetting => r.body)
     );
   }
 
-  /** Path part for operation `updateTeamsSetting()` */
-  static readonly UpdateTeamsSettingPath = '/api/integration/teams';
+  /** Path part for operation `updateTeamsIntegrationSetting()` */
+  static readonly UpdateTeamsIntegrationSettingPath = '/api/integration/teams';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateTeamsSetting()` instead.
+   * To access only the response body, use `updateTeamsIntegrationSetting()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateTeamsSetting$Response(params?: UpdateTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return updateTeamsSetting(this.http, this.rootUrl, params, context);
+  updateTeamsIntegrationSetting$Response(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateTeamsSetting$Response()` instead.
+   * To access the full response (for headers, for example), `updateTeamsIntegrationSetting$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateTeamsSetting(params?: UpdateTeamsSetting$Params, context?: HttpContext): Observable<void> {
-    return this.updateTeamsSetting$Response(params, context).pipe(
+  updateTeamsIntegrationSetting(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateTeamsIntegrationSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
-  /** Path part for operation `testTeamsSetting()` */
-  static readonly TestTeamsSettingPath = '/api/integration/teams/test';
+  /** Path part for operation `testTeamsIntegrationSetting()` */
+  static readonly TestTeamsIntegrationSettingPath = '/api/integration/teams/test';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `testTeamsSetting()` instead.
+   * To access only the response body, use `testTeamsIntegrationSetting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  testTeamsSetting$Response(params?: TestTeamsSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return testTeamsSetting(this.http, this.rootUrl, params, context);
+  testTeamsIntegrationSetting$Response(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return testTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `testTeamsSetting$Response()` instead.
+   * To access the full response (for headers, for example), `testTeamsIntegrationSetting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  testTeamsSetting(params?: TestTeamsSetting$Params, context?: HttpContext): Observable<void> {
-    return this.testTeamsSetting$Response(params, context).pipe(
+  testTeamsIntegrationSetting(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+    return this.testTeamsIntegrationSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
-  /** Path part for operation `getJiraSetting()` */
-  static readonly GetJiraSettingPath = '/api/integration/jira';
+  /** Path part for operation `getJiraIntegrationSetting()` */
+  static readonly GetJiraIntegrationSettingPath = '/api/integration/jira';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getJiraSetting()` instead.
+   * To access only the response body, use `getJiraIntegrationSetting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getJiraSetting$Response(params?: GetJiraSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraSetting>> {
-    return getJiraSetting(this.http, this.rootUrl, params, context);
+  getJiraIntegrationSetting$Response(params?: GetJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraSetting>> {
+    return getJiraIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getJiraSetting$Response()` instead.
+   * To access the full response (for headers, for example), `getJiraIntegrationSetting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getJiraSetting(params?: GetJiraSetting$Params, context?: HttpContext): Observable<JiraSetting> {
-    return this.getJiraSetting$Response(params, context).pipe(
+  getJiraIntegrationSetting(params?: GetJiraIntegrationSetting$Params, context?: HttpContext): Observable<JiraSetting> {
+    return this.getJiraIntegrationSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<JiraSetting>): JiraSetting => r.body)
     );
   }
 
-  /** Path part for operation `updateJiraSetting()` */
-  static readonly UpdateJiraSettingPath = '/api/integration/jira';
+  /** Path part for operation `updateJiraIntegrationSetting()` */
+  static readonly UpdateJiraIntegrationSettingPath = '/api/integration/jira';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateJiraSetting()` instead.
+   * To access only the response body, use `updateJiraIntegrationSetting()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateJiraSetting$Response(params?: UpdateJiraSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return updateJiraSetting(this.http, this.rootUrl, params, context);
+  updateJiraIntegrationSetting$Response(params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateJiraIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateJiraSetting$Response()` instead.
+   * To access the full response (for headers, for example), `updateJiraIntegrationSetting$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateJiraSetting(params?: UpdateJiraSetting$Params, context?: HttpContext): Observable<void> {
-    return this.updateJiraSetting$Response(params, context).pipe(
+  updateJiraIntegrationSetting(params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateJiraIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `testJiraIntegrationSetting()` */
+  static readonly TestJiraIntegrationSettingPath = '/api/integration/jira/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testJiraIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testJiraIntegrationSetting$Response(params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return testJiraIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testJiraIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testJiraIntegrationSetting(params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+    return this.testJiraIntegrationSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }

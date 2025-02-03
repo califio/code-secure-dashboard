@@ -4,6 +4,7 @@ namespace CodeSecure.Manager.Integration.Model;
 
 public record ScanInfoModel
 {
+    public required Guid ProjectId { get; set; }
     public required string ProjectUrl { get; set; }
     public required string ProjectName { get; set; }
     public required string ScanName { get; set; }

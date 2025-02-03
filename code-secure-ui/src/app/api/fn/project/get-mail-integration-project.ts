@@ -8,14 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { JiraSetting } from '../../models/jira-setting';
+import { AlertSetting } from '../../models/alert-setting';
 
-export interface GetJiraSetting$Params {
+export interface GetMailIntegrationProject$Params {
+  projectId: string;
 }
 
-export function getJiraSetting(http: HttpClient, rootUrl: string, params?: GetJiraSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraSetting>> {
-  const rb = new RequestBuilder(rootUrl, getJiraSetting.PATH, 'get');
+export function getMailIntegrationProject(http: HttpClient, rootUrl: string, params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<AlertSetting>> {
+  const rb = new RequestBuilder(rootUrl, getMailIntegrationProject.PATH, 'get');
   if (params) {
+    rb.path('projectId', params.projectId, {"style":"simple"});
   }
 
   return http.request(
@@ -23,9 +25,9 @@ export function getJiraSetting(http: HttpClient, rootUrl: string, params?: GetJi
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<JiraSetting>;
+      return r as StrictHttpResponse<AlertSetting>;
     })
   );
 }
 
-getJiraSetting.PATH = '/api/integration/jira';
+getMailIntegrationProject.PATH = '/api/project/{projectId}/integration/mail';

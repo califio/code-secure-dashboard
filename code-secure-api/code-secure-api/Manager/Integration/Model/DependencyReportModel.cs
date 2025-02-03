@@ -4,6 +4,7 @@ namespace CodeSecure.Manager.Integration.Model;
 
 public record DependencyReportModel
 {
+    public required Guid ProjectId { get; set; }
     public required string RepoUrl { get; set; }
     public required string RepoName { get; set; }
     public required string ProjectDependencyUrl { get; set; }

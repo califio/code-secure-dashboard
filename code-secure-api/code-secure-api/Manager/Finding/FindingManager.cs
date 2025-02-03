@@ -79,15 +79,14 @@ public class FindingManager(
     public async Task<int> GetSlaAsync(Findings finding)
     {
         var severity = finding.Severity;
-        var setting = await settingManager.AppSettingAsync();
         SLA sla;
         if (await scannerManager.IsScaScanner(finding.ScannerId))
         {
-            sla = setting.SlaScaSetting;
+            sla = await settingManager.GetSlaScaSettingAsync();
         }
         else
         {
-            sla = setting.SlaSastSetting;
+            sla = await settingManager.GetSlaSastSettingAsync();
         }
 
         if (severity == FindingSeverity.Critical && sla.Critical > 0) return sla.Critical;

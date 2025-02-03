@@ -1,90 +1,201 @@
+using CodeSecure.Enum;
 using CodeSecure.Manager.Integration.Mail;
 using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Integration.Teams;
+using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Setting;
 
 namespace CodeSecure.Manager.Integration;
 
-public class AlertManager : IAlert
+public class AlertManager(
+    IProjectManager projectManager,
+    MailAlertSetting mailAlertSetting,
+    TeamsSetting teamsSetting,
+    MailAlert mailAlert,
+    TeamsAlert teamsAlert,
+    ILogger<IAlert> logger
+) : IAlertManager
 {
-    private readonly IList<IAlert> notifications = new List<IAlert>();
-
-    public AlertManager(
-        MailSetting mailSetting,
-        MailAlertSetting mailAlertSetting,
-        TeamsSetting teamsSetting,
-        ILogger<IAlert> logger)
+    public async Task AlertScanCompletedInfo(ScanInfoModel model)
     {
-        // Mail
-        if (mailAlertSetting.Active)
+        // GLOBAL
+        // mail
+        if (mailAlertSetting is { Active: true, ScanCompletedEvent: true })
         {
-            notifications.Add(new MailAlert(mailSetting, mailAlertSetting, logger));
+            await mailAlert.AlertScanCompletedInfo(model, mailAlertSetting.Receivers);
         }
-        // MS Teams
-        if (teamsSetting.Active)
+        // teams
+        if (teamsSetting is { Active: true, ScanCompletedEvent: true })
         {
-            try
-            {
-                notifications.Add(new TeamsAlert(teamsSetting));
-            }
-            catch (System.Exception e)
-            {
-                logger?.LogError(e.Message);
-            }
+            await teamsAlert.AlertScanCompletedInfo(model);
         }
-    }
-
-    public Task<NotificationResult> TestAlert(string email)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task AlertScanCompletedInfo(IEnumerable<string> receivers, ScanInfoModel model)
-    {
-        foreach (var notification in notifications)
+        // PROJECT
+        var receivers = (await projectManager.GetMembersAsync(model.ProjectId))
+            .FindAll(member => member.Status == UserStatus.Active)
+            .Select(member => member.Email).ToList();
+        // mail
+        var mailProjectSetting = await projectManager.GetMailSettingAsync(model.ProjectId);
+        if (mailProjectSetting.ScanCompletedEvent)
         {
-            await notification.AlertScanCompletedInfo(receivers, model);
+            mailAlert.AlertScanCompletedInfo(model, receivers);
+        }
+        // teams
+        var teamsProjectSetting = await projectManager.GetTeamsSettingAsync(model.ProjectId);
+        if (teamsProjectSetting is { Active: true, ScanCompletedEvent: true })
+        {
+            var projectTeamsAlert = new TeamsAlert(teamsProjectSetting, logger);
+            projectTeamsAlert.AlertScanCompletedInfo(model, receivers);
         }
     }
 
-    public async Task AlertNewFinding(IEnumerable<string> receivers, NewFindingInfoModel model)
+    public async Task AlertNewFinding(NewFindingInfoModel model)
     {
-        foreach (var notification in notifications)
+        // GLOBAL
+        // mail
+        if (mailAlertSetting is { Active: true, NewFindingEvent: true })
         {
-            await notification.AlertNewFinding(receivers, model);
+            await mailAlert.AlertNewFinding(model, mailAlertSetting.Receivers);
+        }
+        // teams
+        if (teamsSetting is { Active: true, NewFindingEvent: true })
+        {
+            await teamsAlert.AlertNewFinding(model);
+        }
+        // PROJECT
+        var receivers = (await projectManager.GetMembersAsync(model.ProjectId))
+            .FindAll(member => member.Status == UserStatus.Active && member.Role != ProjectRole.Developer)
+            .Select(member => member.Email).ToList();
+        // mail
+        var mailProjectSetting = await projectManager.GetMailSettingAsync(model.ProjectId);
+        if (mailProjectSetting.NewFindingEvent)
+        {
+            mailAlert.AlertNewFinding(model, receivers);
+        }
+        
+        // teams
+        var teamsProjectSetting = await projectManager.GetTeamsSettingAsync(model.ProjectId);
+        if (teamsProjectSetting is { Active: true, NewFindingEvent: true })
+        {
+            var projectTeamsAlert = new TeamsAlert(teamsProjectSetting, logger);
+            projectTeamsAlert.AlertNewFinding(model, receivers);
         }
     }
 
-    public async Task AlertFixedFinding(IEnumerable<string> receivers, FixedFindingInfoModel model)
+    public async Task AlertFixedFinding(FixedFindingInfoModel model)
     {
-        foreach (var notification in notifications)
+        // GLOBAL
+        // mail
+        if (mailAlertSetting is { Active: true, FixedFindingEvent: true })
         {
-            await notification.AlertFixedFinding(receivers, model);
+            await mailAlert.AlertFixedFinding(model, mailAlertSetting.Receivers);
+        }
+        // teams
+        if (teamsSetting is { Active: true, FixedFindingEvent: true })
+        {
+            await teamsAlert.AlertFixedFinding(model);
+        }
+        // PROJECT
+        var receivers = (await projectManager.GetMembersAsync(model.ProjectId))
+            .FindAll(member => member.Status == UserStatus.Active && member.Role != ProjectRole.Developer)
+            .Select(member => member.Email).ToList();
+        // mail
+        var mailProjectSetting = await projectManager.GetMailSettingAsync(model.ProjectId);
+        if (mailProjectSetting.FixedFindingEvent)
+        {
+            mailAlert.AlertFixedFinding(model, receivers);
+        }
+        
+        // teams
+        var teamsProjectSetting = await projectManager.GetTeamsSettingAsync(model.ProjectId);
+        if (teamsProjectSetting is { Active: true, FixedFindingEvent: true })
+        {
+            var projectTeamsAlert = new TeamsAlert(teamsProjectSetting, logger);
+            projectTeamsAlert.AlertFixedFinding(model, receivers);
         }
     }
 
-    public async Task AlertNeedsTriageFinding(IEnumerable<string> receivers, NeedsTriageFindingInfoModel model)
+    public async Task AlertNeedsTriageFinding(NeedsTriageFindingInfoModel model)
     {
-        foreach (var notification in notifications)
+        // GLOBAL
+        // mail
+        if (mailAlertSetting is { Active: true })
         {
-            await notification.AlertNeedsTriageFinding(receivers, model);
+            mailAlert.AlertNeedsTriageFinding(model, mailAlertSetting.Receivers);
+        }
+        // teams
+        if (teamsSetting is { Active: true })
+        {
+            teamsAlert.AlertNeedsTriageFinding(model);
+        }
+        // PROJECT
+        // mail
+        var receivers = (await projectManager.GetMembersAsync(model.ProjectId))
+            .FindAll(member => member.Status == UserStatus.Active && member.Role != ProjectRole.Developer)
+            .Select(member => member.Email).ToList();
+        mailAlert.AlertNeedsTriageFinding(model, receivers);
+        // teams
+        var teamsProjectSetting = await projectManager.GetTeamsSettingAsync(model.ProjectId);
+        if (teamsProjectSetting.Active)
+        {
+            var projectTeamsAlert = new TeamsAlert(teamsProjectSetting, logger);
+            projectTeamsAlert.AlertNeedsTriageFinding(model, receivers);
         }
     }
 
-    public async Task PushDependencyReport(IEnumerable<string> receivers, DependencyReportModel model,
-        string? subject = null)
+    public async Task AlertVulnerableDependencies(DependencyReportModel model, string? subject = null)
     {
-        foreach (var notification in notifications)
+        // GLOBAL
+        // mail
+        if (mailAlertSetting is { Active: true, SecurityAlertEvent: true })
         {
-            await notification.PushDependencyReport(receivers, model, subject);
+            await mailAlert.AlertVulnerableDependencies(model, subject, mailAlertSetting.Receivers);
+        }
+        // teams
+        if (teamsSetting is { Active: true, SecurityAlertEvent: true })
+        {
+            await teamsAlert.AlertVulnerableDependencies(model, subject);
+        }
+        // PROJECT
+        // mail
+        var receivers = (await projectManager.GetMembersAsync(model.ProjectId))
+            .FindAll(member => member.Status == UserStatus.Active)
+            .Select(member => member.Email).ToList();
+        var mailProjectSetting = await projectManager.GetMailSettingAsync(model.ProjectId);
+        if (mailProjectSetting.SecurityAlertEvent)
+        {
+            mailAlert.AlertVulnerableDependencies(model, subject, receivers);
+        }
+        
+        // teams
+        var teamsProjectSetting = await projectManager.GetTeamsSettingAsync(model.ProjectId);
+        if (teamsProjectSetting is { Active: true, SecurityAlertEvent: true })
+        {
+            var projectTeamsAlert = new TeamsAlert(teamsProjectSetting, logger);
+            projectTeamsAlert.AlertVulnerableDependencies(model, subject, receivers);
         }
     }
 
-    public async Task AlertProjectWithoutMember(IEnumerable<string> receivers, AlertProjectWithoutMemberModel model)
+    public async Task AlertProjectWithoutMember(AlertProjectWithoutMemberModel model)
     {
-        foreach (var notification in notifications)
+        // GLOBAL
+        // mail
+        if (mailAlertSetting is { Active: true })
         {
-            await notification.AlertProjectWithoutMember(receivers, model);
+            await mailAlert.AlertProjectWithoutMember(model, mailAlertSetting.Receivers);
+        }
+        // teams
+        if (teamsSetting is { Active: true })
+        {
+            await teamsAlert.AlertProjectWithoutMember(model);
+        }
+        // PROJECT
+        // mail: without member
+        // teams
+        var teamsProjectSetting = await projectManager.GetTeamsSettingAsync(model.ProjectId);
+        if (teamsProjectSetting is { Active: true })
+        {
+            var projectTeamsAlert = new TeamsAlert(teamsProjectSetting, logger);
+            projectTeamsAlert.AlertProjectWithoutMember(model);
         }
     }
 }

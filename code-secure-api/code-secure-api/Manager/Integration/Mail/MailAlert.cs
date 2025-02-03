@@ -6,7 +6,7 @@ using CodeSecure.Manager.Setting;
 
 namespace CodeSecure.Manager.Integration.Mail;
 
-public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, ILogger<IAlert>? logger = null) : IAlert
+public class MailAlert(MailSetting setting, ILogger<IAlert>? logger = null) : IAlert
 {
     public async Task<NotificationResult> TestAlert(string email)
     {
@@ -19,9 +19,9 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         });
     }
 
-    public async Task AlertScanCompletedInfo(IEnumerable<string> receivers, ScanInfoModel model)
+    public async Task AlertScanCompletedInfo(ScanInfoModel model, List<string>? receivers = null)
     {
-        if (!mailAlertSetting.ScanCompletedEvent)
+        if (receivers is { Count: > 0 })
         {
             return;
         }
@@ -30,7 +30,7 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         var result = await SendMailAsync(new MailModel
         {
             Subject = $"Scan on \"{model.ProjectName}\" by {model.ScannerName} completed",
-            Receivers = receivers,
+            Receivers = receivers!,
             Template = template,
             Model = model,
         });
@@ -40,9 +40,9 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         }
     }
 
-    public async Task AlertNewFinding(IEnumerable<string> receivers, NewFindingInfoModel model)
+    public async Task AlertNewFinding(NewFindingInfoModel model, List<string>? receivers = null)
     {
-        if (!mailAlertSetting.NewFindingEvent)
+        if (receivers is { Count: > 0 })
         {
             return;
         }
@@ -58,7 +58,7 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         {
             Subject =
                 $"Security Alert: Found new finding on \"{model.ProjectName}\" project by {model.ScannerName} - {model.ScannerType}",
-            Receivers = receivers,
+            Receivers = receivers!,
             Template = template,
             Model = model,
         });
@@ -68,9 +68,9 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         }
     }
 
-    public async Task AlertFixedFinding(IEnumerable<string> receivers, FixedFindingInfoModel model)
+    public async Task AlertFixedFinding(FixedFindingInfoModel model, List<string>? receivers = null)
     {
-        if (!mailAlertSetting.FixedFindingEvent)
+        if (receivers is { Count: > 0 })
         {
             return;
         }
@@ -85,7 +85,7 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         var result = await SendMailAsync(new MailModel
         {
             Subject = $"Notification: Some findings have been fixed on \"{model.ProjectName}\" project",
-            Receivers = receivers,
+            Receivers = receivers!,
             Template = template,
             Model = model,
         });
@@ -95,9 +95,9 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         }
     }
 
-    public async Task AlertNeedsTriageFinding(IEnumerable<string> receivers, NeedsTriageFindingInfoModel model)
+    public async Task AlertNeedsTriageFinding(NeedsTriageFindingInfoModel model, List<string>? receivers = null)
     {
-        if (!mailAlertSetting.SecurityAlertEvent)
+        if (receivers is { Count: > 0 })
         {
             return;
         }
@@ -106,7 +106,7 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         var result = await SendMailAsync(new MailModel
         {
             Subject = $"Reminder: Please verify unconfirmed finding on \"{model.ProjectName}\" project",
-            Receivers = receivers,
+            Receivers = receivers!,
             Template = template,
             Model = model,
         });
@@ -116,10 +116,9 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         }
     }
 
-    public async Task PushDependencyReport(IEnumerable<string> receivers, DependencyReportModel model,
-        string? subject = null)
+    public async Task AlertVulnerableDependencies(DependencyReportModel model, string? subject = null, List<string>? receivers = null)
     {
-        if (!mailAlertSetting.SecurityAlertEvent)
+        if (receivers is { Count: > 0 })
         {
             return;
         }
@@ -129,7 +128,7 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         var result = await SendMailAsync(new MailModel
         {
             Subject = subject,
-            Receivers = receivers,
+            Receivers = receivers!,
             Template = template,
             Model = model,
         });
@@ -139,14 +138,18 @@ public class MailAlert(MailSetting setting, MailAlertSetting mailAlertSetting, I
         }
     }
 
-    public async Task AlertProjectWithoutMember(IEnumerable<string> receivers, AlertProjectWithoutMemberModel model)
+    public async Task AlertProjectWithoutMember(AlertProjectWithoutMemberModel model, List<string>? receivers = null)
     {
+        if (receivers is { Count: > 0 })
+        {
+            return;
+        }
         logger?.LogInformation($"send mail alert project without member: {model.ProjectName}");
         var template = GetTemplate("alert_project_without_member");
         var result = await SendMailAsync(new MailModel
         {
             Subject = $"Action Required: Add at least one member to {model.ProjectName} to receive notifications",
-            Receivers = receivers,
+            Receivers = receivers!,
             Template = template,
             Model = model,
         });

@@ -151,7 +151,7 @@ export class SettingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateAuthSetting$Response(params?: UpdateAuthSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthSetting>> {
+  updateAuthSetting$Response(params?: UpdateAuthSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
     return updateAuthSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -161,9 +161,9 @@ export class SettingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateAuthSetting(params?: UpdateAuthSetting$Params, context?: HttpContext): Observable<AuthSetting> {
+  updateAuthSetting(params?: UpdateAuthSetting$Params, context?: HttpContext): Observable<void> {
     return this.updateAuthSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<AuthSetting>): AuthSetting => r.body)
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
@@ -201,7 +201,7 @@ export class SettingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateSlaSetting$Response(params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<SlaSetting>> {
+  updateSlaSetting$Response(params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
     return updateSlaSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -211,9 +211,9 @@ export class SettingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateSlaSetting(params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<SlaSetting> {
+  updateSlaSetting(params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<void> {
     return this.updateSlaSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<SlaSetting>): SlaSetting => r.body)
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

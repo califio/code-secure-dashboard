@@ -9,32 +9,61 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Integration;
 
-public class IntegrationController(IIntegrationService integrationService): BaseController
+public class IntegrationController(IIntegrationService integrationService) : BaseController
 {
+    [HttpGet]
+    [Permission(PermissionType.Config, PermissionAction.Read)]
+    public async Task<IntegrationSetting> GetIntegrationSetting()
+    {
+        return await integrationService.GetIntegrationSettingAsync();
+    }
+
+    #region Mail
+
+    [HttpGet]
+    [Route("mail")]
+    [Permission(PermissionType.Config, PermissionAction.Read)]
+    public Task<MailAlertSetting> GetMailIntegrationSetting()
+    {
+        return integrationService.GetMailIntegrationSettingAsync();
+    }
+
+    [HttpPost]
+    [Route("mail")]
+    [Permission(PermissionType.Config, PermissionAction.Update)]
+    public Task UpdateMailIntegrationSetting([FromBody] MailAlertSetting request)
+    {
+        return integrationService.UpdateMailIntegrationSettingAsync(request);
+    }
+
+    #endregion
+
     #region Teams
+
     [HttpGet]
     [Route("teams")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public Task<TeamsSetting> GetTeamsSetting()
+    public Task<TeamsSetting> GetTeamsIntegrationSetting()
     {
-        return integrationService.GetTeamsSettingAsync();
+        return integrationService.GetTeamsIntegrationSettingAsync();
     }
 
     [HttpPost]
     [Route("teams")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task UpdateTeamsSetting([FromBody] TeamsSetting request)
+    public Task UpdateTeamsIntegrationSetting([FromBody] TeamsSetting request)
     {
-        return integrationService.UpdateTeamsSettingAsync(request);
+        return integrationService.UpdateTeamsIntegrationSettingAsync(request);
     }
 
     [HttpPost]
     [Route("teams/test")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task TestTeamsSetting()
+    public Task TestTeamsIntegrationSetting()
     {
-        return integrationService.TestTeamsSettingAsync(User.UserClaims().Email);
+        return integrationService.TestTeamsIntegrationSettingAsync(User.UserClaims().Email);
     }
+
     #endregion
 
     #region Jira
@@ -42,17 +71,25 @@ public class IntegrationController(IIntegrationService integrationService): Base
     [HttpGet]
     [Route("jira")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public Task<JiraSetting> GetJiraSetting()
+    public Task<JiraSetting> GetJiraIntegrationSetting()
     {
-        return integrationService.GetJiraSettingAsync();
+        return integrationService.GetJiraIntegrationSettingAsync();
     }
 
     [HttpPost]
     [Route("jira")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task UpdateJiraSetting([FromBody] JiraSetting request)
+    public Task UpdateJiraIntegrationSetting([FromBody] JiraSetting request)
     {
-        return integrationService.UpdateJiraSettingAsync(request);
+        return integrationService.UpdateJiraIntegrationSettingAsync(request);
+    }
+
+    [HttpPost]
+    [Route("jira/test")]
+    [Permission(PermissionType.Config, PermissionAction.Update)]
+    public Task TestJiraIntegrationSetting()
+    {
+        return integrationService.TestJiraIntegrationSettingAsync();
     }
 
     [HttpPost]
@@ -62,7 +99,7 @@ public class IntegrationController(IIntegrationService integrationService): Base
     {
         return integrationService.GetJiraProjectsAsync(setting, reload);
     }
-    
+
     [HttpPost]
     [Route("jira/issue-types")]
     //[Permission(PermissionType.Config, PermissionAction.Read)]
@@ -70,8 +107,9 @@ public class IntegrationController(IIntegrationService integrationService): Base
     {
         return integrationService.GetJiraIssueTypesAsync(projectKey);
     }
+
     #endregion
-    
+
     [HttpGet]
     [Route("ticket-trackers")]
     public Task<List<TicketTracker>> GetTicketTrackers()

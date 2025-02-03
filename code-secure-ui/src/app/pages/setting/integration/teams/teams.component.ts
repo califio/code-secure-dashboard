@@ -40,14 +40,14 @@ export class TeamsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.integrationService.getTeamsSetting().subscribe(setting => {
+        this.integrationService.getTeamsIntegrationSetting().subscribe(setting => {
             this.form.patchValue(setting);
         })
     }
 
     saveConfig() {
         this.form.disable();
-        this.integrationService.updateTeamsSetting({
+        this.integrationService.updateTeamsIntegrationSetting({
             body: this.form.getRawValue()
         }).pipe(
             finalize(() => this.form.enable())
@@ -56,9 +56,9 @@ export class TeamsComponent implements OnInit {
         })
     }
 
-    testNotification() {
+    testConnection() {
         this.loadingTest = true;
-        this.integrationService.testTeamsSetting().pipe(
+        this.integrationService.testTeamsIntegrationSetting().pipe(
             finalize(() => this.loadingTest = false)
         ).subscribe(() => {
             this.toastr.success('Send notification success');

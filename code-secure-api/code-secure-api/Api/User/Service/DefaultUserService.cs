@@ -7,7 +7,6 @@ using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
-using CodeSecure.Manager.Integration;
 using CodeSecure.Manager.Integration.Mail;
 using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Setting;

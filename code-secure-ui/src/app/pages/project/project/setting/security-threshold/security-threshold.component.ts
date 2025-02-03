@@ -85,7 +85,7 @@ export class SecurityThresholdComponent implements OnInit {
   }
 
   updateSastSetting() {
-    this.projectService.updateProjectSastSetting({
+    this.projectService.updateSastSettingProject({
       projectId: this.store.projectId(),
       body: this.sastForm.getRawValue()
     }).subscribe(() => {
@@ -94,7 +94,7 @@ export class SecurityThresholdComponent implements OnInit {
   }
 
   updateScaSetting() {
-    this.projectService.updateProjectScaSetting({
+    this.projectService.updateScaSettingProject({
       projectId: this.store.projectId(),
       body: this.scaForm.getRawValue()
     }).subscribe(() => {

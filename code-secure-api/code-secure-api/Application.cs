@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CodeSecure.Authentication;
 using CodeSecure.Database;
-using CodeSecure.Manager.Setting;
 using CodeSecure.Middleware;
 using CodeSecure.Scheduler;
 using Microsoft.AspNetCore.Http.Features;
@@ -15,7 +14,6 @@ namespace CodeSecure;
 public static class Application
 {
     public static readonly ApplicationConfig Config = ApplicationConfig.Load();
-    public static AppSetting Setting = null!;
 
     public static string GetConnectionString()
     {

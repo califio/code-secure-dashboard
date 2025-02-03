@@ -12,15 +12,12 @@ public class DefaultSettingService(
 {
     public async Task<AuthSetting> GetAuthSettingAsync()
     {
-        var setting = await settingManager.AppSettingAsync();
-        return setting.AuthSetting;
+        return await settingManager.GetAuthSettingAsync();
     }
 
-    public async Task<AuthSetting> UpdateAuthSettingAsync(AuthSetting request)
+    public async Task UpdateAuthSettingAsync(AuthSetting request)
     {
-        var setting = await settingManager.AppSettingAsync();
-        setting.AuthSetting = request;
-        setting = await settingManager.UpdateAppSettingAsync(setting);
+        await settingManager.UpdateAuthSettingAsync(request);
         if (request.OpenIdConnectSetting != null)
         {
             var authProvider = await authProviderManager.FindBySchemeAsync(OpenIdConnectDefaults.AuthenticationScheme);
@@ -51,27 +48,21 @@ public class DefaultSettingService(
                 await authProviderManager.UpdateAsync(authProvider);
             }
         }
-
-        return setting.AuthSetting;
     }
 
     public async Task<SlaSetting> GetSlaSettingAsync()
     {
-        var setting = await settingManager.AppSettingAsync();
         return new SlaSetting
         {
-            Sast = setting.SlaSastSetting,
-            Sca = setting.SlaScaSetting
+            Sast = await settingManager.GetSlaSastSettingAsync(),
+            Sca = await settingManager.GetSlaScaSettingAsync(),
         };
     }
 
-    public async Task<SlaSetting> UpdateSlaSettingAsync(SlaSetting request)
+    public async Task UpdateSlaSettingAsync(SlaSetting request)
     {
-        var setting = await settingManager.AppSettingAsync();
-        setting.SlaSastSetting = request.Sast;
-        setting.SlaScaSetting = request.Sca;
-        await settingManager.UpdateAppSettingAsync(setting);
-        return request;
+        await settingManager.UpdateSlaSastSettingAsync(request.Sast);
+        await settingManager.UpdateSlaScaSettingAsync(request.Sca);
     }
 
     public async Task<MailSetting> GetMailSettingAsync()

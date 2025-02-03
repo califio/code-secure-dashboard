@@ -8,16 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { JiraSetting } from '../../models/jira-setting';
 
-export interface UpdateJiraSetting$Params {
-      body?: JiraSetting
+export interface TestTeamsIntegrationSetting$Params {
 }
 
-export function updateJiraSetting(http: HttpClient, rootUrl: string, params?: UpdateJiraSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, updateJiraSetting.PATH, 'post');
+export function testTeamsIntegrationSetting(http: HttpClient, rootUrl: string, params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, testTeamsIntegrationSetting.PATH, 'post');
   if (params) {
-    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -30,4 +27,4 @@ export function updateJiraSetting(http: HttpClient, rootUrl: string, params?: Up
   );
 }
 
-updateJiraSetting.PATH = '/api/integration/jira';
+testTeamsIntegrationSetting.PATH = '/api/integration/teams/test';
