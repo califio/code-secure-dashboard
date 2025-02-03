@@ -71,7 +71,7 @@ public class JiraTicketTracker(
             {
                 var package = request.Package;
                 var jiraProjectSetting = await projectManager.GetJiraSettingAsync(request.Project.Id);
-                request.Vulnerabilities.Sort((v1, v2) => v1.Severity - v2.Severity);
+                request.Vulnerabilities.Sort((v1, v2) => v2.Severity - v1.Severity);
                 var description =
                     $"The package *{package.FullName()}@{package.Version}* currently in use contains known security vulnerabilities that may pose a risk to our system’s security and stability. Below is the list of identified vulnerabilities:\n\n" +
                     "||Name||Severity||";

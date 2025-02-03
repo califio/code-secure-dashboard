@@ -238,7 +238,7 @@ public class DefaultCiService(
             await alertManager.AlertFixedFinding(new FixedFindingInfoModel
             {
                 ProjectName = project.Name,
-                Findings = response.NewFindings.Select(item => new FindingModel
+                Findings = response.FixedFindings.Select(item => new FindingModel
                     {
                         Name = item.Name,
                         Url = $"{Application.Config.FrontendUrl}/#/finding/{item.Id}",
@@ -627,9 +627,9 @@ public class DefaultCiService(
             mCiFindings[finding.Identity] = finding;
         }
 
-        var fixedBranchFindings = branchFindings.FindAll(finding =>
-            finding.Status != FindingStatus.Fixed && !mCiFindings.ContainsKey(finding.Identity)).ToList();
+        var fixedBranchFindings = branchFindings.FindAll(finding => finding.Status != FindingStatus.Fixed && !mCiFindings.ContainsKey(finding.Identity)).ToList();
         if (fixedBranchFindings.Count > 0)
+        {
             fixedBranchFindings.ForEach(fixedFinding =>
             {
                 // update status (fixed) of finding on this scan
@@ -655,16 +655,15 @@ public class DefaultCiService(
                     FindingId = fixedFinding.Id
                 });
                 // fixed on default branch or the finding only effected on one branch -> fixed finding
-                if (scan.Commit.IsDefault ||
-                    context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
+                if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
                 {
                     fixedFinding.Status = FindingStatus.Fixed;
                     context.Findings.Update(fixedFinding);
                     // todo: notify for security team to recheck 
                 }
-
                 context.SaveChanges();
             });
+        }
 
         // the new findings that found before
         var oldFindings = ciFindings.Where(finding => mBranchFindings.ContainsKey(finding.Identity))
