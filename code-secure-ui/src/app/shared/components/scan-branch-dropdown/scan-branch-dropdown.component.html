@@ -4,14 +4,10 @@
     (clickOutside)="hidden = true"
     class="flex flex-row items-center gap-1 rounded-md px-3 py-2 font-semibold w-fit">
     @if(selectedOption) {
-      <div class="flex flex-row items-center text-nowrap gap-2 text-[#00c869]">
-        <ng-icon [name]="getGitActionIcon(selectedOption.action)"></ng-icon>
-        <span>{{selectedOption.branch}}</span>
-        @if(selectedOption.action == GitAction.MergeRequest) {
-          <span class="text-muted-foreground">to</span>
-          <span>{{selectedOption.targetBranch}}</span>
-        }
-      </div>
+      <scan-branch [action]="selectedOption.action!"
+                   [branch]="selectedOption.branch!"
+                   [targetBranch]="selectedOption.targetBranch"></scan-branch>
+
     } @else {
       <span>Branch</span>
     }
@@ -24,14 +20,7 @@
           (click)="onClick(option)"
           [ngClass]="option.commitId == selectedOption?.commitId ?  'bg-gray-100 dark:bg-card' : ''"
           class="cursor-pointer mx-2 px-2 py-1 rounded bg-background placeholder-muted-foreground hover:bg-gray-100 dark:hover:bg-card">
-          <div class="flex flex-row items-center gap-2 text-[#00c869]">
-            <ng-icon [name]="getGitActionIcon(option.action)"></ng-icon>
-            <span>{{option.branch}}</span>
-            @if(option.action == GitAction.MergeRequest) {
-              <span class="text-muted-foreground">to</span>
-              <span>{{option.targetBranch}}</span>
-            }
-          </div>
+          <scan-branch [action]="option.action!" [branch]="option.branch!" [targetBranch]="option.targetBranch"></scan-branch>
         </li>
       }
     </ul>

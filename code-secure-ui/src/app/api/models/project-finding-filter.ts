@@ -15,6 +15,6 @@ export interface ProjectFindingFilter {
   severity?: FindingSeverity;
   size?: number;
   sortBy?: ProjectFindingSortField;
-  status?: FindingStatus;
+  status?: Array<FindingStatus> | null;
   type?: ScannerType;
 }

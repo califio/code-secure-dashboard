@@ -4,6 +4,8 @@ import {ProjectFindingFilter} from '../../../../api/models/project-finding-filte
 import {ProjectFindingSortField} from '../../../../api/models/project-finding-sort-field';
 import {ProjectCommitSummary} from '../../../../api/models/project-commit-summary';
 import {ProjectScanner} from '../../../../api/models/project-scanner';
+import {FindingStatus} from '../../../../api/models/finding-status';
+import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,8 @@ export class FindingStore {
   loading = signal(false);
   currentPage = signal(0);
   totalPage = signal(0);
-  commits = signal<ProjectCommitSummary[]>([]);
+  commits = signal<DropdownItem[]>([]);
+  //branch = signal<DropdownItem[]>([]);
   scanners = signal<ProjectScanner[]>([]);
   findings = signal<ProjectFinding[]>([])
   filter: ProjectFindingFilter = {
@@ -22,7 +25,7 @@ export class FindingStore {
     scanner: undefined,
     severity: undefined,
     sortBy: ProjectFindingSortField.CreatedAt,
-    status: undefined,
+    status: [],
     type: undefined,
     commitId: undefined,
   };

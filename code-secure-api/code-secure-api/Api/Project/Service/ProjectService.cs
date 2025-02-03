@@ -181,9 +181,10 @@ public class ProjectService(
                 record.FindingId == finding.Id
                 && record.Scan!.CommitId == filter.CommitId)
             );
-
-        if (filter.Status != null) query = query.Where(finding => finding.Status == filter.Status);
-
+        if (filter.Status is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Status.Contains(finding.Status));
+        }
         if (!string.IsNullOrEmpty(filter.Scanner))
             query = query.Where(finding => finding.Scanner != null && finding.Scanner.Name.Equals(filter.Scanner));
 

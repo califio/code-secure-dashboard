@@ -21,6 +21,8 @@ import {FormsModule} from "@angular/forms";
   templateUrl: 'dropdown.component.html',
 })
 export class DropdownComponent implements OnInit, OnDestroy {
+  @Input()
+  showMaxOption = 2;
   @Input() optionTemplate!: TemplateRef<any>;
   @Input()
   showLabel = true;
@@ -92,20 +94,6 @@ export class DropdownComponent implements OnInit, OnDestroy {
     return this.mSelected.has(value);
   }
 
-  // private updateSelectedLabels() {
-  //     if (this._selected().size >= 3) {
-  //         this.selectedLabels = [`${this.selectedValues.size} selected`];
-  //     } else {
-  //         this.selectedLabels = [];
-  //         this.selectedValues.forEach(value => {
-  //             const item = this.options.find(option => option.value == value);
-  //             if (item) {
-  //                 this.selectedLabels.push(item.label);
-  //             }
-  //         })
-  //     }
-  // }
-
   onClick(option: DropdownItem) {
     if (this.mode == "multiple") {
       if (this.mSelected.has(option.value)) {
@@ -124,7 +112,7 @@ export class DropdownComponent implements OnInit, OnDestroy {
 
   selectChange() {
     this.hidden = true;
-    this.selectedChange.emit(Array.from(this.mSelected.values()));
+    this.selectedChange.emit(Array.from(this.mSelected.values()).map(item => item.value));
   }
 
   onSearch() {

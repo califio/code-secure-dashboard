@@ -5,6 +5,7 @@ import {NgClass} from '@angular/common';
 import {ProjectCommitSummary} from '../../../api/models/project-commit-summary';
 import {getGitActionIcon} from '../../helper';
 import {GitAction} from '../../../api/models';
+import {ScanBranchComponent} from '../scan-branch/scan-branch.component';
 
 @Component({
   selector: 'scan-branch-dropdown',
@@ -12,7 +13,8 @@ import {GitAction} from '../../../api/models';
   imports: [
     NgIcon,
     ClickOutsideDirective,
-    NgClass
+    NgClass,
+    ScanBranchComponent
   ],
   templateUrl: './scan-branch-dropdown.component.html',
   styleUrl: './scan-branch-dropdown.component.scss'

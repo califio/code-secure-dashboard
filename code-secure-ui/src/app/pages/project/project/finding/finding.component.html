@@ -14,14 +14,38 @@
                    (keyup.enter)="onSearchChange()"/>
           </label>
         </div>
-        <scan-branch-dropdown [options]="store.commits()"
-                              [selected]="commitId"
-                              (selectChange)="onSelectScan($event)">
-        </scan-branch-dropdown>
-        <finding-status-filter
-          [status]="store.filter.status"
-          (statusChange)="onStatusChange($event)">
-        </finding-status-filter>
+        <!--Branch Filter-->
+        <dropdown [showSearch]="true"
+                  [showMaxOption]="1"
+                  [options]="store.commits()"
+                  [selected]="store.filter.commitId"
+                  (selectedChange)="onSelectScan($event)"
+                  [optionTemplate]="optionBranchTemplate">
+          <span class="font-semibold" dropdown-label>Branch</span>
+        </dropdown>
+        <ng-template #optionBranchTemplate let-option>
+          <scan-branch [action]="option.action"
+                       [branch]="option.branch"
+                       [targetBranch]="option.targetBranch"></scan-branch>
+          <finding-status-label [status]="option.value" [defaultLabel]="option.label"></finding-status-label>
+        </ng-template>
+        <!--Status Filter-->
+        <dropdown [showSearch]="false"
+                  [showMaxOption]="1"
+                  [options]="statusOptions"
+                  mode="multiple"
+                  [selected]="store.filter.status"
+                  (selectedChange)="onStatusChange($event)"
+                  [optionTemplate]="optionStatusTemplate">
+          <span class="font-semibold" dropdown-label>Status</span>
+        </dropdown>
+        <ng-template #optionStatusTemplate let-option>
+          <finding-status-label
+            [status]="option.value"
+            [defaultLabel]="option.label">
+          </finding-status-label>
+        </ng-template>
+        <!--Scanner Filter-->
         <scanner-dropdown [options]="store.scanners()"
                           [scanner]="scanner"
                           (scannerChange)="onChangeScanner($event)">

@@ -12,7 +12,7 @@
     }
     @if (selectedOptions().length > 0) {
       <div class="flex flex-row items-center gap-1 text-sm">
-        @if(selectedOptions().length < 3) {
+        @if(selectedOptions().length <= showMaxOption) {
           @for (option of selectedOptions(); track $index) {
             <ng-container
               *ngIf="optionTemplate; else defaultOptionTemplate"
