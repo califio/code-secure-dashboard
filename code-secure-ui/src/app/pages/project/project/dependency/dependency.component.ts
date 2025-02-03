@@ -11,10 +11,6 @@ import {ListFindingComponent} from '../../../../shared/components/finding/list-f
 import {NgIcon} from '@ng-icons/core';
 import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-  ScanBranchDropdownComponent
-} from '../../../../shared/components/scan-branch-dropdown/scan-branch-dropdown.component';
-import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dropdown/scanner-dropdown.component';
 import {DependencyStore} from './dependency.store';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -44,8 +40,6 @@ import {ProjectPackageSortField} from '../../../../api/models';
         NgIcon,
         PaginationComponent,
         ReactiveFormsModule,
-        ScanBranchDropdownComponent,
-        ScannerDropdownComponent,
         FormsModule,
         FindingStatusLabelComponent,
         LoadingTableComponent,

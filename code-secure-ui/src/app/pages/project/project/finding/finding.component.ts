@@ -12,9 +12,6 @@ import {ProjectFindingPage} from '../../../../api/models/project-finding-page';
 import {FindingService} from '../../../../api/services/finding.service';
 import {FindingDetail} from '../../../../api/models/finding-detail';
 import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
-import {
-  ScanBranchDropdownComponent
-} from '../../../../shared/components/scan-branch-dropdown/scan-branch-dropdown.component';
 import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
 import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -24,8 +21,6 @@ import {
   FindingStatusFilterComponent
 } from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
 import {ProjectStore} from '../project.store';
-import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dropdown/scanner-dropdown.component';
-import {ProjectScanner} from '../../../../api/models/project-scanner';
 import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectFindingSortField} from '../../../../api/models';
 import {ScannerLabelComponent} from "../../../../shared/components/scanner-label/scanner-label.component";
@@ -43,13 +38,11 @@ import {ScanBranchComponent} from '../../../../shared/components/scan-branch/sca
     DropdownComponent,
     FindingStatusComponent,
     FindingDetailComponent,
-    ScanBranchDropdownComponent,
     LoadingTableComponent,
     PaginationComponent,
     ReactiveFormsModule,
     FormsModule,
     FindingStatusFilterComponent,
-    ScannerDropdownComponent,
     ScannerLabelComponent,
     FindingStatusLabelComponent,
     ScanBranchComponent,
@@ -112,9 +105,13 @@ export class FindingComponent implements OnInit, OnDestroy {
     this.projectService.getProjectScanners({
       projectId: this.projectStore.projectId()
     }).subscribe(scanners => {
-      this.store.scanners.set(scanners);
-      this.scanner = scanners.find(scanner => scanner.name == this.store.filter.scanner
-        && this.store.filter.type == scanner.type);
+      this.store.scanners.set(scanners.map(item => {
+        return {
+          ...item,
+          label: item.name,
+          value: item.id,
+        }
+      }));
     })
     this.route.queryParams.pipe(
       switchMap(params => {
@@ -162,7 +159,6 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject();
   search = '';
-  scanner: ProjectScanner | null | undefined;
   sortOptions: DropdownItem[] = [
     {
       value: ProjectFindingSortField.Name,
@@ -253,14 +249,8 @@ export class FindingComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChangeScanner(scanner: ProjectScanner | null) {
-    if (scanner != null) {
-      this.store.filter.scanner = scanner.name;
-      this.store.filter.type = scanner.type;
-    } else {
-      this.store.filter.scanner = undefined;
-      this.store.filter.type = undefined;
-    }
+  onChangeScanner(scanner: any) {
+    this.store.filter.scanner = scanner;
     updateQueryParams(this.router, this.store.filter);
   }
 

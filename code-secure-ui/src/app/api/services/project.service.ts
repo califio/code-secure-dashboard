@@ -54,7 +54,6 @@ import { ProjectFindingPage } from '../models/project-finding-page';
 import { ProjectInfo } from '../models/project-info';
 import { ProjectIntegration } from '../models/project-integration';
 import { ProjectPackagePage } from '../models/project-package-page';
-import { ProjectScanner } from '../models/project-scanner';
 import { ProjectScanPage } from '../models/project-scan-page';
 import { ProjectSetting } from '../models/project-setting';
 import { ProjectStatistics } from '../models/project-statistics';
@@ -63,6 +62,7 @@ import { ProjectUser } from '../models/project-user';
 import { ProjectUserPage } from '../models/project-user-page';
 import { removeProjectEnvironment } from '../fn/project/remove-project-environment';
 import { RemoveProjectEnvironment$Params } from '../fn/project/remove-project-environment';
+import { Scanners } from '../models/scanners';
 import { setProjectEnvironment } from '../fn/project/set-project-environment';
 import { SetProjectEnvironment$Params } from '../fn/project/set-project-environment';
 import { TeamsSetting } from '../models/teams-setting';
@@ -196,7 +196,7 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectScanners$Response(params: GetProjectScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectScanner>>> {
+  getProjectScanners$Response(params: GetProjectScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Scanners>>> {
     return getProjectScanners(this.http, this.rootUrl, params, context);
   }
 
@@ -206,9 +206,9 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectScanners(params: GetProjectScanners$Params, context?: HttpContext): Observable<Array<ProjectScanner>> {
+  getProjectScanners(params: GetProjectScanners$Params, context?: HttpContext): Observable<Array<Scanners>> {
     return this.getProjectScanners$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<ProjectScanner>>): Array<ProjectScanner> => r.body)
+      map((r: StrictHttpResponse<Array<Scanners>>): Array<Scanners> => r.body)
     );
   }
 

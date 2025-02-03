@@ -9,7 +9,6 @@ import {LoadingTableComponent} from '../../../ui/loading-table/loading-table.com
 import {FindingStatusComponent} from '../finding-status/finding-status.component';
 import {LowerCasePipe, NgClass} from '@angular/common';
 import {ProjectFinding} from '../../../../api/models/project-finding';
-import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
 
@@ -28,7 +27,6 @@ import {FindingSeverityComponent} from '../finding-severity/finding-severity.com
     FindingStatusComponent,
     NgClass,
     LowerCasePipe,
-    ScanBranchDropdownComponent,
     FindingStatusLabelComponent,
     FindingSeverityComponent
   ],

@@ -151,20 +151,15 @@ public class ProjectService(
             .ToListAsync();
     }
 
-    public async Task<List<ProjectScanner>> GetScannersAsync(Guid projectId)
+    public async Task<List<Scanners>> GetScannersAsync(Guid projectId)
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
-
-        return (await context.Scans.Include(scan => scan.Scanner)
-                .Where(scan => scan.ProjectId == project.Id)
-                .Select(scan => scan.Scanner)
-                .Distinct().ToListAsync())
-            .Select(scanner => new ProjectScanner
-            {
-                Name = scanner!.Name,
-                Type = scanner.Type
-            }).ToList();
+        return await context.Scans
+            .Include(scan => scan.Scanner)
+            .Where(scan => scan.ProjectId == project.Id)
+            .Select(scan => scan.Scanner!)
+            .Distinct().ToListAsync();
     }
 
 
@@ -185,11 +180,11 @@ public class ProjectService(
         {
             query = query.Where(finding => filter.Status.Contains(finding.Status));
         }
-        if (!string.IsNullOrEmpty(filter.Scanner))
-            query = query.Where(finding => finding.Scanner != null && finding.Scanner.Name.Equals(filter.Scanner));
 
-        if (filter.Type != null)
-            query = query.Where(finding => finding.Scanner != null && finding.Scanner.Type == filter.Type);
+        if (filter.Scanner is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Scanner.Contains(finding.ScannerId));
+        }
 
         if (filter.Severity != null) query = query.Where(finding => finding.Severity == filter.Severity);
 

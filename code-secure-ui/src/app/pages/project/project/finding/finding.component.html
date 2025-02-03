@@ -46,15 +46,26 @@
           </finding-status-label>
         </ng-template>
         <!--Scanner Filter-->
-        <scanner-dropdown [options]="store.scanners()"
-                          [scanner]="scanner"
-                          (scannerChange)="onChangeScanner($event)">
-        </scanner-dropdown>
+        <dropdown [showSearch]="false"
+                  [showMaxOption]="1"
+                  [options]="store.scanners()"
+                  mode="multiple"
+                  [selected]="store.filter.scanner"
+                  (selectedChange)="onChangeScanner($event)"
+                  [optionTemplate]="optionScannerTemplate">
+          <span class="font-semibold" dropdown-label>Scanner</span>
+        </dropdown>
+        <ng-template #optionScannerTemplate let-option>
+          <scanner-label
+            [scanner]="option.name"
+            [type]="option.type">
+          </scanner-label>
+        </ng-template>
         <div class="flex flex-row gap-2 items-center">
           <dropdown [options]="sortOptions"
-                     [showSearch]="false"
-                     [selected]="store.filter.sortBy"
-                     (selectedChange)="onSortChange($event)">
+                    [showSearch]="false"
+                    [selected]="store.filter.sortBy"
+                    (selectedChange)="onSortChange($event)">
             <div dropdown-label class="font-semibold">Sort By</div>
           </dropdown>
           <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
@@ -82,7 +93,7 @@
     </pagination>
   </div>
   <div class="hidden lg:block w-[800px] overflow-x-auto">
-    @if(finding != null) {
+    @if (finding != null) {
       <finding-detail
         [isProjectPage]="true"
         (close)="closeFinding()"

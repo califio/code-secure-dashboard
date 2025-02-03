@@ -1,5 +1,6 @@
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Api.Project.Service;
+using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
 using CodeSecure.Manager.EnvVariable;
 using CodeSecure.Manager.EnvVariable.Model;
@@ -40,7 +41,7 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
 
     [HttpGet]
     [Route("{projectId}/scanner")]
-    public async Task<List<ProjectScanner>> GetProjectScanners(Guid projectId)
+    public async Task<List<Scanners>> GetProjectScanners(Guid projectId)
     {
         return await projectService.GetScannersAsync(projectId);
     }

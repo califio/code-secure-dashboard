@@ -7,7 +7,6 @@ import {FindingDetail} from '../../../../api/models/finding-detail';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../toastr/toastr.service';
-import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingActivity} from '../../../../api/models/finding-activity';
 import {
   FindingLocation,
@@ -41,7 +40,6 @@ import {TicketDropdownComponent} from '../../ticket-dropdown/ticket-dropdown.com
     FindingStatusComponent,
     RouterLink,
     NgClass,
-    ScanBranchDropdownComponent,
     TimeagoModule,
     AvatarComponent,
     LowerCasePipe,
