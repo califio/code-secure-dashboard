@@ -1,0 +1,45 @@
+<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
+  <div class="flex flex-col gap-2 w-full">
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Server</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.server!" placeholder="smtp.example.com">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Port</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.port!" placeholder="587">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">UserName</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.userName!">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Password</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.password!">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">SSL</span>
+      <div class="w-full max-w-md">
+        <input type="checkbox" [formControl]="form.controls.useSsl!">
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-row gap-2 items-center">
+    <button app-button type="primary" class="w-fit"
+            [loading]="form.disabled"
+            [disabled]="form.disabled"
+            (click)="saveConfig()">Update</button>
+    <button app-button type="primary" class="w-fit"
+            [loading]="loadingTestMail"
+            [disabled]="loadingTestMail"
+            (click)="testMail()">Test Mail</button>
+  </div>
+
+</div>

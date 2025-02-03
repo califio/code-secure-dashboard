@@ -7,7 +7,7 @@
     } @else {
       <finding-status-label [status]="_status"></finding-status-label>
     }
-    <ng-icon name="next" class="rotate-90"></ng-icon>
+    <ng-icon name="chevron-down"></ng-icon>
   </button>
   <!-- Dropdown menu -->
   <div [class.hidden]="hidden" class="z-10 absolute mt-10 rounded-lg shadow w-fit border border-border bg-background">
@@ -21,8 +21,9 @@
                                 class="font-semibold"
                                 [defaultLabel]="'All'" [defaultIcon]="'square'">
           </finding-status-label>
-          <div class="border-4 h-4 w-4 rounded-full border-[#6366F1]  bg-background"
-               [ngClass]="_status == option.status ? 'border-[#6366F1]' : 'border-border'"></div>
+          @if (_status == option.status) {
+            <ng-icon name="check"></ng-icon>
+          }
         </li>
       }
     </ul>

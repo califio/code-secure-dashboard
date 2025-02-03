@@ -4,8 +4,8 @@
 
 export interface MailSetting {
   password?: string | null;
-  port: number;
-  server: string;
-  useSsl: boolean;
-  userName: string;
+  port?: number;
+  server?: string | null;
+  useSsl?: boolean;
+  userName?: string | null;
 }

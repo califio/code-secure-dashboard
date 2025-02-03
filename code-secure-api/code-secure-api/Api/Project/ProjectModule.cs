@@ -6,7 +6,7 @@ public class ProjectModule : IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<IProjectService, DefaultProjectService>();
+        builder.AddScoped<IProjectService, ProjectService>();
         return builder;
     }
 }

@@ -34,7 +34,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `getUsers()` */
-  static readonly GetUsersPath = '/api/user/filter';
+  static readonly GetUsersPath = '/api/user/public';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -59,7 +59,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `getUsersByAdmin()` */
-  static readonly GetUsersByAdminPath = '/api/admin/user/filter';
+  static readonly GetUsersByAdminPath = '/api/user/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -84,7 +84,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `getUser()` */
-  static readonly GetUserPath = '/api/admin/user/{userId}';
+  static readonly GetUserPath = '/api/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -109,7 +109,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `updateUserByAdmin()` */
-  static readonly UpdateUserByAdminPath = '/api/admin/user/{userId}';
+  static readonly UpdateUserByAdminPath = '/api/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -134,7 +134,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `createUserByAdmin()` */
-  static readonly CreateUserByAdminPath = '/api/admin/user';
+  static readonly CreateUserByAdminPath = '/api/user';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -159,7 +159,7 @@ export class UserService extends BaseService {
   }
 
   /** Path part for operation `sendConfirmEmail()` */
-  static readonly SendConfirmEmailPath = '/api/admin/user/{userId}/send-confirm-email';
+  static readonly SendConfirmEmailPath = '/api/user/{userId}/send-confirm-email';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

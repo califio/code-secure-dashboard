@@ -16,7 +16,7 @@ import {ToastrService} from '../../../shared/components/toastr/toastr.service';
   imports: [
     ButtonDirective,
     DropdownComponent,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './add-user-popup.component.html',
   styleUrl: './add-user-popup.component.scss'

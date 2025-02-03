@@ -1,3 +1,4 @@
+using CodeSecure.Database.Entity;
 using CodeSecure.Database.Metadata;
 using CodeSecure.Enum;
 
@@ -20,4 +21,5 @@ public record FindingDetail
     public required DateTime? FixDeadline { get; set; }
 
     public required List<FindingScan> Scans { get; set; }
+    public required Tickets? Ticket { get; set; }
 }

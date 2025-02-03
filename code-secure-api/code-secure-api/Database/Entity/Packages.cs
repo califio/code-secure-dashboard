@@ -15,4 +15,14 @@ public class Packages : BaseEntity
     public required RiskImpact RiskImpact { get; set; }
     public required RiskLevel RiskLevel { get; set; }
     public string? FixedVersion { get; set; }
+
+    public string FullName()
+    {
+        if (string.IsNullOrEmpty(Group))
+        {
+            return Name;
+        }
+
+        return $"{Group}.{Name}";
+    }
 }

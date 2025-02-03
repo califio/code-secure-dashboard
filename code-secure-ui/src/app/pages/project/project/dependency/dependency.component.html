@@ -16,8 +16,10 @@
         </div>
         <div class="flex flex-row gap-2 items-center">
           <dropdown [options]="sortOptions"
-                    [defaultLabel]="'Sort By'"
-                    [selected]="store.filter.sortBy" (selectedChange)="onSortChange($event)">
+                     [showSearch]="false"
+                     [selected]="store.filter.sortBy"
+                     (selectedChange)="onSortChange($event)">
+            <div dropdown-label class="font-semibold">Sort By</div>
           </dropdown>
           <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
                    (click)="onOrderChange()"></ng-icon>

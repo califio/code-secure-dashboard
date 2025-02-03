@@ -13,7 +13,7 @@
                 <div class="flex flex-col">
                   <div class="flex flex-row items-center gap-2">
                     <div class="font-semibold">Jira Issues</div>
-                    @if (config.jira) {
+                    @if (projectStore.projectSetting().jiraSetting?.active) {
                       <div class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                         <ng-icon name="check-circle" size="18"></ng-icon>
                         <span>Active</span>
@@ -31,7 +31,7 @@
             </div>
           </div>
           @if(config.jira) {
-            <jira-integration></jira-integration>
+            <jira-integration class="ml-12 mt-4"></jira-integration>
           }
         </div>
       </div>

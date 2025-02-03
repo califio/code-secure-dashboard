@@ -10,5 +10,7 @@ public class AppSettings
     public string? SlaScaSetting { get; set; }
     // email
     public string? MailSetting { get; set; }
-    public string? TeamsNotificationSetting { get; set; }
+    public string? MailAlertSetting { get; set; }
+    public string? TeamsSetting { get; set; }
+    public string? JiraSetting { get; set; }
 }

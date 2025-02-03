@@ -63,6 +63,12 @@ namespace CodeSecure.Migrations
                     b.Property<string>("AuthSetting")
                         .HasColumnType("text");
 
+                    b.Property<string>("JiraSetting")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MailAlertSetting")
+                        .HasColumnType("text");
+
                     b.Property<string>("MailSetting")
                         .HasColumnType("text");
 
@@ -72,7 +78,7 @@ namespace CodeSecure.Migrations
                     b.Property<string>("SlaScaSetting")
                         .HasColumnType("text");
 
-                    b.Property<string>("TeamsNotificationSetting")
+                    b.Property<string>("TeamsSetting")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -281,6 +287,9 @@ namespace CodeSecure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("TicketId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -292,6 +301,8 @@ namespace CodeSecure.Migrations
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("ScannerId");
+
+                    b.HasIndex("TicketId");
 
                     b.ToTable("Findings");
                 });
@@ -461,9 +472,14 @@ namespace CodeSecure.Migrations
                     b.Property<string>("Location")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("TicketId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("ProjectId", "PackageId", "Location");
 
                     b.HasIndex("PackageId");
+
+                    b.HasIndex("TicketId");
 
                     b.ToTable("ProjectPackages");
                 });
@@ -474,8 +490,16 @@ namespace CodeSecure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Metadata")
-                        .IsRequired()
+                    b.Property<string>("JiraSetting")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SastSetting")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ScaSetting")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TeamsSetting")
                         .HasColumnType("text");
 
                     b.HasKey("ProjectId");
@@ -803,6 +827,37 @@ namespace CodeSecure.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("CodeSecure.Database.Entity.Tickets", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tickets");
+                });
+
             modelBuilder.Entity("CodeSecure.Database.Entity.UserClaims", b =>
                 {
                     b.Property<int>("Id")
@@ -1084,9 +1139,15 @@ namespace CodeSecure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CodeSecure.Database.Entity.Tickets", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId");
+
                     b.Navigation("Project");
 
                     b.Navigation("Scanner");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.PackageDependencies", b =>
@@ -1182,9 +1243,15 @@ namespace CodeSecure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CodeSecure.Database.Entity.Tickets", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId");
+
                     b.Navigation("Package");
 
                     b.Navigation("Project");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.ProjectUsers", b =>

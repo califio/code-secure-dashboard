@@ -8,6 +8,8 @@ using CodeSecure.Enum;
 using CodeSecure.Exception;
 using CodeSecure.Extension;
 using CodeSecure.Manager.Finding;
+using CodeSecure.Manager.Integration.TicketTracker;
+using CodeSecure.Manager.Integration.TicketTracker.Jira;
 using CodeSecure.Manager.Scanner;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +20,7 @@ public class DefaultFindingService(
     IHttpContextAccessor contextAccessor,
     IScannerManager scannerManager,
     IFindingManager findingManager,
+    JiraTicketTracker jiraTicketTracker,
     ILogger<DefaultFindingService> logger
 ) : BaseService<Findings>(contextAccessor), IFindingService
 {
@@ -44,6 +47,11 @@ public class DefaultFindingService(
                 TargetBranch = record.Scan.Commit.TargetBranch,
                 Status = record.Status
             }).ToListAsync();
+        Tickets? ticket = null;
+        if (finding.TicketId != null)
+        {
+            ticket = await context.Tickets.FirstOrDefaultAsync(record => record.Id == finding.TicketId);
+        }
         var metadata = JSONSerializer.Deserialize<FindingMetadata>(finding.Metadata);
         return new FindingDetail
         {
@@ -75,7 +83,8 @@ public class DefaultFindingService(
             },
             Scans = scans,
             Metadata = metadata,
-            FixDeadline = finding.FixDeadline
+            FixDeadline = finding.FixDeadline,
+            Ticket = ticket
         };
     }
 
@@ -213,6 +222,58 @@ public class DefaultFindingService(
         };
     }
 
+    public async Task<Tickets> CreateTicketAsync(Guid findingId, TicketType ticketType)
+    {
+        var finding = await FindByIdAsync(findingId);
+        if (!HasPermission(finding, PermissionAction.Update)) throw new AccessDeniedException();
+        if (await scannerManager.IsSastScanner(finding.ScannerId) == false)
+        {
+            throw new BadRequestException("Can't create ticket for this finding");
+        }
+        
+        var project = context.Projects.First(record => record.Id == finding.ProjectId);
+        var scanner = await scannerManager.FindByIdAsync(finding.ScannerId);
+        var scanFinding = await context.ScanFindings
+            .Include(record => record.Scan!)
+            .OrderByDescending(record => record.Scan!.CompletedAt)
+            .Where(record => record.FindingId == findingId)
+            .FirstAsync();
+        TicketResult<Tickets>? result = null;
+        if (ticketType == TicketType.Jira)
+        {
+            result = await jiraTicketTracker.CreateTicketAsync(new SastTicket
+            {
+                Commit = scanFinding.CommitHash,
+                Project = project,
+                Finding = finding,
+                Scanner = scanner!
+            });
+        }
+
+        if (result != null)
+        {
+            if (result.Succeeded == false)
+            {
+                throw new BadRequestException(result.Error);
+            }
+            return result.Data!;
+        }
+        throw new BadRequestException();
+    }
+
+    public async Task DeleteTicketAsync(Guid findingId)
+    {
+        var finding = await FindByIdAsync(findingId);
+        if (!HasPermission(finding, PermissionAction.Update)) throw new AccessDeniedException();
+        if (finding.TicketId != null)
+        {
+            var ticketId = finding.TicketId;
+            await context.Findings.Where(record => record.Id == findingId)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.TicketId, (Guid?)null));
+            await context.Tickets.Where(record => record.Id == ticketId).ExecuteDeleteAsync();
+        }
+    }
+
     protected override bool HasPermission(Findings entity, string action)
     {
         var currentUser = CurrentUser();
@@ -232,6 +293,7 @@ public class DefaultFindingService(
 
     protected override async Task<Findings> FindByIdAsync(Guid id)
     {
-        return await findingManager.FindByIdAsync(id) ?? throw new BadRequestException("finding not found");
+        return await context.Findings.FirstOrDefaultAsync(record => record.Id == id)
+               ?? throw new BadRequestException("finding not found");
     }
 }

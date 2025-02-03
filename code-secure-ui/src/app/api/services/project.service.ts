@@ -17,6 +17,8 @@ import { deleteProjectMember } from '../fn/project/delete-project-member';
 import { DeleteProjectMember$Params } from '../fn/project/delete-project-member';
 import { EnvironmentVariable } from '../models/environment-variable';
 import { EnvironmentVariablePage } from '../models/environment-variable-page';
+import { getJiraProjectSetting } from '../fn/project/get-jira-project-setting';
+import { GetJiraProjectSetting$Params } from '../fn/project/get-jira-project-setting';
 import { getProjectCommits } from '../fn/project/get-project-commits';
 import { GetProjectCommits$Params } from '../fn/project/get-project-commits';
 import { getProjectEnvironment } from '../fn/project/get-project-environment';
@@ -39,13 +41,14 @@ import { getProjectStatistic } from '../fn/project/get-project-statistic';
 import { GetProjectStatistic$Params } from '../fn/project/get-project-statistic';
 import { getProjectUsers } from '../fn/project/get-project-users';
 import { GetProjectUsers$Params } from '../fn/project/get-project-users';
+import { JiraProjectSettingResponse } from '../models/jira-project-setting-response';
 import { ProjectCommitSummary } from '../models/project-commit-summary';
 import { ProjectFindingPage } from '../models/project-finding-page';
 import { ProjectInfo } from '../models/project-info';
 import { ProjectPackagePage } from '../models/project-package-page';
 import { ProjectScanner } from '../models/project-scanner';
 import { ProjectScanPage } from '../models/project-scan-page';
-import { ProjectSettingMetadata } from '../models/project-setting-metadata';
+import { ProjectSetting } from '../models/project-setting';
 import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
 import { ProjectUser } from '../models/project-user';
@@ -54,10 +57,14 @@ import { removeProjectEnvironment } from '../fn/project/remove-project-environme
 import { RemoveProjectEnvironment$Params } from '../fn/project/remove-project-environment';
 import { setProjectEnvironment } from '../fn/project/set-project-environment';
 import { SetProjectEnvironment$Params } from '../fn/project/set-project-environment';
+import { updateJiraProjectSetting } from '../fn/project/update-jira-project-setting';
+import { UpdateJiraProjectSetting$Params } from '../fn/project/update-jira-project-setting';
 import { updateProjectMember } from '../fn/project/update-project-member';
 import { UpdateProjectMember$Params } from '../fn/project/update-project-member';
-import { updateProjectSetting } from '../fn/project/update-project-setting';
-import { UpdateProjectSetting$Params } from '../fn/project/update-project-setting';
+import { updateProjectSastSetting } from '../fn/project/update-project-sast-setting';
+import { UpdateProjectSastSetting$Params } from '../fn/project/update-project-sast-setting';
+import { updateProjectScaSetting } from '../fn/project/update-project-sca-setting';
+import { UpdateProjectScaSetting$Params } from '../fn/project/update-project-sca-setting';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService extends BaseService {
@@ -374,7 +381,7 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectSetting$Response(params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
+  getProjectSetting$Response(params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSetting>> {
     return getProjectSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -384,34 +391,109 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectSetting(params: GetProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
+  getProjectSetting(params: GetProjectSetting$Params, context?: HttpContext): Observable<ProjectSetting> {
     return this.getProjectSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
+      map((r: StrictHttpResponse<ProjectSetting>): ProjectSetting => r.body)
     );
   }
 
-  /** Path part for operation `updateProjectSetting()` */
-  static readonly UpdateProjectSettingPath = '/api/project/{projectId}/setting';
+  /** Path part for operation `updateProjectSastSetting()` */
+  static readonly UpdateProjectSastSettingPath = '/api/project/{projectId}/setting/sast';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateProjectSetting()` instead.
+   * To access only the response body, use `updateProjectSastSetting()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateProjectSetting$Response(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
-    return updateProjectSetting(this.http, this.rootUrl, params, context);
+  updateProjectSastSetting$Response(params: UpdateProjectSastSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateProjectSastSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateProjectSetting$Response()` instead.
+   * To access the full response (for headers, for example), `updateProjectSastSetting$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateProjectSetting(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
-    return this.updateProjectSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
+  updateProjectSastSetting(params: UpdateProjectSastSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateProjectSastSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `updateProjectScaSetting()` */
+  static readonly UpdateProjectScaSettingPath = '/api/project/{projectId}/setting/sca';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateProjectScaSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectScaSetting$Response(params: UpdateProjectScaSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateProjectScaSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateProjectScaSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectScaSetting(params: UpdateProjectScaSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateProjectScaSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getJiraProjectSetting()` */
+  static readonly GetJiraProjectSettingPath = '/api/project/{projectId}/setting/jira';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getJiraProjectSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraProjectSetting$Response(params: GetJiraProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraProjectSettingResponse>> {
+    return getJiraProjectSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getJiraProjectSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraProjectSetting(params: GetJiraProjectSetting$Params, context?: HttpContext): Observable<JiraProjectSettingResponse> {
+    return this.getJiraProjectSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<JiraProjectSettingResponse>): JiraProjectSettingResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `updateJiraProjectSetting()` */
+  static readonly UpdateJiraProjectSettingPath = '/api/project/{projectId}/setting/jira';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateJiraProjectSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraProjectSetting$Response(params: UpdateJiraProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateJiraProjectSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateJiraProjectSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraProjectSetting(params: UpdateJiraProjectSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateJiraProjectSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

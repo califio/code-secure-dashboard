@@ -12,22 +12,24 @@ import {NgClass} from '@angular/common';
     NgIcon,
     ClickOutsideDirective,
     ScannerLabelComponent,
-    NgClass
+    NgClass,
   ],
   templateUrl: './scanner-dropdown.component.html',
   styleUrl: './scanner-dropdown.component.scss'
 })
 export class ScannerDropdownComponent {
+
   hidden = true;
   label = 'Scanner';
   scannerSelected: ProjectScanner | undefined | null;
+  @Input()
+  options: ProjectScanner[] = [];
 
   @Input()
   set scanner(scanner: ProjectScanner | null | undefined) {
     this.scannerSelected = this.options.find(option => option.name == scanner?.name && option.type == scanner?.type);
   }
-  @Input()
-  options: ProjectScanner[] = [];
+
   @Output()
   scannerChange = new EventEmitter<ProjectScanner | null>();
 

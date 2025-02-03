@@ -13,6 +13,10 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { addComment } from '../fn/finding/add-comment';
 import { AddComment$Params } from '../fn/finding/add-comment';
+import { createTicket } from '../fn/finding/create-ticket';
+import { CreateTicket$Params } from '../fn/finding/create-ticket';
+import { deleteTicket } from '../fn/finding/delete-ticket';
+import { DeleteTicket$Params } from '../fn/finding/delete-ticket';
 import { FindingActivity } from '../models/finding-activity';
 import { FindingActivityPage } from '../models/finding-activity-page';
 import { FindingDetail } from '../models/finding-detail';
@@ -20,6 +24,7 @@ import { getFinding } from '../fn/finding/get-finding';
 import { GetFinding$Params } from '../fn/finding/get-finding';
 import { getFindingActivities } from '../fn/finding/get-finding-activities';
 import { GetFindingActivities$Params } from '../fn/finding/get-finding-activities';
+import { Tickets } from '../models/tickets';
 import { updateFinding } from '../fn/finding/update-finding';
 import { UpdateFinding$Params } from '../fn/finding/update-finding';
 
@@ -126,6 +131,56 @@ export class FindingService extends BaseService {
   addComment(params: AddComment$Params, context?: HttpContext): Observable<FindingActivity> {
     return this.addComment$Response(params, context).pipe(
       map((r: StrictHttpResponse<FindingActivity>): FindingActivity => r.body)
+    );
+  }
+
+  /** Path part for operation `createTicket()` */
+  static readonly CreateTicketPath = '/api/finding/{id}/ticket';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `createTicket()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createTicket$Response(params: CreateTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<Tickets>> {
+    return createTicket(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `createTicket$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createTicket(params: CreateTicket$Params, context?: HttpContext): Observable<Tickets> {
+    return this.createTicket$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Tickets>): Tickets => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteTicket()` */
+  static readonly DeleteTicketPath = '/api/finding/{id}/ticket';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteTicket()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteTicket$Response(params: DeleteTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return deleteTicket(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteTicket$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteTicket(params: DeleteTicket$Params, context?: HttpContext): Observable<void> {
+    return this.deleteTicket$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

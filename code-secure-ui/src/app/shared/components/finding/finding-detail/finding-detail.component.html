@@ -62,6 +62,12 @@
           </div>
         }
       }
+      @if (isSastFinding()){
+        <ticket-dropdown [loading]="loadingTicket"
+                         [ticket]="ticket()"
+                         (onDelete)="deleteTicket()"
+                         (onTicket)="createTicket($event)"></ticket-dropdown>
+      }
     </div>
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">

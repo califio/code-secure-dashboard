@@ -4,8 +4,8 @@
 
 import { OpenIdConnectSetting } from '../models/open-id-connect-setting';
 export interface AuthSetting {
-  allowRegister: boolean;
-  disablePasswordLogon: boolean;
+  allowRegister?: boolean;
+  disablePasswordLogon?: boolean;
   openIdConnectSetting: OpenIdConnectSetting;
   whiteListEmails?: string | null;
 }

@@ -3,16 +3,15 @@ using CodeSecure.Authentication.Jwt;
 using CodeSecure.Database;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
-using CodeSecure.Manager.Notification;
-using CodeSecure.Manager.Notification.Model;
-using Microsoft.EntityFrameworkCore;
+using CodeSecure.Manager.Integration;
+using CodeSecure.Manager.Integration.Model;
 using Quartz;
 
 namespace CodeSecure.Scheduler.Job;
 
 public class AlertProjectWithoutMemberJob(
     AppDbContext dbContext,
-    INotification notification,
+    IAlert alert,
     JwtUserManager userManager, 
     ILogger<AlertProjectWithoutMemberJob> logger) : IJob
 {
@@ -33,7 +32,7 @@ public class AlertProjectWithoutMemberJob(
                 .PageAsync(1, 50);
             foreach (var project in result.Items)
             {
-                notification.PushAlertProjectWithoutMember(receivers, new AlertProjectWithoutMemberModel
+                alert.AlertProjectWithoutMember(receivers, new AlertProjectWithoutMemberModel
                 {
                     ProjectName = project.Name,
                     ProjectUrl = $"{Application.Config.FrontendUrl}/#/project/{project.Id}/setting/member"

@@ -9,6 +9,7 @@ import { FindingScan } from '../models/finding-scan';
 import { FindingSeverity } from '../models/finding-severity';
 import { FindingStatus } from '../models/finding-status';
 import { ScannerType } from '../models/scanner-type';
+import { Tickets } from '../models/tickets';
 export interface FindingDetail {
   description?: string | null;
   fixDeadline?: string | null;
@@ -23,5 +24,6 @@ export interface FindingDetail {
   scans?: Array<FindingScan> | null;
   severity?: FindingSeverity;
   status?: FindingStatus;
+  ticket?: Tickets;
   type?: ScannerType;
 }

@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AvatarComponent} from '../../../../../shared/ui/avatar/avatar.component';
 import {ButtonDirective} from '../../../../../shared/ui/button/button.directive';
-import {MailComponent} from '../../../../setting/notification/mail/mail.component';
 import {NgIcon} from '@ng-icons/core';
-import {TeamsComponent} from '../../../../setting/notification/teams/teams.component';
+import {TeamsComponent} from '../../../../setting/integration/teams/teams.component';
 import {JiraComponent} from './jira/jira.component';
+import {ProjectStore} from '../../project.store';
 
 @Component({
   selector: 'app-integration',
@@ -12,7 +12,6 @@ import {JiraComponent} from './jira/jira.component';
   imports: [
     AvatarComponent,
     ButtonDirective,
-    MailComponent,
     NgIcon,
     TeamsComponent,
     JiraComponent
@@ -23,5 +22,8 @@ import {JiraComponent} from './jira/jira.component';
 export class IntegrationComponent {
   config = {
     jira: false
+  }
+
+  constructor(public projectStore: ProjectStore) {
   }
 }

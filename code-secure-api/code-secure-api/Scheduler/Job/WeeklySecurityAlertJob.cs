@@ -2,8 +2,8 @@ using CodeSecure.Database;
 using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
-using CodeSecure.Manager.Notification;
-using CodeSecure.Manager.Notification.Model;
+using CodeSecure.Manager.Integration;
+using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Project;
 using Quartz;
 
@@ -12,7 +12,7 @@ namespace CodeSecure.Scheduler.Job;
 public class WeeklySecurityAlertJob(
     AppDbContext dbContext,
     IProjectManager projectManager,
-    INotification notification,
+    IAlert alert,
     ILogger<WeeklySecurityAlertJob> logger) : IJob
 {
     private const int BulkSize = 1000;
@@ -54,7 +54,7 @@ public class WeeklySecurityAlertJob(
                         Packages = report.Packages
                     };
                     var subject = $"Weekly Security Alert: Vulnerability found in dependencies of {model.RepoName}";
-                    notification.PushDependencyReport(developers, model, subject);
+                    alert.PushDependencyReport(developers, model, subject);
                 }
                 // Reminder verify unconfirmed finding
                 var openFinding = dbContext.Findings
@@ -62,7 +62,7 @@ public class WeeklySecurityAlertJob(
                                      && record.Status == FindingStatus.Open);
                 if (openFinding > 0)
                 {
-                    notification.PushNeedsTriageFindingInfo(triagers, new NeedsTriageFindingInfoModel
+                    alert.AlertNeedsTriageFinding(triagers, new NeedsTriageFindingInfoModel
                     {
                         ProjectName = project.Name,
                         NeedsTriage = openFinding,

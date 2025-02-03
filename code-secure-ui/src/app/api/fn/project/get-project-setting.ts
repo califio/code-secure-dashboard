@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ProjectSettingMetadata } from '../../models/project-setting-metadata';
+import { ProjectSetting } from '../../models/project-setting';
 
 export interface GetProjectSetting$Params {
   projectId: string;
 }
 
-export function getProjectSetting(http: HttpClient, rootUrl: string, params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
+export function getProjectSetting(http: HttpClient, rootUrl: string, params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSetting>> {
   const rb = new RequestBuilder(rootUrl, getProjectSetting.PATH, 'get');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -25,7 +25,7 @@ export function getProjectSetting(http: HttpClient, rootUrl: string, params: Get
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ProjectSettingMetadata>;
+      return r as StrictHttpResponse<ProjectSetting>;
     })
   );
 }

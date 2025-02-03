@@ -9,18 +9,11 @@ import {PaginationComponent} from '../../../../../shared/ui/pagination/paginatio
 import {TimeagoModule} from 'ngx-timeago';
 import {DropdownComponent} from '../../../../../shared/ui/dropdown/dropdown.component';
 import {DropdownItem} from '../../../../../shared/ui/dropdown/dropdown.model';
-import {
-  AuthRequest,
-  ProjectSettingMetadata,
-  SastSetting,
-  ScaSetting,
-  SeverityThreshold,
-  ThresholdMode
-} from '../../../../../api/models';
 import {ProjectStore} from '../../project.store';
 import {ProjectService} from '../../../../../api/services/project.service';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../core/forms';
 import {ToastrService} from '../../../../../shared/components/toastr/toastr.service';
+import {ThresholdMode, ThresholdSetting} from '../../../../../api/models';
 
 @Component({
   selector: 'app-security-threshold',
@@ -35,7 +28,7 @@ import {ToastrService} from '../../../../../shared/components/toastr/toastr.serv
     PaginationComponent,
     TimeagoModule,
     DropdownComponent,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './security-threshold.component.html',
   styleUrl: './security-threshold.component.scss'
@@ -55,59 +48,65 @@ export class SecurityThresholdComponent implements OnInit {
       label: 'Block On Detection'
     },
   ];
-  formConfig = new FormSection<ConfigOf<ProjectSettingMetadata>>({
-    sastSetting: new FormSection<ConfigOf<SastSetting>>({
-      mode: new FormField(ThresholdMode.MonitorOnly),
-      severityThreshold: new FormSection<ConfigOf<SeverityThreshold>>({
-        critical: new FormField(0),
-        high: new FormField(0),
-        low: new FormField(0),
-        medium: new FormField(0),
-      })
-    }),
-    scaSetting: new FormSection<ConfigOf<ScaSetting>>({
-      mode: new FormField(ThresholdMode.MonitorOnly),
-      severityThreshold: new FormSection<ConfigOf<SeverityThreshold>>({
-        critical: new FormField(0),
-        high: new FormField(0),
-        low: new FormField(0),
-        medium: new FormField(0),
-      })
-    })
+  sastFormConfig = new FormSection<ConfigOf<ThresholdSetting>>({
+    mode: new FormField(ThresholdMode.MonitorOnly),
+    critical: new FormField(0),
+    high: new FormField(0),
+    low: new FormField(0),
+    medium: new FormField(0),
   });
-  form: FormGroup<ControlsOf<ProjectSettingMetadata>>;
+  scaFormConfig = new FormSection<ConfigOf<ThresholdSetting>>({
+    mode: new FormField(ThresholdMode.MonitorOnly),
+    critical: new FormField(0),
+    high: new FormField(0),
+    low: new FormField(0),
+    medium: new FormField(0),
+  });
+  sastForm: FormGroup<ControlsOf<ThresholdSetting>>;
+  scaForm: FormGroup<ControlsOf<ThresholdSetting>>;
+
   constructor(
     private projectService: ProjectService,
     private store: ProjectStore,
     private formService: FormService,
     private toastr: ToastrService
   ) {
-    this.form = this.formService.group(this.formConfig);
+    this.sastForm = this.formService.group(this.sastFormConfig);
+    this.scaForm = this.formService.group(this.scaFormConfig);
   }
 
   ngOnInit(): void {
     this.projectService.getProjectSetting({
       projectId: this.store.projectId()
     }).subscribe(setting => {
-      this.form.patchValue(setting);
+      this.sastForm.patchValue(setting.sastSetting!);
+      this.scaForm.patchValue(setting.scaSetting!);
     });
   }
 
-  saveSecurityThreshold() {
-
+  updateSastSetting() {
+    this.projectService.updateProjectSastSetting({
+      projectId: this.store.projectId(),
+      body: this.sastForm.getRawValue()
+    }).subscribe(() => {
+      this.toastr.success('Update success!');
+    })
   }
 
-  updateSecurityThreshold() {
-    this.projectService.updateProjectSetting({
+  updateScaSetting() {
+    this.projectService.updateProjectScaSetting({
       projectId: this.store.projectId(),
-      body: this.form.getRawValue()
-    }).subscribe(data => {
-      this.form.patchValue(data);
+      body: this.scaForm.getRawValue()
+    }).subscribe(() => {
       this.toastr.success('Update success!');
     })
   }
 
   changeSastMode($event: any) {
-    this.form.controls.sastSetting.controls.mode.setValue($event);
+    this.sastForm.controls.mode!.setValue($event);
+  }
+
+  changeScaMode($event: any) {
+    this.scaForm.controls.mode!.setValue($event);
   }
 }

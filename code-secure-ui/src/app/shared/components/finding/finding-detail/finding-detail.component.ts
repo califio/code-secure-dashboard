@@ -9,7 +9,15 @@ import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../toastr/toastr.service';
 import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingActivity} from '../../../../api/models/finding-activity';
-import {FindingLocation, FindingScan, GitAction, SourceType} from '../../../../api/models';
+import {
+  FindingLocation,
+  FindingScan,
+  GitAction,
+  ScannerType,
+  SourceType,
+  Tickets,
+  TicketType
+} from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
 import {AvatarComponent} from '../../../ui/avatar/avatar.component';
 import {MarkdownComponent} from 'ngx-markdown';
@@ -23,6 +31,7 @@ import {DatePickerComponent} from '../../../ui/date-picker/date-picker.component
 import {FindingActivityComponent} from '../finding-activity/finding-activity.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {finalize} from 'rxjs';
+import {TicketDropdownComponent} from '../../ticket-dropdown/ticket-dropdown.component';
 
 @Component({
   selector: 'finding-detail',
@@ -49,6 +58,7 @@ import {finalize} from 'rxjs';
     FindingActivityComponent,
     ReactiveFormsModule,
     FormsModule,
+    TicketDropdownComponent,
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'
@@ -60,6 +70,7 @@ export class FindingDetailComponent {
   @Input()
   set finding(value: FindingDetail) {
     this._finding = value;
+    this.ticket.set(value.ticket);
     this.fixDeadline.set(this.parseFixDeadline(value.fixDeadline));
     this.currentScan = value.scans?.find(scan => scan.isDefault);
     if (!this.currentScan && value.scans && value.scans.length > 0) {
@@ -84,8 +95,10 @@ export class FindingDetailComponent {
   @Input()
   isProjectPage: boolean = false;
   fixDeadline = signal<Date | null>(null);
+  ticket = signal<Tickets | undefined>(undefined);
   comment = '';
   commentLoading = false;
+  loadingTicket = false;
   constructor(
     private findingService: FindingService,
     private toastr: ToastrService
@@ -194,5 +207,32 @@ export class FindingDetailComponent {
         this.toastr.success('Add comment success!');
       });
     }
+  }
+
+  createTicket(type: TicketType) {
+    this.loadingTicket = true;
+    this.findingService.createTicket({
+      id: this.finding.id!,
+      type: type
+    }).pipe(
+      finalize(() => this.loadingTicket = false)
+    ).subscribe(ticket => {
+      this.ticket.set(ticket);
+    })
+  }
+
+  isSastFinding() {
+    if (this.finding) {
+      return this.finding.type == ScannerType.Sast || this.finding.type == ScannerType.Secret;
+    }
+    return false;
+  }
+
+  deleteTicket() {
+    this.findingService.deleteTicket({
+      id: this.finding.id!
+    }).subscribe(() => {
+      this.ticket.set(undefined);
+    })
   }
 }

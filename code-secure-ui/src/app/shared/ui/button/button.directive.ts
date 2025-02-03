@@ -64,7 +64,7 @@ export class ButtonDirective implements OnChanges {
     const button = this.el.nativeElement;
     if (this.loading) {
       if (!this.contentWrapper) {
-        this.contentWrapper = this.renderer.createElement('span');
+        this.contentWrapper = this.renderer.createElement('div');
         while (button.firstChild) {
           this.renderer.appendChild(this.contentWrapper, button.firstChild);
         }

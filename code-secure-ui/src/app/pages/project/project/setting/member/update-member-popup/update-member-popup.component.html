@@ -1,7 +1,8 @@
 <div [class.hidden]="!memberStore.showUpdateMemberPopup()" class="fixed top-0 right-0 left-0 z-50 h-screen w-screen">
   <div class="flex flex-col w-full h-full items-center justify-center">
     <div class="flex flex-row justify-center w-full h-fit">
-      <div class="flex flex-col gap-3 w-fit h-fit min-w-[480px] border border-border bg-background shadow-lg p-4 rounded-lg" >
+      <div
+        class="flex flex-col gap-3 w-fit h-fit min-w-[480px] border border-border bg-background shadow-lg p-4 rounded-lg">
         <div class="flex flex-col gap-1 w-full">
           <span class="font-semibold">User</span>
           <user-info [username]="user.userName ?? 'Unknown'"
@@ -13,8 +14,9 @@
         <div class="flex flex-col gap-1 w-full">
           <div class="font-semibold">Role</div>
           <dropdown [options]="roles" class="w-fit text-sm"
-                    [selected]="user.role"
-                    (selectedChange)="changeRoleUser($event)"></dropdown>
+                     [selected]="user.role"
+                     [showLabel]="false"
+                     (selectedChange)="changeRoleUser($event)"></dropdown>
         </div>
         <div class="flex flex-row items-center gap-4 justify-end">
           <div class="flex flex-row items-center gap-4 w-fit">

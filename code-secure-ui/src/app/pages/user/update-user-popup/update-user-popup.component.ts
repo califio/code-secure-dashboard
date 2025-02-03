@@ -23,7 +23,7 @@ import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../.
     DropdownComponent,
     ButtonDirective,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './update-user-popup.component.html',
   styleUrl: './update-user-popup.component.scss'

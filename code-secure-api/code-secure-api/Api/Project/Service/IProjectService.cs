@@ -1,6 +1,6 @@
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Database.Extension;
-using CodeSecure.Database.Metadata;
+using CodeSecure.Manager.Project.Model;
 
 namespace CodeSecure.Api.Project.Service;
 
@@ -18,7 +18,10 @@ public interface IProjectService
     Task<ProjectUser> AddMemberAsync(Guid projectId, AddMemberRequest request);
     Task<ProjectUser> UpdateMemberAsync(Guid projectId, Guid userId, UpdateMemberRequest request);
     Task DeleteMemberAsync(Guid projectId, Guid userId);
-    Task<ProjectSettingMetadata> GetProjectSettingAsync(Guid projectId);
-    Task<ProjectSettingMetadata> UpdateProjectSettingAsync(Guid projectId, ProjectSettingMetadata request);
+    Task<ProjectSetting> GetProjectSettingAsync(Guid projectId);
+    Task UpdateSastSettingAsync(Guid projectId, ThresholdSetting request);
+    Task UpdateScaSettingAsync(Guid projectId, ThresholdSetting request);
+    Task<JiraProjectSettingResponse> GetJiraProjectSettingAsync(Guid projectId, bool reload);
+    Task UpdateJiraProjectSettingAsync(Guid projectId, JiraProjectSetting request);
     
 }

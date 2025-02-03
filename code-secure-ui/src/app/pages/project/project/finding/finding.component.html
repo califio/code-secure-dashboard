@@ -3,7 +3,7 @@
     <div class="flex flex-wrap w-full p-4 gap-2 items-center justify-between border border-border bg-background">
       <div class="flex flex-row items-center gap-2">
         <!--SEARCH-->
-        <div class="flex w-full md:max-w-80">
+        <div class="flex w-full md:max-w-80 text-xs">
           <label class="relative text-muted-foreground w-full">
             <div class="absolute left-2.5 top-2.5">
               <ng-icon name="search"></ng-icon>
@@ -26,11 +26,12 @@
                           [scanner]="scanner"
                           (scannerChange)="onChangeScanner($event)">
         </scanner-dropdown>
-
         <div class="flex flex-row gap-2 items-center">
           <dropdown [options]="sortOptions"
-                    [defaultLabel]="'Sort By'"
-                    [selected]="store.filter.sortBy" (selectedChange)="onSortChange($event)">
+                     [showSearch]="false"
+                     [selected]="store.filter.sortBy"
+                     (selectedChange)="onSortChange($event)">
+            <div dropdown-label class="font-semibold">Sort By</div>
           </dropdown>
           <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
                    (click)="onOrderChange()"></ng-icon>

@@ -25,4 +25,7 @@ public class Findings : BaseEntity
     public Projects? Project { get; init; }
     public required Guid ScannerId { get; init; }
     public Scanners? Scanner { get; init; }
+    
+    public Guid? TicketId { get; set; }
+    public Tickets? Ticket { get; set; }
 }

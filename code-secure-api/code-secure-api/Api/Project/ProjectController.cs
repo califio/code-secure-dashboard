@@ -1,9 +1,9 @@
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Api.Project.Service;
 using CodeSecure.Database.Extension;
-using CodeSecure.Database.Metadata;
 using CodeSecure.Manager.EnvVariable;
 using CodeSecure.Manager.EnvVariable.Model;
+using CodeSecure.Manager.Project.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Project;
@@ -95,16 +95,37 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
 
     [HttpGet]
     [Route("{projectId}/setting")]
-    public async Task<ProjectSettingMetadata> GetProjectSetting(Guid projectId)
+    public async Task<ProjectSetting> GetProjectSetting(Guid projectId)
     {
         return await projectService.GetProjectSettingAsync(projectId);
     }
 
     [HttpPost]
-    [Route("{projectId}/setting")]
-    public async Task<ProjectSettingMetadata> UpdateProjectSetting(Guid projectId, ProjectSettingMetadata request)
+    [Route("{projectId}/setting/sast")]
+    public async Task UpdateProjectSastSetting(Guid projectId, ThresholdSetting request)
     {
-        return await projectService.UpdateProjectSettingAsync(projectId, request);
+        await projectService.UpdateSastSettingAsync(projectId, request);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/setting/sca")]
+    public async Task UpdateProjectScaSetting(Guid projectId, ThresholdSetting request)
+    {
+        await projectService.UpdateScaSettingAsync(projectId, request);
+    }
+
+    [HttpGet]
+    [Route("{projectId}/setting/jira")]
+    public async Task<JiraProjectSettingResponse> GetJiraProjectSetting(Guid projectId, bool reload)
+    {
+        return await projectService.GetJiraProjectSettingAsync(projectId, reload);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/setting/jira")]
+    public async Task UpdateJiraProjectSetting(Guid projectId, [FromBody] JiraProjectSetting setting)
+    {
+        await projectService.UpdateJiraProjectSettingAsync(projectId, setting);
     }
 
     [HttpPost]

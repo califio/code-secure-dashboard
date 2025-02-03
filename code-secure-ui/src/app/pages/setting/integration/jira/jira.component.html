@@ -1,0 +1,53 @@
+<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
+  <div class="flex flex-col gap-2 w-full">
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Enable</span>
+      <div class="w-full max-w-md">
+        <input type="checkbox" [formControl]="form.controls.active!">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Email or username</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.userName!">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">API token or password</span>
+      <div class="w-full max-w-md">
+        <input type="text" class="w-full" [formControl]="form.controls.password!">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Default Project</span>
+      <div class="flex flex-row items-center gap-2">
+        <dropdown [options]="jiraProjects()"
+                  [showLabel]="false"
+                  [selected]="form.controls.projectKey!.value"
+                  (selectedChange)="onChangeProject($event)">
+          <span dropdown-label class="font-semibold text-xs">Select</span>
+        </dropdown>
+        <button app-button type="default" (click)="onReload()" class="px-4 py-2" [loading]="loadingJiraProject">
+          @if(!loadingJiraProject){
+            <ng-icon name="reload" class="text-sm"></ng-icon>
+          }
+        </button>
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Issue Type</span>
+      <div class="flex flex-row items-center gap-2">
+        <dropdown [options]="issueTypes()"
+                  [showLabel]="false"
+                  [loading]="loadingIssueType"
+                  [selected]="form.controls.issueType!.value"
+                  (selectedChange)="onChangeIssueType($event)">
+          <span dropdown-label class="font-semibold text-xs">Select</span>
+        </dropdown>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-row gap-2 items-center">
+    <button app-button type="primary" class="w-fit" [loading]="form.disabled" (click)="saveSetting()">Update</button>
+  </div>
+</div>

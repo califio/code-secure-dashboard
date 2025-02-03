@@ -5,8 +5,9 @@ using CodeSecure.Database.Entity;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
 using CodeSecure.Extension;
-using CodeSecure.Manager.Notification;
-using CodeSecure.Manager.Notification.Model;
+using CodeSecure.Manager.Integration;
+using CodeSecure.Manager.Integration.Mail;
+using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Setting;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,13 +17,23 @@ public class DefaultAuthService(
     IHttpContextAccessor contextAccessor,
     SignInManager<Users> signInManager,
     JwtUserManager userManager,
-    IAppSettingManager appSettingManager,
+    ISettingManager settingManager,
     IMailSender mailSender
 ) : IAuthService
 {
+    public async Task<AuthConfig> GetAuthInfoAsync()
+    {
+        var config = await settingManager.AppSettingAsync();
+        return new AuthConfig
+        {
+            DisablePasswordLogon = config.AuthSetting.DisablePasswordLogon,
+            OpenIdConnectEnable = config.AuthSetting.OpenIdConnectSetting is { Enable: true },
+            OpenIdConnectProvider = config.AuthSetting.OpenIdConnectSetting.DisplayName
+        };
+    }
     public async Task<AuthResponse> PasswordSignInAsync(AuthRequest request)
     {
-        var authSetting = (await appSettingManager.AppSettingAsync()).AuthSetting;
+        var authSetting = (await settingManager.AppSettingAsync()).AuthSetting;
         if (authSetting is { DisablePasswordLogon: true })
             throw new BadRequestException("the admin disabled password logon");
 

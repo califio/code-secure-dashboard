@@ -13,8 +13,7 @@ import {environment} from '../../../../environments/environment';
 import {AuthResponse} from '../../../api/models/auth-response';
 import {bindQueryParams} from '../../../core/router';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
-import {ConfigService} from '../../../api/services/config.service';
-import {AuthInfo} from '../../../api/models/auth-info';
+import {AuthConfig} from '../../../api/models/auth-config';
 
 @Component({
   selector: 'app-login',
@@ -43,12 +42,11 @@ export class LoginComponent implements OnInit {
     requireConfirmEmail: null,
     requireTwoFactor: null,
   }
-  authInfo: AuthInfo = {};
+  authConfig: AuthConfig = {};
   constructor(
     private formService: FormService,
     private authService: AuthService,
     private authStore: AuthStore,
-    private configService: ConfigService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private route: ActivatedRoute,
@@ -72,8 +70,8 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl(returnUrl).then();
       }
     }
-    this.configService.getAuthInfo().subscribe(authInfo => {
-      this.authInfo = authInfo;
+    this.authService.getAuthConfig().subscribe(config => {
+      this.authConfig = config;
     });
   }
 
@@ -82,7 +80,7 @@ export class LoginComponent implements OnInit {
   }
 
   onPasswordSignIn() {
-    if (this.authInfo.disablePasswordLogon) {
+    if (this.authConfig.disablePasswordLogon) {
       this.toastr.warning('The administrator disabled password logon');
       return;
     }

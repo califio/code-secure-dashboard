@@ -7,21 +7,17 @@ export const routes: Routes = [
     component: SettingComponent,
     children: [
       {
+        path: 'general',
+        loadComponent: () => import('./general/general.component').then(x => x.GeneralComponent)
+      },
+      {
         path: 'ci-token',
         loadComponent: () => import('./ci-token/ci-token.component').then(x => x.CiTokenComponent)
       },
       {
-        path: 'authentication',
-        loadComponent: () => import('./authentication/authentication.component').then(x => x.AuthenticationComponent)
+        path: 'integration',
+        loadComponent: () => import('./integration/integration.component').then((x) => x.IntegrationComponent)
       },
-      {
-        path: 'notification',
-        loadComponent: () => import('./notification/notification.component').then((x) => x.NotificationComponent)
-      },
-      {
-        path: 'sla',
-        loadComponent: () => import('./sla/sla.component').then(x => x.SlaComponent)
-      }
     ],
   }
 ]

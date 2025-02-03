@@ -8,14 +8,15 @@ using CodeSecure.Extension;
 using CodeSecure.Manager.Container;
 using CodeSecure.Manager.EnvVariable.Model;
 using CodeSecure.Manager.Finding;
-using CodeSecure.Manager.Notification;
-using CodeSecure.Manager.Notification.Model;
+using CodeSecure.Manager.Integration;
+using CodeSecure.Manager.Integration.Model;
+using CodeSecure.Manager.Integration.TicketTracker;
 using CodeSecure.Manager.Package;
 using CodeSecure.Manager.Project;
+using CodeSecure.Manager.Project.Model;
 using CodeSecure.Manager.Scanner;
 using CodeSecure.Manager.SourceControl;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace CodeSecure.Api.CI.Service;
 
@@ -28,7 +29,8 @@ public class DefaultCiService(
     IContainerManager containerManager,
     IProjectManager projectManager,
     ISourceControlManager sourceControlManager,
-    INotification notification,
+    IAlert alert,
+    ITicketTrackerManager ticketTrackerManager,
     ILogger<DefaultCiService> logger) : ICiService
 {
     public async Task<CiScanInfo> InitScan(CiScanRequest request)
@@ -202,13 +204,14 @@ public class DefaultCiService(
         var members = await projectManager.GetMembersAsync(scan.ProjectId);
         var frontendUrl = contextAccessor.FrontendUrl();
         var projectUrl = $"{frontendUrl}/#/project/{project.Id.ToString()}";
-        var findingUrl = $"{projectUrl}/finding?commitId={scan.CommitId}&scanner={scan.Scanner!.Name}&type={scan.Scanner!.Type.ToString()}";
+        var findingUrl =
+            $"{projectUrl}/finding?commitId={scan.CommitId}&scanner={scan.Scanner!.Name}&type={scan.Scanner!.Type.ToString()}";
         var commitUrl = GetCommitUrl(project.SourceControl!.Type, project.RepoUrl, scan.CommitHash);
         var mergeRequestUrl = GetMergeRequestUrl(project.SourceControl!.Type, project.RepoUrl, scan.MergeRequestId);
         // send notification for security team
         if (response.NewFindings.Any())
         {
-            notification.PushNewFindingInfo(
+            alert.AlertNewFinding(
                 members.FindAll(item => item.Role != ProjectRole.Developer)
                     .Select(item => item.Email).ToList(),
                 new NewFindingInfoModel
@@ -235,7 +238,7 @@ public class DefaultCiService(
 
         if (response.FixedFindings.Any())
         {
-            notification.PushFixedFindingInfo(
+            alert.AlertFixedFinding(
                 members.FindAll(item => item.Role != ProjectRole.Developer)
                     .Select(item => item.Email).ToList(),
                 new FixedFindingInfoModel
@@ -260,7 +263,7 @@ public class DefaultCiService(
 
         if (response.IsBlock)
         {
-            notification.PushScanInfo(members.Select(item => item.Email), new ScanInfoModel
+            alert.AlertScanCompletedInfo(members.Select(item => item.Email), new ScanInfoModel
             {
                 ProjectUrl = projectUrl,
                 ProjectName = project.Name,
@@ -466,7 +469,7 @@ public class DefaultCiService(
             if (report.Critical + report.High + report.Medium + report.Low > 0 && report.Packages.Any())
             {
                 var members = await projectManager.GetMembersAsync(scan.ProjectId);
-                await notification.PushDependencyReport(
+                await alert.PushDependencyReport(
                     members.Select(item => item.Email),
                     new DependencyReportModel
                     {
@@ -480,6 +483,8 @@ public class DefaultCiService(
                         Packages = report.Packages
                     }, null);
             }
+
+            await CreateIssueTracker(scan.ProjectId);
         }
 
         return new CiUploadDependencyResponse
@@ -500,6 +505,7 @@ public class DefaultCiService(
         {
             mProjectFindings[finding.Identity] = finding;
         }
+
         // branch findings
         List<Findings> branchFindings;
         Guid? scanId = null;
@@ -533,6 +539,7 @@ public class DefaultCiService(
         {
             mBranchFindings[finding.Identity] = finding;
         }
+
         // new branch findings 
         var newBranchFindings = new List<Findings>();
         foreach (var newBranchFinding in ciFindings.Where(finding => !mBranchFindings.ContainsKey(finding.Identity)))
@@ -592,6 +599,7 @@ public class DefaultCiService(
                     });
                 }
             }
+
             context.ScanFindings.AddRange(newScanFindings);
             await context.SaveChangesAsync();
             // add activity of finding
@@ -625,6 +633,7 @@ public class DefaultCiService(
         {
             mCiFindings[finding.Identity] = finding;
         }
+
         var fixedBranchFindings = branchFindings.FindAll(finding =>
             finding.Status != FindingStatus.Fixed && !mCiFindings.ContainsKey(finding.Identity)).ToList();
         if (fixedBranchFindings.Count > 0)
@@ -792,44 +801,24 @@ public class DefaultCiService(
 
     private bool IsBlock(Guid projectId, CiUploadFindingResponse response, ScannerType scannerType)
     {
-        var setting = context.ProjectSettings.First(record => record.ProjectId == projectId);
-        var projectSetting = JSONSerializer.Deserialize<ProjectSettingMetadata>(setting.Metadata);
-        if (projectSetting == null) return false;
-        ThresholdMode mode;
-        SeverityThreshold? threshold;
+        var setting = projectManager.GetProjectSettingAsync(projectId).Result;
+        ThresholdSetting threshold;
         if (scannerManager.IsScaScanner(scannerType))
         {
-            if (projectSetting.ScaSetting == null)
-            {
-                return false;
-            }
-
-            mode = projectSetting.ScaSetting.Mode;
-            threshold = projectSetting.ScaSetting.SeverityThreshold;
+            threshold = setting.ScaSetting;
         }
         else
         {
-            if (projectSetting.SastSetting == null)
-            {
-                return false;
-            }
-
-            mode = projectSetting.SastSetting.Mode;
-            threshold = projectSetting.SastSetting.SeverityThreshold;
+            threshold = setting.SastSetting;
         }
 
-        if (threshold == null)
-        {
-            return false;
-        }
-
-        if (mode == ThresholdMode.MonitorOnly)
+        if (threshold.Mode == ThresholdMode.MonitorOnly)
         {
             return false;
         }
 
         List<CiFinding> findings = new();
-        if (mode == ThresholdMode.BlockOnConfirmation)
+        if (threshold.Mode == ThresholdMode.BlockOnConfirmation)
         {
             findings.AddRange(response.ConfirmedFindings);
         }
@@ -878,5 +867,29 @@ public class DefaultCiService(
         }
 
         return false;
+    }
+    
+    private async Task CreateIssueTracker(Guid projectId)
+    {
+        var projectPackages = await context.ProjectPackages
+            .Include(record => record.Package)
+            .Include(record => record.Project)
+            .Where(record => record.ProjectId == projectId)
+            .ToListAsync();
+        foreach (var package in projectPackages.FindAll(item => item.TicketId == null && !string.IsNullOrEmpty(item.Package!.FixedVersion)))
+        {
+            var vulnerabilities = await context.PackageVulnerabilities
+                .Include(record => record.Vulnerability)
+                .Where(record => record.PackageId == package.PackageId)
+                .Select(record => record.Vulnerability!)
+                .ToListAsync();
+            await ticketTrackerManager.CreateTicketAsync(new ScaTicket
+            {
+                Location = package.Location,
+                Project = package.Project!,
+                Package = package.Package!,
+                Vulnerabilities = vulnerabilities
+            });
+        }
     }
 }

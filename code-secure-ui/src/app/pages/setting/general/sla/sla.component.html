@@ -1,0 +1,162 @@
+<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
+  <div class="flex flex-col gap-2 w-full">
+    <div class="flex flex-wrap gap-8">
+      <div class="flex flex-col gap-1">
+        <div class="font-semibold">Static Application Security Testing (SAST)</div>
+        <table class="border-none w-fit">
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Critical</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.critical!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">High</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.high!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Medium</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.medium!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Low</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.low!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Info</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.info!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="font-semibold">Software Composition Analysis (SCA)</div>
+        <table class="border-none w-fit">
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Critical</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.critical!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">High</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.high!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Medium</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.medium!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Low</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.low!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-2">
+              <div class="flex flex-col">
+                <div class="uppercase">Info</div>
+                <span class="text-xs">duration frequency</span>
+              </div>
+            </td>
+            <td class="px-4">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.info!">
+                <span>days</span>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <button app-button type="primary" class="w-fit"
+          [loading]="form.disabled"
+          [disabled]="form.disabled"
+          (click)="saveSla()">Update</button>
+</div>

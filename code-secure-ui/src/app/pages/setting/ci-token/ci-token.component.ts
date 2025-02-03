@@ -5,12 +5,12 @@ import {PaginationComponent} from '../../../shared/ui/pagination/pagination.comp
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {CiTokens} from '../../../api/models/ci-tokens';
-import {CiTokenService} from '../../../api/services/ci-token.service';
 import {ToastrService} from '../../../shared/components/toastr/toastr.service';
 import {ConfirmPopupComponent} from '../../../shared/ui/confirm-popup/confirm-popup.component';
 import {finalize} from 'rxjs';
 import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
 import {ButtonDirective} from '../../../shared/ui/button/button.directive';
+import {TokenService} from '../../../api/services/token.service';
 
 interface CiTokenView {
   token: CiTokens
@@ -42,11 +42,11 @@ export class CiTokenComponent {
   showConfirmPopup = false;
 
   constructor(
-    private ciTokenService: CiTokenService,
+    private tokenService: TokenService,
     private toastr: ToastrService,
   ) {
 
-    this.ciTokenService.getCiTokens().subscribe(tokens => {
+    this.tokenService.getCiTokens().subscribe(tokens => {
       this.tokens = tokens.map(value => <CiTokenView>{
         hidden: true,
         token: value
@@ -56,7 +56,7 @@ export class CiTokenComponent {
 
   createCIToken() {
     if (this.tokenName.trim()) {
-      this.ciTokenService.createCiToken({
+      this.tokenService.createCiToken({
         body: {
           name: this.tokenName.trim()
         }
@@ -78,7 +78,7 @@ export class CiTokenComponent {
 
   confirmDelete() {
     if (this.deleteTokenId) {
-      this.ciTokenService.deleteCiToken({
+      this.tokenService.deleteCiToken({
         id: this.deleteTokenId
       }).pipe(
         finalize(() => {
