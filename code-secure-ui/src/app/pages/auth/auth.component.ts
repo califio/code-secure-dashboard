@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NgIcon} from '@ng-icons/core';
 
@@ -10,7 +10,7 @@ import {NgIcon} from '@ng-icons/core';
     NgIcon
   ],
   templateUrl: './auth.component.html',
-  styleUrl: './auth.component.scss'
+  styleUrl: './auth.component.scss',
 })
 export class AuthComponent {
 

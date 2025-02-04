@@ -33,9 +33,9 @@ export class ScanStatusComponent {
     [ScanStatus.Error, 'text-red-500'],
   ])
   private mIcon: Map<ScanStatus, string> = new Map<ScanStatus, string>([
-    [ScanStatus.Queue, 'status-waiting'],
-    [ScanStatus.Running, 'status-running'],
-    [ScanStatus.Completed, 'status-completed'],
-    [ScanStatus.Error, 'status-failed'],
+    [ScanStatus.Queue, 'heroPauseCircle'],
+    [ScanStatus.Running, 'spin'],
+    [ScanStatus.Completed, 'heroCheckCircle'],
+    [ScanStatus.Error, 'heroMinusCircle'],
   ])
 }

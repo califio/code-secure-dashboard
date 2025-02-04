@@ -5,26 +5,26 @@
       (click)="prevPage()"
       class="inline-flex items-center justify-center border-none disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full rounded-none"
       title="Previous page" [disabled]="disable.prev">
-      <ng-icon name="next" size="18" class="rotate-180"></ng-icon>
+      <ng-icon name="chevronRight" size="18" class="rotate-180"></ng-icon>
     </button>
     <button
       (click)="firstPage()"
       class="inline-flex items-center justify-center border-none disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full rounded-none"
       title="First page" [disabled]="disable.prev">
-      <ng-icon name="double-prev" size="18"></ng-icon>
+      <ng-icon name="chevronDoubleLeft" size="18"></ng-icon>
     </button>
     <div class="px-2 py-1 flex items-center">{{currentPage}}</div>
     <button
       (click)="nextPage()"
       class="inline-flex items-center justify-center border-none disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full rounded-none"
       title="Last page" [disabled]="disable.next">
-      <ng-icon name="next" size="18"></ng-icon>
+      <ng-icon name="chevronRight" size="18"></ng-icon>
     </button>
     <button
       (click)="endPage()"
       class="inline-flex items-center justify-center border-none disabled:pointer-events-none disabled:opacity-50 px-1.5 py-1.5 h-full rounded-none"
       title="Next page" [disabled]="disable.next">
-      <ng-icon name="double-next" size="18"></ng-icon>
+      <ng-icon name="chevronDoubleRight" size="18"></ng-icon>
     </button>
   </div>
 </div>

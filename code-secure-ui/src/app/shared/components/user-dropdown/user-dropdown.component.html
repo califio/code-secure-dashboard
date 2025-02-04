@@ -10,7 +10,8 @@
     } @else {
       <span>Select User</span>
     }
-    <ng-icon name="chevron-down"></ng-icon>  </button>
+    <ng-icon name="heroChevronDown"></ng-icon>
+  </button>
   <!-- Dropdown menu -->
   <div [class.hidden]="hidden" class="z-10 absolute mt-14 rounded shadow w-fit border border-border bg-background overflow-y-auto max-h-96">
     <div class="flex w-full rounded-t p-2">
@@ -19,7 +20,7 @@
           @if(loading) {
             <ng-icon name="spin" class="animate-spin"></ng-icon>
           } @else {
-            <ng-icon name="search"></ng-icon>
+            <ng-icon name="heroMagnifyingGlass"></ng-icon>
           }
         </div>
         <input class="py-2 pl-8 pr-2 rounded-none w-full border" placeholder="Search..." type="text"

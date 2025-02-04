@@ -1,9 +1,8 @@
 import {Component, OnDestroy} from '@angular/core';
-import {NgIcon, provideIcons} from "@ng-icons/core";
+import {NgIcon} from "@ng-icons/core";
 import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {NavItem} from '../../core/menu';
 import {Subject} from 'rxjs';
-import {heroAdjustmentsHorizontal, heroEnvelope, heroKey, heroScale} from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-setting',
@@ -15,8 +14,7 @@ import {heroAdjustmentsHorizontal, heroEnvelope, heroKey, heroScale} from '@ng-i
     RouterLink
   ],
   templateUrl: './setting.component.html',
-  styleUrl: './setting.component.scss',
-  viewProviders: [provideIcons({heroEnvelope, heroKey, heroScale, heroAdjustmentsHorizontal})]
+  styleUrl: './setting.component.scss'
 })
 export class SettingComponent implements OnDestroy {
   constructor(

@@ -54,25 +54,25 @@ export class FindingStatusFilterComponent {
     {
       status: undefined,
       label: 'All',
-      icon: 'square',
+      icon: 'square4',
       style: 'border-b cursor-pointer'
     },
     {
       status: FindingStatus.Open,
       label: 'Open',
-      icon: 'open',
+      icon: 'dotDashCircle',
       style: 'border-b rounded-t-lg cursor-pointer'
     },
     {
       status: FindingStatus.Confirmed,
       label: 'Confirmed',
-      icon: 'verified',
+      icon: 'checkBadge',
       style: 'border-b text-yellow-500 cursor-pointer'
     },
     {
       status: FindingStatus.Incorrect,
       label: 'False Positive',
-      icon: 'dislike',
+      icon: 'handThumbDown',
       style: 'border-b cursor-pointer'
     },
     {
@@ -84,7 +84,7 @@ export class FindingStatusFilterComponent {
     {
       status: FindingStatus.Fixed,
       label: 'Fixed',
-      icon: 'verified',
+      icon: 'checkBadge',
       style: 'rounded-b-lg text-green-500 cursor-pointer'
     }
   ];

@@ -6,7 +6,7 @@ export const items: MenuItem[] = [
     separator: false,
     items: [
       {
-        icon: 'chart-pie',
+        icon: 'chartPie',
         label: 'Dashboard',
         route: '/dashboard',
       },

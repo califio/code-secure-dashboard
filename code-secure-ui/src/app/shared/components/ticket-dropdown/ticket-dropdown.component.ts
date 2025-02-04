@@ -64,7 +64,7 @@ export class TicketDropdownComponent implements OnInit {
     if (ticket.type == TicketType.Jira) {
       return 'jira';
     }
-    return 'flag';
+    return 'heroFlag';
   }
 
   protected readonly TicketType = TicketType;

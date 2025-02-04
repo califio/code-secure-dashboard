@@ -1,11 +1,12 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {NgIcon} from "@ng-icons/core";
+import {NgIcon, provideIcons} from "@ng-icons/core";
 import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {NavItem} from '../../../core/menu';
 import {getPathParam} from '../../../core/router';
 import {Subject, switchMap, takeUntil} from 'rxjs';
 import {ProjectStore} from './project.store';
 import {ProjectService} from '../../../api/services';
+import {bug} from '../../../icons';
 
 @Component({
   selector: 'app-project',

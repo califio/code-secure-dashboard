@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
 import {ToastrType} from './toastr.model';
-import {NgIcon} from '@ng-icons/core';
+import {NgIcon, provideIcons} from '@ng-icons/core';
 import {NgClass} from '@angular/common';
+import {error, success, warning} from '../../../icons';
 
 @Component({
   selector: 'app-toastr',
@@ -11,7 +12,8 @@ import {NgClass} from '@angular/common';
     NgClass
   ],
   templateUrl: './toastr.component.html',
-  styleUrl: './toastr.component.scss'
+  styleUrl: './toastr.component.scss',
+  viewProviders: [provideIcons({success, warning, error})]
 })
 export class ToastrComponent {
   hidden = true;

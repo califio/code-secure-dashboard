@@ -25,7 +25,6 @@ import {heroEnvelope, heroKey, heroScale} from '@ng-icons/heroicons/outline';
   ],
   templateUrl: './general.component.html',
   styleUrl: './general.component.scss',
-  viewProviders: [provideIcons({heroScale, heroKey, heroEnvelope})]
 })
 export class GeneralComponent {
 

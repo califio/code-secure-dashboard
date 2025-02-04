@@ -43,20 +43,6 @@ import {heroPencilSquare} from '@ng-icons/heroicons/outline';
     provideMarkdown()
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  viewProviders: [provideIcons({
-    bold,
-    quote,
-    italic,
-    link,
-    media,
-    listBullet,
-    listNumber,
-    listTask,
-    table,
-    eye,
-    codeBracket,
-    heroPencilSquare
-  })]
 })
 export class MarkdownEditorComponent implements OnInit, ControlValueAccessor {
   controlId: string = `md-editor-${Math.floor(100000 * Math.random())}`;

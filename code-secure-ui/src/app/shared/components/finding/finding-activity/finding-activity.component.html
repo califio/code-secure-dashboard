@@ -1,5 +1,5 @@
 <li class="mt-10 ms-6">
-  @if(activity.username) {
+  @if (activity.username) {
     <div class="absolute -start-5">
       <avatar [text]="activity.username"
               [size]="38"
@@ -8,18 +8,18 @@
     </div>
   } @else {
     <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 dark:bg-blue-900">
-                    <ng-icon [name]="activity.type == FindingActivityType.Open ? 'clock' : activity.type == FindingActivityType.ChangeStatus ? 'open' : 'open'"></ng-icon>
-                  </span>
+      <ng-icon [name]="activity.type == FindingActivityType.Open ? 'heroClock' : activity.type == FindingActivityType.ChangeStatus ? 'dotDashCircle' : 'dotDashCircle'"></ng-icon>
+    </span>
   }
   <div class="flex flex-row items-center justify-between gap-2 mb-1">
     <div class="flex flex-row items-center gap-2">
-      @if(activity.username) {
-        <span class="font-semibold">{{activity.username}}</span>
+      @if (activity.username) {
+        <span class="font-semibold">{{ activity.username }}</span>
       } @else {
         <span class="font-semibold">system</span>
       }
     </div>
-    <time class="block text-xs" [tooltip]="activity.createdAt">{{activity.createdAt | timeago}}</time>
+    <time class="block text-xs" [tooltip]="activity.createdAt">{{ activity.createdAt | timeago }}</time>
   </div>
   <div class="flex flex-row items-center gap-2">
     @switch (activity.type) {
@@ -40,14 +40,14 @@
       @case (FindingActivityType.ChangeDeadline) {
         <span>change fix deadline</span>
         <div class="flex flex-row items-center gap-2 text-xs">
-          @if(activity.metadata?.changeDeadline?.previousDate) {
+          @if (activity.metadata?.changeDeadline?.previousDate) {
             <div class="flex text-nowrap border border-border px-2 py-1 rounded-md">
-              {{parseDate(activity.metadata?.changeDeadline?.previousDate) | date : 'dd/MM/yyyy'}}
+              {{ parseDate(activity.metadata?.changeDeadline?.previousDate) | date : 'dd/MM/yyyy' }}
             </div>
           }
           <span>to</span>
           <div class="flex text-nowrap border border-border px-2 py-1 rounded-md">
-            {{parseDate(activity.metadata?.changeDeadline?.currentDate) | date : 'dd/MM/yyyy'}}
+            {{ parseDate(activity.metadata?.changeDeadline?.currentDate) | date : 'dd/MM/yyyy' }}
           </div>
         </div>
       }
@@ -61,7 +61,7 @@
         <span>seen again</span>
       }
     }
-    @if(activity.metadata?.scanInfo) {
+    @if (activity.metadata?.scanInfo) {
       <span>on</span>
       <scan-branch [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
                    [branch]="activity.metadata?.scanInfo?.branch ?? ''"
@@ -69,7 +69,7 @@
       </scan-branch>
     }
   </div>
-  @if(activity.comment) {
-    <p>{{activity.comment}}</p>
+  @if (activity.comment) {
+    <p>{{ activity.comment }}</p>
   }
 </li>

@@ -24,7 +24,6 @@ import {ProjectIntegration} from '../../../../../api/models/project-integration'
   ],
   templateUrl: './integration.component.html',
   styleUrl: './integration.component.scss',
-  viewProviders: [provideIcons({heroCheckCircle, heroEnvelope})]
 })
 export class IntegrationComponent {
   integrationSetting: ProjectIntegration = {};

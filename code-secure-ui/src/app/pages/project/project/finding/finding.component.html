@@ -6,7 +6,7 @@
         <div class="flex w-full md:max-w-80 text-xs">
           <label class="relative text-muted-foreground w-full">
             <div class="absolute left-2.5 top-2.5">
-              <ng-icon name="search"></ng-icon>
+              <ng-icon name="heroMagnifyingGlass"></ng-icon>
             </div>
             <input class="py-2 pl-8 pr-2"
                    placeholder="Search..." type="text"
@@ -74,7 +74,7 @@
       <div class="flex flex-row items-center gap-2">
         <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
              (click)="onReload()">
-          <ng-icon name="reload"></ng-icon>
+          <ng-icon name="arrowPath"></ng-icon>
         </div>
         <finding-status [fixedLabel]="'Mark as'" (statusChange)="onMarkAs($event)"></finding-status>
       </div>
@@ -103,7 +103,7 @@
         @if (loadingFinding) {
           <ng-icon name="spin" class="animate-spin" size="24"></ng-icon>
         } @else {
-          <ng-icon name="click" size="24"></ng-icon>
+          <ng-icon name="cursorArrowRays" size="24"></ng-icon>
           <div>Select vulnerability to see its details.</div>
         }
       </div>

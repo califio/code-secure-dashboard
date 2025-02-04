@@ -44,7 +44,6 @@ import {heroPaperAirplane} from '@ng-icons/heroicons/outline';
   ],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss',
-  viewProviders: [provideIcons({heroPaperAirplane})]
 })
 export class UserComponent implements OnInit, OnDestroy {
   loading = false;

@@ -51,7 +51,7 @@
           Password
         </label>
         <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground" (click)="passwordTextType = !passwordTextType">
-          <ng-icon [name]="passwordTextType ? 'eye' : 'eye-off'"></ng-icon>
+          <ng-icon [name]="passwordTextType ? 'eye' : 'eyeSlash'"></ng-icon>
         </span>
       </div>
       @if(submitted && form.controls.password.getError('required')) {

@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ButtonDirective} from "../../../shared/ui/button/button.directive";
 import {FormsModule} from "@angular/forms";
-import {NgIcon, provideIcons} from '@ng-icons/core';
+import {NgIcon} from '@ng-icons/core';
 import {TimeagoModule} from 'ngx-timeago';
 import {AvatarComponent} from '../../../shared/ui/avatar/avatar.component';
 import {RouterLink} from '@angular/router';
 import {TeamsComponent} from './teams/teams.component';
 import {JiraComponent} from "./jira/jira.component";
-import {heroCheckCircle, heroEnvelope} from '@ng-icons/heroicons/outline';
 import {IntegrationService} from '../../../api/services/integration.service';
 import {IntegrationSetting} from '../../../api/models/integration-setting';
 import {MailComponent} from './mail/mail.component';
@@ -29,7 +28,6 @@ import {MailComponent} from './mail/mail.component';
   ],
   templateUrl: './integration.component.html',
   styleUrl: './integration.component.scss',
-  viewProviders: [provideIcons({heroEnvelope, heroCheckCircle})]
 })
 export class IntegrationComponent implements OnInit {
   config = {

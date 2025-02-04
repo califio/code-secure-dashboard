@@ -8,7 +8,7 @@
           <div class="flex w-full md:max-w-80">
             <label class="relative text-muted-foreground w-full">
               <div class="absolute left-2.5 top-2.5">
-                <ng-icon name="search"></ng-icon>
+                <ng-icon name="heroMagnifyingGlass"></ng-icon>
               </div>
               <input class="py-2 pl-8 pr-2 w-full" placeholder="Search..." type="text"
                      [(ngModel)]="store.filter.name"
@@ -93,16 +93,16 @@
                 <td class="text-xl">
                   <div class="w-full flex flex-row items-center justify-center">
                     @if(user.verified) {
-                      <ng-icon name="check-circle" class="text-green-500"></ng-icon>
+                      <ng-icon name="heroCheckCircle" class="text-green-500"></ng-icon>
                     } @else {
-                      <ng-icon name="x-circle" class="text-red-500"></ng-icon>
+                      <ng-icon name="xCircle" class="text-red-500"></ng-icon>
                     }
                   </div>
                 </td>
                 <td class="text-xl">
                   <div class="w-full flex flex-row items-center justify-center gap-2">
                     @if(user.lockout) {
-                      <ng-icon name="check" class="text-red-500"></ng-icon>
+                      <ng-icon name="heroCheck" class="text-red-500"></ng-icon>
                       <span>{{user.lockout}}</span>
                     }
                   </div>
@@ -118,10 +118,10 @@
                                (click)="showSendEmailConfirmPopup(user)">
                       </ng-icon>
                     }
-                    <ng-icon name="pencil-square" class="cursor-pointer"
+                    <ng-icon name="pencilSquare" class="cursor-pointer"
                              (click)="showUpdateUserPopup(user)">
                     </ng-icon>
-                    <ng-icon name="x-circle" class="cursor-pointer" [tooltip]="'disable user'"
+                    <ng-icon name="xCircle" class="cursor-pointer" [tooltip]="'disable user'"
                              (click)="showConfirmDisableUserPopup(user)">
                     </ng-icon>
                   </div>

@@ -1,18 +1,19 @@
 import {GitAction} from '../api/models/git-action';
 import {FindingStatus} from '../api/models/finding-status';
+import {gitMerge, gitTag} from '../icons';
 
 export const mActionIcon: Map<GitAction, string> = new Map<GitAction, string>([
-  [GitAction.CommitTag, 'git-tag'],
-  [GitAction.CommitBranch, 'git-branch'],
-  [GitAction.MergeRequest, 'git-merge'],
+  [GitAction.CommitTag, 'gitTag'],
+  [GitAction.CommitBranch, 'gitBranch'],
+  [GitAction.MergeRequest, 'gitMerge'],
 ]);
 
 export const mFindingStatusIcon: Map<FindingStatus, string> = new Map<FindingStatus, string>([
-  [FindingStatus.Open, 'open'],
-  [FindingStatus.Confirmed, 'verified'],
-  [FindingStatus.Incorrect, 'dislike'],
+  [FindingStatus.Open, 'dotDashCircle'],
+  [FindingStatus.Confirmed, 'checkBadge'],
+  [FindingStatus.Incorrect, 'handThumbDown'],
   [FindingStatus.AcceptedRisk, 'warning'],
-  [FindingStatus.Fixed, 'verified'],
+  [FindingStatus.Fixed, 'checkBadge'],
 ]);
 
 export const mFindingStatusLabel: Map<FindingStatus, string> = new Map<FindingStatus, string>([

@@ -6,7 +6,7 @@
            [ngClass]="{'pr-2 border-r border-border': selectedOptions().length > 0}">
         <ng-content select="[dropdown-label]">Select</ng-content>
         @if (selectedOptions().length == 0 && !loading) {
-          <ng-icon name="chevron-down"></ng-icon>
+          <ng-icon name="heroChevronDown"></ng-icon>
         }
       </div>
     }
@@ -32,7 +32,7 @@
       </div>
     }
     @if (!showLabel && selectedOptions().length > 0 && !loading) {
-      <ng-icon name="chevron-down" class="my-2"></ng-icon>
+      <ng-icon name="heroChevronDown" class="my-2"></ng-icon>
     }
     @if (loading) {
       <ng-icon name="spin" class="animate-spin my-2"></ng-icon>
@@ -43,7 +43,7 @@
        class="z-10 absolute mt-10 rounded shadow w-fit border border-border bg-background">
     @if (showSearch) {
       <div class="flex flex-row w-full border-b border-border items-center px-2">
-        <ng-icon name="magnifying-glass"></ng-icon>
+        <ng-icon name="heroMagnifyingGlass"></ng-icon>
         <input type="text"
                class="w-full border-none focus:ring-0"
                [(ngModel)]="search"
@@ -64,7 +64,7 @@
             <span>{{ option.label }}</span>
           </ng-template>
           @if(isSelected(option.value)) {
-            <ng-icon name="check"></ng-icon>
+            <ng-icon name="heroCheck"></ng-icon>
           }
         </div>
       } @empty {

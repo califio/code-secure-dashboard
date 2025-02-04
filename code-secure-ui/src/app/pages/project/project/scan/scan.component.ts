@@ -25,6 +25,7 @@ import {
 import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
 import {LowerCasePipe} from '@angular/common';
 import {TruncatePipe} from '../../../../shared/pipes/truncate.pipe';
+import {gitTag} from '../../../../icons';
 
 @Component({
   selector: 'app-scan',
@@ -159,9 +160,9 @@ export class ScanComponent implements OnInit, OnDestroy {
   }
 
   private mIcon: Map<GitAction, string> = new Map<GitAction, string>([
-    [GitAction.CommitTag, 'git-tag'],
-    [GitAction.CommitBranch, 'git-branch'],
-    [GitAction.MergeRequest, 'git-merge'],
+    [GitAction.CommitTag, 'gitTag'],
+    [GitAction.CommitBranch, 'gitBranch'],
+    [GitAction.MergeRequest, 'gitMerge'],
   ]);
 
   ngOnDestroy(): void {
