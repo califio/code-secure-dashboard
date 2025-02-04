@@ -9,9 +9,6 @@ import {LoadingTableComponent} from '../../../ui/loading-table/loading-table.com
 import {FindingStatusComponent} from '../finding-status/finding-status.component';
 import {LowerCasePipe, NgClass} from '@angular/common';
 import {ProjectFinding} from '../../../../api/models/project-finding';
-import {FindingStatus} from '../../../../api/models/finding-status';
-import {FindingSeverity} from '../../../../api/models/finding-severity';
-import {ScanBranchDropdownComponent} from '../../scan-branch-dropdown/scan-branch-dropdown.component';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
 
@@ -30,7 +27,6 @@ import {FindingSeverityComponent} from '../finding-severity/finding-severity.com
     FindingStatusComponent,
     NgClass,
     LowerCasePipe,
-    ScanBranchDropdownComponent,
     FindingStatusLabelComponent,
     FindingSeverityComponent
   ],
@@ -47,7 +43,9 @@ export class ListFindingComponent {
   @Output()
   selectFindings = new EventEmitter<string[]>();
   selectedFindings: string[] = [];
-  constructor() {}
+
+  constructor() {
+  }
 
   onOpenFinding(findingId?: string) {
     this.openFinding.emit(findingId);

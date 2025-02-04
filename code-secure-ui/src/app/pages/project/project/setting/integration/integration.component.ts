@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AvatarComponent} from '../../../../../shared/ui/avatar/avatar.component';
 import {ButtonDirective} from '../../../../../shared/ui/button/button.directive';
-import {MailComponent} from '../../../../setting/notification/mail/mail.component';
-import {NgIcon} from '@ng-icons/core';
-import {TeamsComponent} from '../../../../setting/notification/teams/teams.component';
+import {NgIcon, provideIcons} from '@ng-icons/core';
 import {JiraComponent} from './jira/jira.component';
+import {ProjectStore} from '../../project.store';
+import {TeamsComponent} from './teams/teams.component';
+import {MailComponent} from './mail/mail.component';
+import {heroCheckCircle, heroEnvelope} from '@ng-icons/heroicons/outline';
+import {ProjectService} from '../../../../../api/services/project.service';
+import {ProjectIntegration} from '../../../../../api/models/project-integration';
 
 @Component({
   selector: 'app-integration',
@@ -12,16 +16,32 @@ import {JiraComponent} from './jira/jira.component';
   imports: [
     AvatarComponent,
     ButtonDirective,
-    MailComponent,
     NgIcon,
     TeamsComponent,
-    JiraComponent
+    JiraComponent,
+    TeamsComponent,
+    MailComponent
   ],
   templateUrl: './integration.component.html',
-  styleUrl: './integration.component.scss'
+  styleUrl: './integration.component.scss',
+  viewProviders: [provideIcons({heroCheckCircle, heroEnvelope})]
 })
 export class IntegrationComponent {
+  integrationSetting: ProjectIntegration = {};
   config = {
+    mail: false,
+    teams: false,
     jira: false
+  }
+
+  constructor(
+    private projectService: ProjectService,
+    public projectStore: ProjectStore
+  ) {
+    this.projectService.getIntegrationProject({
+      projectId: projectStore.projectId()
+    }).subscribe(setting => {
+      this.integrationSetting = setting;
+    })
   }
 }

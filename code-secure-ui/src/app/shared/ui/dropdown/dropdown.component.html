@@ -1,22 +1,85 @@
-<div class="flex flex-col items-center">
-  <button
-    (click)="hidden = !hidden"
-    (clickOutside)="hidden = true"
-    class="flex flex-row items-center gap-1 rounded-md px-4 py-2 font-semibold w-fit text-nowrap">
-    <span>{{ label }}</span>
-    <ng-icon name="next" class="rotate-90"></ng-icon>
+<div class="flex flex-col w-fit" (clickOutside)="hidden = true">
+  <button (click)="hidden = !hidden"
+          class="flex flex-row items-center gap-2 rounded border border-border px-3 w-fit text-nowrap cursor-pointer">
+    @if (showLabel || selectedOptions().length == 0) {
+      <div class="flex flex-row items-center gap-2 my-2"
+           [ngClass]="{'pr-2 border-r border-border': selectedOptions().length > 0}">
+        <ng-content select="[dropdown-label]">Select</ng-content>
+        @if (selectedOptions().length == 0 && !loading) {
+          <ng-icon name="chevron-down"></ng-icon>
+        }
+      </div>
+    }
+    @if (selectedOptions().length > 0) {
+      <div class="flex flex-row items-center gap-1 text-sm">
+        @if(selectedOptions().length <= showMaxOption) {
+          @for (option of selectedOptions(); track $index) {
+            <ng-container
+              *ngIf="optionTemplate; else defaultOptionTemplate"
+              [ngTemplateOutlet]="optionTemplate"
+              [ngTemplateOutletContext]="{ $implicit: option }"
+            ></ng-container>
+            <ng-template #defaultOptionTemplate>
+              <div class="rounded px-1.5 py-0.5"
+                   [ngClass]="{'bg-gray-100 dark:bg-gray-800': mode != 'default'}">
+                {{ option.label }}
+              </div>
+            </ng-template>
+          }
+        } @else {
+          <span>{{selectedOptions().length}} selected</span>
+        }
+      </div>
+    }
+    @if (!showLabel && selectedOptions().length > 0 && !loading) {
+      <ng-icon name="chevron-down" class="my-2"></ng-icon>
+    }
+    @if (loading) {
+      <ng-icon name="spin" class="animate-spin my-2"></ng-icon>
+    }
   </button>
   <!-- Dropdown menu -->
-  <div [class.hidden]="hidden" class="z-10 absolute mt-10 rounded-lg shadow w-fit border border-border bg-background">
-    <ul class="py-2">
-      @for(option of options; track $index) {
-        <li
-          (click)="onClick(option)"
-          [ngClass]="option.value == _selected?.value ?  'bg-gray-100 dark:bg-card' : ''"
-          class="cursor-pointer mx-2 px-4 py-2 rounded bg-background placeholder-muted-foreground hover:bg-gray-100 dark:hover:bg-card">
-          {{option.label}}
-        </li>
+  <div [class.hidden]="hidden"
+       class="z-10 absolute mt-10 rounded shadow w-fit border border-border bg-background">
+    @if (showSearch) {
+      <div class="flex flex-row w-full border-b border-border items-center px-2">
+        <ng-icon name="magnifying-glass"></ng-icon>
+        <input type="text"
+               class="w-full border-none focus:ring-0"
+               [(ngModel)]="search"
+               (keydown.enter)="onSearch()">
+      </div>
+    }
+    <ul class="py-2 flex flex-col gap-1 max-h-60 overflow-y-auto">
+      @for (option of filterOptions(); track $index) {
+        <div class="flex flex-row items-center justify-between gap-3 hover:bg-gray-100 dark:hover:bg-gray-900/70 mx-1 rounded cursor-pointer px-2 py-1 bg-background placeholder-muted-foreground"
+             (click)="onClick(option)"
+             [ngClass]="isSelected(option.value) ?  'bg-gray-100 dark:bg-gray-900/70' : ''">
+          <ng-container
+            *ngIf="optionTemplate; else defaultOptionTemplate"
+            [ngTemplateOutlet]="optionTemplate"
+            [ngTemplateOutletContext]="{ $implicit: option }"
+          ></ng-container>
+          <ng-template #defaultOptionTemplate>
+            <span>{{ option.label }}</span>
+          </ng-template>
+          @if(isSelected(option.value)) {
+            <ng-icon name="check"></ng-icon>
+          }
+        </div>
+      } @empty {
+        <div class="mx-1 px-2 py-1">No Data</div>
       }
     </ul>
+    @if (mode == 'multiple') {
+      <div class="flex flex-row justify-between items-center border-t border-border w-full text-center py-1 cursor-pointer">
+        <div class="w-1/2" (click)="clearSelect()">
+          Clear
+        </div>
+        <div class="w-1/2" (click)="selectChange()">
+          Ok
+        </div>
+      </div>
+    }
   </div>
 </div>

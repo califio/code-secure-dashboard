@@ -31,4 +31,4 @@ export function getUsersByAdmin(http: HttpClient, rootUrl: string, params?: GetU
   );
 }
 
-getUsersByAdmin.PATH = '/api/admin/user/filter';
+getUsersByAdmin.PATH = '/api/user/filter';

@@ -8,15 +8,16 @@ import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { AuthService } from './services/auth.service';
 import { CiService } from './services/ci.service';
-import { CiTokenService } from './services/ci-token.service';
-import { ConfigService } from './services/config.service';
 import { DashboardService } from './services/dashboard.service';
 import { DependencyService } from './services/dependency.service';
 import { FindingService } from './services/finding.service';
+import { IntegrationService } from './services/integration.service';
 import { OpenIdConnectService } from './services/open-id-connect.service';
 import { ProfileService } from './services/profile.service';
 import { ProjectService } from './services/project.service';
 import { RoleService } from './services/role.service';
+import { SettingService } from './services/setting.service';
+import { TokenService } from './services/token.service';
 import { UserService } from './services/user.service';
 
 /**
@@ -29,15 +30,16 @@ import { UserService } from './services/user.service';
   providers: [
     AuthService,
     CiService,
-    CiTokenService,
-    ConfigService,
     DashboardService,
     DependencyService,
     FindingService,
+    IntegrationService,
     OpenIdConnectService,
     ProfileService,
     ProjectService,
     RoleService,
+    SettingService,
+    TokenService,
     UserService,
     ApiConfiguration
   ],

@@ -19,7 +19,7 @@ import {finalize} from 'rxjs';
     AvatarComponent,
     ButtonDirective,
     DropdownComponent,
-    UserDropdownComponent
+    UserDropdownComponent,
   ],
   templateUrl: './add-member-popup.component.html',
   styleUrl: './add-member-popup.component.scss'

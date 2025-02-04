@@ -19,6 +19,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@github/markdown-toolbar-element": "^2.2.3",
     "@ng-icons/core": "^29.5.1",
     "@ng-icons/heroicons": "^29.5.1",
     "ng-apexcharts": "^1.13.0",

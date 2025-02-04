@@ -1,6 +1,5 @@
 using CodeSecure.Database;
 using CodeSecure.Database.Entity;
-using CodeSecure.Database.Metadata;
 using CodeSecure.Enum;
 using CodeSecure.Manager.Scanner;
 using CodeSecure.Manager.Setting;
@@ -13,16 +12,17 @@ public class FindingManager(
     AppDbContext context,
     IMemoryCache cache,
     IScannerManager scannerManager,
-    IAppSettingManager settingManager) : IFindingManager
+    ISettingManager settingManager) : IFindingManager
 {
     private const int ExpiredTime = 1;
-    
+
     public async Task<Findings?> FindByIdAsync(Guid id)
     {
         if (cache.TryGetValue(CacheKey(id), out Findings? finding))
         {
             return finding;
         }
+
         finding = await context.Findings.FirstOrDefaultAsync(record => record.Id == id);
         CacheFinding(CacheKey(id), finding);
         return finding;
@@ -34,7 +34,9 @@ public class FindingManager(
         {
             return finding;
         }
-        finding = await context.Findings.FirstOrDefaultAsync(record => record.Identity == identity && record.ProjectId == projectId);
+
+        finding = await context.Findings.FirstOrDefaultAsync(record =>
+            record.Identity == identity && record.ProjectId == projectId);
         CacheFinding(CacheKey(projectId, identity), finding);
         return finding;
     }
@@ -77,15 +79,14 @@ public class FindingManager(
     public async Task<int> GetSlaAsync(Findings finding)
     {
         var severity = finding.Severity;
-        var setting = await settingManager.AppSettingAsync();
         SLA sla;
         if (await scannerManager.IsScaScanner(finding.ScannerId))
         {
-            sla = setting.SlaScaSetting;
+            sla = await settingManager.GetSlaScaSettingAsync();
         }
         else
         {
-            sla = setting.SlaSastSetting;
+            sla = await settingManager.GetSlaSastSettingAsync();
         }
 
         if (severity == FindingSeverity.Critical && sla.Critical > 0) return sla.Critical;
@@ -102,11 +103,12 @@ public class FindingManager(
             .SetSlidingExpiration(TimeSpan.FromMinutes(ExpiredTime));
         cache.Set(key, finding, options);
     }
+
     private string CacheKey(Guid projectId, string identity)
     {
         return $"finding_identity:{projectId}_{identity}";
     }
-    
+
     private string CacheKey(Guid id)
     {
         return $"finding_id:{id.ToString()}";

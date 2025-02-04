@@ -4,6 +4,7 @@ namespace CodeSecure.Api.Auth.Service;
 
 public interface IAuthService
 {
+    Task<AuthConfig> GetAuthInfoAsync();
     Task<AuthResponse> PasswordSignInAsync(AuthRequest request);
     Task<OidcSignInResult> OidcSignInAsync(string username);
     Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request);

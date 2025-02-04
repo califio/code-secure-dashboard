@@ -1,6 +1,8 @@
 using CodeSecure.Api.Finding.Model;
 using CodeSecure.Api.Finding.Service;
+using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
+using CodeSecure.Enum;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Finding;
@@ -33,5 +35,19 @@ public class FindingController(IFindingService findingService) : BaseController
     public async Task<FindingActivity> AddComment(Guid id, FindingCommentRequest request)
     {
         return await findingService.AddComment(id, request);
+    }
+    
+    [HttpPost]
+    [Route("{id:guid}/ticket")]
+    public async Task<Tickets> CreateTicket(Guid id, TicketType type)
+    {
+        return await findingService.CreateTicketAsync(id, type);
+    }
+    
+    [HttpDelete]
+    [Route("{id:guid}/ticket")]
+    public async Task DeleteTicket(Guid id)
+    {
+         await findingService.DeleteTicketAsync(id);
     }
 }

@@ -29,4 +29,4 @@ export function sendConfirmEmail(http: HttpClient, rootUrl: string, params: Send
   );
 }
 
-sendConfirmEmail.PATH = '/api/admin/user/{userId}/send-confirm-email';
+sendConfirmEmail.PATH = '/api/user/{userId}/send-confirm-email';

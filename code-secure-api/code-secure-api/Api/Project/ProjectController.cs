@@ -1,9 +1,11 @@
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Api.Project.Service;
+using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
-using CodeSecure.Database.Metadata;
 using CodeSecure.Manager.EnvVariable;
 using CodeSecure.Manager.EnvVariable.Model;
+using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Setting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Project;
@@ -39,7 +41,7 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
 
     [HttpGet]
     [Route("{projectId}/scanner")]
-    public async Task<List<ProjectScanner>> GetProjectScanners(Guid projectId)
+    public async Task<List<Scanners>> GetProjectScanners(Guid projectId)
     {
         return await projectService.GetScannersAsync(projectId);
     }
@@ -95,16 +97,79 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
 
     [HttpGet]
     [Route("{projectId}/setting")]
-    public async Task<ProjectSettingMetadata> GetProjectSetting(Guid projectId)
+    public async Task<ProjectSetting> GetProjectSetting(Guid projectId)
     {
         return await projectService.GetProjectSettingAsync(projectId);
     }
 
     [HttpPost]
-    [Route("{projectId}/setting")]
-    public async Task<ProjectSettingMetadata> UpdateProjectSetting(Guid projectId, ProjectSettingMetadata request)
+    [Route("{projectId}/setting/sast")]
+    public async Task UpdateSastSettingProject(Guid projectId, ThresholdSetting request)
     {
-        return await projectService.UpdateProjectSettingAsync(projectId, request);
+        await projectService.UpdateSastSettingAsync(projectId, request);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/setting/sca")]
+    public async Task UpdateScaSettingProject(Guid projectId, ThresholdSetting request)
+    {
+        await projectService.UpdateScaSettingAsync(projectId, request);
+    }
+    
+    [HttpGet]
+    [Route("{projectId}/integration")]
+    public async Task<ProjectIntegration> GetIntegrationProject(Guid projectId)
+    {
+        return await projectService.GetIntegrationSettingAsync(projectId);
+    }
+
+    [HttpGet]
+    [Route("{projectId}/integration/jira")]
+    public async Task<JiraProjectSettingResponse> GetJiraIntegrationProject(Guid projectId, bool reload)
+    {
+        return await projectService.GetJiraIntegrationSettingAsync(projectId, reload);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/integration/jira")]
+    public async Task UpdateJiraIntegrationProject(Guid projectId, [FromBody] JiraProjectSetting setting)
+    {
+        await projectService.UpdateJiraIntegrationSettingAsync(projectId, setting);
+    }
+    
+    [HttpGet]
+    [Route("{projectId}/integration/teams")]
+    public async Task<TeamsSetting> GetTeamsIntegrationProject(Guid projectId)
+    {
+        return await projectService.GetTeamsIntegrationSettingAsync(projectId);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/integration/teams")]
+    public async Task UpdateTeamsIntegrationProject(Guid projectId, [FromBody] TeamsSetting setting)
+    {
+        await projectService.UpdateTeamsIntegrationSettingAsync(projectId, setting);
+    }
+    
+    [HttpPost]
+    [Route("{projectId}/integration/teams/test")]
+    public async Task TestTeamsIntegrationProject(Guid projectId)
+    {
+        await projectService.TestTeamsIntegrationSettingAsync(projectId);
+    }
+    
+    [HttpGet]
+    [Route("{projectId}/integration/mail")]
+    public async Task<AlertSetting> GetMailIntegrationProject(Guid projectId)
+    {
+        return await projectService.GetMailIntegrationSettingAsync(projectId);
+    }
+
+    [HttpPost]
+    [Route("{projectId}/integration/mail")]
+    public async Task UpdateMailIntegrationProject(Guid projectId, [FromBody] AlertSetting setting)
+    {
+        await projectService.UpdateMailIntegrationSettingAsync(projectId, setting);
     }
 
     [HttpPost]

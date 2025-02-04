@@ -1,21 +1,38 @@
 using CodeSecure.Database;
 using CodeSecure.Database.Entity;
-using CodeSecure.Database.Metadata;
 using CodeSecure.Enum;
 using CodeSecure.Extension;
 using CodeSecure.Manager.Project.Model;
 using CodeSecure.Manager.Scanner;
+using CodeSecure.Manager.Setting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CodeSecure.Manager.Project;
 
 public class ProjectManager(
     AppDbContext context,
     IScannerManager scannerManager,
+    ISettingManager settingManager,
+    IMemoryCache cache,
     ILogger<ProjectManager> logger
-) : IProjectManager
+    ) : IProjectManager
 {
     private static readonly SemaphoreSlim Lock = new(1, 1);
+
+    public async Task<SourceType> GetSourceTypeAsync(Guid sourceControlId)
+    {
+        var key = $"{nameof(SourceControls)}:{sourceControlId}";
+        if (cache.TryGetValue(key, out SourceControls? sourceControl))
+        {
+            return sourceControl!.Type;
+        }
+        sourceControl = await context.SourceControls.FirstAsync(record => record.Id == sourceControlId);
+        var options = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(3));
+        cache.Set(key, sourceControl, options);
+        return sourceControl.Type;
+    }
 
     public async Task<Projects> CreateOrUpdateAsync(Projects input)
     {
@@ -30,23 +47,11 @@ public class ProjectManager(
                 project.Id = Guid.NewGuid();
                 context.Projects.Add(project);
                 await context.SaveChangesAsync();
-                var severityThreshold = new SeverityThreshold();
                 var setting = new ProjectSettings
                 {
                     ProjectId = project.Id,
-                    Metadata = JSONSerializer.Serialize(new ProjectSettingMetadata
-                    {
-                        SastSetting = new SastSetting
-                        {
-                            Mode = ThresholdMode.MonitorOnly,
-                            SeverityThreshold = severityThreshold
-                        },
-                        ScaSetting = new ScaSetting
-                        {
-                            Mode = ThresholdMode.MonitorOnly,
-                            SeverityThreshold = severityThreshold
-                        }
-                    })
+                    SastSetting = JSONSerializer.Serialize(new ThresholdSetting()),
+                    ScaSetting = JSONSerializer.Serialize(new ThresholdSetting()),
                 };
                 context.ProjectSettings.Add(setting);
                 await context.SaveChangesAsync();
@@ -131,6 +136,7 @@ public class ProjectManager(
                 {
                     recommendation = $"Upgrade to version {item.Package.FixedVersion}";
                 }
+
                 return new DependencyProject
                 {
                     Name = name,
@@ -151,5 +157,125 @@ public class ProjectManager(
             ProjectDependencyUrl = $"{Application.Config.FrontendUrl}/#/project/{project.Id.ToString()}/dependency"
         };
         return report;
+    }
+
+    public async Task<ProjectSetting> GetProjectSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        var jiraSetting = JSONSerializer.DeserializeOrDefault(setting.JiraSetting, new JiraProjectSetting());
+        var jiraGlobalSetting = await settingManager.GetJiraSettingAsync();
+        jiraSetting.Active = jiraGlobalSetting.Active;
+        if (string.IsNullOrEmpty(jiraSetting.ProjectKey))
+        {
+            jiraSetting.ProjectKey = jiraGlobalSetting.ProjectKey;
+        }
+
+        return new ProjectSetting
+        {
+            SastSetting = JSONSerializer.DeserializeOrDefault(setting.SastSetting,
+                new ThresholdSetting()),
+            ScaSetting = JSONSerializer.DeserializeOrDefault(setting.ScaSetting,
+                new ThresholdSetting()),
+            JiraSetting = jiraSetting,
+        };
+    }
+
+    public async Task<ThresholdSetting> GetSastSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        return JSONSerializer.DeserializeOrDefault(setting.SastSetting, new ThresholdSetting());
+    }
+
+    public async Task<ThresholdSetting> GetScaSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        return JSONSerializer.DeserializeOrDefault(setting.ScaSetting, new ThresholdSetting());
+    }
+
+    public async Task UpdateSastSettingAsync(Guid projectId, ThresholdSetting setting)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        projectSetting.SastSetting = JSONSerializer.Serialize(setting);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateScaSettingAsync(Guid projectId, ThresholdSetting setting)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        projectSetting.ScaSetting = JSONSerializer.Serialize(setting);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<JiraProjectSetting> GetJiraSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        var jiraSetting = JSONSerializer.DeserializeOrDefault(setting.JiraSetting, new JiraProjectSetting());
+        var globalSetting = await settingManager.GetJiraSettingAsync();
+        jiraSetting.Active = globalSetting.Active;
+        if (string.IsNullOrEmpty(jiraSetting.ProjectKey))
+        {
+            jiraSetting.ProjectKey = globalSetting.ProjectKey;
+        }
+
+        if (string.IsNullOrEmpty(jiraSetting.IssueType))
+        {
+            jiraSetting.IssueType = globalSetting.IssueType;
+        }
+        return jiraSetting;
+    }
+
+    public async Task UpdateJiraSettingAsync(Guid projectId, JiraProjectSetting setting)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        projectSetting.JiraSetting = JSONSerializer.Serialize(setting);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<AlertSetting> GetMailSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        return JSONSerializer.DeserializeOrDefault(setting.MailSetting, new AlertSetting
+        {
+            Active = true,
+            SecurityAlertEvent = true,
+            NewFindingEvent = true,
+            FixedFindingEvent = true,
+            ScanCompletedEvent = false,
+            ScanFailedEvent = true
+        });
+    }
+
+    public async Task UpdateMailSettingAsync(Guid projectId, AlertSetting request)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        // always active by default
+        request.Active = true;
+        projectSetting.MailSetting = JSONSerializer.Serialize(request);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<TeamsSetting> GetTeamsSettingAsync(Guid projectId)
+    {
+        var setting = await FindProjectSettingsAsync(projectId);
+        return JSONSerializer.DeserializeOrDefault(setting.TeamsSetting, new TeamsSetting());
+    }
+
+    public async Task UpdateTeamsSettingAsync(Guid projectId, TeamsSetting request)
+    {
+        var projectSetting = await FindProjectSettingsAsync(projectId);
+        projectSetting.TeamsSetting = JSONSerializer.Serialize(request);
+        context.ProjectSettings.Update(projectSetting);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task<ProjectSettings> FindProjectSettingsAsync(Guid projectId)
+    {
+        return await context.ProjectSettings
+            .Where(record => record.ProjectId == projectId)
+            .FirstAsync();
     }
 }

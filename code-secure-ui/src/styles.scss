@@ -48,7 +48,6 @@
     --muted-foreground: rgb(156, 163, 175);
     --destructive: rgb(204, 0, 34);
     --destructive-foreground: rgb(249, 250, 251);
-    --border: rgb(31, 41, 55);
   }
 
   :root[data-theme='red'] {
@@ -90,7 +89,6 @@
     --primary-foreground: rgb(250, 250, 249);
     --muted: rgb(41, 37, 36);
     --muted-foreground: rgb(168, 162, 158);
-    --border: rgb(41, 37, 36);
   }
 
   :root[data-theme='yellow'] {
@@ -107,7 +105,6 @@
     --muted: rgb(41, 37, 36);
     --muted-foreground: rgb(168, 162, 158);
     --destructive-foreground: rgb(250, 250, 249);
-    --border: rgb(41, 37, 36);
   }
 
   :root[data-theme='green'] {
@@ -135,7 +132,7 @@
   textarea,
   button,
   select {
-    @apply rounded-md border border-border bg-background text-xs placeholder-muted-foreground focus:z-10 focus:border-primary focus:outline-none focus:ring-primary;
+    @apply rounded border border-border bg-background text-xs placeholder-muted-foreground focus:z-10 focus:border-border focus:outline-none focus:ring-0;
   }
 
   [type='checkbox'],

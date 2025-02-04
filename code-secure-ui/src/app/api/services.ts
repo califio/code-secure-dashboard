@@ -4,13 +4,14 @@
 
 export { AuthService } from './services/auth.service';
 export { CiService } from './services/ci.service';
-export { CiTokenService } from './services/ci-token.service';
-export { ConfigService } from './services/config.service';
 export { DashboardService } from './services/dashboard.service';
 export { DependencyService } from './services/dependency.service';
 export { FindingService } from './services/finding.service';
+export { IntegrationService } from './services/integration.service';
 export { OpenIdConnectService } from './services/open-id-connect.service';
 export { ProfileService } from './services/profile.service';
 export { ProjectService } from './services/project.service';
 export { RoleService } from './services/role.service';
+export { SettingService } from './services/setting.service';
+export { TokenService } from './services/token.service';
 export { UserService } from './services/user.service';

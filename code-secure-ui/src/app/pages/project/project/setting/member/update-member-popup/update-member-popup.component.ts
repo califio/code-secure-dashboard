@@ -15,12 +15,12 @@ import {ProjectStore} from '../../../project.store';
 @Component({
   selector: 'app-update-member-popup',
   standalone: true,
-    imports: [
-        AvatarComponent,
-        DropdownComponent,
-        ButtonDirective,
-        UserInfoComponent
-    ],
+  imports: [
+    AvatarComponent,
+    DropdownComponent,
+    ButtonDirective,
+    UserInfoComponent,
+  ],
   templateUrl: './update-member-popup.component.html',
   styleUrl: './update-member-popup.component.scss'
 })

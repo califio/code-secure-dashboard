@@ -6,4 +6,5 @@ public record UpdateFindingRequest
 {
     public FindingStatus? Status { get; set; }
     public DateTime? FixDeadline { get; set; }
+    public string? Recommendation { get; set; }
 }

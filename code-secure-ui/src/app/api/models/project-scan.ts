@@ -15,6 +15,7 @@ export interface ProjectScan {
   jobUrl?: string | null;
   metadata?: string | null;
   scanner?: string | null;
+  scannerId?: string;
   severityCritical?: number;
   severityHigh?: number;
   severityInfo?: number;

@@ -33,4 +33,4 @@ export function updateUserByAdmin(http: HttpClient, rootUrl: string, params: Upd
   );
 }
 
-updateUserByAdmin.PATH = '/api/admin/user/{userId}';
+updateUserByAdmin.PATH = '/api/user/{userId}';

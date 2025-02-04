@@ -1,8 +1,9 @@
 import {Component, OnDestroy} from '@angular/core';
-import {NgIcon} from "@ng-icons/core";
+import {NgIcon, provideIcons} from "@ng-icons/core";
 import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {NavItem} from '../../core/menu';
 import {Subject} from 'rxjs';
+import {heroAdjustmentsHorizontal, heroEnvelope, heroKey, heroScale} from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-setting',
@@ -14,7 +15,8 @@ import {Subject} from 'rxjs';
     RouterLink
   ],
   templateUrl: './setting.component.html',
-  styleUrl: './setting.component.scss'
+  styleUrl: './setting.component.scss',
+  viewProviders: [provideIcons({heroEnvelope, heroKey, heroScale, heroAdjustmentsHorizontal})]
 })
 export class SettingComponent implements OnDestroy {
   constructor(
@@ -32,24 +34,19 @@ export class SettingComponent implements OnDestroy {
 
   navItems: NavItem[] = [
     {
-      label: 'CI Token',
+      label: 'General',
+      route: '/setting/general',
+      icon: 'heroAdjustmentsHorizontal',
+    },
+    {
+      label: 'Access Token',
       route: '/setting/ci-token',
-      icon: 'cicd',
+      icon: 'token',
     },
     {
-      label: 'Notification',
-      route: '/setting/notification',
-      icon: 'envelope',
-    },
-    {
-      label: 'Authentication',
-      route: '/setting/authentication',
-      icon: 'key',
-    },
-    {
-      label: 'Service Level Agreement (SLA)',
-      route: '/setting/sla',
-      icon: 'scale',
+      label: 'Integration',
+      route: '/setting/integration',
+      icon: 'plugin',
     }
   ]
   private destroy$ = new Subject();

@@ -1,35 +1,54 @@
+using System.Net;
 using Atlassian.Jira;
-using Atlassian.Jira.Remote;
+using CodeSecure.Extension;
 
 namespace CodeSecure.Tests;
 
 public class JiraTest
 {
     public required ConfigTest Config;
-    public required Jira Jira;
+    public required Jira jira;
 
     [SetUp]
     public void Setup()
     {
         Config = ConfigTest.GetConfig();
-        Jira = Jira.CreateRestClient(Config.JiraUrl, Config.JiraUserName, Config.JiraPassword);
+        var setting = new JiraRestClientSettings();
+        setting.Proxy = new WebProxy("http://127.0.0.1:8080");
+        jira = Jira.CreateRestClient(Config.JiraUrl, Config.JiraUserName, Config.JiraPassword, setting);
     }
 
     [Test]
-    public void TestConnectJira()
+    public void TestCreateIssueJira()
+    {
+        var issueTypes = jira.IssueTypes.GetIssueTypesAsync().Result;
+        foreach (var issueType in issueTypes)
+        {
+            Console.WriteLine(JSONSerializer.Serialize(issueType));
+        }
+    }
+    
+    [Test]
+    public void TestUpdateIssueJira()
+    {
+        var issue = jira.Issues.GetIssueAsync("ATTT-504").Result;
+        issue.Description = "Test create issue jira description. Ignore this issue\n{code}\ntest1\n{code}";
+        jira.Issues.UpdateIssueAsync(issue).Wait();
+        //Console.WriteLine(issue.Description);
+    }
+
+    [Test]
+    public void TestGetProjectJira()
     {
         try
         {
-            var project = this.Jira.Projects.GetProjectAsync("ATTT").Result;
-            Console.WriteLine(project.Url);
+            var project = jira.Projects.GetProjectAsync("ATTT").Result;
             Console.WriteLine(project.Key);
-            Console.WriteLine(project.Lead);
         }
-        catch (ResourceNotFoundException e)
+        catch (System.Exception e)
         {
             Console.WriteLine(e.Message);
+            throw;
         }
-        
-        
     }
 }

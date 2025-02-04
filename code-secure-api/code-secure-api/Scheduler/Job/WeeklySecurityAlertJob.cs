@@ -2,8 +2,8 @@ using CodeSecure.Database;
 using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
-using CodeSecure.Manager.Notification;
-using CodeSecure.Manager.Notification.Model;
+using CodeSecure.Manager.Integration;
+using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Project;
 using Quartz;
 
@@ -12,7 +12,7 @@ namespace CodeSecure.Scheduler.Job;
 public class WeeklySecurityAlertJob(
     AppDbContext dbContext,
     IProjectManager projectManager,
-    INotification notification,
+    IAlertManager alertManager,
     ILogger<WeeklySecurityAlertJob> logger) : IJob
 {
     private const int BulkSize = 1000;
@@ -29,14 +29,6 @@ public class WeeklySecurityAlertJob(
                 .Page(page, BulkSize);
             foreach (var project in result.Items)
             {
-                var members = (await projectManager.GetMembersAsync(project.Id))
-                    .FindAll(member => member.Status == UserStatus.Active);
-                var developers = members.FindAll(member => member.Role == ProjectRole.Developer)
-                    .Select(member => member.Email)
-                    .ToList();
-                var triagers = members.FindAll(member => member.Role != ProjectRole.Developer)
-                    .Select(member => member.Email)
-                    .ToList();
                 // dependency alert
                 var report = await projectManager.DependencyReportAsync(project);
                 var total = report.Critical + report.High + report.Medium + report.Low;
@@ -51,10 +43,11 @@ public class WeeklySecurityAlertJob(
                         High = report.High,
                         Medium = report.Medium,
                         Low = report.Low,
-                        Packages = report.Packages
+                        Packages = report.Packages,
+                        ProjectId = project.Id
                     };
                     var subject = $"Weekly Security Alert: Vulnerability found in dependencies of {model.RepoName}";
-                    notification.PushDependencyReport(developers, model, subject);
+                    await alertManager.AlertVulnerableDependencies(model, subject);
                 }
                 // Reminder verify unconfirmed finding
                 var openFinding = dbContext.Findings
@@ -62,11 +55,13 @@ public class WeeklySecurityAlertJob(
                                      && record.Status == FindingStatus.Open);
                 if (openFinding > 0)
                 {
-                    notification.PushNeedsTriageFindingInfo(triagers, new NeedsTriageFindingInfoModel
+                    await alertManager.AlertNeedsTriageFinding(new NeedsTriageFindingInfoModel
                     {
                         ProjectName = project.Name,
                         NeedsTriage = openFinding,
-                        OpenFindingUrl = $"{Application.Config.FrontendUrl}/#/project/{project.Id.ToString()}/finding?status=Open"
+                        OpenFindingUrl =
+                            $"{Application.Config.FrontendUrl}/#/project/{project.Id.ToString()}/finding?status=Open",
+                        ProjectId = project.Id
                     });
                 }
             }

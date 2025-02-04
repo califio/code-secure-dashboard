@@ -31,4 +31,4 @@ export function createUserByAdmin(http: HttpClient, rootUrl: string, params?: Cr
   );
 }
 
-createUserByAdmin.PATH = '/api/admin/user';
+createUserByAdmin.PATH = '/api/user';

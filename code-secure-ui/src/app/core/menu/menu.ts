@@ -27,14 +27,9 @@ export const items: MenuItem[] = [
         route: '/user',
       },
       {
-        label: 'Rules',
-        icon: 'template',
-        route: '/rule',
-      },
-      {
         icon: 'setting',
         label: 'Settings',
-        route: '/setting/ci-token',
+        route: '/setting',
       },
       // {
       //   icon: 'assets/icons/heroicons/outline/folder.svg',

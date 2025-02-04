@@ -1,0 +1,79 @@
+table {
+  @apply border border-gray-300;
+}
+.ant-input {
+  &:focus {
+    border: none;
+    box-shadow: none;
+  }
+  &:hover {
+    border: none;
+  }
+}
+textarea {
+  border: none;
+  &:focus {
+    border: none;
+  }
+  &:hover {
+    border: none;
+  }
+}
+markdown-toolbar {
+  @apply flex flex-row items-baseline;
+  .btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    padding: 3px 5px;
+    width: 28px;
+    color: #222;
+
+    i {
+      display: flex;
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.editor {
+  @apply flex flex-col border border-border w-full px-2 bg-background;
+  border-radius: 3px;
+
+  .text-editor {
+    padding-left: 15px;
+    padding-right: 15px;
+    resize: none;
+    border-color: transparent;
+    width: 100%;
+    overflow-y: hidden;
+
+    &:focus {
+      outline: none;
+      border: transparent;
+    }
+  }
+}
+
+.preview {
+  position: relative;
+  min-height: 32px;
+  .icon-edit {
+    @apply font-normal;
+    display: none;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+  }
+  &:hover {
+    @apply bg-background border border-border;
+    .icon-edit {
+      display: block;
+    }
+  }
+}

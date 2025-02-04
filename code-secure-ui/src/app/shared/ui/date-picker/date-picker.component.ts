@@ -24,7 +24,6 @@ export class DatePickerComponent implements OnInit {
   @Input() set date(date: Date | null | undefined) {
     this._date = date;
     this.initDate();
-    console.log(date);
   }
   get date() {
     return this._date;

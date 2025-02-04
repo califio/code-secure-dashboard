@@ -13,10 +13,17 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { addMember } from '../fn/project/add-member';
 import { AddMember$Params } from '../fn/project/add-member';
+import { AlertSetting } from '../models/alert-setting';
 import { deleteProjectMember } from '../fn/project/delete-project-member';
 import { DeleteProjectMember$Params } from '../fn/project/delete-project-member';
 import { EnvironmentVariable } from '../models/environment-variable';
 import { EnvironmentVariablePage } from '../models/environment-variable-page';
+import { getIntegrationProject } from '../fn/project/get-integration-project';
+import { GetIntegrationProject$Params } from '../fn/project/get-integration-project';
+import { getJiraIntegrationProject } from '../fn/project/get-jira-integration-project';
+import { GetJiraIntegrationProject$Params } from '../fn/project/get-jira-integration-project';
+import { getMailIntegrationProject } from '../fn/project/get-mail-integration-project';
+import { GetMailIntegrationProject$Params } from '../fn/project/get-mail-integration-project';
 import { getProjectCommits } from '../fn/project/get-project-commits';
 import { GetProjectCommits$Params } from '../fn/project/get-project-commits';
 import { getProjectEnvironment } from '../fn/project/get-project-environment';
@@ -39,25 +46,40 @@ import { getProjectStatistic } from '../fn/project/get-project-statistic';
 import { GetProjectStatistic$Params } from '../fn/project/get-project-statistic';
 import { getProjectUsers } from '../fn/project/get-project-users';
 import { GetProjectUsers$Params } from '../fn/project/get-project-users';
+import { getTeamsIntegrationProject } from '../fn/project/get-teams-integration-project';
+import { GetTeamsIntegrationProject$Params } from '../fn/project/get-teams-integration-project';
+import { JiraProjectSettingResponse } from '../models/jira-project-setting-response';
 import { ProjectCommitSummary } from '../models/project-commit-summary';
 import { ProjectFindingPage } from '../models/project-finding-page';
 import { ProjectInfo } from '../models/project-info';
+import { ProjectIntegration } from '../models/project-integration';
 import { ProjectPackagePage } from '../models/project-package-page';
-import { ProjectScanner } from '../models/project-scanner';
 import { ProjectScanPage } from '../models/project-scan-page';
-import { ProjectSettingMetadata } from '../models/project-setting-metadata';
+import { ProjectSetting } from '../models/project-setting';
 import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
 import { ProjectUser } from '../models/project-user';
 import { ProjectUserPage } from '../models/project-user-page';
 import { removeProjectEnvironment } from '../fn/project/remove-project-environment';
 import { RemoveProjectEnvironment$Params } from '../fn/project/remove-project-environment';
+import { Scanners } from '../models/scanners';
 import { setProjectEnvironment } from '../fn/project/set-project-environment';
 import { SetProjectEnvironment$Params } from '../fn/project/set-project-environment';
+import { TeamsSetting } from '../models/teams-setting';
+import { testTeamsIntegrationProject } from '../fn/project/test-teams-integration-project';
+import { TestTeamsIntegrationProject$Params } from '../fn/project/test-teams-integration-project';
+import { updateJiraIntegrationProject } from '../fn/project/update-jira-integration-project';
+import { UpdateJiraIntegrationProject$Params } from '../fn/project/update-jira-integration-project';
+import { updateMailIntegrationProject } from '../fn/project/update-mail-integration-project';
+import { UpdateMailIntegrationProject$Params } from '../fn/project/update-mail-integration-project';
 import { updateProjectMember } from '../fn/project/update-project-member';
 import { UpdateProjectMember$Params } from '../fn/project/update-project-member';
-import { updateProjectSetting } from '../fn/project/update-project-setting';
-import { UpdateProjectSetting$Params } from '../fn/project/update-project-setting';
+import { updateSastSettingProject } from '../fn/project/update-sast-setting-project';
+import { UpdateSastSettingProject$Params } from '../fn/project/update-sast-setting-project';
+import { updateScaSettingProject } from '../fn/project/update-sca-setting-project';
+import { UpdateScaSettingProject$Params } from '../fn/project/update-sca-setting-project';
+import { updateTeamsIntegrationProject } from '../fn/project/update-teams-integration-project';
+import { UpdateTeamsIntegrationProject$Params } from '../fn/project/update-teams-integration-project';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService extends BaseService {
@@ -174,7 +196,7 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectScanners$Response(params: GetProjectScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectScanner>>> {
+  getProjectScanners$Response(params: GetProjectScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Scanners>>> {
     return getProjectScanners(this.http, this.rootUrl, params, context);
   }
 
@@ -184,9 +206,9 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectScanners(params: GetProjectScanners$Params, context?: HttpContext): Observable<Array<ProjectScanner>> {
+  getProjectScanners(params: GetProjectScanners$Params, context?: HttpContext): Observable<Array<Scanners>> {
     return this.getProjectScanners$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<ProjectScanner>>): Array<ProjectScanner> => r.body)
+      map((r: StrictHttpResponse<Array<Scanners>>): Array<Scanners> => r.body)
     );
   }
 
@@ -374,7 +396,7 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectSetting$Response(params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
+  getProjectSetting$Response(params: GetProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSetting>> {
     return getProjectSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -384,34 +406,259 @@ export class ProjectService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProjectSetting(params: GetProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
+  getProjectSetting(params: GetProjectSetting$Params, context?: HttpContext): Observable<ProjectSetting> {
     return this.getProjectSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
+      map((r: StrictHttpResponse<ProjectSetting>): ProjectSetting => r.body)
     );
   }
 
-  /** Path part for operation `updateProjectSetting()` */
-  static readonly UpdateProjectSettingPath = '/api/project/{projectId}/setting';
+  /** Path part for operation `updateSastSettingProject()` */
+  static readonly UpdateSastSettingProjectPath = '/api/project/{projectId}/setting/sast';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateProjectSetting()` instead.
+   * To access only the response body, use `updateSastSettingProject()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateProjectSetting$Response(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSettingMetadata>> {
-    return updateProjectSetting(this.http, this.rootUrl, params, context);
+  updateSastSettingProject$Response(params: UpdateSastSettingProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateSastSettingProject(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateProjectSetting$Response()` instead.
+   * To access the full response (for headers, for example), `updateSastSettingProject$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateProjectSetting(params: UpdateProjectSetting$Params, context?: HttpContext): Observable<ProjectSettingMetadata> {
-    return this.updateProjectSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectSettingMetadata>): ProjectSettingMetadata => r.body)
+  updateSastSettingProject(params: UpdateSastSettingProject$Params, context?: HttpContext): Observable<void> {
+    return this.updateSastSettingProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `updateScaSettingProject()` */
+  static readonly UpdateScaSettingProjectPath = '/api/project/{projectId}/setting/sca';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateScaSettingProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateScaSettingProject$Response(params: UpdateScaSettingProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateScaSettingProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateScaSettingProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateScaSettingProject(params: UpdateScaSettingProject$Params, context?: HttpContext): Observable<void> {
+    return this.updateScaSettingProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getIntegrationProject()` */
+  static readonly GetIntegrationProjectPath = '/api/project/{projectId}/integration';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getIntegrationProject$Response(params: GetIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectIntegration>> {
+    return getIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getIntegrationProject(params: GetIntegrationProject$Params, context?: HttpContext): Observable<ProjectIntegration> {
+    return this.getIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectIntegration>): ProjectIntegration => r.body)
+    );
+  }
+
+  /** Path part for operation `getJiraIntegrationProject()` */
+  static readonly GetJiraIntegrationProjectPath = '/api/project/{projectId}/integration/jira';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getJiraIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraIntegrationProject$Response(params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraProjectSettingResponse>> {
+    return getJiraIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getJiraIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraIntegrationProject(params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<JiraProjectSettingResponse> {
+    return this.getJiraIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<JiraProjectSettingResponse>): JiraProjectSettingResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `updateJiraIntegrationProject()` */
+  static readonly UpdateJiraIntegrationProjectPath = '/api/project/{projectId}/integration/jira';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateJiraIntegrationProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraIntegrationProject$Response(params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateJiraIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateJiraIntegrationProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraIntegrationProject(params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<void> {
+    return this.updateJiraIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getTeamsIntegrationProject()` */
+  static readonly GetTeamsIntegrationProjectPath = '/api/project/{projectId}/integration/teams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getTeamsIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsIntegrationProject$Response(params: GetTeamsIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
+    return getTeamsIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getTeamsIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsIntegrationProject(params: GetTeamsIntegrationProject$Params, context?: HttpContext): Observable<TeamsSetting> {
+    return this.getTeamsIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<TeamsSetting>): TeamsSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateTeamsIntegrationProject()` */
+  static readonly UpdateTeamsIntegrationProjectPath = '/api/project/{projectId}/integration/teams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateTeamsIntegrationProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateTeamsIntegrationProject$Response(params: UpdateTeamsIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateTeamsIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateTeamsIntegrationProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateTeamsIntegrationProject(params: UpdateTeamsIntegrationProject$Params, context?: HttpContext): Observable<void> {
+    return this.updateTeamsIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `testTeamsIntegrationProject()` */
+  static readonly TestTeamsIntegrationProjectPath = '/api/project/{projectId}/integration/teams/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testTeamsIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testTeamsIntegrationProject$Response(params: TestTeamsIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return testTeamsIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testTeamsIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testTeamsIntegrationProject(params: TestTeamsIntegrationProject$Params, context?: HttpContext): Observable<void> {
+    return this.testTeamsIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getMailIntegrationProject()` */
+  static readonly GetMailIntegrationProjectPath = '/api/project/{projectId}/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getMailIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMailIntegrationProject$Response(params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<AlertSetting>> {
+    return getMailIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getMailIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMailIntegrationProject(params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<AlertSetting> {
+    return this.getMailIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<AlertSetting>): AlertSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateMailIntegrationProject()` */
+  static readonly UpdateMailIntegrationProjectPath = '/api/project/{projectId}/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateMailIntegrationProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationProject$Response(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateMailIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateMailIntegrationProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationProject(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<void> {
+    return this.updateMailIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

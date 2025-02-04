@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LoadingTableComponent} from "../../shared/ui/loading-table/loading-table.component";
-import {NgIcon} from "@ng-icons/core";
+import {NgIcon, provideIcons} from "@ng-icons/core";
 import {PaginationComponent} from "../../shared/ui/pagination/pagination.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TimeagoModule} from "ngx-timeago";
@@ -21,6 +21,7 @@ import {RoleService} from '../../api/services/role.service';
 import {ConfirmPopupComponent} from '../../shared/ui/confirm-popup/confirm-popup.component';
 import {ToastrService} from '../../shared/components/toastr/toastr.service';
 import {TooltipDirective} from '../../shared/ui/tooltip/tooltip.directive';
+import {heroPaperAirplane} from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-user',
@@ -42,7 +43,8 @@ import {TooltipDirective} from '../../shared/ui/tooltip/tooltip.directive';
     TooltipDirective
   ],
   templateUrl: './user.component.html',
-  styleUrl: './user.component.scss'
+  styleUrl: './user.component.scss',
+  viewProviders: [provideIcons({heroPaperAirplane})]
 })
 export class UserComponent implements OnInit, OnDestroy {
   loading = false;

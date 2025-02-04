@@ -10,37 +10,39 @@
               <td class="uppercase">MODE</td>
               <td class="px-4">
                 <dropdown [options]="thresholdModeOptions"
-                          [defaultLabel]="'Mode'"
-                          (selectedChange)="changeSastMode($event)"
-                          [selected]="form.controls.sastSetting.controls.mode.value"></dropdown>
+                          [selected]="sastForm.controls.mode!.value"
+                          [showLabel]="false"
+                          (selectedChange)="changeSastMode($event)">
+                </dropdown>
               </td>
             </tr>
             <tr>
               <td class="uppercase">Critical</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.critical">
+                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.critical!">
               </td>
             </tr>
             <tr>
               <td class="uppercase">High</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.high">
+                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.high!">
               </td>
             </tr>
             <tr>
               <td class="uppercase">MEDIUM</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.medium">
+                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.medium!">
               </td>
             </tr>
             <tr>
               <td class="uppercase">LOW</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sastSetting.controls.severityThreshold.controls.low">
+                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.low!">
               </td>
             </tr>
           </table>
         </div>
+        <button app-button type="primary" class="w-fit" (click)="updateSastSetting()">Update</button>
       </div>
       <div class="flex flex-col gap-2">
         <div class="text-xl">Software Composition Analysis (SCA)</div>
@@ -50,38 +52,40 @@
               <td class="uppercase">MODE</td>
               <td class="px-4">
                 <dropdown [options]="thresholdModeOptions"
-                          [defaultLabel]="'Mode'"
-                          [selected]="form.controls.scaSetting.controls.mode.value"></dropdown>
+                          [selected]="scaForm.controls.mode!.value"
+                          [showLabel]="false"
+                          (selectedChange)="changeScaMode($event)">
+                </dropdown>
               </td>
             </tr>
             <tr>
               <td class="uppercase">Critical</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.critical">
+                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.critical!">
               </td>
             </tr>
             <tr>
               <td class="uppercase">High</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.high">
+                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.high!">
               </td>
             </tr>
             <tr>
               <td class="uppercase">MEDIUM</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.medium">
+                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.medium!">
               </td>
             </tr>
             <tr>
               <td class="uppercase">LOW</td>
               <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.scaSetting.controls.severityThreshold.controls.low">
+                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.low!">
               </td>
             </tr>
           </table>
         </div>
+        <button app-button type="primary" class="w-fit" (click)="updateScaSetting()">Update</button>
       </div>
     </div>
-    <button app-button type="primary" class="w-fit" (click)="updateSecurityThreshold()">Update</button>
   </div>
 </div>

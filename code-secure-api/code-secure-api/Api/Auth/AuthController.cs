@@ -19,6 +19,13 @@ public class AuthController(IAuthService authService) : Controller
         return Request.FrontendUrl();
     }
 
+    [HttpGet]
+    [Route("/api/auth-config")]
+    public async Task<AuthConfig> GetAuthConfig()
+    {
+        return await authService.GetAuthInfoAsync();
+    }
+
     [HttpPost]
     [Route("/api/login")]
     public async Task<AuthResponse> Login(AuthRequest request)

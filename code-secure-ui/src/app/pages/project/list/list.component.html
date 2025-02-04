@@ -13,13 +13,11 @@
           </label>
         </div>
         <div class="flex flex-row space-x-2 items-center">
-          <select class="w-28 p-2 text-muted-foreground"
-                  [ngModel]="filter.SortBy"
-                  (ngModelChange)="onSortChange($event)">
-            @for (option of sorts; track $index) {
-              <option [value]="option.value">{{option.label}}</option>
-            }
-          </select>
+          <dropdown [options]="sorts"
+                    [selected]="filter.SortBy"
+                    (selectedChange)="onSortChange($event)">
+            <span class="font-semibold" dropdown-label>Sort By</span>
+          </dropdown>
           <ng-icon [name]="filter.Desc ? 'desc' : 'asc'" class="cursor-pointer" size="16" (click)="onOrderChange()"></ng-icon>
         </div>
       </div>

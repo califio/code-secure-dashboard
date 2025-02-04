@@ -5,8 +5,8 @@ using CodeSecure.Database.Entity;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
 using CodeSecure.Extension;
-using CodeSecure.Manager.Notification;
-using CodeSecure.Manager.Notification.Model;
+using CodeSecure.Manager.Integration.Mail;
+using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Setting;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,13 +16,24 @@ public class DefaultAuthService(
     IHttpContextAccessor contextAccessor,
     SignInManager<Users> signInManager,
     JwtUserManager userManager,
-    IAppSettingManager appSettingManager,
+    ISettingManager settingManager,
     IMailSender mailSender
 ) : IAuthService
 {
+    public async Task<AuthConfig> GetAuthInfoAsync()
+    {
+        var authSetting = await settingManager.GetAuthSettingAsync();
+        return new AuthConfig
+        {
+            DisablePasswordLogon = authSetting.DisablePasswordLogon,
+            OpenIdConnectEnable = authSetting.OpenIdConnectSetting is { Enable: true },
+            OpenIdConnectProvider = authSetting.OpenIdConnectSetting.DisplayName
+        };
+    }
+
     public async Task<AuthResponse> PasswordSignInAsync(AuthRequest request)
     {
-        var authSetting = (await appSettingManager.AppSettingAsync()).AuthSetting;
+        var authSetting = await settingManager.GetAuthSettingAsync();
         if (authSetting is { DisablePasswordLogon: true })
             throw new BadRequestException("the admin disabled password logon");
 
@@ -69,7 +80,8 @@ public class DefaultAuthService(
         if (user == null)
         {
             var username = email.Split('@')[0];
-            var status = Application.Setting.AuthSetting.AllowRegister ? UserStatus.Active : UserStatus.Disabled;
+            var allowRegister = (await settingManager.GetAuthSettingAsync()).AllowRegister;
+            var status = allowRegister ? UserStatus.Active : UserStatus.Disabled;
             user = new Users
             {
                 Id = Guid.NewGuid(),
@@ -87,7 +99,7 @@ public class DefaultAuthService(
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, RoleDefaults.User);
-                if (!Application.Setting.AuthSetting.AllowRegister)
+                if (!allowRegister)
                 {
                     message = $"Registration successful. Contact admin to enable your account: {email}";
                 }

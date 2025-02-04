@@ -35,6 +35,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Scans> Scans { set; get; } = null!;
     public DbSet<SourceControls> SourceControls { set; get; } = null!;
     public DbSet<Tags> Tags { set; get; } = null!;
+    public DbSet<Tickets> Tickets { set; get; } = null!;
     public DbSet<Vulnerabilities> Vulnerabilities { set; get; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

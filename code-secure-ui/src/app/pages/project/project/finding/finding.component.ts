@@ -12,9 +12,6 @@ import {ProjectFindingPage} from '../../../../api/models/project-finding-page';
 import {FindingService} from '../../../../api/services/finding.service';
 import {FindingDetail} from '../../../../api/models/finding-detail';
 import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
-import {
-  ScanBranchDropdownComponent
-} from '../../../../shared/components/scan-branch-dropdown/scan-branch-dropdown.component';
 import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
 import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -24,10 +21,13 @@ import {
   FindingStatusFilterComponent
 } from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
 import {ProjectStore} from '../project.store';
-import {ScannerDropdownComponent} from '../../../../shared/components/scanner-dropdown/scanner-dropdown.component';
-import {ProjectScanner} from '../../../../api/models/project-scanner';
 import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectFindingSortField} from '../../../../api/models';
+import {ScannerLabelComponent} from "../../../../shared/components/scanner-label/scanner-label.component";
+import {
+  FindingStatusLabelComponent
+} from '../../../../shared/components/finding/finding-status-label/finding-status-label.component';
+import {ScanBranchComponent} from '../../../../shared/components/scan-branch/scan-branch.component';
 
 @Component({
   selector: 'app-finding',
@@ -38,13 +38,14 @@ import {ProjectFindingSortField} from '../../../../api/models';
     DropdownComponent,
     FindingStatusComponent,
     FindingDetailComponent,
-    ScanBranchDropdownComponent,
     LoadingTableComponent,
     PaginationComponent,
     ReactiveFormsModule,
     FormsModule,
     FindingStatusFilterComponent,
-    ScannerDropdownComponent,
+    ScannerLabelComponent,
+    FindingStatusLabelComponent,
+    ScanBranchComponent,
   ],
   templateUrl: './finding.component.html',
   styleUrl: './finding.component.scss'
@@ -55,7 +56,28 @@ export class FindingComponent implements OnInit, OnDestroy {
   loadingFinding = false;
   selectedFindings: string[] = [];
   commitId: string | null | undefined = null;
-
+  statusOptions: DropdownItem[] = [
+    {
+      value: FindingStatus.Open,
+      label: 'Open',
+    },
+    {
+      value: FindingStatus.Confirmed,
+      label: 'Confirmed',
+    },
+    {
+      value: FindingStatus.Incorrect,
+      label: 'False Positive',
+    },
+    {
+      value: FindingStatus.AcceptedRisk,
+      label: 'Accepted Risk',
+    },
+    {
+      value: FindingStatus.Fixed,
+      label: 'Fixed',
+    }
+  ];
   constructor(
     private projectService: ProjectService,
     private projectStore: ProjectStore,
@@ -71,19 +93,37 @@ export class FindingComponent implements OnInit, OnDestroy {
     this.projectService.getProjectCommits({
       projectId: this.projectStore.projectId()
     }).subscribe(branches => {
-      this.store.commits.set(branches);
+      this.store.commits.set(branches.map(item => {
+        return {
+          ...item,
+          label: item.branch,
+          value: item.commitId,
+        }
+      }));
       this.commitId = this.store.filter.commitId;
     });
     this.projectService.getProjectScanners({
       projectId: this.projectStore.projectId()
     }).subscribe(scanners => {
-      this.store.scanners.set(scanners);
-      this.scanner = scanners.find(scanner => scanner.name == this.store.filter.scanner
-        && this.store.filter.type == scanner.type);
+      this.store.scanners.set(scanners.map(item => {
+        return {
+          ...item,
+          label: item.name,
+          value: item.id,
+        }
+      }));
     })
     this.route.queryParams.pipe(
       switchMap(params => {
         bindQueryParams(params, this.store.filter);
+        if (!this.store.filter.status) {
+          this.store.filter.status = [
+            FindingStatus.Open,
+            FindingStatus.Confirmed,
+            FindingStatus.Fixed,
+            FindingStatus.AcceptedRisk
+          ];
+        }
         return this.getProjectFindings();
       }),
       takeUntil(this.destroy$)
@@ -119,7 +159,6 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject();
   search = '';
-  scanner: ProjectScanner | null | undefined;
   sortOptions: DropdownItem[] = [
     {
       value: ProjectFindingSortField.Name,
@@ -173,7 +212,7 @@ export class FindingComponent implements OnInit, OnDestroy {
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onStatusChange(status: FindingStatus | undefined) {
+  onStatusChange(status: any) {
     this.store.filter.status = status;
     updateQueryParams(this.router, this.store.filter);
   }
@@ -210,14 +249,8 @@ export class FindingComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChangeScanner(scanner: ProjectScanner | null) {
-    if (scanner != null) {
-      this.store.filter.scanner = scanner.name;
-      this.store.filter.type = scanner.type;
-    } else {
-      this.store.filter.scanner = undefined;
-      this.store.filter.type = undefined;
-    }
+  onChangeScanner(scanner: any) {
+    this.store.filter.scanner = scanner;
     updateQueryParams(this.router, this.store.filter);
   }
 

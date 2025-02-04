@@ -11,12 +11,15 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { AuthConfig } from '../models/auth-config';
 import { AuthResponse } from '../models/auth-response';
 import { confirmEmail } from '../fn/auth/confirm-email';
 import { ConfirmEmail$Params } from '../fn/auth/confirm-email';
 import { ConfirmEmailResult } from '../models/confirm-email-result';
 import { forgotPassword } from '../fn/auth/forgot-password';
 import { ForgotPassword$Params } from '../fn/auth/forgot-password';
+import { getAuthConfig } from '../fn/auth/get-auth-config';
+import { GetAuthConfig$Params } from '../fn/auth/get-auth-config';
 import { login } from '../fn/auth/login';
 import { Login$Params } from '../fn/auth/login';
 import { logout } from '../fn/auth/logout';
@@ -56,6 +59,31 @@ export class AuthService extends BaseService {
   server(params?: Server$Params, context?: HttpContext): Observable<string> {
     return this.server$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>): string => r.body)
+    );
+  }
+
+  /** Path part for operation `getAuthConfig()` */
+  static readonly GetAuthConfigPath = '/api/auth-config';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getAuthConfig()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getAuthConfig$Response(params?: GetAuthConfig$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthConfig>> {
+    return getAuthConfig(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getAuthConfig$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getAuthConfig(params?: GetAuthConfig$Params, context?: HttpContext): Observable<AuthConfig> {
+    return this.getAuthConfig$Response(params, context).pipe(
+      map((r: StrictHttpResponse<AuthConfig>): AuthConfig => r.body)
     );
   }
 

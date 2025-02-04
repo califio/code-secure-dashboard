@@ -31,6 +31,7 @@ export class ButtonDirective implements OnChanges {
     this.renderer.addClass(button, 'px-3');
     this.renderer.addClass(button, 'py-2');
     this.renderer.addClass(button, 'text-nowrap');
+    this.renderer.addClass(button, 'w-fit');
     // border
     if (this.type == "dashed") {
       this.renderer.addClass(button, 'border-dashed');
@@ -64,7 +65,7 @@ export class ButtonDirective implements OnChanges {
     const button = this.el.nativeElement;
     if (this.loading) {
       if (!this.contentWrapper) {
-        this.contentWrapper = this.renderer.createElement('span');
+        this.contentWrapper = this.renderer.createElement('div');
         while (button.firstChild) {
           this.renderer.appendChild(this.contentWrapper, button.firstChild);
         }
