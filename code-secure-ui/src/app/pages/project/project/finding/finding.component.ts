@@ -193,6 +193,11 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   private getProjectFindings(): Observable<ProjectFindingPage> {
     this.store.loading.set(true);
+    if (this.store.filter.scanner) {
+      if (!Array.isArray(this.store.filter.scanner)) {
+        this.store.filter.scanner = [this.store.filter.scanner];
+      }
+    }
     return this.projectService.getProjectFindings({
       projectId: this.projectStore.projectId(),
       body: this.store.filter
