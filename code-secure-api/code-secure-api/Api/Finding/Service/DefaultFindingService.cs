@@ -151,6 +151,10 @@ public class DefaultFindingService(
             finding.FixDeadline = request.FixDeadline;
         }
 
+        if (request.Recommendation != null)
+        {
+            finding.Recommendation = request.Recommendation;
+        }
         await findingManager.UpdateAsync(finding);
         return await GetFindingAsync(findingId);
     }

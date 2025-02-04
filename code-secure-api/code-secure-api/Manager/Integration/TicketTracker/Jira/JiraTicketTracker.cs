@@ -24,7 +24,7 @@ public class JiraTicketTracker(
             try
             {
                 var jiraProjectSetting = await projectManager.GetJiraSettingAsync(request.Project.Id);
-                string description = request.Finding.Description;
+                string description = Converter.MarkdownToJira(request.Finding.Description);
                 description += $"\n\n*Repo:* [{request.Project.Name}|{request.Project.RepoUrl}]";
                 var sourceType = await projectManager.GetSourceTypeAsync(request.Project.SourceControlId);
                 var location = RepoHelpers.UrlByCommit(sourceType, request.Project.RepoUrl, request.Commit,
@@ -37,7 +37,7 @@ public class JiraTicketTracker(
 
                 if (!string.IsNullOrEmpty(request.Finding.Recommendation))
                 {
-                    description += $"\n\n*Recommendation*\n{request.Finding.Recommendation}";
+                    description += $"\n\n*Recommendation*\n{Converter.MarkdownToJira(request.Finding.Recommendation)}";
                 }
                 description += $"\n\n*Found by:* {request.Scanner.Name}";
                 var jiraIssue = new JiraIssue
@@ -74,10 +74,11 @@ public class JiraTicketTracker(
                 request.Vulnerabilities.Sort((v1, v2) => v2.Severity - v1.Severity);
                 var description =
                     $"The package *{package.FullName()}@{package.Version}* currently in use contains known security vulnerabilities that may pose a risk to our system’s security and stability. Below is the list of identified vulnerabilities:\n\n" +
-                    "||Name||Severity||";
+                    "||Name||Severity||Fix Version||";
                 foreach (var vulnerability in request.Vulnerabilities)
                 {
-                    description += $"\n|{vulnerability.Name}|{vulnerability.Severity.ToString().ToUpper()}|";
+                    
+                    description += $"\n|{vulnerability.Name}|{vulnerability.Severity.ToString().ToUpper()}|{vulnerability.FixedVersion}|";
                 }
 
                 description += $"\n\n*Repo:* [{request.Project.Name}|{request.Project.RepoUrl}]";

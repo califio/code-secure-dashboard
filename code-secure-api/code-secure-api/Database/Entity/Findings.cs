@@ -8,7 +8,7 @@ public class Findings : BaseEntity
     public required string Name { get; init; }
     public required string Description { get; init; }
     public string? Category { get; init; }
-    public string? Recommendation { get; init; }
+    public string? Recommendation { get; set; }
     public required FindingStatus Status { get; set; }
     public required FindingSeverity Severity { get; init; }
     public DateTime? VerifiedAt { get; set; }
