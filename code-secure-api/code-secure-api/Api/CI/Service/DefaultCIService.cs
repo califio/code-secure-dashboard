@@ -576,48 +576,43 @@ public class DefaultCiService(
         if (newBranchFindings.Count > 0)
         {
             // add new scan findings
-            var newScanFindings = new List<ScanFindings>();
             foreach (var finding in newBranchFindings)
             {
-                var entry = context.ChangeTracker.Entries<ScanFindings>().FirstOrDefault(entity =>
-                    entity.Entity.ScanId == scanId && entity.Entity.FindingId == finding.Id);
-                if (entry == null)
+                try
                 {
-                    newScanFindings.Add(new ScanFindings
+                    context.ScanFindings.Add(new ScanFindings
                     {
                         ScanId = scan.Id,
                         FindingId = finding.Id,
                         Status = finding.Status,
                         CommitHash = scan.CommitHash
                     });
+                    await context.SaveChangesAsync();
+                    context.FindingActivities.Add(new FindingActivities
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = null,
+                        Comment = null,
+                        Type = FindingActivityType.Open,
+                        Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
+                        {
+                            ScanInfo = new FindingScanActivity
+                            {
+                                Branch = scan.Commit.Branch,
+                                Action = scan.Commit.Action,
+                                TargetBranch = scan.Commit.TargetBranch,
+                                IsDefault = scan.Commit.IsDefault
+                            }
+                        }),
+                        FindingId = finding.Id
+                    });
+                    await context.SaveChangesAsync();
+                }
+                catch (System.Exception e)
+                {
+                    logger.LogError(e.Message);
                 }
             }
-
-            context.ScanFindings.AddRange(newScanFindings);
-            await context.SaveChangesAsync();
-            // add activity of finding
-            newScanFindings.ForEach(scanFinding =>
-            {
-                context.FindingActivities.Add(new FindingActivities
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = null,
-                    Comment = null,
-                    Type = FindingActivityType.Open,
-                    Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
-                    {
-                        ScanInfo = new FindingScanActivity
-                        {
-                            Branch = scan.Commit.Branch,
-                            Action = scan.Commit.Action,
-                            TargetBranch = scan.Commit.TargetBranch,
-                            IsDefault = scan.Commit.IsDefault
-                        }
-                    }),
-                    FindingId = scanFinding.FindingId
-                });
-            });
-            await context.SaveChangesAsync();
         }
 
         // fixed findings
