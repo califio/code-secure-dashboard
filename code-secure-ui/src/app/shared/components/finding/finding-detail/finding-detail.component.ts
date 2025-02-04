@@ -31,6 +31,7 @@ import {FindingActivityComponent} from '../finding-activity/finding-activity.com
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {finalize} from 'rxjs';
 import {TicketDropdownComponent} from '../../ticket-dropdown/ticket-dropdown.component';
+import {MarkdownEditorComponent} from '../../../ui/markdown-editor/markdown-editor.component';
 
 @Component({
   selector: 'finding-detail',
@@ -57,6 +58,7 @@ import {TicketDropdownComponent} from '../../ticket-dropdown/ticket-dropdown.com
     ReactiveFormsModule,
     FormsModule,
     TicketDropdownComponent,
+    MarkdownEditorComponent,
   ],
   templateUrl: './finding-detail.component.html',
   styleUrl: './finding-detail.component.scss'
@@ -97,6 +99,8 @@ export class FindingDetailComponent {
   comment = '';
   commentLoading = false;
   loadingTicket = false;
+  recommendationPreview = true;
+  recommendationLoading = false;
   constructor(
     private findingService: FindingService,
     private toastr: ToastrService
@@ -231,6 +235,20 @@ export class FindingDetailComponent {
       id: this.finding.id!
     }).subscribe(() => {
       this.ticket.set(undefined);
+    })
+  }
+
+  saveRecommendation() {
+    this.recommendationLoading = true;
+    this.findingService.updateFinding({
+      id: this.finding.id!,
+      body: {
+        recommendation: this.finding.recommendation
+      }
+    }).pipe(
+      finalize(() => this.recommendationLoading = false)
+    ).subscribe(() => {
+      this.toastr.success('Update recommendation success!');
     })
   }
 }

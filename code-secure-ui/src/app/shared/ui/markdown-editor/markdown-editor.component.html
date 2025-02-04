@@ -1,0 +1,74 @@
+@if (editable) {
+  <div class="w-full">
+    @if (!preview) {
+      <div class="space-y-1">
+        <div class="editor" [class.focus]="focus">
+          <div class="flex flex-row justify-between mt-2">
+            <markdown-toolbar [attr.for]="controlId" class="flex flex-row items-center gap-2 cursor-pointer">
+              <md-bold title="Bold" aria-label="Bold">
+                <ng-icon name="bold" [size]="iconSize"></ng-icon>
+              </md-bold>
+              <md-italic title="Italic" aria-label="Italic">
+                <ng-icon name="italic" [size]="iconSize"></ng-icon>
+              </md-italic>
+              <md-quote title="Quote" aria-label="Quote">
+                <ng-icon name="quote" [size]="iconSize"></ng-icon>
+              </md-quote>
+              <md-code title="Code" aria-label="Code">
+                <ng-icon name="codeBracket" [size]="iconSize"></ng-icon>
+              </md-code>
+              <md-link title="Link" aria-label="Link">
+                <ng-icon name="link" [size]="iconSize"></ng-icon>
+              </md-link>
+              <md-image title="Image" aria-label="Image">
+                <ng-icon name="media" [size]="iconSize"></ng-icon>
+              </md-image>
+              <md-unordered-list title="Unordered List" aria-label="Unordered List">
+                <ng-icon name="listBullet" [size]="iconSize"></ng-icon>
+              </md-unordered-list>
+              <md-ordered-list title="Ordered List" aria-label="Ordered List">
+                <ng-icon name="listNumber" [size]="iconSize"></ng-icon>
+              </md-ordered-list>
+              <md-task-list title="Task List" aria-label="Task List">
+                <ng-icon name="listTask" [size]="iconSize"></ng-icon>
+              </md-task-list>
+              <md-table title="Table" aria-label="Table" (click)="insertTable()">
+                <ng-icon name="table" [size]="iconSize"></ng-icon>
+              </md-table>
+              <md-preview>
+                <ng-icon name="eye" [size]="iconSize" (click)="onPreview()" class="cursor-pointer"></ng-icon>
+              </md-preview>
+            </markdown-toolbar>
+            <div class="flex flex-row items-center">
+              @if (loading) {
+                <ng-icon name="spin" class="animate-spin"></ng-icon>
+              }
+            </div>
+          </div>
+          <div class="w-full h-0.5 border-t border-border"></div>
+          <textarea [id]="controlId" #textarea class="overflow-y-auto max-h-96"
+                    [formControl]="control"
+                    (focus)="onEdit()"
+                    (blur)="onBlur()">
+          </textarea>
+          <div class="w-full h-0.5 border-b border-border"></div>
+          <div class="w-full flex flex-row space-x-1 items-center justify-between py-1">
+            <a class="hidden md:block no-wrap text-xs" target="_blank"
+               href="https://www.markdownguide.org/basic-syntax/">Markdown is supported</a>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="preview" [ngClass]="previewClass">
+        <markdown [data]="control.value"></markdown>
+        <div class="p-1 icon-edit cursor-pointer"
+             title="Click to edit"
+             (click)="onEdit()">
+          <ng-icon name="heroPencilSquare" class="text-primary"></ng-icon>
+        </div>
+      </div>
+    }
+  </div>
+} @else {
+  <markdown class="w-full" [data]="control.value"></markdown>
+}

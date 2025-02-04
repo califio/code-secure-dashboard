@@ -31,6 +31,7 @@ export class ButtonDirective implements OnChanges {
     this.renderer.addClass(button, 'px-3');
     this.renderer.addClass(button, 'py-2');
     this.renderer.addClass(button, 'text-nowrap');
+    this.renderer.addClass(button, 'w-fit');
     // border
     if (this.type == "dashed") {
       this.renderer.addClass(button, 'border-dashed');

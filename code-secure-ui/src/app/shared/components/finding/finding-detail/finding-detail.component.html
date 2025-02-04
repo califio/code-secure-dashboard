@@ -94,14 +94,26 @@
           </div>
         </div>
       }
-      @if (finding.recommendation) {
-        <div class="flex flex-col gap-2">
-          <div class="font-semibold">Recommendation</div>
-          <div class="block rounded border border-border bg-background p-2 items-center">
-            <div markdown>{{ finding.recommendation }}</div>
-          </div>
-        </div>
-      }
+      <div class="flex flex-col gap-2">
+        <div class="font-semibold">Recommendation</div>
+        @if (finding.recommendation || !recommendationPreview) {
+          <markdown-editor
+            [(data)]="finding.recommendation!"
+            [(preview)]="recommendationPreview"
+            [loading]="recommendationLoading"
+            previewClass="rounded border border-border bg-background p-2">
+          </markdown-editor>
+          @if(!recommendationPreview){
+            <div class="flex flex-row items-center gap-2">
+              <button app-button type="primary" (click)="saveRecommendation()">Save</button>
+              <button app-button type="default" (click)="recommendationPreview = true">Cancel</button>
+            </div>
+          }
+        } @else {
+          <button app-button type="dashed" (click)="recommendationPreview = false">Add Recommendation</button>
+        }
+      </div>
+
       @if (finding.metadata && finding.metadata.cwes) {
         <div class="flex flex-col gap-2">
           <div class="font-semibold">CWEs</div>
