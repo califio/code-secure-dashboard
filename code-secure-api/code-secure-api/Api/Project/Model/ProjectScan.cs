@@ -12,6 +12,7 @@ public record ProjectScan
     public required string CommitTitle { get; set; }
     public required string? CommitBranch { get; set; }
     public required string? TargetBranch { get; set; }
+    public required Guid ScannerId { get; set; }
     public required string Scanner { get; set; }
     public required ScannerType Type { get; set; }
     public required ScanStatus Status { get; set; }

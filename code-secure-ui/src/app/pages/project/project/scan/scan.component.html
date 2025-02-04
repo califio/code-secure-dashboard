@@ -118,7 +118,7 @@
                 </td>
                 <td>
                   <a [routerLink]="['/project', store.projectId(), 'finding']"
-                     [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scanner, 'type': scan.type}"
+                     [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scannerId}"
                      class="flex flex-col gap-1">
                     <div [tooltip]="scan.commitTitle" position="dynamic">{{scan.commitTitle! | truncate:50 }}</div>
                     <scan-branch [action]="scan.gitAction ?? GitAction.CommitBranch"

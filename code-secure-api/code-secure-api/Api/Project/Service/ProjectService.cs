@@ -96,6 +96,7 @@ public class ProjectService(
             Id = scan.Id,
             GitAction = scan.Commit!.Action,
             Metadata = scan.Metadata,
+            ScannerId = scan.Scanner!.Id,
             Scanner = scan.Scanner!.Name,
             Type = scan.Scanner!.Type,
             Status = scan.Status,
