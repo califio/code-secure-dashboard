@@ -173,15 +173,24 @@ public class ProjectService(
             .Include(finding => finding.Scanner)
             .Where(finding => finding.ProjectId == project.Id);
         if (filter.CommitId != null)
+        {
             query = query.Where(finding => context.ScanFindings.Any(record =>
                 record.FindingId == finding.Id
                 && record.Scan!.CommitId == filter.CommitId)
             );
+        }
         if (filter.Status is { Count: > 0 })
         {
-            query = query.Where(finding => filter.Status.Contains(finding.Status));
+            if (filter.CommitId != null)
+            {
+                query = query.Where(finding => context.ScanFindings.Any(record => record.FindingId == finding.Id && filter.Status.Contains(record.Status)));
+            }
+            else
+            {
+                query = query.Where(finding => filter.Status.Contains(finding.Status));
+            }
         }
-
+        
         if (filter.Scanner is { Count: > 0 })
         {
             query = query.Where(finding => filter.Scanner.Contains(finding.ScannerId));
