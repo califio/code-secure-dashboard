@@ -2,7 +2,8 @@
   <!-- Input Field -->
   <div (click)="toggleCalendar()" class="text-nowrap">
     @if (date){
-      <div class="flex flex-row items-center text-nowrap gap-2 border border-border px-3 py-2 rounded-md cursor-pointer">
+      <div [ngClass]="{'cursor-pointer': editable, 'cursor-not-allowed': !editable}"
+        class="flex flex-row items-center text-nowrap bg-background gap-2 border border-border px-3 py-2 rounded-md">
         <span>
           {{date | date: format}}
         </span>

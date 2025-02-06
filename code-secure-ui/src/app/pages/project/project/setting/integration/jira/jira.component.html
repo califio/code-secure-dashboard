@@ -10,11 +10,10 @@
                     (selectedChange)="onChangeProject($event)">
             <span dropdown-label class="font-semibold text-xs">Select</span>
           </dropdown>
-          <button app-button type="default" (click)="onReload()" [loading]="loading">
-            @if(!loading){
-              <ng-icon name="arrowPath"></ng-icon>
-            }
-          </button>
+          <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
+               (click)="onReload()">
+            <ng-icon name="arrowPath" [ngClass]="{'animate-spin': loading}"></ng-icon>
+          </div>
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">

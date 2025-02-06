@@ -38,30 +38,22 @@
         [status]="finding.status!"
         (statusChange)="onChangeStatus($event)">
       </finding-status>
-      @if (finding.status == FindingStatus.Confirmed) {
+      @if (finding.fixDeadline || finding.status == FindingStatus.Confirmed) {
         <date-picker [titleTemplate]="datePickerTitle"
+                     [editable]="finding.status == FindingStatus.Confirmed"
                      [afterDateTemplate]="afterDateTemplate"
                      [date]="fixDeadline()"
                      [format]="dateFormat"
                      (dateChange)="onChangeFixDeadline($event)">
         </date-picker>
-        <ng-template #datePickerTitle>
-          <button app-button type="dashed" class="border-primary">Add Deadline</button>
-        </ng-template>
-        <ng-template #afterDateTemplate>
-          <div class="text-white bg-primary rounded px-1">deadline</div>
-        </ng-template>
-      } @else {
-        @if (finding.fixDeadline) {
-          <div
-            class="flex flex-row items-center text-nowrap gap-2 border border-border px-3 py-2 rounded-md cursor-pointer">
-            <span>
-              {{ finding.fixDeadline | date : dateFormat }}
-            </span>
-            <div class="text-white bg-primary rounded px-1">deadline</div>
-          </div>
-        }
       }
+      <ng-template #datePickerTitle>
+        <button app-button type="dashed" class="border-primary">Add Deadline</button>
+      </ng-template>
+      <ng-template #afterDateTemplate>
+        <div class="text-white bg-primary rounded px-1">deadline</div>
+      </ng-template>
+
       @if (isSastFinding()){
         <ticket-dropdown [loading]="loadingTicket"
                          [ticket]="ticket()"

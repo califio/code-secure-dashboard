@@ -10,18 +10,20 @@ import {finalize, forkJoin, switchMap, tap} from 'rxjs';
 import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
 import {IntegrationService} from '../../../../api/services/integration.service';
 import {map} from 'rxjs/operators';
+import {NgClass} from "@angular/common";
 
 
 @Component({
   selector: 'app-jira',
   standalone: true,
-  imports: [
-    ButtonDirective,
-    FormsModule,
-    DropdownComponent,
-    NgIcon,
-    ReactiveFormsModule
-  ],
+    imports: [
+        ButtonDirective,
+        FormsModule,
+        DropdownComponent,
+        NgIcon,
+        ReactiveFormsModule,
+        NgClass
+    ],
   templateUrl: './jira.component.html',
   styleUrl: './jira.component.scss'
 })

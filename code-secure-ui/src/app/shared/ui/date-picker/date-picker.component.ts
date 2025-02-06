@@ -17,6 +17,8 @@ import {ClickOutsideDirective} from '../../directives/click-outside.directive';
   styleUrl: './date-picker.component.scss'
 })
 export class DatePickerComponent implements OnInit {
+  @Input()
+  editable = true;
   @Input() titleTemplate?: TemplateRef<any>;
   @Input() afterDateTemplate?: TemplateRef<any>;
   @Input() format = 'yyyy-MM-dd';
@@ -58,6 +60,9 @@ export class DatePickerComponent implements OnInit {
   }
 
   toggleCalendar() {
+    if (!this.editable) {
+      return;
+    }
     this.isCalendarOpen = !this.isCalendarOpen;
     if (this.isCalendarOpen) {
       this.initDate();

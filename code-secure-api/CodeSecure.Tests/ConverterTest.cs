@@ -7,7 +7,7 @@ public class ConverterTest
     [Test]
     public void MarkdownToJiraTest()
     {
-        var input = "Test \n1. step 1\n2.step 2\n\ncode demo\n```java\njava code\n```";
+        var input = "[dompurify](https://www.npmjs.com/package/dompurify) \r\n```\r\n<div dangerouslySetInnerHTML={{ __html: purify.sanitize(text) }} />\r\n```";
         var output = Converter.MarkdownToJira(input);
         Console.WriteLine(output);
     }

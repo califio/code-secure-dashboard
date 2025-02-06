@@ -14,6 +14,7 @@ import {finalize} from 'rxjs';
 import {ToastrService} from '../../../../../../shared/components/toastr/toastr.service';
 import {map} from 'rxjs/operators';
 import {IntegrationService} from '../../../../../../api/services/integration.service';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'jira-integration-project',
@@ -24,7 +25,8 @@ import {IntegrationService} from '../../../../../../api/services/integration.ser
     ComingSoonComponent,
     DropdownComponent,
     NgIcon,
-    RouterLink
+    RouterLink,
+    NgClass
   ],
   templateUrl: './jira.component.html',
   styleUrl: './jira.component.scss'
