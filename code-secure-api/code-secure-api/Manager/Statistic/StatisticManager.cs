@@ -8,39 +8,51 @@ namespace CodeSecure.Manager.Statistic;
 
 public class StatisticManager(AppDbContext context, IScannerManager scannerManager) : IStatisticManager
 {
-    public async Task<SeveritySeries> SeveritySastAsync(Guid? projectId = null)
+    public async Task<SeveritySeries> SeveritySastAsync(Guid? projectId = null, DateTime? from = null, DateTime? to = null)
     {
+        from ??= DateTime.MinValue;
+        to ??= DateTime.UtcNow;
         var scanners = await scannerManager.GetSastScannersAsync();
-        return await GetSeverityByScannerAsync(projectId, scanners.Select(item => item.Id));
+        return await GetSeverityByScannerAsync(projectId, scanners.Select(item => item.Id), (DateTime)from, (DateTime)to);
     }
 
-    public async Task<SeveritySeries> SeverityScaAsync(Guid? projectId = null)
+    public async Task<SeveritySeries> SeverityScaAsync(Guid? projectId = null, DateTime? from = null, DateTime? to = null)
     {
+        from ??= DateTime.MinValue;
+        to ??= DateTime.UtcNow;
         var scanners = await scannerManager.GetScaScannersAsync();
-        return await GetSeverityByScannerAsync(projectId, scanners.Select(item => item.Id));
+        return await GetSeverityByScannerAsync(projectId, scanners.Select(item => item.Id), (DateTime)from, (DateTime)to);
+
     }
 
-    public async Task<StatusSeries> StatusSastAsync(Guid? projectId = null)
+    public async Task<StatusSeries> StatusSastAsync(Guid? projectId = null, DateTime? from = null, DateTime? to = null)
     {
+        from ??= DateTime.MinValue;
+        to ??= DateTime.UtcNow;
         var scanners = await scannerManager.GetSastScannersAsync();
-        return await GetStatusByScannerAsync(projectId, scanners.Select(item => item.Id));
+        return await GetStatusByScannerAsync(projectId, scanners.Select(item => item.Id), (DateTime)from, (DateTime)to);
     }
 
-    public async Task<StatusSeries> StatusScaAsync(Guid? projectId = null)
+    public async Task<StatusSeries> StatusScaAsync(Guid? projectId = null, DateTime? from = null, DateTime? to = null)
     {
+        from ??= DateTime.MinValue;
+        to ??= DateTime.UtcNow;
         var scanners = await scannerManager.GetScaScannersAsync();
-        return await GetStatusByScannerAsync(projectId, scanners.Select(item => item.Id));
+        return await GetStatusByScannerAsync(projectId, scanners.Select(item => item.Id), (DateTime)from, (DateTime)to);
     }
 
-    public async Task<List<TopFinding>> TopSastFindingAsync(Guid? projectId = null, int top = 10)
+    public async Task<List<TopFinding>> TopSastFindingAsync(Guid? projectId = null, int top = 10, DateTime? from = null, DateTime? to = null)
     {
+        from ??= DateTime.MinValue;
+        to ??= DateTime.UtcNow;
         var categories = new Dictionary<string, int> { { "Other", 0 } };
         var scanners = (await scannerManager.GetSastScannersAsync())
             .Select(item => item.Id).ToList();
         var query = context.Findings.Where(finding =>
             (projectId == null || finding.ProjectId == projectId) &&
             finding.Status != FindingStatus.Incorrect &&
-            scanners.Contains(finding.ScannerId));
+            scanners.Contains(finding.ScannerId) && 
+            (finding.CreatedAt >= from && finding.CreatedAt <= to));
         //severity
         query.GroupBy(finding => finding.Category).Select(g => new
         {
@@ -74,7 +86,7 @@ public class StatisticManager(AppDbContext context, IScannerManager scannerManag
     public async Task<List<TopDependency>> TopDependenciesAsync(Guid? projectId = null, int top = 10)
     {
         var topVulnerablePackages = await context.PackageVulnerabilities
-            .Where(record => context.ProjectPackages.Any(temp => temp.PackageId == record.PackageId))
+            .Where(record => context.ProjectPackages.Any(temp => temp.PackageId == record.PackageId ))
             .GroupBy(record => record.PackageId)
             .OrderByDescending(g => g.Count())
             .Select(g => g.Key)
@@ -104,30 +116,34 @@ public class StatisticManager(AppDbContext context, IScannerManager scannerManag
         return packages;
     }
 
-    private async Task<StatusSeries> GetStatusByScannerAsync(Guid? projectId, IEnumerable<Guid> scanners)
+    private async Task<StatusSeries> GetStatusByScannerAsync(Guid? projectId, IEnumerable<Guid> scanners, DateTime from, DateTime to)
     {
         return new StatusSeries
         {
             Open = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Status == FindingStatus.Open &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             Confirmed = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Status == FindingStatus.Confirmed &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             AcceptedRisk = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Status == FindingStatus.AcceptedRisk &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             Fixed = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Status == FindingStatus.Fixed &&
-                scanners.Contains(finding.ScannerId))
+                scanners.Contains(finding.ScannerId) && 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
         };
     }
 
-    private async Task<SeveritySeries> GetSeverityByScannerAsync(Guid? projectId, IEnumerable<Guid> scanners)
+    private async Task<SeveritySeries> GetSeverityByScannerAsync(Guid? projectId, IEnumerable<Guid> scanners, DateTime from, DateTime to)
     {
         return new SeveritySeries
         {
@@ -135,27 +151,32 @@ public class StatisticManager(AppDbContext context, IScannerManager scannerManag
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Severity == FindingSeverity.Critical &&
                 finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)  && 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             High = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Severity == FindingSeverity.High &&
                 finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             Medium = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Severity == FindingSeverity.Medium &&
                 finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             Low = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Severity == FindingSeverity.Low &&
                 finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)),
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to)),
             Info = await context.Findings.CountAsync(finding =>
                 (projectId == null || finding.ProjectId == projectId) &&
                 finding.Severity == FindingSeverity.Info &&
                 finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId))
+                scanners.Contains(finding.ScannerId)&& 
+                (finding.CreatedAt >= from && finding.CreatedAt < to))
         };
     }
 }

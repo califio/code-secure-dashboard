@@ -11,11 +11,15 @@ import { RequestBuilder } from '../../request-builder';
 import { ScaStatistic } from '../../models/sca-statistic';
 
 export interface ScaStatistic$Params {
+  from?: string;
+  to?: string;
 }
 
 export function scaStatistic(http: HttpClient, rootUrl: string, params?: ScaStatistic$Params, context?: HttpContext): Observable<StrictHttpResponse<ScaStatistic>> {
   const rb = new RequestBuilder(rootUrl, scaStatistic.PATH, 'get');
   if (params) {
+    rb.query('from', params.from, {"style":"form"});
+    rb.query('to', params.to, {"style":"form"});
   }
 
   return http.request(

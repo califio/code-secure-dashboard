@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ComingSoonComponent} from "../../shared/ui/coming-soon/coming-soon.component";
 import {LoadingTableComponent} from '../../shared/ui/loading-table/loading-table.component';
 import {NgIcon} from '@ng-icons/core';
@@ -11,9 +11,15 @@ import {SastStatistic} from '../../api/models/sast-statistic';
 import {ScaStatistic} from '../../api/models/sca-statistic';
 import {DashboardService} from '../../api/services/dashboard.service';
 import {TopFindingChartComponent} from '../../shared/components/chart/top-finding-chart/top-finding-chart.component';
-import {finalize} from 'rxjs';
+import {finalize, Subject, takeUntil} from 'rxjs';
 import {TopDependencyChartComponent} from '../../shared/components/chart/top-dependency-chart/top-dependency-chart.component';
+import {ActivatedRoute} from '@angular/router';
+import {bindQueryParams} from '../../core/router';
 
+interface DashboardFilter {
+  from?: string,
+  to?: string
+}
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -32,7 +38,7 @@ import {TopDependencyChartComponent} from '../../shared/components/chart/top-dep
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   sastStatistic: SastStatistic = {
     severity: {
       critical: 0,
@@ -67,16 +73,33 @@ export class DashboardComponent implements OnInit {
   };
   loadingSast = false;
   loadingSca = false;
-
+  filter: DashboardFilter = {
+    from: undefined, to: undefined
+  }
+  private destroy$ = new Subject();
   constructor(
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private route: ActivatedRoute
   ) {
+    this.route.queryParams.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(params => {
+      bindQueryParams(params, this.filter);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
     this.loadingSast = true;
     this.loadingSca = true;
-    this.dashboardService.sastStatistic().pipe(
+    this.dashboardService.sastStatistic({
+      from: this.filter.from,
+      to: this.filter.to
+    }).pipe(
       finalize(() => this.loadingSast = false)
     ).subscribe(sast => {
       this.sastStatistic = sast;
