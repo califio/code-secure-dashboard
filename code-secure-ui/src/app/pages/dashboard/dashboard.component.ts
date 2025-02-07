@@ -104,7 +104,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ).subscribe(sast => {
       this.sastStatistic = sast;
     });
-    this.dashboardService.scaStatistic()
+    this.dashboardService.scaStatistic({
+      from: this.filter.from,
+      to: this.filter.to
+    })
       .pipe(
         finalize(() => this.loadingSca = false)
       ).subscribe(sca => {
