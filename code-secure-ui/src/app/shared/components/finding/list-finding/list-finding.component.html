@@ -1,42 +1,51 @@
-<table class="table w-full table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
-  @if(!loading) {
-    <tbody>
-      @for (finding of findings; track $index) {
-        <div class="flex flex-row items-center gap-3 p-4 bg-background border-b border-border hover:bg-card">
-          <div class="text-center">
-            <input
-              (change)="onSelectFinding(finding.id!, $event)"
-              class="checkbox checkbox-sm"
-              type="checkbox"/>
+<p-table [loading]="loading" [value]="findings" [scrollable]="true">
+  <ng-template #header>
+    <tr class="text-sm">
+      <th class="w-[50px] min-w-[50px] text-center">
+        <p-checkbox binary></p-checkbox>
+      </th>
+      <th class="w-[25px]">
+        <div class="flex flex-row items-center gap-1">
+          <span>SEVERITY</span>
+        </div>
+      </th>
+      <th>
+        <div class="flex flex-row items-center gap-1">
+          <span>SUMMARY</span>
+        </div>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-finding>
+    <tr>
+      <td class="text-center">
+        <p-checkbox binary (onChange)="onSelectFinding(finding.id, $event)"></p-checkbox>
+      </td>
+      <td>
+        <finding-severity [severity]="finding.severity!"></finding-severity>
+      </td>
+      <td>
+        <div class="flex flex-col gap-1 w-full" >
+          <div class="cursor-pointer" (click)="emitOpenFinding(finding.id)">
+            {{ finding.name }}
           </div>
-          <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenFinding(finding.id)">
-            <finding-severity [severity]="finding.severity!"></finding-severity>
-            <div class="flex flex-col gap-1 w-full">
-              <div class="font-semibold">
-                {{ finding.name }}
-              </div>
-              <div class="flex flex-row items-center justify-between w-full">
-                <div class="flex flex-row items-center gap-2">
-                  <finding-status-label
-                    class="border border-border rounded w-fit px-3 py-1"
-                    [status]="finding.status">
-                  </finding-status-label>
-                </div>
-                <div class="flex flex-row items-center gap-2">
-                  <div class="flex flex-row items-center gap-1 text-[#00c869]">
-                    <div class="text-xs border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
-                      {{finding.scanner}}
-                    </div>
-                  </div>
+          <div class="flex flex-row items-center justify-between w-full">
+            <div class="flex flex-row items-center gap-2">
+              <finding-status-label
+                class="border border-surface rounded w-fit px-3 py-1"
+                [status]="finding.status">
+              </finding-status-label>
+            </div>
+            <div class="flex flex-row items-center gap-2">
+              <div class="flex flex-row items-center gap-1 text-[#00c869]">
+                <div class="text-xs border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+                  {{finding.scanner}}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      }
-    </tbody>
-  }
-</table>
-@if(loading) {
-  <loading-table></loading-table>
-}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

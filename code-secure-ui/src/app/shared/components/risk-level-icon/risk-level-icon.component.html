@@ -1,23 +1,11 @@
-<div class="px-1" [tooltip]="risk | lowercase">
-  @switch (risk) {
-    @case (RiskLevel.None) {
-      @if(impact == RiskImpact.Indirect) {
-        <ng-icon name="shield-exclamation" class="text-green-500"></ng-icon>
-      } @else {
-        <ng-icon name="shieldCheck" class="text-green-500"></ng-icon>
-      }
+<div class="px-1" [pTooltip]="risk | lowercase" [ngClass]="mColor.get(risk)">
+  @if(risk == RiskLevel.None) {
+    @if(impact == RiskImpact.Indirect) {
+      <ng-icon name="shieldExclamation"></ng-icon>
+    } @else {
+      <ng-icon name="shieldCheck"></ng-icon>
     }
-    @case (RiskLevel.Low) {
-      <ng-icon name="shield-exclamation" class="text-low"></ng-icon>
-    }
-    @case (RiskLevel.Medium) {
-      <ng-icon name="shield-exclamation" class="text-medium"></ng-icon>
-    }
-    @case (RiskLevel.High) {
-      <ng-icon name="shield-exclamation" class="text-high"></ng-icon>
-    }
-    @case (RiskLevel.Critical) {
-      <ng-icon name="shield-exclamation" class="text-critical"></ng-icon>
-    }
+  } @else {
+    <ng-icon name="shieldExclamation"></ng-icon>
   }
 </div>

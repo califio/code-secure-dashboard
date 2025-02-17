@@ -1,40 +1,33 @@
 import {Component, OnInit} from '@angular/core';
-import {ComingSoonComponent} from '../../../../../shared/ui/coming-soon/coming-soon.component';
-import {ButtonDirective} from "../../../../../shared/ui/button/button.directive";
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {AvatarComponent} from '../../../../../shared/ui/avatar/avatar.component';
-import {LoadingTableComponent} from '../../../../../shared/ui/loading-table/loading-table.component';
-import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../../shared/ui/pagination/pagination.component';
 import {TimeagoModule} from 'ngx-timeago';
-import {DropdownComponent} from '../../../../../shared/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectStore} from '../../project.store';
 import {ProjectService} from '../../../../../api/services/project.service';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../core/forms';
-import {ToastrService} from '../../../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../../../shared/services/toastr.service';
 import {ThresholdMode, ThresholdSetting} from '../../../../../api/models';
+import {Panel} from 'primeng/panel';
+import {SelectButton} from 'primeng/selectbutton';
+import {InputNumber} from 'primeng/inputnumber';
+import {Button} from 'primeng/button';
 
 @Component({
   selector: 'app-security-threshold',
   standalone: true,
   imports: [
-    ComingSoonComponent,
-    ButtonDirective,
     ReactiveFormsModule,
-    AvatarComponent,
-    LoadingTableComponent,
-    NgIcon,
-    PaginationComponent,
     TimeagoModule,
-    DropdownComponent,
     FormsModule,
+    Panel,
+    SelectButton,
+    InputNumber,
+    Button,
   ],
   templateUrl: './security-threshold.component.html',
   styleUrl: './security-threshold.component.scss'
 })
 export class SecurityThresholdComponent implements OnInit {
-  thresholdModeOptions: DropdownItem[] = [
+  thresholdModeOptions = [
     {
       value: ThresholdMode.MonitorOnly,
       label: 'Monitor Only'
@@ -89,7 +82,9 @@ export class SecurityThresholdComponent implements OnInit {
       projectId: this.store.projectId(),
       body: this.sastForm.getRawValue()
     }).subscribe(() => {
-      this.toastr.success('Update success!');
+      this.toastr.success({
+        message: 'Update success!'
+      });
     })
   }
 
@@ -98,7 +93,9 @@ export class SecurityThresholdComponent implements OnInit {
       projectId: this.store.projectId(),
       body: this.scaForm.getRawValue()
     }).subscribe(() => {
-      this.toastr.success('Update success!');
+      this.toastr.success({
+        message: 'Update success!'
+      });
     })
   }
 

@@ -1,106 +1,78 @@
-<div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm">
-  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Integration</div>
-  <div class="flex flex-col rounded-xl border border-border bg-background gap-4 p-4 w-full">
-    <div class="overflow-x-auto">
-      <div class="flex flex-col gap-4 w-full">
-        <div class="flex flex-col border-b border-border p-2 gap-2">
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <div class="flex flex-row gap-2 items-center">
-                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
-                  <ng-icon name="heroEnvelope" size="28"></ng-icon>
+<div class="flex flex-col">
+  <h5>Integration</h5>
+  <div class="flex flex-col gap-4">
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="heroEnvelope" size="28"></ng-icon>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Mail</div>
+              @if (integrationSetting.mail) {
+                <div
+                  class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                  <ng-icon name="heroCheckCircle" size="18"></ng-icon>
+                  <span>Active</span>
                 </div>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">Mail</div>
-                    @if (integrationSetting.mail){
-                      <div
-                        class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                        <ng-icon name="heroCheckCircle" size="18"></ng-icon>
-                        <span>Active</span>
-                      </div>
-                    }
-                  </div>
-                  <div class="hidden md:block">Send notifications of all projects to via mail.</div>
-                </div>
-              </div>
+              }
             </div>
-            <div class="w-fit">
-              <button app-button type="default" class="w-fit" (click)="config.mail = !config.mail">
-                Configure
-              </button>
+            <div class="hidden md:block">Send notifications of all projects to via mail.</div>
+          </div>
+        </div>
+      </ng-template>
+
+      <app-mail-integration></app-mail-integration>
+    </p-panel>
+
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="teams" size="28"></ng-icon>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Microsoft Teams</div>
+              @if (integrationSetting.teams) {
+                <div
+                  class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                  <ng-icon name="heroCheckCircle" size="18"></ng-icon>
+                  <span>Active</span>
+                </div>
+              }
+            </div>
+            <div class="hidden md:block">Send notifications of all projects to your Microsoft Teams channels.
             </div>
           </div>
-          @if (config.mail) {
-            <app-mail-integration class="ml-12 mt-4"></app-mail-integration>
-          }
         </div>
-        <div class="flex flex-col border-b border-border p-2 gap-2">
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <div class="flex flex-row gap-2 items-center">
-                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
-                  <ng-icon name="teams" size="28"></ng-icon>
-                </div>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">Microsoft Teams</div>
-                    @if (integrationSetting.teams) {
-                      <div
-                        class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                        <ng-icon name="heroCheckCircle" size="18"></ng-icon>
-                        <span>Active</span>
-                      </div>
-                    }
-                  </div>
-                  <div class="hidden md:block">Send notifications of all projects to your Microsoft Teams channels.
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="w-fit">
-              <button app-button type="default" class="w-fit" (click)="config.teams = !config.teams">
-                Configure
-              </button>
-            </div>
+      </ng-template>
+      <app-teams class="ml-12 mt-4"></app-teams>
+    </p-panel>
+
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="jira" size="36"></ng-icon>
           </div>
-          @if (config.teams) {
-            <app-teams class="ml-12 mt-4"></app-teams>
-          }
-        </div>
-        <div class="flex flex-col border-b border-border p-2 gap-2">
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <div class="flex flex-row gap-2 items-center">
-                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
-                  <ng-icon name="jira" size="36"></ng-icon>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Jira Issue</div>
+              @if (integrationSetting.jira) {
+                <div
+                  class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                  <ng-icon name="heroCheckCircle" size="18"></ng-icon>
+                  <span>Active</span>
                 </div>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">Jira Issue</div>
-                    @if (integrationSetting.jira) {
-                      <div
-                        class="flex flex-row items-center gap-1 rounded-full px-1.5 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                        <ng-icon name="heroCheckCircle" size="18"></ng-icon>
-                        <span>Active</span>
-                      </div>
-                    }
-                  </div>
-                  <div class="hidden md:block">Create ticket to your Jira.</div>
-                </div>
-              </div>
+              }
             </div>
-            <div class="w-fit">
-              <button app-button type="default" class="w-fit" (click)="config.jira = !config.jira">
-                Configure
-              </button>
-            </div>
+            <div class="hidden md:block">Create ticket to your Jira.</div>
           </div>
-          @if (config.jira) {
-            <app-jira class="ml-12 mt-4"></app-jira>
-          }
         </div>
-      </div>
-    </div>
+      </ng-template>
+      <app-jira></app-jira>
+    </p-panel>
   </div>
 </div>

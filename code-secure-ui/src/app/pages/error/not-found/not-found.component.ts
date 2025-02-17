@@ -1,12 +1,8 @@
-import { Component } from '@angular/core';
-import {NgIcon} from '@ng-icons/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-not-found',
   standalone: true,
-  imports: [
-    NgIcon
-  ],
   templateUrl: './not-found.component.html',
   styleUrl: './not-found.component.scss'
 })

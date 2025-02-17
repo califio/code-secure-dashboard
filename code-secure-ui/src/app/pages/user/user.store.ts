@@ -1,9 +1,8 @@
-import {Injectable, signal} from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core';
 import {UserFilter} from '../../api/models/user-filter';
 import {UserSortField} from '../../api/models/user-sort-field';
 import {UserInfo} from '../../api/models/user-info';
 import {RoleSummary} from '../../api/models/role-summary';
-import {DropdownItem} from '../../shared/ui/dropdown/dropdown.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +13,26 @@ export class UserStore {
     desc: true,
     name: '',
     page: 1,
+    size: 20,
     roleId: null,
     sortBy: UserSortField.CreatedAt,
     status: undefined,
   };
   users = signal<UserInfo[]>([]);
+  roles = signal<RoleSummary[]>([]);
+  // update user
+  selectedUser = signal<UserInfo | undefined>(undefined);
+  showUpdateUserDialog = false;
+  // add user
+  showAddUserDialog = false;
+  // paginator
   currentPage = signal(1);
-  totalPage = signal(1);
-  count = signal(0);
-  showAddUserPopup = signal(false);
-  showUpdateUserPopup = signal(false);
-  showDisableUserPopup = signal(false);
-  showSendEmailConfirmPopup = signal(false);
-  roleOptions = signal<DropdownItem[]>([]);
-  constructor() { }
+  pageSize = signal(20);
+  totalRecords = signal(0);
+  firstRecord = computed(() => {
+    return (this.currentPage() - 1) * this.pageSize();
+  });
+
+  constructor() {
+  }
 }

@@ -1,22 +1,7 @@
 table {
-  @apply border border-gray-300;
-}
-.ant-input {
-  &:focus {
-    border: none;
-    box-shadow: none;
-  }
-  &:hover {
-    border: none;
-  }
-}
-textarea {
-  border: none;
-  &:focus {
-    border: none;
-  }
-  &:hover {
-    border: none;
+  @apply border border-surface-200 dark:border-red-600;
+  tr {
+    @apply border border-surface-200 dark:border-red-600;
   }
 }
 markdown-toolbar {
@@ -41,25 +26,6 @@ markdown-toolbar {
   }
 }
 
-.editor {
-  @apply flex flex-col border border-border w-full px-2 bg-background;
-  border-radius: 3px;
-
-  .text-editor {
-    padding-left: 15px;
-    padding-right: 15px;
-    resize: none;
-    border-color: transparent;
-    width: 100%;
-    overflow-y: hidden;
-
-    &:focus {
-      outline: none;
-      border: transparent;
-    }
-  }
-}
-
 .preview {
   position: relative;
   min-height: 32px;
@@ -71,7 +37,7 @@ markdown-toolbar {
     top: 3px;
   }
   &:hover {
-    @apply bg-background border border-border;
+    @apply bg-surface-100 dark:bg-surface-800;
     .icon-edit {
       display: block;
     }

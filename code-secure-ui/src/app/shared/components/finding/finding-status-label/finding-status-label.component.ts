@@ -1,8 +1,13 @@
 import {Component, Input} from '@angular/core';
 import {NgIcon} from "@ng-icons/core";
 import {FindingStatus} from '../../../../api/models/finding-status';
-import {getFindingStatusColor, getFindingStatusIcon, getFindingStatusLabel} from '../../../helper';
 import {NgClass} from '@angular/common';
+import {
+  getFindingStatusColor,
+  getFindingStatusDescription,
+  getFindingStatusIcon,
+  getFindingStatusLabel
+} from '../finding-status';
 
 @Component({
   selector: 'finding-status-label',
@@ -12,18 +17,13 @@ import {NgClass} from '@angular/common';
     NgClass
   ],
   templateUrl: './finding-status-label.component.html',
-  styleUrl: './finding-status-label.component.scss'
 })
 export class FindingStatusLabelComponent {
-  @Input() defaultIcon = ''
-  @Input()
-  defaultLabel = 'Status';
-  @Input()
-  status: FindingStatus | undefined | null = FindingStatus.Open;
-  @Input()
-  ngClass: string = '';
-
-  protected readonly getFindingStatusIcon = getFindingStatusIcon;
+  @Input() status: FindingStatus = FindingStatus.Open;
+  @Input() showDescription = false;
+  @Input() styleClass: string = '';
   protected readonly getFindingStatusLabel = getFindingStatusLabel;
+  protected readonly getFindingStatusIcon = getFindingStatusIcon;
   protected readonly getFindingStatusColor = getFindingStatusColor;
+  protected readonly getFindingStatusDescription = getFindingStatusDescription;
 }

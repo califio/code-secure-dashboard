@@ -1,0 +1,39 @@
+<p-dialog header="Add Member" [modal]="true"
+          (visibleChange)="store.showAddMemberDialog.set(false)"
+          [visible]="store.showAddMemberDialog()">
+  <div class="flex flex-col gap-4 w-[320px] md:w-[480px]">
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1 w-full">
+        <span class="font-semibold">User</span>
+        <p-select appendTo="body"
+                  [(ngModel)]="userId"
+                  [loading]="loadingUsers"
+                  [options]="users()"
+                  optionValue="id"
+                  [filter]="true"
+                  filterBy="userName"
+                  (onFilter)="onSearchUsers($event)">
+          <ng-template #selectedItem let-user>
+            <user-info [username]="user.userName" [avatar]="user.avatar"></user-info>
+          </ng-template>
+          <ng-template #item let-user>
+            <user-info [username]="user.userName" [avatar]="user.avatar"></user-info>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="flex flex-col gap-1 w-fit">
+        <div class="font-semibold">Role</div>
+        <p-select-button
+          [options]="roleOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="role">
+        </p-select-button>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="onCancel()"/>
+      <p-button [loading]="loading" label="Save" (click)="onAddUser()"/>
+    </div>
+  </div>
+</p-dialog>

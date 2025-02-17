@@ -1,39 +1,33 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {ButtonDirective} from '../../../../../../shared/ui/button/button.directive';
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {ComingSoonComponent} from '../../../../../../shared/ui/coming-soon/coming-soon.component';
-import {DropdownComponent} from '../../../../../../shared/ui/dropdown/dropdown.component';
-import {NgIcon} from '@ng-icons/core';
-import {DropdownItem} from '../../../../../../shared/ui/dropdown/dropdown.model';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../../core/forms';
 import {JiraProjectSetting} from '../../../../../../api/models/jira-project-setting';
 import {RouterLink} from '@angular/router';
 import {ProjectService} from '../../../../../../api/services/project.service';
 import {ProjectStore} from '../../../project.store';
 import {finalize} from 'rxjs';
-import {ToastrService} from '../../../../../../shared/components/toastr/toastr.service';
-import {map} from 'rxjs/operators';
+import {ToastrService} from '../../../../../../shared/services/toastr.service';
 import {IntegrationService} from '../../../../../../api/services/integration.service';
-import {NgClass} from '@angular/common';
+import {Button, ButtonDirective} from 'primeng/button';
+import {Select, SelectChangeEvent} from 'primeng/select';
+import {JiraProject} from '../../../../../../api/models/jira-project';
 
 @Component({
   selector: 'jira-integration-project',
   standalone: true,
   imports: [
-    ButtonDirective,
     ReactiveFormsModule,
-    ComingSoonComponent,
-    DropdownComponent,
-    NgIcon,
     RouterLink,
-    NgClass
+    Button,
+    Select,
+    ButtonDirective
   ],
   templateUrl: './jira.component.html',
   styleUrl: './jira.component.scss'
 })
 export class JiraComponent implements OnInit {
-  jiraProjects = signal<DropdownItem[]>([]);
-  issueTypes = signal<DropdownItem[]>([]);
+  jiraProjects = signal<JiraProject[]>([]);
+  issueTypes = signal<{ label: string, value: string }[]>([]);
   formConfig = new FormSection<ConfigOf<JiraProjectSetting>>({
     active: new FormField(false),
     projectKey: new FormField(''),
@@ -42,6 +36,7 @@ export class JiraComponent implements OnInit {
   form: FormGroup<ControlsOf<JiraProjectSetting>>;
   loading = false;
   loadingIssueType = false;
+
   constructor(
     public projectStore: ProjectStore,
     private projectService: ProjectService,
@@ -55,11 +50,11 @@ export class JiraComponent implements OnInit {
 
   ngOnInit(): void {
     this.getJiraSetting().subscribe(setting => {
-      this.jiraProjects.set(setting.jiraProjects!.map(item => {
-        return {value: item.key, label: item.name}
-      }));
+      this.jiraProjects.set(setting.jiraProjects!);
       this.loadIssueType(setting.projectKey!).subscribe(issueTypes => {
-        this.issueTypes.set(issueTypes);
+        this.issueTypes.set(issueTypes.map(item => {
+          return {value: item, label: item}
+        }));
         this.form.patchValue(setting)
       })
     });
@@ -68,9 +63,7 @@ export class JiraComponent implements OnInit {
 
   onReload() {
     this.getJiraSetting(true).subscribe(setting => {
-      this.jiraProjects.set(setting.jiraProjects!.map(item => {
-        return {value: item.key, label: item.name}
-      }));
+      this.jiraProjects.set(setting.jiraProjects!);
     })
   }
 
@@ -80,11 +73,6 @@ export class JiraComponent implements OnInit {
       projectKey: projectKey
     }).pipe(
       finalize(() => this.loadingIssueType = false),
-      map(result => {
-        return result.map(item => {
-          return <DropdownItem>{value: item, label: item};
-        });
-      })
     );
   }
 
@@ -96,7 +84,9 @@ export class JiraComponent implements OnInit {
     }).pipe(
       finalize(() => this.form.enable())
     ).subscribe(() => {
-      this.toastr.success('Update success!');
+      this.toastr.success({
+        message: 'Update success!'
+      });
     })
   }
 
@@ -112,14 +102,15 @@ export class JiraComponent implements OnInit {
     );
   }
 
-  onChangeProject(projectKey: any) {
-    this.form.controls.projectKey!.setValue(projectKey);
-    this.loadIssueType(projectKey).subscribe(issueTypes => {
-      this.issueTypes.set(issueTypes);
-    });
-  }
-
   onChangeIssueType(issueType: any) {
     this.form.controls.issueType!.setValue(issueType);
+  }
+
+  onChangeProject($event: SelectChangeEvent) {
+    this.loadIssueType($event.value).subscribe(issueTypes => {
+      this.issueTypes.set(issueTypes.map(item => {
+        return {value: item, label: item}
+      }));
+    });
   }
 }

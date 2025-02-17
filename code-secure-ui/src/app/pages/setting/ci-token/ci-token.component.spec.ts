@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CiTokenComponent } from './ci-token.component';
+import {CiTokenComponent} from './ci-token.component';
 
 describe('CiTokenComponent', () => {
   let component: CiTokenComponent;
@@ -10,7 +10,7 @@ describe('CiTokenComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CiTokenComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(CiTokenComponent);
     component = fixture.componentInstance;

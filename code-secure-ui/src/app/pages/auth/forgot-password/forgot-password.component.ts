@@ -1,35 +1,41 @@
 import {Component} from '@angular/core';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../api/services/auth.service';
 import {FormsModule} from '@angular/forms';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../shared/services/toastr.service';
 import {finalize} from 'rxjs';
+import {AppFloatingConfigurator} from "../../../layout/component/app.floatingconfigurator";
+import {ButtonDirective} from "primeng/button";
+import {InputText} from "primeng/inputtext";
+import {NgIcon} from "@ng-icons/core";
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
   imports: [
-    ButtonDirective,
     RouterLink,
-    FormsModule
+    FormsModule,
+    AppFloatingConfigurator,
+    InputText,
+    NgIcon,
+    ButtonDirective,
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
 })
 export class ForgotPasswordComponent {
   loading = false;
   email = '';
+
   constructor(
     private authService: AuthService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
   ) {
   }
 
   forgotPassword() {
-    this.loading = true;
     if (this.email) {
+      this.loading = true;
       this.authService.forgotPassword({
         body: {
           username: this.email
@@ -37,10 +43,14 @@ export class ForgotPasswordComponent {
       }).pipe(
         finalize(() => this.loading = false)
       ).subscribe(() => {
-        this.toastr.success('an email sent to your email account');
+        this.toastr.success({
+          message: 'An email sent to your email account'
+        });
       })
     } else {
-      this.toastr.error('email or username is required');
+      this.toastr.error({
+        message: 'Email or username is required'
+      });
     }
   }
 }

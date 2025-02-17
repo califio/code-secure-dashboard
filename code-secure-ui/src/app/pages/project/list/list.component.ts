@@ -1,62 +1,65 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {PaginationComponent} from '../../../shared/ui/pagination/pagination.component';
+import {Component, computed, OnDestroy, OnInit, signal} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {FormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {LoadingTableComponent} from '../../../shared/ui/loading-table/loading-table.component';
 import {ProjectService} from '../../../api/services/project.service';
 import {GetProjects$Params} from '../../../api/fn/project/get-projects';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
 import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
-import {ProjectSummaryPage} from '../../../api/models/project-summary-page';
 import {ProjectSortField} from '../../../api/models/project-sort-field';
-import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
-import {LowerCasePipe} from '@angular/common';
-import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
 import {SourceType} from '../../../api/models/source-type';
+import {Panel} from 'primeng/panel';
+import {TableModule} from 'primeng/table';
+import {Paginator, PaginatorState} from 'primeng/paginator';
+import {Tooltip} from 'primeng/tooltip';
+import {IconField} from 'primeng/iconfield';
+import {InputIcon} from 'primeng/inputicon';
+import {InputText} from 'primeng/inputtext';
+import {Select} from 'primeng/select';
+import {Checkbox} from 'primeng/checkbox';
+import {LayoutService} from '../../../layout/layout.service';
+import {ProjectSummary} from '../../../api/models/project-summary';
+import {FloatLabel} from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-list',
   standalone: true,
   imports: [
-    PaginationComponent,
     NgIcon,
     FormsModule,
     TimeagoModule,
     RouterLink,
-    LoadingTableComponent,
-    DropdownComponent,
-    LowerCasePipe,
-    TooltipDirective
+    Panel,
+    TableModule,
+    Paginator,
+    Tooltip,
+    IconField,
+    InputIcon,
+    InputText,
+    Select,
+    Checkbox,
+    FloatLabel
   ],
   templateUrl: './list.component.html',
-  styleUrl: './list.component.scss'
 })
 export class ListComponent implements OnInit, OnDestroy {
   loading = false;
-  sorts: DropdownItem[] = [
+  sorts = [
     {
       value: ProjectSortField.Name,
-      label: 'Name'
+      label: 'name'
     },
     {
       value: ProjectSortField.CreatedAt,
-      label: 'Created'
+      label: 'created'
     },
     {
       value: ProjectSortField.UpdatedAt,
-      label: 'Updated'
+      label: 'updated'
     }
   ];
-  response: ProjectSummaryPage = {
-    count: 0,
-    currentPage: 1,
-    pageCount: 0,
-    items: [],
-    size: 0,
-  };
+  projects = signal<ProjectSummary[]>([]);
   filter: GetProjects$Params = {
     Name: '',
     SortBy: ProjectSortField.CreatedAt,
@@ -64,12 +67,23 @@ export class ListComponent implements OnInit, OnDestroy {
     Page: 1,
     Desc: true
   }
+  isDesktop = true;
+  // paginator
+  currentPage = signal(1);
+  pageSize = signal(20);
+  totalRecords = signal(0);
+  firstRecord = computed(() => {
+    return (this.currentPage() - 1) * this.pageSize();
+  });
+  private destroy$ = new Subject();
 
   constructor(
     private projectService: ProjectService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private layoutService: LayoutService
   ) {
+    this.isDesktop = this.layoutService.isDesktop();
   }
 
   ngOnInit(): void {
@@ -77,9 +91,8 @@ export class ListComponent implements OnInit, OnDestroy {
       switchMap(params => {
         this.loading = true;
         bindQueryParams(params, this.filter);
-        if (!this.filter.SortBy) {
-          this.filter.SortBy = ProjectSortField.CreatedAt;
-        }
+        this.currentPage.set(this.filter.Page!);
+        this.pageSize.set(this.filter.Size!);
         return this.projectService.getProjects(this.filter).pipe(
           finalize(() => {
             this.loading = false;
@@ -88,7 +101,9 @@ export class ListComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroy$)
     ).subscribe(response => {
-      this.response = response;
+      this.projects.set(response.items!);
+      //this.projects.set(response.items!);
+      this.totalRecords.set(response.count!);
     })
   }
 
@@ -101,20 +116,11 @@ export class ListComponent implements OnInit, OnDestroy {
     updateQueryParams(this.router, this.filter);
   }
 
-  onSortChange(sortBy: ProjectSortField) {
-    this.filter.SortBy = sortBy;
-    updateQueryParams(this.router, this.filter);
-  }
-
   ngOnDestroy(): void {
     this.destroy$.next(null);
     this.destroy$.complete();
   }
 
-  onChangePage($event: number) {
-    this.filter.Page = $event;
-    updateQueryParams(this.router, this.filter);
-  }
 
   sourceIcon(source?: SourceType | undefined | null): string {
     if (source) {
@@ -123,6 +129,17 @@ export class ListComponent implements OnInit, OnDestroy {
     return ""
   }
 
-  private destroy$ = new Subject();
+  onPageChange($event: PaginatorState) {
+    this.filter.Size = $event.rows;
+    if ($event.page) {
+      this.filter.Page = $event.page + 1;
+    }
 
+    updateQueryParams(this.router, this.filter);
+  }
+
+  onSortChange(sortBy: any) {
+    this.filter.SortBy = sortBy;
+    updateQueryParams(this.router, this.filter);
+  }
 }

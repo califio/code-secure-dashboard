@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { JiraComponent } from './jira.component';
+import {JiraComponent} from './jira.component';
 
 describe('JiraComponent', () => {
   let component: JiraComponent;
@@ -10,7 +10,7 @@ describe('JiraComponent', () => {
     await TestBed.configureTestingModule({
       imports: [JiraComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(JiraComponent);
     component = fixture.componentInstance;

@@ -16,6 +16,7 @@ import {FindingDetail} from '../../../api/models/finding-detail';
 })
 export class FindingComponent implements OnInit, OnDestroy {
   finding: FindingDetail = {};
+
   constructor(
     private findingService: FindingService
   ) {
@@ -33,6 +34,7 @@ export class FindingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
   }
+
 
   private destroy$ = new Subject();
 

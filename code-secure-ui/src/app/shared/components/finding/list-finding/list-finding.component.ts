@@ -1,37 +1,27 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgIcon} from '@ng-icons/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {DropdownComponent} from '../../../ui/dropdown/dropdown.component';
 import {TimeagoModule} from 'ngx-timeago';
-import {RouterLink} from '@angular/router';
-import {PaginationComponent} from '../../../ui/pagination/pagination.component';
-import {LoadingTableComponent} from '../../../ui/loading-table/loading-table.component';
-import {FindingStatusComponent} from '../finding-status/finding-status.component';
-import {LowerCasePipe, NgClass} from '@angular/common';
 import {ProjectFinding} from '../../../../api/models/project-finding';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
+import {TableModule} from 'primeng/table';
+import {Checkbox, CheckboxChangeEvent} from 'primeng/checkbox';
+import {GitAction} from '../../../../api/models/git-action';
+import {ScanStatus} from '../../../../api/models/scan-status';
 
 @Component({
   selector: 'list-finding',
   standalone: true,
   imports: [
-    NgIcon,
     ReactiveFormsModule,
     FormsModule,
-    DropdownComponent,
     TimeagoModule,
-    RouterLink,
-    PaginationComponent,
-    LoadingTableComponent,
-    FindingStatusComponent,
-    NgClass,
-    LowerCasePipe,
     FindingStatusLabelComponent,
-    FindingSeverityComponent
+    FindingSeverityComponent,
+    TableModule,
+    Checkbox,
   ],
   templateUrl: './list-finding.component.html',
-  styleUrl: './list-finding.component.scss'
 })
 export class ListFindingComponent {
   @Input()
@@ -39,27 +29,28 @@ export class ListFindingComponent {
   @Input()
   findings: ProjectFinding[] = [];
   @Output()
-  openFinding = new EventEmitter<string>();
+  onOpenFinding = new EventEmitter<string>();
   @Output()
-  selectFindings = new EventEmitter<string[]>();
-  selectedFindings: string[] = [];
+  onSelectedChange = new EventEmitter<string[]>();
+
+  private _selectedFindings = new Set<string>();
 
   constructor() {
   }
 
-  onOpenFinding(findingId?: string) {
-    this.openFinding.emit(findingId);
+  emitOpenFinding(findingId?: string) {
+    this.onOpenFinding.emit(findingId);
   }
 
-  onSelectFinding(findingId: string, event: any) {
-    if (event.target.checked) {
-      if (!this.selectedFindings.find(value => value == findingId)) {
-        this.selectedFindings.push(findingId);
-        this.selectFindings.emit(this.selectedFindings);
-      }
+  onSelectFinding(findingId: string, $event: CheckboxChangeEvent) {
+    if ($event.checked) {
+      this._selectedFindings.add(findingId);
     } else {
-      this.selectedFindings = this.selectedFindings.filter(value => value != findingId);
-      this.selectFindings.emit(this.selectedFindings);
+      this._selectedFindings.delete(findingId);
     }
+    this.onSelectedChange.emit(Array.from(this._selectedFindings.values()));
   }
+
+  protected readonly GitAction = GitAction;
+  protected readonly ScanStatus = ScanStatus;
 }

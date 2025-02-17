@@ -5,14 +5,16 @@ import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {Router} from "@angular/router";
 import {AuthStore} from './auth.store';
 import {AuthService} from '../../api/services';
-import {ToastrService} from '../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../shared/services/toastr.service';
 
 interface ErrorResponse {
   status: number
   errors: string[]
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthInterceptor implements HttpInterceptor {
   private refreshTokenInProgress = false;
   private refreshToken$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
@@ -21,7 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
     private authStore: AuthStore,
     private authService: AuthService,
     private router: Router,
-    private toast: ToastrService
+    private toastr: ToastrService
   ) {
   }
 
@@ -105,7 +107,7 @@ export class AuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private callRefreshToken(): Observable<{accessToken: any, refreshToken: any}> {
+  private callRefreshToken(): Observable<{ accessToken: any, refreshToken: any }> {
     return this.authService.refreshToken({
       body: {
         refreshToken: this.authStore.refreshToken!
@@ -118,9 +120,11 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private handleError(err: ErrorResponse) {
-    if (err.errors && err.errors?.length > 0) {
+    if (err.errors && err.errors.length > 0) {
       err.errors.forEach(e => {
-        this.toast.error(e);
+        this.toastr.error({
+          message: e
+        });
       });
     }
   }

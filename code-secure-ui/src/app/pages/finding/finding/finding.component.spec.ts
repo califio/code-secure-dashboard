@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FindingComponent } from './finding.component';
+import {FindingComponent} from './finding.component';
 
 describe('FindingComponent', () => {
   let component: FindingComponent;
@@ -10,7 +10,7 @@ describe('FindingComponent', () => {
     await TestBed.configureTestingModule({
       imports: [FindingComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(FindingComponent);
     component = fixture.componentInstance;

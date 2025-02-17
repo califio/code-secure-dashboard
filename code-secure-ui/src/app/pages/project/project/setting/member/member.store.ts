@@ -1,4 +1,4 @@
-import {Injectable, signal} from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core';
 import {ProjectUserFilter} from '../../../../../api/models/project-user-filter';
 import {ProjectUser} from '../../../../../api/models/project-user';
 
@@ -15,12 +15,18 @@ export class MemberStore {
   };
   loading = signal(false);
   members = signal<ProjectUser[]>([]);
+  // update member
+  member = signal<ProjectUser>({});
+  showUpdateMemberDialog = signal(false);
+  showAddMemberDialog = signal(false);
+  //paginator
   currentPage = signal(1);
-  totalPage = signal(1);
-  count = signal(0);
-  //
-  showUpdateMemberPopup = signal(false);
-  showAddMemberPopup = signal(false);
-  showConfirmDeleteMemberPopup = signal(false);
-  constructor() { }
+  pageSize = signal(20);
+  totalRecords = signal(0);
+  firstRecord = computed(() => {
+    return (this.currentPage() - 1) * this.pageSize();
+  });
+
+  constructor() {
+  }
 }

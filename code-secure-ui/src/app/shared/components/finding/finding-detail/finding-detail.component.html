@@ -1,18 +1,30 @@
-<div class="flex flex-col gap-4 w-full">
-  <div class="flex flex-col border-b border-border pb-4 gap-4">
+<p-panel styleClass="h-full overflow-y-auto">
+  <ng-template #header>
     <div class="flex flex-row items-center w-full gap-2">
       <finding-severity [severity]="finding.severity!"></finding-severity>
       <div class="text-xl">{{ finding.name }}</div>
     </div>
+  </ng-template>
+  <div class="flex flex-col pb-4 gap-4">
     <div class="flex flex-row items-center justify-between">
       <div class="flex flex-row items-center gap-4">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="font-semibold whitespace-nowrap">On {{ finding.scans?.length }} branch</span>
-          <finding-scan-dropdown
-            [options]="finding.scans ?? []"
-            (selectChange)="onScanChange($event)"
-            [selected]="currentScan?.scanId">
-          </finding-scan-dropdown>
+          <p-select [options]="finding.scans!" optionValue="scanId"
+                    [ngModel]="currentScan()?.scanId"
+                    (ngModelChange)="onScanChange($event)">
+            <ng-template #selectedItem let-option>
+              <scan-branch-label [action]="option.action"
+                           [branch]="option.branch"
+                           [targetBranch]="option.targetBranch">
+              </scan-branch-label>
+            </ng-template>
+            <ng-template #item let-option>
+              <scan-branch-label [action]="option.action"
+                           [branch]="option.branch"
+                           [targetBranch]="option.targetBranch">
+              </scan-branch-label>
+            </ng-template>
+          </p-select>
         </div>
         <div class="flex flex-row gap-2 items-center">
           <ng-icon [name]="finding.project?.sourceType! | lowercase"></ng-icon>
@@ -21,11 +33,11 @@
         </div>
       </div>
       @if (minimal) {
-        <div class="flex-row gap-2 items-center hidden lg:flex">
+        <div class="flex-row items-center hidden lg:flex">
           <a [routerLink]="['/finding', finding.id]">
             <ng-icon name="arrowsPointingOut" size="18" class="cursor-pointer"></ng-icon>
           </a>
-          <div class="shrink-0 bg-border w-[1px] h-5 text-muted"></div>
+          <p-divider layout="vertical"></p-divider>
           <ng-icon
             (click)="closeFinding()"
             name="x" size="18"
@@ -33,103 +45,94 @@
         </div>
       }
     </div>
-    <div class="flex flex-row items-center gap-2 text-xs">
-      <finding-status
-        [status]="finding.status!"
-        (statusChange)="onChangeStatus($event)">
-      </finding-status>
+    <div class="flex flex-row items-center gap-2">
+      <p-select
+        [ngModel]="finding.status"
+        optionValue="status"
+        (ngModelChange)="onChangeStatus($event)"
+        [options]="statusOptions">
+        <ng-template #selectedItem let-option>
+          <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
+        </ng-template>
+        <ng-template let-option #item>
+          <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
+        </ng-template>
+      </p-select>
       @if (finding.fixDeadline || finding.status == FindingStatus.Confirmed) {
-        <date-picker [titleTemplate]="datePickerTitle"
-                     [editable]="finding.status == FindingStatus.Confirmed"
-                     [afterDateTemplate]="afterDateTemplate"
-                     [date]="fixDeadline()"
-                     [format]="dateFormat"
-                     (dateChange)="onChangeFixDeadline($event)">
-        </date-picker>
+        <p-floatlabel variant="on">
+          <p-date-picker [ngModel]="fixDeadline()"
+                         (ngModelChange)="onChangeFixDeadline($event)"
+                         [dateFormat]="dateFormat"
+                         styleClass="w-36"
+                         inputId="on_deadline" showIcon iconDisplay="input"></p-date-picker>
+          <label for="on_deadline">Deadline</label>
+        </p-floatlabel>
       }
-      <ng-template #datePickerTitle>
-        <button app-button type="dashed" class="border-primary">Add Deadline</button>
-      </ng-template>
-      <ng-template #afterDateTemplate>
-        <div class="text-white bg-primary rounded px-1">deadline</div>
-      </ng-template>
-
-      @if (isSastFinding()){
-        <ticket-dropdown [loading]="loadingTicket"
-                         [ticket]="ticket()"
-                         (onDelete)="deleteTicket()"
-                         (onTicket)="createTicket($event)"></ticket-dropdown>
+      @if (isSastFinding()) {
+        <ticket-menu [loading]="loadingTicket"
+                     [ticket]="ticket()"
+                     (onDelete)="deleteTicket()"
+                     (onTicket)="createTicket($event)"></ticket-menu>
       }
     </div>
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
-    <div class="flex flex-col gap-4 w-full border border-border p-4 h-fit">
+    <div class="flex flex-col w-full">
+      @if (finding.description) {
+        <p-fieldset legend="Description">
+          <p markdown>{{ finding.description }}</p>
+        </p-fieldset>
+      }
       @if (finding.location) {
-        <div class="flex flex-col gap-2">
-          <div class="font-semibold">Found at</div>
+        <p-fieldset legend="Location">
           <a [href]="source(finding.location)" target="_blank" class="flex flex-row items-center gap-1">
             <span>{{ finding.location.path }}</span>
             <ng-icon name="arrowTopRightOnSquare"></ng-icon>
           </a>
           @if (finding.location.snippet) {
-            <div class="block rounded border border-border bg-background p-2 items-center">
-              <div>{{ finding.location.snippet }}</div>
-            </div>
+            <p-divider></p-divider>
+            <p markdown>{{ finding.location.snippet }}</p>
           }
-        </div>
+        </p-fieldset>
       }
-      @if (finding.description) {
-        <div class="flex flex-col gap-2">
-          <div class="font-semibold">Description</div>
-          <div class="block rounded border border-border bg-background p-2 items-center">
-            <div markdown>{{ finding.description }}</div>
-          </div>
-        </div>
-      }
-      <div class="flex flex-col gap-2">
-        <div class="font-semibold">Recommendation</div>
+      <p-fieldset legend="Recommendation">
         @if (finding.recommendation || !recommendationPreview) {
           <markdown-editor
-            [(data)]="finding.recommendation!"
+            [(ngModel)]="finding.recommendation!"
             [(preview)]="recommendationPreview"
-            [loading]="recommendationLoading"
-            previewClass="rounded border border-border bg-background p-2">
+            [loading]="recommendationLoading">
           </markdown-editor>
-          @if(!recommendationPreview){
-            <div class="flex flex-row items-center gap-2">
-              <button app-button type="primary" (click)="saveRecommendation()">Save</button>
-              <button app-button type="default" (click)="recommendationPreview = true">Cancel</button>
+          @if (!recommendationPreview) {
+            <div class="flex flex-row items-center gap-2 mt-2">
+              <button pButton severity="primary" (click)="saveRecommendation()">Save</button>
+              <button pButton severity="secondary" (click)="recommendationPreview = true">Cancel</button>
             </div>
           }
         } @else {
-          <button app-button type="dashed" (click)="recommendationPreview = false">Add Recommendation</button>
+          <button pButton severity="secondary" (click)="recommendationPreview = false">Add Recommendation</button>
         }
-      </div>
-
+      </p-fieldset>
       @if (finding.metadata && finding.metadata.cwes) {
-        <div class="flex flex-col gap-2">
-          <div class="font-semibold">CWEs</div>
-          <ul class="list-disc">
+        <p-fieldset legend="CWEs">
+          <div class="flex flex-co gap-2">
             @for (cwe of finding.metadata.cwes; track $index) {
-              <li class="ml-4">{{ cwe }}</li>
+              <div>{{ cwe }}</div>
             }
-          </ul>
-        </div>
+          </div>
+        </p-fieldset>
       }
       @if (finding.metadata && finding.metadata.references) {
-        <div class="flex flex-col gap-2">
-          <div class="font-semibold">References</div>
-          <ul class="list-disc">
+        <p-fieldset legend="References">
+          <div class="flex flex-co gap-2">
             @for (reference of finding.metadata.references; track $index) {
-              <li class="ml-4" markdown>{{ reference }}</li>
+              <div markdown>{{ reference }}</div>
             }
-          </ul>
-        </div>
+          </div>
+        </p-fieldset>
       }
 
       @if (findingFlow(finding).length > 0) {
-        <div class="flex flex-col gap-2">
-          <div class="font-semibold">Finding Flow</div>
+        <p-fieldset legend="Finding Flow">
           <div class="flex flex-col justify-between items-center">
             @for (location of findingFlow(finding); track $index; let isLast = $last) {
               <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer"
@@ -141,41 +144,25 @@
               }
             }
           </div>
-        </div>
+        </p-fieldset>
       }
     </div>
     <!--    ACTIVITIES-->
     <div class="flex flex-col gap-2"
          [ngClass]="minimal ? '' : 'min-w-[550px] max-w-[600px]'">
-      <div class="flex flex-col rounded border border-border p-4 gap-2">
-        <div class="font-semibold">Activity</div>
-        <div class="flex flex-col overflow-y-auto h-full max-h-screen">
-          <ol class="relative border-s border-border ml-5">
-            <li class="mt-10 ms-6">
-              <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 dark:bg-blue-900">
-                <ng-icon name="plusCircle" size="20"></ng-icon>
-              </span>
-              <div class="flex flex-row items-center justify-between gap-2 mb-1">
-                <div class="flex flex-col w-full gap-2">
-                  <textarea [(ngModel)]="comment"></textarea>
-                  <div class="flex flex-row gap-2 items-center justify-end">
-                    <button app-button type="default" (click)="comment = ''">Cancel</button>
-                    <button app-button type="primary"
-                            [loading]="commentLoading"
-                            [disabled]="commentLoading"
-                            (click)="postComment()">Comment
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            @for (activity of activities; track $index) {
-              <finding-activity [activity]="activity"></finding-activity>
-            }
-          </ol>
+      <p-fieldset legend="Activity" styleClass="overflow-y-auto" [style]="{'max-height': 'calc(100vh - 20.5rem)'}">
+        <div class="flex flex-col w-full gap-2">
+          <markdown-editor [(ngModel)]="comment"></markdown-editor>
+          <div class="flex flex-row gap-2 items-center justify-end">
+            <button pButton severity="primary"
+                    [loading]="commentLoading"
+                    [disabled]="commentLoading"
+                    (click)="postComment()">Comment
+            </button>
+          </div>
+          <finding-activity [activities]="activities" class="mt-4"></finding-activity>
         </div>
-      </div>
+      </p-fieldset>
     </div>
   </div>
-</div>
+</p-panel>
