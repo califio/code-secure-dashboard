@@ -28,10 +28,6 @@
         font-weight: 500;
         gap: 0.5rem;
 
-        svg {
-            width: 3rem;
-        }
-
         &:focus-visible {
             @include focused();
         }
@@ -41,7 +37,6 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        color: var(--text-color-secondary);
         border-radius: 50%;
         width: 2.5rem;
         height: 2.5rem;
