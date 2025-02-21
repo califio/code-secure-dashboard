@@ -8,7 +8,6 @@ import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../../services/toastr.service';
 import {FindingActivity} from '../../../../api/models/finding-activity';
 import {
-  FindingActivityType,
   FindingLocation,
   FindingScan,
   GitAction,
@@ -35,6 +34,9 @@ import {Fieldset} from 'primeng/fieldset';
 import {ButtonDirective} from 'primeng/button';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 import {getFindingStatusOptions} from '../finding-status';
+import {ScannerLabelComponent} from '../../scanner-label/scanner-label.component';
+import {TruncatePipe} from '../../../pipes/truncate.pipe';
+import {Tooltip} from 'primeng/tooltip';
 
 @Component({
   selector: 'finding-detail',
@@ -62,6 +64,9 @@ import {getFindingStatusOptions} from '../finding-status';
     Fieldset,
     ButtonDirective,
     FindingStatusLabelComponent,
+    ScannerLabelComponent,
+    TruncatePipe,
+    Tooltip,
   ],
   templateUrl: './finding-detail.component.html',
 })
@@ -171,7 +176,6 @@ export class FindingDetailComponent {
   protected readonly FindingStatus = FindingStatus;
 
   onChangeFixDeadline($event: Date) {
-    console.log($event);
     const currentFixDeadline = this.fixDeadline();
     this.fixDeadline.set($event);
     this.findingService.updateFinding({
@@ -247,7 +251,6 @@ export class FindingDetailComponent {
 
   saveRecommendation() {
     this.recommendationLoading = true;
-    console.log(this.finding.recommendation);
     this.findingService.updateFinding({
       id: this.finding.id!,
       body: {
@@ -261,9 +264,4 @@ export class FindingDetailComponent {
   }
 
   statusOptions = getFindingStatusOptions();
-  protected readonly FindingActivityType = FindingActivityType;
-
-  onChangeRecommend($event: any) {
-    console.log('change: ', $event);
-  }
 }

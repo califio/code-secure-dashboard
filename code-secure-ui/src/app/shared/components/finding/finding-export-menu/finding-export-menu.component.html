@@ -1,0 +1,7 @@
+<p-button (click)="menu.toggle($event)"
+          [loading]="loading"
+          label="Export"
+          severity="primary"
+          iconPos="right"
+          icon="pi pi-chevron-down"/>
+<p-menu #menu [model]="items()" [popup]="true" ></p-menu>

@@ -90,8 +90,10 @@
             <ng-icon name="arrowTopRightOnSquare"></ng-icon>
           </a>
           @if (finding.location.snippet) {
-            <p-divider></p-divider>
-            <p markdown>{{ finding.location.snippet }}</p>
+            <div class="border border-dashed border-surface p-2 mt-2">
+              <p markdown>{{ finding.location.snippet }}</p>
+            </div>
+
           }
         </p-fieldset>
       }
@@ -146,6 +148,27 @@
           </div>
         </p-fieldset>
       }
+      <p-fieldset legend="Found By">
+        <div class="flex flex-col w-full gap-2">
+          <div class="flex flex-row justify-between">
+            <div>Scanner</div>
+            <scanner-label [scanner]="finding.scanner" [type]="finding.type"/>
+          </div>
+          @if (finding.ruleId){
+            <div class="flex flex-row justify-between">
+              <div>Rule ID</div>
+              <div class="flex flex-row gap-1 items-center">
+                <a target="_blank"
+                   pTooltip="Find similar findings" tooltipPosition="top"
+                   routerLink="/finding" [queryParams]="{'ruleId': finding.ruleId}">
+                  <span class="truncate">{{finding.ruleId | truncate:50}}</span>
+                </a>
+                <i class="pi pi-external-link"></i>
+              </div>
+            </div>
+          }
+        </div>
+      </p-fieldset>
     </div>
     <!--    ACTIVITIES-->
     <div class="flex flex-col gap-2"

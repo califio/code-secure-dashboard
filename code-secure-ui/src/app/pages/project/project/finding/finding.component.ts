@@ -1,19 +1,16 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {FindingDetailComponent} from '../../../../shared/components/finding/finding-detail/finding-detail.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectService} from '../../../../api/services/project.service';
-import {finalize, forkJoin, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {finalize, forkJoin, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
-import {ProjectFindingPage} from '../../../../api/models/project-finding-page';
 import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../../../shared/services/toastr.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingStore} from './finding.store';
 import {ProjectStore} from '../project.store';
-import {ProjectFindingSortField} from '../../../../api/models';
-import {ScannerLabelComponent} from "../../../../shared/components/scanner-label/scanner-label.component";
 import {
   FindingStatusLabelComponent
 } from '../../../../shared/components/finding/finding-status-label/finding-status-label.component';
@@ -25,9 +22,7 @@ import {InputIcon} from "primeng/inputicon";
 import {InputText} from "primeng/inputtext";
 import {FloatLabel} from 'primeng/floatlabel';
 import {Select} from 'primeng/select';
-import {MultiSelect, MultiSelectChangeEvent} from 'primeng/multiselect';
 import {Button} from 'primeng/button';
-import {getFindingStatusOptions} from '../../../../shared/components/finding/finding-status';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 import {Checkbox, CheckboxChangeEvent} from 'primeng/checkbox';
 import {
@@ -35,10 +30,34 @@ import {
 } from '../../../../shared/components/finding/finding-severity/finding-severity.component';
 import {TableModule} from 'primeng/table';
 import {LayoutService} from '../../../../layout/layout.service';
-import {Menu} from 'primeng/menu';
 import {MenuItem} from 'primeng/api';
-import {OverlayBadge} from 'primeng/overlaybadge';
 import {Tooltip} from 'primeng/tooltip';
+import {
+  FindingStatusMenuComponent
+} from '../../../../shared/components/finding/finding-status-menu/finding-status-menu.component';
+import {
+  FindingStatusFilterComponent
+} from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
+import {
+  FindingScannerFilterComponent
+} from '../../../../shared/components/finding/finding-scanner-filter/finding-scanner-filter.component';
+import {SortByComponent} from '../../../../shared/ui/sort-by/sort-by.component';
+import {SortByState} from '../../../../shared/ui/sort-by/sort-by-state';
+import {
+  FindingRuleFilterComponent
+} from '../../../../shared/components/finding/finding-rule-filter/finding-rule-filter.component';
+import {ScannerService} from '../../../../api/services/scanner.service';
+import {RuleService} from '../../../../api/services/rule.service';
+import {
+  FindingSeverityFilterComponent
+} from '../../../../shared/components/finding/finding-severity-filter/finding-severity-filter.component';
+import {FindingSeverity} from '../../../../api/models/finding-severity';
+import {
+  FindingExportMenuComponent
+} from '../../../../shared/components/finding/finding-export-menu/finding-export-menu.component';
+import {ExportType} from '../../../../api/models/export-type';
+import {FindingSortField} from '../../../../api/models/finding-sort-field';
+import {formatDate} from '@angular/common';
 
 @Component({
   selector: 'app-finding',
@@ -48,7 +67,6 @@ import {Tooltip} from 'primeng/tooltip';
     FindingDetailComponent,
     ReactiveFormsModule,
     FormsModule,
-    ScannerLabelComponent,
     FindingStatusLabelComponent,
     ScanBranchLabelComponent,
     IconField,
@@ -56,64 +74,85 @@ import {Tooltip} from 'primeng/tooltip';
     InputText,
     FloatLabel,
     Select,
-    MultiSelect,
     Paginator,
     Checkbox,
     FindingSeverityComponent,
     TableModule,
-    Menu,
     Button,
-    OverlayBadge,
     Tooltip,
+    FindingStatusMenuComponent,
+    FindingStatusFilterComponent,
+    FindingScannerFilterComponent,
+    SortByComponent,
+    FindingRuleFilterComponent,
+    FindingSeverityFilterComponent,
+    FindingExportMenuComponent,
   ],
   templateUrl: './finding.component.html',
 })
 export class FindingComponent implements OnInit, OnDestroy {
   showDetailFinding = false;
-  statusOptions = getFindingStatusOptions();
   selectedFindings = new Set<string>();
   isDesktop = true;
-  menuItems: MenuItem[] = [];
   private destroy$ = new Subject();
 
   constructor(
     private projectService: ProjectService,
+    private scannerService: ScannerService,
+    private findingService: FindingService,
     private projectStore: ProjectStore,
+    private ruleService: RuleService,
     private route: ActivatedRoute,
     private router: Router,
-    private findingService: FindingService,
     public store: FindingStore,
     private toastrService: ToastrService,
-    private layoutService: LayoutService
+    private layoutService: LayoutService,
+    @Inject(LOCALE_ID) private locale: string
   ) {
     this.isDesktop = this.layoutService.isDesktop();
-    this.menuItems = getFindingStatusOptions().map(item => {
-      return {
-        status: item.status,
-        label: item.label
-      }
-    })
   }
 
   ngOnInit(): void {
+    this.store.filter = {
+      desc: true,
+      name: '',
+      page: 1,
+      scanner: [],
+      severity: undefined,
+      sortBy: FindingSortField.CreatedAt,
+      ruleId: undefined,
+      status: [
+        FindingStatus.Open,
+        FindingStatus.Confirmed,
+        FindingStatus.Fixed,
+        FindingStatus.AcceptedRisk
+      ],
+      commitId: undefined,
+      size: 20,
+    };
     this.projectService.getProjectCommits({
       projectId: this.projectStore.projectId()
     }).subscribe(commits => {
       this.store.commits.set(commits);
     });
-
-    this.projectService.getProjectScanners({
+    this.scannerService.getScanners({
       projectId: this.projectStore.projectId()
     }).subscribe(scanners => {
       this.store.scanners.set(scanners);
     });
-
+    this.ruleService.getRules({
+      body: {
+        projectId: this.projectStore.projectId()
+      }
+    }).subscribe(rules => {
+      this.store.rules.set(rules);
+    });
     this.route.queryParams.pipe(
       switchMap(params => {
         bindQueryParams(params, this.store.filter);
         this.store.pageSize.set(this.store.filter.size!);
         this.store.currentPage.set(this.store.filter.page!);
-        return this.getProjectFindings();
+        return this.getFindings();
       }),
       takeUntil(this.destroy$)
     ).subscribe()
@@ -148,17 +187,23 @@ export class FindingComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(null);
     this.destroy$.complete();
+    this.store.finding.set(null);
   }
 
   onReload() {
-    this.getProjectFindings().subscribe();
+    this.getFindings().subscribe();
   }
 
-  private getProjectFindings(): Observable<ProjectFindingPage> {
-    this.store.loadingFindings.set(true);
+  private getFindings() {
+    this.store.loading.set(true);
     if (this.store.filter.scanner) {
       if (!Array.isArray(this.store.filter.scanner)) {
         this.store.filter.scanner = [this.store.filter.scanner];
+      }
+    }
+    if (this.store.filter.severity) {
+      if (!Array.isArray(this.store.filter.severity)) {
+        this.store.filter.severity = [this.store.filter.severity];
       }
     }
     return this.projectService.getProjectFindings({
@@ -166,7 +211,7 @@ export class FindingComponent implements OnInit, OnDestroy {
       body: this.store.filter
     }).pipe(
       finalize(() => {
-        this.store.loadingFindings.set(false);
+        this.store.loading.set(false);
       }),
       tap(response => {
         this.store.findings.set(response.items!);
@@ -213,23 +258,29 @@ export class FindingComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOrderChange() {
-    this.store.filter.desc = !this.store.filter.desc;
+  onSortChange($event: SortByState) {
+    this.store.filter.sortBy = $event.sortBy;
+    this.store.filter.desc = $event.desc;
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onSortChange(sortBy: any) {
-    this.store.filter.sortBy = sortBy;
+  onChangeStatus($event: FindingStatus[]) {
+    this.store.filter.status = $event;
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onChangeStatus($event: MultiSelectChangeEvent) {
-    this.store.filter.status = $event.value;
+  onChangeScanners($event: string[]) {
+    this.store.filter.scanner = $event;
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onChangeScanners($event: MultiSelectChangeEvent) {
-    this.store.filter.scanner = $event.value;
+  onChangeRule($event: string) {
+    this.store.filter.ruleId = $event;
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onChangeSeverity($event: FindingSeverity[]) {
+    this.store.filter.severity = $event;
     updateQueryParams(this.router, this.store.filter);
   }
 
@@ -241,28 +292,6 @@ export class FindingComponent implements OnInit, OnDestroy {
     }
   }
 
-  sortOptions = [
-    {
-      value: ProjectFindingSortField.Name,
-      label: 'name'
-    },
-    {
-      value: ProjectFindingSortField.UpdatedAt,
-      label: 'updated'
-    },
-    {
-      value: ProjectFindingSortField.CreatedAt,
-      label: 'created'
-    },
-    {
-      value: ProjectFindingSortField.Status,
-      label: 'status'
-    },
-    {
-      value: ProjectFindingSortField.Severity,
-      label: 'severity'
-    }
-  ];
   items: MenuItem[] = [
     {
       label: 'Refresh',
@@ -283,5 +312,41 @@ export class FindingComponent implements OnInit, OnDestroy {
     } else {
       this.selectedFindings.clear();
     }
+  }
+
+  onExport($event: ExportType) {
+    if (!this.store.filter.commitId) {
+      this.toastrService.warning({
+        message: 'Require branch to export report'
+      });
+      return;
+    }
+    this.store.loadingExport.set(true);
+
+    this.projectService.export$Any({
+      projectId: this.projectStore.projectId(),
+      format: $event,
+      body: this.store.filter
+    }).pipe(
+      finalize(() => {
+        this.store.loadingExport.set(false);
+      })
+    ).subscribe(data => {
+      let ext = '';
+      if ($event == ExportType.Pdf) {
+        ext = '.pdf';
+      } else if ($event == ExportType.Excel) {
+        ext = '.xlsx';
+      } else {
+        ext = '.json'
+      }
+      const fileName = `${formatDate(Date.now(), 'yyyyMMddhhmmss', this.locale)}_${this.projectStore.project().name}${ext}`;
+      const a = document.createElement('a');
+      const objectUrl = URL.createObjectURL(data);
+      a.href = objectUrl;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    });
   }
 }

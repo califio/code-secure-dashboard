@@ -24,9 +24,7 @@ export class SettingComponent implements OnDestroy {
   constructor(
     private router: Router,
   ) {
-    console.log(router.url);
     if (!this.regexBaseUrl.test(router.url)) {
-      console.log(this.navItems[0].routerLink);
       this.router.navigateByUrl(this.navItems[0].routerLink).then();
     }
   }

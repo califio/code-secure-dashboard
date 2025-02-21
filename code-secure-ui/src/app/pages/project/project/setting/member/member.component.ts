@@ -26,6 +26,7 @@ import {ConfirmationService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {Chip} from 'primeng/chip';
 import {Panel} from 'primeng/panel';
+import {ProjectUserFilter} from '../../../../../api/models/project-user-filter';
 
 @Component({
   selector: 'app-member',
@@ -54,6 +55,13 @@ import {Panel} from 'primeng/panel';
 })
 export class MemberComponent implements OnInit, OnDestroy {
   isDesktop = true;
+  filter: ProjectUserFilter = {
+    desc: true,
+    name: '',
+    page: 1,
+    role: undefined,
+    size: 20
+  };
   private destroy$ = new Subject();
 
   constructor(
@@ -77,7 +85,7 @@ export class MemberComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams.pipe(
       switchMap(params => {
-        bindQueryParams(params, this.store.filter);
+        bindQueryParams(params, this.filter);
         return this.getProjectUsers();
       }),
       takeUntil(this.destroy$)
@@ -85,14 +93,14 @@ export class MemberComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange() {
-    updateQueryParams(this.router, this.store.filter);
+    updateQueryParams(this.router, this.filter);
   }
 
   private getProjectUsers() {
     this.store.loading.set(true)
     return this.projectService.getProjectUsers({
       projectId: this.projectStore.projectId(),
-      body: this.store.filter
+      body: this.filter
     }).pipe(
       finalize(() => this.store.loading.set(false)),
       tap(response => {
@@ -142,8 +150,8 @@ export class MemberComponent implements OnInit, OnDestroy {
   }
 
   onPageChange($event: PaginatorState) {
-    this.store.filter.page = $event.page! + 1;
-    this.store.filter.size = $event.rows;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.page = $event.page! + 1;
+    this.filter.size = $event.rows;
+    updateQueryParams(this.router, this.filter);
   }
 }

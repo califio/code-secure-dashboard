@@ -5,7 +5,6 @@ using CodeSecure.Database.Metadata;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
 using CodeSecure.Extension;
-using CodeSecure.Manager.Container;
 using CodeSecure.Manager.EnvVariable.Model;
 using CodeSecure.Manager.Finding;
 using CodeSecure.Manager.Integration;
@@ -26,7 +25,6 @@ public class DefaultCiService(
     IPackageManager packageManager,
     IScannerManager scannerManager,
     IFindingManager findingManager,
-    IContainerManager containerManager,
     IProjectManager projectManager,
     ISourceControlManager sourceControlManager,
     IAlertManager alertManager,
@@ -35,14 +33,14 @@ public class DefaultCiService(
 {
     public async Task<CiScanInfo> InitScan(CiScanRequest request)
     {
-        if (request.Type == ScannerType.Container && string.IsNullOrEmpty(request.ContainerImage))
+        if ((request.Type is ScannerType.Sast or ScannerType.Dependency or ScannerType.Secret) == false)
         {
-            throw new BadRequestException("scan container require container image");
+            throw new NotImplementedException();
         }
-
         // update source control
         var uri = new Uri(request.RepoUrl);
         var sourceUrl = uri.GetLeftPart(UriPartial.Authority);
+        var repoPath = uri.AbsolutePath.TrimStart('/');
         var sourceControl = await sourceControlManager.CreateOrUpdateAsync(new SourceControls
         {
             Url = sourceUrl,
@@ -51,7 +49,7 @@ public class DefaultCiService(
         // update project
         var project = await projectManager.CreateOrUpdateAsync(new Projects
         {
-            Name = request.RepoName,
+            Name = repoPath,
             RepoId = request.RepoId,
             RepoUrl = request.RepoUrl,
             SourceControlId = sourceControl.Id
@@ -69,7 +67,7 @@ public class DefaultCiService(
             && record.Branch == request.CommitBranch);
         if (request.GitAction == GitAction.MergeRequest)
         {
-            if (string.IsNullOrEmpty(request.TargetBranch)) throw new BadRequestException("target branch invalid");
+            if (string.IsNullOrEmpty(request.TargetBranch)) throw new BadRequestException("Target branch invalid");
 
             commitQuery = commitQuery.Where(record => record.TargetBranch == request.TargetBranch);
         }
@@ -84,20 +82,20 @@ public class DefaultCiService(
                 IsDefault = request.IsDefault,
                 Branch = request.CommitBranch,
                 Action = request.GitAction,
-                TargetBranch = request.TargetBranch
+                CommitHash = request.CommitHash,
+                CommitTitle = request.ScanTitle,
+                TargetBranch = request.TargetBranch,
+                MergeRequestId = request.MergeRequestId
             };
             context.ProjectCommits.Add(commit);
             await context.SaveChangesAsync();
         }
-
-        Containers? container = null;
-        if (request.Type == ScannerType.Container)
+        else
         {
-            container = await containerManager.CreateAsync(new Containers
-            {
-                Name = request.ContainerImage!
-            });
-            request.ScanTitle = $"Scan container image {container.Name}";
+            commit.CommitHash = request.CommitHash;
+            commit.CommitTitle = request.ScanTitle;
+            context.ProjectCommits.Update(commit);
+            await context.SaveChangesAsync();
         }
 
         var scan = await context.Scans.FirstOrDefaultAsync(record =>
@@ -114,13 +112,10 @@ public class DefaultCiService(
                 StartedAt = DateTime.UtcNow,
                 CompletedAt = null,
                 Name = request.ScanTitle,
-                CommitHash = request.CommitHash,
-                MergeRequestId = request.MergeRequestId,
                 Metadata = null,
                 ProjectId = project.Id,
                 ScannerId = scanner.Id,
                 CommitId = commit.Id,
-                ContainerId = container?.Id
             };
             context.Scans.Add(scan);
         }
@@ -131,9 +126,6 @@ public class DefaultCiService(
             scan.CompletedAt = null;
             scan.Status = ScanStatus.Running;
             scan.Name = request.ScanTitle;
-            scan.CommitHash = request.CommitHash;
-            scan.MergeRequestId = request.MergeRequestId;
-            scan.ContainerId = container?.Id;
             context.Scans.Update(scan);
         }
 
@@ -166,7 +158,7 @@ public class DefaultCiService(
     public async Task UpdateScan(Guid scanId, UpdateCiScanRequest request)
     {
         var scan = await context.Scans.FirstOrDefaultAsync(scan => scan.Id == scanId);
-        if (scan == null) throw new BadRequestException("scan not found");
+        if (scan == null) throw new BadRequestException("Scan not found");
 
         if (request.Status != null && request.Status != scan.Status)
         {
@@ -191,9 +183,9 @@ public class DefaultCiService(
             .Include(scan => scan.Scanner)
             .Include(scan => scan.Commit)
             .FirstOrDefaultAsync(scan => scan.Id == request.ScanId);
-        if (scan == null) throw new BadRequestException("scan not found");
+        if (scan == null) throw new BadRequestException("Scan not found");
 
-        if (scan.Status != ScanStatus.Running) throw new BadRequestException("scan is not running");
+        if (scan.Status != ScanStatus.Running) throw new BadRequestException("Scan is not running");
         var response = await HandleCiFinding(scan, request.Findings);
         var isBlock = IsBlock(scan.ProjectId, response, scan.Scanner!.Type);
         response.IsBlock = isBlock;
@@ -205,8 +197,8 @@ public class DefaultCiService(
         var projectUrl = $"{frontendUrl}/#/project/{project.Id.ToString()}";
         var findingUrl =
             $"{projectUrl}/finding?commitId={scan.CommitId}&scanner={scan.Scanner!.Name}&type={scan.Scanner!.Type.ToString()}";
-        var commitUrl = GetCommitUrl(project.SourceControl!.Type, project.RepoUrl, scan.CommitHash);
-        var mergeRequestUrl = GetMergeRequestUrl(project.SourceControl!.Type, project.RepoUrl, scan.MergeRequestId);
+        var commitUrl = RepoHelpers.GetCommitUrl(project.SourceControl!.Type, project.RepoUrl, scan.Commit!.CommitHash ?? string.Empty);
+        var mergeRequestUrl = GetMergeRequestUrl(project.SourceControl!.Type, project.RepoUrl, scan.Commit!.MergeRequestId);
         // send notification for security team
         if (response.NewFindings.Any())
         {
@@ -585,7 +577,7 @@ public class DefaultCiService(
                         ScanId = scan.Id,
                         FindingId = finding.Id,
                         Status = finding.Status,
-                        CommitHash = scan.CommitHash
+                        CommitHash = scan.Commit!.CommitHash ?? string.Empty
                     });
                     await context.SaveChangesAsync();
                     context.FindingActivities.Add(new FindingActivities
@@ -685,7 +677,7 @@ public class DefaultCiService(
                             ScanId = scan.Id,
                             FindingId = finding.Id,
                             Status = finding.Status,
-                            CommitHash = scan.CommitHash
+                            CommitHash = scan.Commit.CommitHash ?? string.Empty
                         };
                         if (finding.Status == FindingStatus.Fixed) scanFinding.Status = FindingStatus.Confirmed;
 
@@ -693,7 +685,7 @@ public class DefaultCiService(
                     }
                     else
                     {
-                        scanFinding.CommitHash = scan.CommitHash;
+                        scanFinding.CommitHash = scan.Commit.CommitHash ?? string.Empty;
                         if (finding.Status == FindingStatus.Fixed)
                             //reopen finding
                             scanFinding.Status = FindingStatus.Confirmed;
@@ -715,7 +707,7 @@ public class DefaultCiService(
                         ScanId = scan.Id,
                         FindingId = finding.Id,
                         Status = FindingStatus.Confirmed,
-                        CommitHash = scan.CommitHash
+                        CommitHash = scan.Commit.CommitHash ?? string.Empty
                     });
                 }
                 else
@@ -769,14 +761,7 @@ public class DefaultCiService(
         // todo: add other source
         return null;
     }
-
-    private string GetCommitUrl(SourceType sourceType, string repoUrl, string commitHash)
-    {
-        if (sourceType == SourceType.GitLab) return $"{repoUrl}/-/commit/{commitHash}";
-        // todo: add other source
-        return repoUrl;
-    }
-
+    
     private bool IsBlock(Guid projectId, CiUploadFindingResponse response, ScannerType scannerType)
     {
         var setting = projectManager.GetProjectSettingAsync(projectId).Result;

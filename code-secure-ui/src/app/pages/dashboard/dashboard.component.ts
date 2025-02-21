@@ -8,7 +8,6 @@ import {TopFindingChartComponent} from './top-finding-chart/top-finding-chart.co
 import {debounceTime, Subject, takeUntil} from 'rxjs';
 import {TopDependencyChartComponent} from './top-dependency-chart/top-dependency-chart.component';
 import {ActivatedRoute} from '@angular/router';
-import {bindQueryParams} from '../../core/router';
 import {Fluid} from 'primeng/fluid';
 import {LayoutService} from '../../layout/layout.service';
 import {Severity} from './severity-chart/severity';
@@ -18,12 +17,9 @@ import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {TopDependency} from '../../api/models/top-dependency';
 import {Card} from 'primeng/card';
-
-
-interface DashboardFilter {
-  from?: string,
-  to?: string
-}
+import {RangeDateComponent} from '../../shared/ui/range-date/range-date.component';
+import {getRangeDate, RangeDateType} from '../../shared/date-util';
+import {RangeDateState} from '../../shared/ui/range-date/range-date.model';
 
 Chart.register(...registerables, ChartDataLabels);
 
@@ -38,7 +34,8 @@ Chart.register(...registerables, ChartDataLabels);
     TopFindingChartComponent,
     TopDependencyChartComponent,
     Fluid,
-    Card
+    Card,
+    RangeDateComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -54,8 +51,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   scaStatus = signal<FindingStatusSeries>({acceptedRisk: 0, confirmed: 0, fixed: 0, open: 0});
   topFindings = signal<TopFinding[]>([]);
   topDependencies = signal<TopDependency[]>([]);
-  filter: DashboardFilter = {
-    from: undefined, to: undefined
+  rangeDate: RangeDateState = {
+    type: RangeDateType.Last30Days,
+    ...getRangeDate(RangeDateType.Last30Days)
   }
   private destroy$ = new Subject();
 
@@ -70,11 +68,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.initCharts();
     });
-    this.route.queryParams.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(params => {
-      bindQueryParams(params, this.filter);
-    });
   }
 
   ngOnDestroy(): void {
@@ -87,9 +80,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   initCharts() {
+    const startDate = this.rangeDate.startDate.toISOString()
+    const endDate = this.rangeDate.endDate.toISOString()
     this.dashboardService.sastStatistic({
-      from: this.filter.from,
-      to: this.filter.to
+      from: startDate,
+      to: endDate
     }).subscribe(sast => {
       this.sastSeverity.set({
         critical: sast.severity.critical,
@@ -108,8 +103,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
 
     this.dashboardService.scaStatistic({
-      from: this.filter.from,
-      to: this.filter.to
+      from: startDate,
+      to: endDate
     }).subscribe(sca => {
       this.scaSeverity.set({
         critical: sca.severity.critical,
@@ -126,5 +121,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
       this.topDependencies.set(sca.topDependencies);
     });
+  }
+
+  onRangeDateChange($event: RangeDateState) {
+    this.rangeDate = $event;
+    this.initCharts();
   }
 }

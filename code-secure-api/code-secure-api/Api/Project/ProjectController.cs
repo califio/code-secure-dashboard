@@ -1,9 +1,12 @@
+using System.Net.Mime;
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Api.Project.Service;
 using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
+using CodeSecure.Enum;
 using CodeSecure.Manager.EnvVariable;
 using CodeSecure.Manager.EnvVariable.Model;
+using CodeSecure.Manager.Finding.Model;
 using CodeSecure.Manager.Project.Model;
 using CodeSecure.Manager.Setting;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +58,7 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
 
     [HttpPost]
     [Route("{projectId}/finding/filter")]
-    public async Task<Page<ProjectFinding>> GetProjectFindings(Guid projectId, ProjectFindingFilter filter)
+    public async Task<Page<FindingSummary>> GetProjectFindings(Guid projectId, ProjectFindingFilter filter)
     {
         return await projectService.GetFindingsAsync(projectId, filter);
     }
@@ -191,5 +194,18 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
     public async Task RemoveProjectEnvironment(Guid projectId, string name)
     {
         await envVariableManager.RemoveProjectEnvironmentAsync(projectId, name);
+    }
+    
+    [HttpPost]
+    [Route("{projectId}/export")]
+    [Produces(MediaTypeNames.Application.Octet)]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    public async Task<FileContentResult> Export(ExportType format, Guid projectId, ProjectFindingFilter filter)
+    {
+        var result = await projectService.ExportAsync(format, projectId, filter);
+        return new FileContentResult(result.Data, MediaTypeNames.Application.Octet)
+        {
+            FileDownloadName = result.FileName
+        };
     }
 }

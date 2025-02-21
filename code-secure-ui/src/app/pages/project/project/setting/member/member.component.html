@@ -7,7 +7,7 @@
     <div class="flex flex-row gap-3 items-center">
       <p-iconfield>
         <p-inputicon styleClass="pi pi-search"/>
-        <input type="text" [(ngModel)]="store.filter.name" (keyup.enter)="onSearchChange()" pInputText
+        <input type="text" [(ngModel)]="filter.name" (keyup.enter)="onSearchChange()" pInputText
                placeholder="Search..."/>
       </p-iconfield>
       <p-button class="text-nowrap" type="primary" label="Add Member" (onClick)="showAddMemberPopup()"/>
@@ -65,7 +65,7 @@
       <p-paginator class="sticky bottom-0"
                    (onPageChange)="onPageChange($event)"
                    [first]="store.firstRecord()"
-                   [rows]="store.filter.size"
+                   [rows]="filter.size"
                    [totalRecords]="store.totalRecords()"
                    [showCurrentPageReport]="isDesktop"
                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"

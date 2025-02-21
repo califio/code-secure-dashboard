@@ -61,9 +61,9 @@ export function getFindingStatusOptions(): FindingStatusOption[] {
   return [
     FindingStatus.Open,
     FindingStatus.Confirmed,
-    FindingStatus.Incorrect,
     FindingStatus.AcceptedRisk,
-    FindingStatus.Fixed
+    FindingStatus.Fixed,
+    FindingStatus.Incorrect,
   ].map(status => {
     return <FindingStatusOption>{
       status: status,

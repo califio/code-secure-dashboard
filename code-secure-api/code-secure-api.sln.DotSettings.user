@@ -10,6 +10,7 @@
     &lt;TestId&gt;NUnit3x::6630ACC9-C29A-4364-8B86-FFDFDEB3EC17::net8.0::CodeSecure.Tests.JiraTest.TestGetProjectJira&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::6630ACC9-C29A-4364-8B86-FFDFDEB3EC17::net8.0::CodeSecure.Tests.JiraTest.TestUpdateIssueJira&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::6630ACC9-C29A-4364-8B86-FFDFDEB3EC17::net8.0::CodeSecure.Tests.ConverterTest.MarkdownToJiraTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::6630ACC9-C29A-4364-8B86-FFDFDEB3EC17::net8.0::CodeSecure.Tests.PdfConverterTest.ConvertHtmlToPdfTest&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=codesecure/@EntryIndexedValue">True</s:Boolean>

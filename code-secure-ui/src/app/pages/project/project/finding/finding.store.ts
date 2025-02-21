@@ -1,11 +1,8 @@
 import {computed, Injectable, signal} from '@angular/core';
-import {ProjectFinding} from '../../../../api/models/project-finding';
-import {ProjectFindingFilter} from '../../../../api/models/project-finding-filter';
-import {ProjectFindingSortField} from '../../../../api/models/project-finding-sort-field';
 import {ProjectCommitSummary} from '../../../../api/models/project-commit-summary';
 import {Scanners} from '../../../../api/models/scanners';
-import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingDetail} from '../../../../api/models/finding-detail';
+import {FindingSortField, FindingSummary, ProjectFindingFilter} from '../../../../api/models';
 
 @Injectable({
   providedIn: 'root'
@@ -13,30 +10,17 @@ import {FindingDetail} from '../../../../api/models/finding-detail';
 export class FindingStore {
   commits = signal<ProjectCommitSummary[]>([]);
   scanners = signal<Scanners[]>([]);
+  rules = signal<string[]>([]);
   // list findings
-  loadingFindings = signal(false);
-  findings = signal<ProjectFinding[]>([]);
+  loading = signal(false);
+  findings = signal<FindingSummary[]>([]);
   // finding detail
   showFinding = signal(false);
   loadingFinding = signal(false);
   finding = signal<FindingDetail | null>(null);
+  loadingExport = signal(false);
   // filter
-  filter: ProjectFindingFilter = {
-    desc: true,
-    name: '',
-    page: 1,
-    scanner: [],
-    severity: undefined,
-    sortBy: ProjectFindingSortField.CreatedAt,
-    status: [
-      FindingStatus.Open,
-      FindingStatus.Confirmed,
-      FindingStatus.Fixed,
-      FindingStatus.AcceptedRisk
-    ],
-    commitId: undefined,
-    size: 20,
-  };
+  filter: ProjectFindingFilter = {};
   //paginator
   currentPage = signal(1);
   pageSize = signal(20);
@@ -44,6 +28,29 @@ export class FindingStore {
   firstRecord = computed(() => {
     return (this.currentPage() - 1) * this.pageSize();
   })
+  //
+  sortOptions = [
+    {
+      value: FindingSortField.Name,
+      label: 'name'
+    },
+    {
+      value: FindingSortField.UpdatedAt,
+      label: 'updated'
+    },
+    {
+      value: FindingSortField.CreatedAt,
+      label: 'created'
+    },
+    {
+      value: FindingSortField.Status,
+      label: 'status'
+    },
+    {
+      value: FindingSortField.Severity,
+      label: 'severity'
+    }
+  ];
 
   constructor() {
   }

@@ -1,0 +1,13 @@
+<div class="flex flex-row gap-2 items-center">
+  <p-float-label variant="on">
+    <p-select
+      [ngModel]="sortBy()"
+      inputId="on_sort_by"
+      (ngModelChange)="onSortChange($event)"
+      class="min-w-28"
+      [options]="options()">
+    </p-select>
+    <label for="on_sort_by">Sort By</label>
+  </p-float-label>
+  <i class="pi cursor-pointer text-xl" [ngClass]="desc() ? 'pi-sort-amount-down' : 'pi-sort-amount-up'" (click)="onOrderChange()"></i>
+</div>

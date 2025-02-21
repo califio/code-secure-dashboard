@@ -18,6 +18,11 @@ import { deleteProjectMember } from '../fn/project/delete-project-member';
 import { DeleteProjectMember$Params } from '../fn/project/delete-project-member';
 import { EnvironmentVariable } from '../models/environment-variable';
 import { EnvironmentVariablePage } from '../models/environment-variable-page';
+import { export$Any } from '../fn/project/export-any';
+import { Export$Any$Params } from '../fn/project/export-any';
+import { export$Json } from '../fn/project/export-json';
+import { Export$Json$Params } from '../fn/project/export-json';
+import { FindingSummaryPage } from '../models/finding-summary-page';
 import { getIntegrationProject } from '../fn/project/get-integration-project';
 import { GetIntegrationProject$Params } from '../fn/project/get-integration-project';
 import { getJiraIntegrationProject } from '../fn/project/get-jira-integration-project';
@@ -50,7 +55,6 @@ import { getTeamsIntegrationProject } from '../fn/project/get-teams-integration-
 import { GetTeamsIntegrationProject$Params } from '../fn/project/get-teams-integration-project';
 import { JiraProjectSettingResponse } from '../models/jira-project-setting-response';
 import { ProjectCommitSummary } from '../models/project-commit-summary';
-import { ProjectFindingPage } from '../models/project-finding-page';
 import { ProjectInfo } from '../models/project-info';
 import { ProjectIntegration } from '../models/project-integration';
 import { ProjectPackagePage } from '../models/project-package-page';
@@ -246,7 +250,7 @@ export class ProjectService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getProjectFindings$Response(params: GetProjectFindings$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectFindingPage>> {
+  getProjectFindings$Response(params: GetProjectFindings$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingSummaryPage>> {
     return getProjectFindings(this.http, this.rootUrl, params, context);
   }
 
@@ -256,9 +260,9 @@ export class ProjectService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getProjectFindings(params: GetProjectFindings$Params, context?: HttpContext): Observable<ProjectFindingPage> {
+  getProjectFindings(params: GetProjectFindings$Params, context?: HttpContext): Observable<FindingSummaryPage> {
     return this.getProjectFindings$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectFindingPage>): ProjectFindingPage => r.body)
+      map((r: StrictHttpResponse<FindingSummaryPage>): FindingSummaryPage => r.body)
     );
   }
 
@@ -734,6 +738,53 @@ export class ProjectService extends BaseService {
   removeProjectEnvironment(params: RemoveProjectEnvironment$Params, context?: HttpContext): Observable<void> {
     return this.removeProjectEnvironment$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `export()` */
+  static readonly ExportPath = '/api/project/{projectId}/export';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `export$Any()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Any$Response(params: Export$Any$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return export$Any(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `export$Any$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Any(params: Export$Any$Params, context?: HttpContext): Observable<Blob> {
+    return this.export$Any$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `export$Json()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Json$Response(params: Export$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return export$Json(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `export$Json$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Json(params: Export$Json$Params, context?: HttpContext): Observable<Blob> {
+    return this.export$Json$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
     );
   }
 

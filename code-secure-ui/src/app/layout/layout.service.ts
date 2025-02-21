@@ -30,8 +30,8 @@ export class LayoutService {
   _config: layoutConfig = {
     preset: 'Aura',
     primary: 'noir',
-    surface: null,
-    darkTheme: false,
+    surface: 'zinc',
+    darkTheme: true,
     menuMode: 'static'
   };
 

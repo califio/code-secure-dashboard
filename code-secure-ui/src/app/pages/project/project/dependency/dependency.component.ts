@@ -16,13 +16,13 @@ import {ProjectPackageSortField} from '../../../../api/models';
 import {IconField} from "primeng/iconfield";
 import {InputIcon} from "primeng/inputicon";
 import {InputText} from "primeng/inputtext";
-import {FloatLabel} from 'primeng/floatlabel';
-import {Select} from 'primeng/select';
-import {NgClass} from '@angular/common';
 import {TableModule} from 'primeng/table';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 import {LayoutService} from '../../../../layout/layout.service';
 import {Tooltip} from 'primeng/tooltip';
+import {SortByComponent} from '../../../../shared/ui/sort-by/sort-by.component';
+import {SortByState} from '../../../../shared/ui/sort-by/sort-by-state';
+import {Button} from 'primeng/button';
 
 @Component({
   selector: 'app-dependency',
@@ -36,12 +36,11 @@ import {Tooltip} from 'primeng/tooltip';
     IconField,
     InputIcon,
     InputText,
-    FloatLabel,
-    Select,
-    NgClass,
     TableModule,
     Paginator,
     Tooltip,
+    SortByComponent,
+    Button,
   ],
   templateUrl: './dependency.component.html',
 })
@@ -66,6 +65,13 @@ export class DependencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.store.filter = {
+      desc: true,
+      name: '',
+      page: 1,
+      size: 20,
+      sortBy: ProjectPackageSortField.RiskLevel
+    }
     this.projectService.getProjectPackages({
       projectId: this.projectStore.projectId(),
       body: this.store.filter
@@ -134,13 +140,9 @@ export class DependencyComponent implements OnInit, OnDestroy {
   ];
 
 
-  onSortChange(sortBy: any) {
-    this.store.filter.sortBy = sortBy;
-    updateQueryParams(this.router, this.store.filter);
-  }
-
-  onOrderChange() {
-    this.store.filter.desc = !this.store.filter.desc;
+  onSortChange($event: SortByState) {
+    this.store.filter.sortBy = $event.sortBy;
+    this.store.filter.desc = $event.desc;
     updateQueryParams(this.router, this.store.filter);
   }
 }

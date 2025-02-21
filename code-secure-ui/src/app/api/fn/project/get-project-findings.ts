@@ -8,15 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { FindingSummaryPage } from '../../models/finding-summary-page';
 import { ProjectFindingFilter } from '../../models/project-finding-filter';
-import { ProjectFindingPage } from '../../models/project-finding-page';
 
 export interface GetProjectFindings$Params {
   projectId: string;
       body?: ProjectFindingFilter
 }
 
-export function getProjectFindings(http: HttpClient, rootUrl: string, params: GetProjectFindings$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectFindingPage>> {
+export function getProjectFindings(http: HttpClient, rootUrl: string, params: GetProjectFindings$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingSummaryPage>> {
   const rb = new RequestBuilder(rootUrl, getProjectFindings.PATH, 'post');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -28,7 +28,7 @@ export function getProjectFindings(http: HttpClient, rootUrl: string, params: Ge
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ProjectFindingPage>;
+      return r as StrictHttpResponse<FindingSummaryPage>;
     })
   );
 }

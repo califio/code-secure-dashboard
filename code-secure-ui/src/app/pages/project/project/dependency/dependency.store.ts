@@ -13,13 +13,7 @@ export class DependencyStore {
   showDependency = signal(false);
   loadingDependency = signal(false);
   dependency = signal<null | ProjectPackage>(null);
-  filter: ProjectPackageFilter = {
-    desc: true,
-    name: '',
-    page: 1,
-    size: 20,
-    sortBy: ProjectPackageSortField.RiskLevel
-  }
+  filter: ProjectPackageFilter = {}
   // paginator
   currentPage = signal(1);
   pageSize = signal(20);

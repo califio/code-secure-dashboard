@@ -1,0 +1,18 @@
+<p-float-label variant="on">
+  <p-multi-select
+    class="min-w-28"
+    (onChange)="onChangeStatus($event)"
+    id="on_status"
+    optionLabel="label" optionValue="status"
+    [ngModel]="status()"
+    [options]="options"
+    [maxSelectedLabels]="1">
+    <ng-template #item let-option>
+      <finding-status-label
+        [status]="option.status"
+      >
+      </finding-status-label>
+    </ng-template>
+  </p-multi-select>
+  <label for="on_status">Status</label>
+</p-float-label>

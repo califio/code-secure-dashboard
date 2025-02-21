@@ -1,123 +1,63 @@
 <div class="flex flex-row w-full gap-4" style="height: calc(100vh - 15rem)">
-  <div class="flex flex-col w-full">
-    <div class="flex flex-wrap p-4 gap-2 items-center justify-between border border-surface">
-      <div class="flex flex-row items-center gap-2 w-full">
-        <!--SEARCH-->
-        <p-iconfield>
-          <p-inputicon styleClass="pi pi-search"/>
-          <input type="text"
-                 pInputText placeholder="Search..."
-                 [(ngModel)]="store.filter.name"
-                 (keyup.enter)="onSearchChange()"/>
-        </p-iconfield>
-        <!--Branch Filter-->
-        <p-float-label variant="on">
-          <p-select
-            [ngModel]="store.filter.commitId"
-            inputId="on_branch"
-            optionValue="commitId"
-            (ngModelChange)="onSelectScan($event)"
-            class="min-w-28"
-            [options]="store.commits()">
-            <ng-template #selectedItem let-option>
-              <scan-branch-label [action]="option.action"
-                                 [branch]="option.branch"
-                                 [targetBranch]="option.targetBranch"></scan-branch-label>
-            </ng-template>
-            <ng-template let-option #item>
-              <scan-branch-label [action]="option.action"
-                                 [branch]="option.branch"
-                                 [targetBranch]="option.targetBranch"></scan-branch-label>
-            </ng-template>
-          </p-select>
-          <label for="on_branch">Branch</label>
-        </p-float-label>
-        <!--Status Filter-->
-        <p-float-label variant="on">
-          <p-multi-select
-            class="min-w-28"
-            (onChange)="onChangeStatus($event)"
-            id="on_status"
-            optionLabel="label" optionValue="status"
-            [ngModel]="store.filter.status"
-            [options]="statusOptions"
-            [maxSelectedLabels]="1">
-            <ng-template #item let-option>
-              <finding-status-label
-                [status]="option.status"
-              >
-              </finding-status-label>
-            </ng-template>
-          </p-multi-select>
-          <label for="on_status">Status</label>
-        </p-float-label>
-        <!--Scanner Filter-->
-        <p-float-label variant="on">
-          <p-multi-select
-            class="min-w-28"
-            (onChange)="onChangeScanners($event)"
-            id="on_scanner"
-            optionLabel="name" optionValue="id"
-            [ngModel]="store.filter.scanner"
-            [options]="store.scanners()"
-            [maxSelectedLabels]="1">
-            <ng-template #item let-option>
-              <scanner-label
-                [scanner]="option.name"
-                [type]="option.type">
-              </scanner-label>
-            </ng-template>
-          </p-multi-select>
-          <label for="on_scanner">Scanner</label>
-        </p-float-label>
-        <div class="flex flex-row gap-2 items-center">
-          <p-float-label variant="on">
-            <p-select
-              [ngModel]="store.filter.sortBy"
-              inputId="on_sort_by"
-              optionValue="value"
-              optionLabel="label"
-              (ngModelChange)="onSortChange($event)"
-              class="min-w-28"
-              [options]="sortOptions">
-            </p-select>
-            <label for="on_sort_by">Sort By</label>
-          </p-float-label>
-          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
-                   (click)="onOrderChange()"></ng-icon>
-        </div>
-      </div>
-      <div class="flex flex-row items-center gap-2">
-        <p-button severity="secondary" icon="pi pi-sync" pTooltip="reload" tooltipPosition="top"
-                  (click)="onReload()" [loading]="store.loadingFindings()"></p-button>
-        <!--Mark As-->
-        @if (selectedFindings.size > 0) {
-          <p-overlay-badge [value]="selectedFindings.size" badgeSize="small">
-            <p-button (click)="menu.toggle($event)"
-                      label="Mark as"
-                      severity="primary"
-                      iconPos="right"
-                      icon="pi pi-chevron-down"/>
-          </p-overlay-badge>
-        } @else {
-          <p-button (click)="menu.toggle($event)"
-                    label="Mark as"
-                    severity="secondary"
-                    iconPos="right"
-                    icon="pi pi-chevron-down"/>
-        }
-        <p-menu #menu [model]="menuItems" [popup]="true">
-          <ng-template #item let-option>
-            <div class="max-w-72 cursor-pointer px-4 py-2" (click)="onMarkAs(option.status)">
-              <finding-status-label [status]="option.status" [showDescription]="true"
-                                    styleClass="font-semibold"></finding-status-label>
-            </div>
+  <div class="flex flex-col">
+    <div class="flex flex-wrap p-4 gap-2 items-center border border-surface">
+      <!--SEARCH-->
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search"/>
+        <input type="text"
+               pInputText placeholder="Search..."
+               [(ngModel)]="store.filter.name"
+               (keyup.enter)="onSearchChange()"/>
+      </p-iconfield>
+      <!--Branch Filter-->
+      <p-float-label variant="on">
+        <p-select
+          showClear
+          [ngModel]="store.filter.commitId"
+          inputId="on_branch"
+          optionValue="commitId"
+          (ngModelChange)="onSelectScan($event)"
+          class="min-w-28"
+          [options]="store.commits()">
+          <ng-template #selectedItem let-option>
+            <scan-branch-label [action]="option.action"
+                               [branch]="option.branch"
+                               [targetBranch]="option.targetBranch"></scan-branch-label>
           </ng-template>
-        </p-menu>
-      </div>
+          <ng-template let-option #item>
+            <scan-branch-label [action]="option.action"
+                               [branch]="option.branch"
+                               [targetBranch]="option.targetBranch"></scan-branch-label>
+          </ng-template>
+        </p-select>
+        <label for="on_branch">Branch</label>
+      </p-float-label>
+      <!--Rule Filter-->
+      <finding-rule-filter [options]="store.rules()"
+                           [rule]="store.filter.ruleId"
+                           (onChange)="onChangeRule($event)"/>
+      <!--Status Filter-->
+      <finding-status-filter [status]="store.filter.status"
+                             (statusChange)="onChangeStatus($event)"/>
+      <!--Severity Filter-->
+      <finding-severity-filter [severity]="store.filter.severity"
+                               (onChange)="onChangeSeverity($event)"/>
+      <!--Scanner Filter-->
+      <finding-scanner-filter [selected]="store.filter.scanner"
+                              [scanners]="store.scanners()"
+                              (onChange)="onChangeScanners($event)"/>
+      <!--Sort By-->
+      <sort-by [sortBy]="store.filter.sortBy"
+               [options]="store.sortOptions"
+               (onChange)="onSortChange($event)"/>
+      <p-button severity="secondary" icon="pi pi-sync" pTooltip="reload" tooltipPosition="top"
+                (click)="onReload()" [loading]="store.loading()"/>
+      <!--Mark As-->
+      <finding-status-menu [badge]="selectedFindings.size" (onSelect)="onMarkAs($event)"/>
+      <finding-export-menu [loading]="store.loadingExport()" (onSelect)="onExport($event)"></finding-export-menu>
     </div>
     <!--LIST FINDING-->
-    <p-table [loading]="store.loadingFindings()" [value]="store.findings()" [scrollable]="true"
+    <p-table [loading]="store.loading()" [value]="store.findings()" [scrollable]="true"
              class="w-full overflow-y-auto">
       <ng-template #header>
         <tr class="text-sm">
@@ -175,7 +115,7 @@
                    [rowsPerPageOptions]="[10, 20, 50, 100]"/>
     </div>
   </div>
-  <div class="hidden lg:block w-720px w-full h-full overflow-y-auto">
+  <div class="hidden lg:block w-[720px] h-full overflow-y-auto">
     @if (store.finding() != null) {
       <finding-detail
         [isProjectPage]="true"

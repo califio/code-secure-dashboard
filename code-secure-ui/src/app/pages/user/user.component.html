@@ -10,20 +10,9 @@
           <input type="text" [(ngModel)]="store.filter.name" (keyup.enter)="onSearchChange()" pInputText
                  placeholder="Search..."/>
         </p-icon-field>
-        <div class="flex flex-row gap-2 items-center">
-          <p-float-label variant="on">
-            <p-select
-              [ngModel]="store.filter.sortBy"
-              inputId="on_sort_by"
-              (ngModelChange)="onSortChange($event)"
-              class="min-w-28"
-              [options]="sortOptions">
-            </p-select>
-            <label for="on_sort_by">Sort By</label>
-          </p-float-label>
-          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
-                   (click)="onOrderChange()"></ng-icon>
-        </div>
+        <sort-by [options]="sortOptions"
+                 [sortBy]="store.filter.sortBy"
+                 (onChange)="onSortChange($event)"/>
       </div>
       <div class="flex flex-row items-center gap-2">
         <button pButton severity="primary" (click)="onShowAddUserDialog()">Add User</button>

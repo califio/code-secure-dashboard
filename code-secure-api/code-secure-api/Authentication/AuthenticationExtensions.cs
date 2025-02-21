@@ -38,7 +38,7 @@ public static class AuthenticationExtensions
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
-            options.SaveToken = true;
+            options.SaveToken = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,

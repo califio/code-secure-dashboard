@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NgIcon} from "@ng-icons/core";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TimeagoModule} from "ngx-timeago";
 import {ActivatedRoute, Router} from '@angular/router';
@@ -14,8 +13,6 @@ import {UpdateUserPopupComponent} from './update-user-popup/update-user-popup.co
 import {RoleService} from '../../api/services/role.service';
 import {ToastrService} from '../../shared/services/toastr.service';
 import {ButtonDirective} from 'primeng/button';
-import {FloatLabel} from 'primeng/floatlabel';
-import {Select} from 'primeng/select';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ConfirmationService} from 'primeng/api';
 import {Checkbox} from 'primeng/checkbox';
@@ -28,12 +25,13 @@ import {TableModule} from 'primeng/table';
 import {LayoutService} from '../../layout/layout.service';
 import {Chip} from 'primeng/chip';
 import {Tooltip} from 'primeng/tooltip';
+import {SortByComponent} from '../../shared/ui/sort-by/sort-by.component';
+import {SortByState} from '../../shared/ui/sort-by/sort-by-state';
 
 @Component({
   selector: 'app-user',
   standalone: true,
   imports: [
-    NgIcon,
     ReactiveFormsModule,
     TimeagoModule,
     FormsModule,
@@ -41,8 +39,6 @@ import {Tooltip} from 'primeng/tooltip';
     AddUserPopupComponent,
     UpdateUserPopupComponent,
     ButtonDirective,
-    FloatLabel,
-    Select,
     ConfirmDialog,
     Checkbox,
     IconField,
@@ -53,6 +49,7 @@ import {Tooltip} from 'primeng/tooltip';
     TableModule,
     Chip,
     Tooltip,
+    SortByComponent,
   ],
   templateUrl: './user.component.html',
   providers: [ConfirmationService]
@@ -124,13 +121,9 @@ export class UserComponent implements OnInit, OnDestroy {
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onOrderChange() {
-    this.store.filter.desc = !this.store.filter.desc;
-    updateQueryParams(this.router, this.store.filter);
-  }
-
-  onSortChange(value: any) {
-    this.store.filter.sortBy = value;
+  onSortChange($event: SortByState) {
+    this.store.filter.sortBy = $event.sortBy;
+    this.store.filter.desc = $event.desc;
     updateQueryParams(this.router, this.store.filter);
   }
 

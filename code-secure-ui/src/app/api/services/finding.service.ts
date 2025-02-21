@@ -17,13 +17,20 @@ import { createTicket } from '../fn/finding/create-ticket';
 import { CreateTicket$Params } from '../fn/finding/create-ticket';
 import { deleteTicket } from '../fn/finding/delete-ticket';
 import { DeleteTicket$Params } from '../fn/finding/delete-ticket';
+import { exportFinding$Any } from '../fn/finding/export-finding-any';
+import { ExportFinding$Any$Params } from '../fn/finding/export-finding-any';
+import { exportFinding$Json } from '../fn/finding/export-finding-json';
+import { ExportFinding$Json$Params } from '../fn/finding/export-finding-json';
 import { FindingActivity } from '../models/finding-activity';
 import { FindingActivityPage } from '../models/finding-activity-page';
 import { FindingDetail } from '../models/finding-detail';
+import { FindingSummaryPage } from '../models/finding-summary-page';
 import { getFinding } from '../fn/finding/get-finding';
 import { GetFinding$Params } from '../fn/finding/get-finding';
 import { getFindingActivities } from '../fn/finding/get-finding-activities';
 import { GetFindingActivities$Params } from '../fn/finding/get-finding-activities';
+import { getFindings } from '../fn/finding/get-findings';
+import { GetFindings$Params } from '../fn/finding/get-findings';
 import { Tickets } from '../models/tickets';
 import { updateFinding } from '../fn/finding/update-finding';
 import { UpdateFinding$Params } from '../fn/finding/update-finding';
@@ -32,6 +39,78 @@ import { UpdateFinding$Params } from '../fn/finding/update-finding';
 export class FindingService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `getFindings()` */
+  static readonly GetFindingsPath = '/api/finding/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getFindings()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getFindings$Response(params?: GetFindings$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingSummaryPage>> {
+    return getFindings(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getFindings$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getFindings(params?: GetFindings$Params, context?: HttpContext): Observable<FindingSummaryPage> {
+    return this.getFindings$Response(params, context).pipe(
+      map((r: StrictHttpResponse<FindingSummaryPage>): FindingSummaryPage => r.body)
+    );
+  }
+
+  /** Path part for operation `exportFinding()` */
+  static readonly ExportFindingPath = '/api/finding/export';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `exportFinding$Any()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  exportFinding$Any$Response(params?: ExportFinding$Any$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return exportFinding$Any(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `exportFinding$Any$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  exportFinding$Any(params?: ExportFinding$Any$Params, context?: HttpContext): Observable<Blob> {
+    return this.exportFinding$Any$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `exportFinding$Json()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  exportFinding$Json$Response(params?: ExportFinding$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return exportFinding$Json(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `exportFinding$Json$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  exportFinding$Json(params?: ExportFinding$Json$Params, context?: HttpContext): Observable<Blob> {
+    return this.exportFinding$Json$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+    );
   }
 
   /** Path part for operation `getFinding()` */

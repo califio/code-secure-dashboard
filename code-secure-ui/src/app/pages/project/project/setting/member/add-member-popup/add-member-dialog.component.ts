@@ -72,7 +72,6 @@ export class AddMemberDialogComponent implements OnInit, OnDestroy {
       debounceTime(100),
       takeUntil(this.destroy$),
       switchMap(search => {
-        console.log(search);
         return this.getUsers(search);
       })
     ).subscribe(response => {

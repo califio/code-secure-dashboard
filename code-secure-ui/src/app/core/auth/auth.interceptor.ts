@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {Router} from "@angular/router";
 import {AuthStore} from './auth.store';
@@ -12,9 +12,7 @@ interface ErrorResponse {
   errors: string[]
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private refreshTokenInProgress = false;
   private refreshToken$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
@@ -36,7 +34,7 @@ export class AuthInterceptor implements HttpInterceptor {
             case 401: {
               if (req.url.includes('refresh-token') || !this.authStore.refreshToken) {
                 this.refreshTokenInProgress = false;
-                this.authStore.clearSession();
+                this.authStore.clearSession()
                 this.router.navigate(['/auth', 'login']).then();
               } else {
                 this.refreshToken$.pipe(
@@ -55,22 +53,19 @@ export class AuthInterceptor implements HttpInterceptor {
                 } else {
                   this.refreshTokenInProgress = true;
                   this.refreshToken$.next(null);
-                  // call refresh token
-                  this.callRefreshToken().pipe(
-                    switchMap((token) => {
+                  return this.authService.refreshToken({
+                    body: {
+                      refreshToken: this.authStore.refreshToken!
+                    }
+                  }).pipe(
+                    switchMap((session) => {
                       this.refreshTokenInProgress = false;
-                      this.authStore.accessToken = token.accessToken;
-                      this.authStore.refreshToken = token.refreshToken;
-                      this.refreshToken$.next(token.refreshToken);
+                      this.authStore.accessToken = session.accessToken!;
+                      this.refreshToken$.next(session.accessToken!);
                       return next.handle(this.requestWithToken(req));
-                    })
-                  ).subscribe();
+                    }));
                 }
               }
-              break
-            }
-            case 309: {
-              this.router.navigate(['auth', '/mfa-require']).then();
               break
             }
             case 400: {
@@ -107,18 +102,6 @@ export class AuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private callRefreshToken(): Observable<{ accessToken: any, refreshToken: any }> {
-    return this.authService.refreshToken({
-      body: {
-        refreshToken: this.authStore.refreshToken!
-      }
-    }).pipe(
-      switchMap(response => {
-        return of({accessToken: response.accessToken, refreshToken: response.refreshToken})
-      })
-    );
-  }
-
   private handleError(err: ErrorResponse) {
     if (err.errors && err.errors.length > 0) {
       err.errors.forEach(e => {
@@ -129,3 +112,5 @@ export class AuthInterceptor implements HttpInterceptor {
     }
   }
 }
+
+

@@ -23,8 +23,9 @@ export class AppMenu implements  OnInit {
       {
         label: 'Application',
         items: [
-          { label: 'Dashboard', icon: PrimeIcons.HOME, routerLink: ['/dashboard'] },
+          { label: 'Dashboard', icon: PrimeIcons.OBJECTS_COLUMN, routerLink: ['/dashboard'] },
           { label: 'Project', icon: PrimeIcons.FOLDER, routerLink: ['/project'] },
+          { label: 'Finding', icon: PrimeIcons.SEARCH, routerLink: ['/finding'] },
         ]
       },
       {

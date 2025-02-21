@@ -10,26 +10,10 @@
                  [(ngModel)]="store.filter.name"
                  (keyup.enter)="onSearchChange()"/>
         </p-iconfield>
-        <div class="flex flex-row gap-2 items-center">
-          <p-floatlabel variant="on">
-            <p-select
-              [ngModel]="store.filter.sortBy"
-              inputId="on_sort_by"
-              optionValue="value"
-              optionLabel="label"
-              (ngModelChange)="onSortChange($event)"
-              class="min-w-28"
-              [options]="sortOptions">
-            </p-select>
-            <label for="on_sort_by">Sort By</label>
-          </p-floatlabel>
-          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
-                   (click)="onOrderChange()"></ng-icon>
-        </div>
-        <div class="flex items-center cursor-pointer px-4 py-2 rounded border border-surface"
-             (click)="onReload()">
-          <ng-icon name="arrowPath" [ngClass]="{ 'animate-spin': store.loading()}"></ng-icon>
-        </div>
+        <sort-by [options]="sortOptions"
+                 [sortBy]="store.filter.sortBy"
+                 (onChange)="onSortChange($event)"/>
+        <p-button severity="secondary" icon="pi pi-sync" [loading]="store.loading()" (onClick)="onReload()"/>
       </div>
     </div>
     <p-table [loading]="store.loading()" [value]="store.dependencies()" [scrollable]="true"
