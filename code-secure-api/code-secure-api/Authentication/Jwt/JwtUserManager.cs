@@ -44,6 +44,8 @@ public class JwtUserManager(
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 IssuerSigningKey = Application.Config.RefreshTokenSecurityKey,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero

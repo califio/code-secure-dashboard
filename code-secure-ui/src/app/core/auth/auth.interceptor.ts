@@ -61,6 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
                     switchMap((session) => {
                       this.refreshTokenInProgress = false;
                       this.authStore.accessToken = session.accessToken!;
+                      this.authStore.refreshToken = session.refreshToken!;
                       this.refreshToken$.next(session.accessToken!);
                       return next.handle(this.requestWithToken(req));
                     }));
