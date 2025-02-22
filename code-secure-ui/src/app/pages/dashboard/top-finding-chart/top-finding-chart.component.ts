@@ -43,7 +43,6 @@ export class TopFindingChartComponent {
       }
     ];
     this.option = {
-      responsive: true,
       maintainAspectRatio: true,
       indexAxis: "y",
       scales: {

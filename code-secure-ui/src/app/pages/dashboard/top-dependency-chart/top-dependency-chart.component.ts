@@ -30,7 +30,7 @@ export class TopDependencyChartComponent implements OnDestroy {
     const textColor = documentStyle.getPropertyValue('--text-color');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
     this.option = {
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
       indexAxis: "y",
       scales: {
         x: {
