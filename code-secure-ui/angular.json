@@ -32,12 +32,18 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
+              "src/styles.scss"
             ],
             "scripts": [
 
             ],
-            "allowedCommonJsDependencies": []
+            "allowedCommonJsDependencies": [
+              "prismjs",
+              "prismjs/components/prism-go",
+              "prismjs/components/prism-typescript",
+              "prismjs/components/prism-javascript",
+              "prismjs/components/prism-python"
+            ]
           },
           "configurations": {
             "production": {
@@ -45,7 +51,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",

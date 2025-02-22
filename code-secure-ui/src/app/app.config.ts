@@ -13,12 +13,12 @@ import {providePrimeNG} from 'primeng/config';
 import {MessageService} from 'primeng/api';
 import {ToastrService} from './shared/services/toastr.service';
 import 'prismjs';
-import 'prismjs/components/prism-java.min.js';
-import 'prismjs/components/prism-csharp.min.js';
-import 'prismjs/components/prism-javascript.min.js';
-import 'prismjs/components/prism-typescript.min.js';
-import 'prismjs/components/prism-go.min.js';
-import 'prismjs/components/prism-python.min.js';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-csharp';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-go';
 
 export const appConfig: ApplicationConfig = {
   providers: [
