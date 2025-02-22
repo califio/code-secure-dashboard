@@ -12,6 +12,12 @@ The following are the required environment variables.
 | GITLAB_TOKEN      | optional | The GitLab token used to comment on merge requests when new findings are detected. |
 
 
+??? question "How to get CODE_SECURE_TOKEN?"
+
+    Go to **Setting > Access Token** in the Code Secure Dashboard.
+
+    ![](../assets/images/setting_access_token.png)
+
 ??? question "How to get GITLAB_TOKEN?"
 
     Go to **Settings > Access Tokens** in the GitLab project and create a GitLab access token with the role **Reporter** and the **api** scope.
