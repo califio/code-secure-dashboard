@@ -7,6 +7,7 @@ public interface IScannerManager
 {
     Task<Scanners?> FindByIdAsync(Guid scannerId);
     Task<Scanners> CreateOrUpdateAsync(Scanners scanner);
+    Task<List<Scanners>> GetScannersAsync(Guid? projectId = null);
     Task<List<Scanners>> GetSastScannersAsync();
     Task<List<Scanners>> GetScaScannersAsync();
     Task<List<Scanners>> GetScannerByTypeAsync(ScannerType type);

@@ -1,34 +1,43 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ViewEncapsulation} from '@angular/core';
 import {FindingActivity} from '../../../../api/models/finding-activity';
-import {AvatarComponent} from '../../../ui/avatar/avatar.component';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
-import {NgIcon} from '@ng-icons/core';
-import {ScanBranchComponent} from '../../scan-branch/scan-branch.component';
+import {ScanBranchLabelComponent} from '../../scan/scan-branch-label/scan-branch-label.component';
 import {TimeagoModule} from 'ngx-timeago';
 import {FindingActivityType} from '../../../../api/models/finding-activity-type';
 import {GitAction} from '../../../../api/models/git-action';
 import {FindingStatus} from '../../../../api/models/finding-status';
-import {TooltipDirective} from '../../../ui/tooltip/tooltip.directive';
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgClass, UpperCasePipe} from '@angular/common';
+import {Avatar} from 'primeng/avatar';
+import {FirstCharPipe} from '../../../pipes/firstchar.pipe';
+import {Timeline} from 'primeng/timeline';
+import {Panel} from 'primeng/panel';
+import {Tooltip} from 'primeng/tooltip';
+import {MarkdownComponent} from 'ngx-markdown';
 
 @Component({
   selector: 'finding-activity',
   standalone: true,
   imports: [
-    AvatarComponent,
     FindingStatusLabelComponent,
-    NgIcon,
-    ScanBranchComponent,
+    ScanBranchLabelComponent,
     TimeagoModule,
-    TooltipDirective,
-    DatePipe
+    DatePipe,
+    Avatar,
+    FirstCharPipe,
+    Timeline,
+    UpperCasePipe,
+    Panel,
+    NgClass,
+    Tooltip,
+    MarkdownComponent
   ],
   templateUrl: './finding-activity.component.html',
-  styleUrl: './finding-activity.component.scss'
+  styleUrl: './finding-activity.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class FindingActivityComponent {
   @Input()
-  activity: FindingActivity = {};
+  activities: FindingActivity[] = [];
 
   parseDate(text: string | null | undefined) {
     if (text) {
@@ -36,6 +45,29 @@ export class FindingActivityComponent {
     }
     return null;
   }
+
+  activityIcon(activityType: FindingActivityType): string {
+    if (activityType == FindingActivityType.Open) {
+      return 'pi pi-map-marker';
+    }
+    if (activityType == FindingActivityType.Reopen) {
+      return 'pi pi-map-marker';
+    }
+    if (activityType == FindingActivityType.Fixed) {
+      return 'pi-check-circle';
+    }
+    if (activityType == FindingActivityType.Comment) {
+      return 'pi pi-comment';
+    }
+    if (activityType == FindingActivityType.ChangeStatus) {
+      return 'pi pi-replay';
+    }
+    if (activityType == FindingActivityType.ChangeDeadline) {
+      return 'pi pi-history';
+    }
+    return 'pi pi-circle';
+  }
+
   protected readonly FindingActivityType = FindingActivityType;
   protected readonly GitAction = GitAction;
   protected readonly FindingStatus = FindingStatus;

@@ -1,3 +1,5 @@
+using System.Data;
+using ClosedXML.Excel;
 using CodeSecure.Api.Finding.Model;
 using CodeSecure.Authentication;
 using CodeSecure.Database;
@@ -8,8 +10,10 @@ using CodeSecure.Enum;
 using CodeSecure.Exception;
 using CodeSecure.Extension;
 using CodeSecure.Manager.Finding;
+using CodeSecure.Manager.Finding.Model;
 using CodeSecure.Manager.Integration.TicketTracker;
 using CodeSecure.Manager.Integration.TicketTracker.Jira;
+using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Scanner;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,10 +24,112 @@ public class DefaultFindingService(
     IHttpContextAccessor contextAccessor,
     IScannerManager scannerManager,
     IFindingManager findingManager,
+    IProjectManager projectManager,
     JiraTicketTracker jiraTicketTracker,
     ILogger<DefaultFindingService> logger
 ) : BaseService<Findings>(contextAccessor), IFindingService
 {
+    public Task<Page<FindingSummary>> GetFindingsAsync(FindingFilter filter)
+    {
+        return findingManager.GetFindingAsync(filter, CurrentUser());
+    }
+
+    public async Task<byte[]> Export(FindingFilter filter)
+    {
+        var actor = CurrentUser();
+        var allowReadFinding = actor.HasClaim(PermissionType.Finding, PermissionAction.Read);
+        var query = context.Findings
+            .Include(finding => finding.Scanner)
+            .Include(finding => finding.Project)
+            .Include(finding => finding.Ticket)
+            .Where(finding =>
+                allowReadFinding == true ||
+                context.ProjectUsers.Any(projectUser =>
+                    projectUser.ProjectId == finding.ProjectId &&
+                    projectUser.UserId == actor.Id
+                )
+            );
+        if (filter.ProjectId != null)
+        {
+            query = query.Where(finding => finding.ProjectId == filter.ProjectId);
+        }
+
+        if (filter.Status is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Status.Contains(finding.Status));
+        }
+
+        if (filter.Scanner is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Scanner.Contains(finding.ScannerId));
+        }
+
+        if (filter.Severity is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Severity.Contains(finding.Severity));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(finding => finding.Name.Contains(filter.Name));
+        }
+        if (!string.IsNullOrEmpty(filter.RuleId))
+        {
+            query = query.Where(finding => finding.RuleId == filter.RuleId);
+        }
+
+        if (filter.ProjectManagerId != null)
+        {
+            query = query.Where(finding => context.ProjectUsers.Any(record =>
+                record.Role == ProjectRole.Manager 
+                && finding.ProjectId == record.ProjectId
+                && record.UserId == filter.ProjectManagerId)
+            );
+        }
+
+        query = query.Distinct();
+        if (query.Count() > 10000)
+        {
+            throw new BadRequestException("Total record too large. Max record 10000");
+        }
+        var findings = await query.OrderBy(record => record.ProjectId).ToListAsync();
+        using var wb = new XLWorkbook();
+        var findingDt = new DataTable();
+        findingDt.TableName = "List Finding";
+        //Add Columns  
+        findingDt.Columns.Add("Repo", typeof(string));
+        findingDt.Columns.Add("Repo URL", typeof(string));
+        findingDt.Columns.Add("Scanner", typeof(string));
+        findingDt.Columns.Add("Finding", typeof(string));
+        findingDt.Columns.Add("Severity", typeof(string));
+        findingDt.Columns.Add("Status", typeof(string));
+        findingDt.Columns.Add("Location", typeof(string));
+        findingDt.Columns.Add("Description", typeof(string));
+        findingDt.Columns.Add("Recommendation", typeof(string));
+        findingDt.Columns.Add("Ticket", typeof(string));
+        //Add Rows in DataTable  
+        findings.ForEach(finding =>
+        {
+            findingDt.Rows.Add(
+                finding.Project!.Name,
+                finding.Project!.RepoUrl,
+                finding.Scanner!.Name,
+                finding.Name,
+                finding.Severity.ToString().ToUpper(),
+                finding.Status.ToString().ToUpper(),
+                finding.Location,
+                finding.Description,
+                finding.Recommendation ?? string.Empty,
+                finding.Ticket?.Url ?? string.Empty
+            );
+        });
+        findingDt.AcceptChanges();
+        wb.Worksheets.Add(findingDt);
+        var stream = new MemoryStream();
+        wb.SaveAs(stream);
+        return stream.GetBuffer();
+    }
+
     public async Task<FindingDetail> GetFindingAsync(Guid id)
     {
         var finding = await FindByIdAsync(id);
@@ -84,7 +190,8 @@ public class DefaultFindingService(
             Scans = scans,
             Metadata = metadata,
             FixDeadline = finding.FixDeadline,
-            Ticket = ticket
+            Ticket = ticket,
+            RuleId = finding.RuleId
         };
     }
 
@@ -277,7 +384,7 @@ public class DefaultFindingService(
             await context.Tickets.Where(record => record.Id == ticketId).ExecuteDeleteAsync();
         }
     }
-
+    
     protected override bool HasPermission(Findings entity, string action)
     {
         var currentUser = CurrentUser();

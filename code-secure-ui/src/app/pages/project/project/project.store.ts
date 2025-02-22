@@ -9,5 +9,7 @@ export class ProjectStore {
   project = signal<ProjectInfo>({});
   projectSetting = signal<ProjectSetting>({});
   projectId = signal('')
-  constructor() { }
+
+  constructor() {
+  }
 }

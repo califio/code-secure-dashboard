@@ -1,4 +1,4 @@
-<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
+<div class="flex flex-col gap-4 w-full">
   <div class="flex flex-col gap-2 w-full">
     <div class="flex flex-wrap gap-8">
       <div class="flex flex-col gap-1">
@@ -13,7 +13,8 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.critical!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sast.controls.critical!"></p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -27,7 +28,8 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.high!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sast.controls.high!"></p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -41,7 +43,8 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.medium!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sast.controls.medium!"></p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -56,7 +59,8 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.low!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sast.controls.low!"></p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -70,7 +74,8 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sast.controls.info!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sast.controls.info!"></p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -89,7 +94,9 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.critical!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sca.controls.critical!">
+                </p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -103,7 +110,9 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.high!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sca.controls.high!">
+                </p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -117,7 +126,9 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.medium!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sca.controls.medium!">
+                </p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -132,7 +143,9 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.low!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sca.controls.low!">
+                </p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -146,7 +159,9 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <input type="number" class="max-w-20" min="0" [formControl]="form.controls.sca.controls.info!">
+                <p-input-number inputStyleClass="max-w-20" min="0"
+                                [formControl]="form.controls.sca.controls.info!">
+                </p-input-number>
                 <span>days</span>
               </div>
             </td>
@@ -155,8 +170,8 @@
       </div>
     </div>
   </div>
-  <button app-button type="primary" class="w-fit"
-          [loading]="form.disabled"
-          [disabled]="form.disabled"
-          (click)="saveSla()">Update</button>
+  <p-button severity="primary" label="Update"
+            [loading]="form.disabled"
+            [disabled]="form.disabled"
+            (click)="saveSla()"/>
 </div>

@@ -1,4 +1,4 @@
-using AutoMapper;
+using System.Net.Mime;
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Authentication;
 using CodeSecure.Database;
@@ -6,25 +6,33 @@ using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
+using CodeSecure.Manager.Finding;
+using CodeSecure.Manager.Finding.Model;
 using CodeSecure.Manager.Integration.Mail;
 using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Integration.Teams;
 using CodeSecure.Manager.Integration.TicketTracker.Jira;
 using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Report;
+using CodeSecure.Manager.Report.Model;
+using CodeSecure.Manager.Scanner;
 using CodeSecure.Manager.Setting;
 using CodeSecure.Manager.Statistic;
 using Microsoft.EntityFrameworkCore;
+using FindingModel = CodeSecure.Manager.Report.Model.FindingModel;
 
 namespace CodeSecure.Api.Project.Service;
 
 public class ProjectService(
-    IMapper mapper,
     AppDbContext context,
     IProjectManager projectManager,
+    IFindingManager findingManager,
+    IScannerManager scannerManager,
     IJiraManager jiraManager,
     IStatisticManager statisticManager,
     IMailSender mailSender,
+    IReportManager reportManager,
     IHttpContextAccessor contextAccessor) : BaseService<Projects>(contextAccessor), IProjectService
 {
     public async Task<Page<ProjectSummary>> GetProjectsAsync(ProjectFilter filter)
@@ -71,8 +79,16 @@ public class ProjectService(
         var setting = await context.ProjectSettings
             .Where(record => record.ProjectId == project.Id)
             .FirstAsync();
-        var result = mapper.Map<ProjectInfo>(project);
-        return result;
+        return new ProjectInfo
+        {
+            Id = project.Id,
+            Name = project.Name,
+            RepoId = project.RepoId,
+            RepoUrl = project.RepoUrl,
+            SourceType = project.SourceControl!.Type,
+            CreatedAt = project.CreatedAt,
+            UpdatedAt = project.UpdatedAt
+        };
     }
 
     public async Task<Page<ProjectScan>> GetScansAsync(Guid projectId, ProjectScanFilter filter)
@@ -148,7 +164,14 @@ public class ProjectService(
 
         return await context.ProjectCommits
             .Where(record => record.ProjectId == project.Id)
-            .Select(record => mapper.Map<ProjectCommitSummary>(record))
+            .Select(record => new ProjectCommitSummary
+            {
+                CommitId = record.Id,
+                Branch = record.Branch,
+                Action = record.Action,
+                TargetBranch = record.TargetBranch,
+                IsDefault = record.IsDefault
+            })
             .ToListAsync();
     }
 
@@ -156,54 +179,27 @@ public class ProjectService(
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
-        return await context.Scans
-            .Include(scan => scan.Scanner)
-            .Where(scan => scan.ProjectId == project.Id)
-            .Select(scan => scan.Scanner!)
-            .Distinct().ToListAsync();
+        return await scannerManager.GetScannersAsync(projectId);
     }
-
-
-    public async Task<Page<ProjectFinding>> GetFindingsAsync(Guid projectId, ProjectFindingFilter filter)
+    
+    public async Task<Page<FindingSummary>> GetFindingsAsync(Guid projectId, ProjectFindingFilter filter)
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
-
-        var query = context.Findings
-            .Include(finding => finding.Scanner)
-            .Where(finding => finding.ProjectId == project.Id);
-        if (filter.CommitId != null)
+        return await findingManager.GetFindingAsync(new FindingFilter
         {
-            query = query.Where(finding => context.ScanFindings.Any(record =>
-                record.FindingId == finding.Id
-                && record.Scan!.CommitId == filter.CommitId)
-            );
-        }
-        if (filter.Status is { Count: > 0 })
-        {
-            if (filter.CommitId != null)
-            {
-                query = query.Where(finding => context.ScanFindings.Any(record => record.FindingId == finding.Id && filter.Status.Contains(record.Status)));
-            }
-            else
-            {
-                query = query.Where(finding => filter.Status.Contains(finding.Status));
-            }
-        }
-        
-        if (filter.Scanner is { Count: > 0 })
-        {
-            query = query.Where(finding => filter.Scanner.Contains(finding.ScannerId));
-        }
-
-        if (filter.Severity != null) query = query.Where(finding => finding.Severity == filter.Severity);
-
-        if (!string.IsNullOrEmpty(filter.Name)) query = query.Where(finding => finding.Name.Contains(filter.Name));
-
-        return await query.Distinct()
-            .OrderBy(filter.SortBy.ToString(), filter.Desc)
-            .Select(finding => mapper.Map<ProjectFinding>(finding))
-            .PageAsync(filter.Page, filter.Size);
+            Size = filter.Size,
+            Page = filter.Page,
+            Desc = filter.Desc,
+            ProjectId = projectId,
+            RuleId = filter.RuleId,
+            CommitId = filter.CommitId,
+            Name = filter.Name,
+            Severity = filter.Severity,
+            Status = filter.Status,
+            Scanner = filter.Scanner,
+            SortBy = filter.SortBy
+        }, CurrentUser());
     }
 
     public async Task<Page<ProjectPackage>> GetPackagesAsync(Guid projectId, ProjectPackageFilter filter)
@@ -301,7 +297,16 @@ public class ProjectService(
             Role = request.Role.ToString(),
             Username = user.UserName!,
         });
-        return mapper.Map<ProjectUser>(user);
+        return new ProjectUser
+        {
+            UserId = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            FullName = user.FullName,
+            Email = user.Email,
+            Avatar = user.Avatar,
+            Role = projectUser.Role,
+            CreatedAt = projectUser.CreatedAt
+        };
     }
 
     public async Task<ProjectUser> UpdateMemberAsync(Guid projectId, Guid userId, UpdateMemberRequest request)
@@ -315,9 +320,16 @@ public class ProjectService(
         projectUser.Role = request.Role;
         context.ProjectUsers.Update(projectUser);
         await context.SaveChangesAsync();
-        var result = mapper.Map<ProjectUser>(projectUser.User);
-        result.Role = projectUser.Role;
-        return result;
+        return new ProjectUser
+        {
+            UserId = projectUser.UserId,
+            UserName = projectUser.User!.UserName ?? string.Empty,
+            FullName = projectUser.User!.FullName,
+            Email = projectUser.User!.Email,
+            Avatar = projectUser.User!.Avatar,
+            Role = projectUser.Role,
+            CreatedAt = projectUser.CreatedAt
+        };
     }
 
     public async Task DeleteMemberAsync(Guid projectId, Guid userId)
@@ -443,6 +455,128 @@ public class ProjectService(
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
         await projectManager.UpdateMailSettingAsync(projectId, request);
+    }
+
+    public async Task<ExportModel> ExportAsync(ExportType type, Guid projectId, ProjectFindingFilter filter)
+    {
+        if (filter.CommitId == null)
+        {
+            throw new BadRequestException("Commit is required");
+        }
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
+        var query = context.Findings
+            .Include(finding => finding.Scanner)
+            .Include(finding => finding.Ticket)
+            .Where(finding => finding.ProjectId == projectId);
+        
+        query = query.Where(finding =>
+            context.ScanFindings.Any(record =>
+                record.FindingId == finding.Id &&
+                record.Scan!.CommitId == filter.CommitId
+            )
+        );
+
+        if (filter.Status is { Count: > 0 })
+        {
+            query = query.Where(finding => 
+                context.ScanFindings.Any(record => 
+                    record.FindingId == finding.Id && 
+                    filter.Status.Contains(record.Status)
+                )
+            );
+        }
+
+        if (filter.Scanner is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Scanner.Contains(finding.ScannerId));
+        }
+
+        if (filter.Severity is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Severity.Contains(finding.Severity));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(finding => finding.Name.Contains(filter.Name));
+        }
+        if (!string.IsNullOrEmpty(filter.RuleId))
+        {
+            query = query.Where(finding => finding.RuleId == filter.RuleId);
+        }
+        var result = await query.ToListAsync();
+        var findings = result.Select(finding => new FindingModel
+        {
+            Id = finding.Id,
+            Name = finding.Name,
+            Description = finding.Description,
+            Recommendation = finding.Recommendation,
+            Status = finding.Status,
+            Severity = finding.Severity,
+            Location = finding.Location,
+            Snippet = finding.Snippet,
+            StartLine = finding.StartLine,
+            EndLine = finding.EndLine,
+            Scanner = finding.Scanner!.Name,
+            Type = finding.Scanner!.Type,
+            TicketUrl = finding.Ticket?.Url,
+            TicketName = finding.Ticket?.Name
+        }).ToList();
+        var commit = await context.ProjectCommits.FirstAsync(commit => commit.Id == filter.CommitId &&  commit.ProjectId == projectId);
+        var scans = context.Scans.Include(scan => scan.Scanner)
+            .Where(scan => scan.ProjectId == project.Id && scan.CommitId == commit.Id).ToList();
+        var scanners = scans.Select(scan => scan.Scanner!)
+                .DistinctBy(scanner => scanner.Id)
+                .Where(scanner => filter.Scanner is { Count: > 0 } == false || filter.Scanner.Contains(scanner.Id))
+                .Select(scanner => new ScannerModel
+                {
+                    Name = scanner.Name,
+                    Type = scanner.Type
+                }).ToList();
+        //
+        findings = findings.FindAll(finding => finding.Status != FindingStatus.Incorrect);
+        findings.Sort((f1, f2) => f2.Severity - f1.Severity);
+        var model = new ReportModel
+        {
+            SourceType = project.SourceControl!.Type,
+            RepoName = project.Name,
+            RepoUrl = project.RepoUrl,
+            CommitTitle = commit.CommitTitle ?? string.Empty,
+            CommitSha = commit.CommitHash ?? string.Empty,
+            CommitBranch = commit.Branch,
+            TargetBranch = commit.TargetBranch,
+            MergeRequestId = commit.MergeRequestId,
+            Time = scans.First().StartedAt,
+            Scanners = scanners,
+            Findings = findings
+        };
+        
+        if (type == ExportType.Pdf)
+        {
+            return new ExportModel
+            {
+                FileName = $"{DateTime.Now:yyyy_MM_dd}_{project.Name}.pdf",
+                Data = reportManager.ExportPdf(model),
+                MineType = MediaTypeNames.Application.Pdf
+            };
+        }
+
+        if (type == ExportType.Excel)
+        {
+            return new ExportModel
+            {
+                FileName = $"{DateTime.Now:yyyy_MM_dd}_{project.Name}.xlsx",
+                Data = reportManager.ExportExcel(model),
+                MineType = MediaTypeNames.Application.Octet
+            };
+        }
+        return new ExportModel
+        {
+            FileName = $"{DateTime.Now:yyyy_MM_dd}_{project.Name}.json",
+            Data = reportManager.ExportJson(model),
+            MineType = MediaTypeNames.Application.Octet
+        };
     }
 
     protected override bool HasPermission(Projects entity, string action)

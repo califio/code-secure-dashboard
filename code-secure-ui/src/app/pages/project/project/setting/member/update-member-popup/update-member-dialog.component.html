@@ -1,0 +1,30 @@
+<p-dialog header="Edit Member" [modal]="true"
+          (visibleChange)="store.showUpdateMemberDialog.set(false)"
+          [visible]="store.showUpdateMemberDialog()">
+  <div class="flex flex-col gap-4 w-[320px] md:w-[480px]">
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1 w-full">
+        <span class="font-semibold">User</span>
+        <user-info [username]="store.member().userName"
+                   [avatar]="store.member().avatar"
+                   [fullName]="store.member().fullName"
+                   [email]="store.member().email">
+        </user-info>
+      </div>
+      <div class="flex flex-col gap-1 w-fit">
+        <div class="font-semibold">Role</div>
+        <p-select-button
+          [options]="roles"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="store.member().role"
+          (ngModelChange)="changeRoleUser($event)">
+        </p-select-button>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="onCancel()"/>
+      <p-button [loading]="loading" label="Save" (click)="onUpdateRole()"/>
+    </div>
+  </div>
+</p-dialog>

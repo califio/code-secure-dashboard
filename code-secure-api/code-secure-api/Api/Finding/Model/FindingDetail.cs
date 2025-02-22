@@ -8,6 +8,7 @@ public record FindingDetail
 {
     public required Guid Id { get; set; }
     public required string Identity { get; set; }
+    public required string? RuleId { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public string? Recommendation { get; set; }

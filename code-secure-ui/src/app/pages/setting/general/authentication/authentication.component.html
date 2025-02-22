@@ -1,25 +1,22 @@
-<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
+<div class="flex flex-col gap-4 w-full">
   <div class="flex flex-col gap-2 w-full">
     <div class="flex flex-row gap-2 w-full items-center">
       <div class="w-36 md:w-48">Auth Mode</div>
       <div class="w-full max-w-md">
-        <dropdown [options]="authOptions"
-                  [showLabel]="false"
-                  [(selected)]="authMode">
-        </dropdown>
+        <p-select [options]="authOptions" [(ngModel)]="authMode"></p-select>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <div class="w-36 md:w-48">Allow Register</div>
       <div class="w-full max-w-md">
-        <input type="checkbox" [formControl]="form.controls.allowRegister!">
+        <p-toggle-switch [formControl]="form.controls.allowRegister!"/>
       </div>
     </div>
-    @if(authMode != 'local'){
+    @if (authMode != 'local') {
       <div class="flex flex-row gap-2 w-full items-center">
         <div class="w-36 md:w-48">Disable Password Logon</div>
         <div class="w-full max-w-md">
-          <input type="checkbox" [formControl]="form.controls.disablePasswordLogon!">
+          <p-toggle-switch [formControl]="form.controls.disablePasswordLogon!"/>
         </div>
       </div>
     }
@@ -27,50 +24,38 @@
       <div class="flex flex-row gap-2 w-full items-center">
         <div class="w-36 md:w-48">Enable OIDC</div>
         <div class="w-full max-w-md">
-          <input type="checkbox" [formControl]="form.controls.openIdConnectSetting.controls.enable!">
+          <p-toggle-switch [formControl]="form.controls.openIdConnectSetting.controls.enable!"/>
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">
         <div class="w-36 md:w-48">OIDC Provider</div>
         <div class="w-full max-w-md">
-          <input type="text" class="w-full" [formControl]="form.controls.openIdConnectSetting.controls.displayName!">
+          <input pInputText class="w-full" [formControl]="form.controls.openIdConnectSetting.controls.displayName!">
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">
         <div class="w-36 md:w-48">OIDC Authority</div>
         <div class="w-full max-w-md">
-          <input type="text" class="w-full" [formControl]="form.controls.openIdConnectSetting.controls.authority!">
+          <input pInputText class="w-full" [formControl]="form.controls.openIdConnectSetting.controls.authority!">
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">
         <div class="w-36 md:w-48">OIDC Client ID</div>
         <div class="w-full max-w-md">
-          <input type="text" class="w-full" [formControl]="form.controls.openIdConnectSetting.controls.clientId!">
+          <input pInputText class="w-full" [formControl]="form.controls.openIdConnectSetting.controls.clientId!">
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">
         <div class="w-36 md:w-48">OIDC Client Secret</div>
         <div class="w-full max-w-md">
-          <div class="relative w-full">
-            <input
-              [type]="secretTextType ? 'text' : 'password'"
-              [formControl]="form.controls.openIdConnectSetting.controls.clientSecret!"
-              id="password"
-              class="peer block w-full"
-              placeholder=" "/>
-            <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground" (click)="secretTextType = !secretTextType">
-                  <ng-icon [name]="secretTextType ? 'eye' : 'eyeSlash'"></ng-icon>
-                </span>
-          </div>
+          <p-password [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full"
+                      [formControl]="form.controls.openIdConnectSetting.controls.clientSecret!"></p-password>
         </div>
       </div>
     }
   </div>
-  <button app-button
-          [loading]="form.disabled"
-          [disabled]="form.disabled"
-          type="primary"
-          class="w-fit"
-          (click)="saveConfig()">Update
-  </button>
+  <p-button severity="primary" label="Update"
+            [loading]="form.disabled"
+            [disabled]="form.disabled"
+            (click)="saveConfig()"/>
 </div>

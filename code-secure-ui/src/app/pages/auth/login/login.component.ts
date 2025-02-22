@@ -1,19 +1,23 @@
 import {Component, OnInit} from '@angular/core';
-import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from "../../../core/forms";
 import {NgIcon} from '@ng-icons/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {NgClass} from '@angular/common';
 import {AuthRequest} from '../../../api/models/auth-request';
 import {AuthService} from '../../../api/services/auth.service';
 import {finalize} from 'rxjs';
 import {AuthStore} from '../../../core/auth/auth.store';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {environment} from '../../../../environments/environment';
 import {AuthResponse} from '../../../api/models/auth-response';
 import {bindQueryParams} from '../../../core/router';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../shared/services/toastr.service';
 import {AuthConfig} from '../../../api/models/auth-config';
+import {AppFloatingConfigurator} from '../../../layout/component/app.floatingconfigurator';
+import {InputText} from 'primeng/inputtext';
+import {Password} from 'primeng/password';
+import {Checkbox} from 'primeng/checkbox';
+import {ButtonDirective} from 'primeng/button';
+import {Divider} from 'primeng/divider';
 
 @Component({
   selector: 'app-login',
@@ -22,11 +26,15 @@ import {AuthConfig} from '../../../api/models/auth-config';
     ReactiveFormsModule,
     NgIcon,
     RouterLink,
-    NgClass,
+    AppFloatingConfigurator,
+    InputText,
+    Password,
+    Checkbox,
+    Divider,
+    FormsModule,
     ButtonDirective
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   formConfig = new FormSection<ConfigOf<AuthRequest>>({
@@ -34,8 +42,6 @@ export class LoginComponent implements OnInit {
     userName: new FormField('', Validators.required),
   });
   form: FormGroup<ControlsOf<AuthRequest>>;
-  submitted = false;
-  passwordTextType = false;
   authResponse: AuthResponse = {
     accessToken: null,
     refreshToken: null,
@@ -43,6 +49,7 @@ export class LoginComponent implements OnInit {
     requireTwoFactor: null,
   }
   authConfig: AuthConfig = {};
+
   constructor(
     private formService: FormService,
     private authService: AuthService,
@@ -60,8 +67,11 @@ export class LoginComponent implements OnInit {
     const oidc = params['oidc'];
     if (oidc) {
       bindQueryParams(params, this.authResponse);
-      if (params['message']){
-        this.toastr.warning(params['message'], 0);
+      if (params['message']) {
+        this.toastr.error({
+          message: params['message'],
+          duration: 50000
+        });
       }
       if (this.authResponse.accessToken && this.authResponse.refreshToken) {
         this.authStore.accessToken = this.authResponse.accessToken;
@@ -81,7 +91,9 @@ export class LoginComponent implements OnInit {
 
   onPasswordSignIn() {
     if (this.authConfig.disablePasswordLogon) {
-      this.toastr.warning('The administrator disabled password logon');
+      this.toastr.warning({
+        message: 'The administrator disabled password logon'
+      });
       return;
     }
     if (this.form.invalid || this.form.disabled) {

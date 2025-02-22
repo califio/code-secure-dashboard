@@ -1,0 +1,14 @@
+<p-float-label variant="on">
+  <p-multi-select
+    class="min-w-28"
+    [filter]="false"
+    (onChange)="onChangeSeverity($event)"
+    optionValue="value"
+    optionLabel="label"
+    id="on_severity"
+    [ngModel]="severity()"
+    [options]="options"
+    [maxSelectedLabels]="1">
+  </p-multi-select>
+  <label for="on_severity">Severity</label>
+</p-float-label>

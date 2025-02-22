@@ -12,6 +12,8 @@ export { OpenIdConnectService } from './services/open-id-connect.service';
 export { ProfileService } from './services/profile.service';
 export { ProjectService } from './services/project.service';
 export { RoleService } from './services/role.service';
+export { RuleService } from './services/rule.service';
+export { ScannerService } from './services/scanner.service';
 export { SettingService } from './services/setting.service';
 export { TokenService } from './services/token.service';
 export { UserService } from './services/user.service';

@@ -1,11 +1,11 @@
 import {Routes} from '@angular/router';
-import {ListComponent} from './list/list.component';
+import {ListProjectComponent} from './list-project/list-project.component';
 import {ProjectComponent} from './project/project.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: ListComponent,
+    component: ListProjectComponent,
   },
   {
     path: ':projectId',

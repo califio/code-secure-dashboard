@@ -1,91 +1,67 @@
-<div class="mx-auto flex flex-col text-sm">
-  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">Security Threshold</div>
-  <div class="flex flex-col rounded-xl border border-border bg-background gap-4 p-4">
-    <div class="flex flex-wrap gap-8 w-full">
-      <div class="flex flex-col gap-2">
+<div class="mx-auto flex flex-col" style="height: calc(100vh - 19.5rem)">
+  <div class="font-semibold mb-2 text-xl">Security Threshold</div>
+  <div class="flex flex-col gap-4">
+    <p-panel class="col-span-12">
+      <ng-template #header>
         <div class="text-xl">Static Application Security Testing (SAST)</div>
-        <div class="flex flex-col gap-1">
-          <table class="border-none w-fit">
-            <tr>
-              <td class="uppercase">MODE</td>
-              <td class="px-4">
-                <dropdown [options]="thresholdModeOptions"
-                          [selected]="sastForm.controls.mode!.value"
-                          [showLabel]="false"
-                          (selectedChange)="changeSastMode($event)">
-                </dropdown>
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">Critical</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.critical!">
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">High</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.high!">
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">MEDIUM</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.medium!">
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">LOW</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="sastForm.controls.low!">
-              </td>
-            </tr>
-          </table>
-        </div>
-        <button app-button type="primary" class="w-fit" (click)="updateSastSetting()">Update</button>
-      </div>
+      </ng-template>
       <div class="flex flex-col gap-2">
-        <div class="text-xl">Software Composition Analysis (SCA)</div>
-        <div class="flex flex-col gap-1">
-          <table class="border-none w-fit">
-            <tr>
-              <td class="uppercase">MODE</td>
-              <td class="px-4">
-                <dropdown [options]="thresholdModeOptions"
-                          [selected]="scaForm.controls.mode!.value"
-                          [showLabel]="false"
-                          (selectedChange)="changeScaMode($event)">
-                </dropdown>
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">Critical</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.critical!">
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">High</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.high!">
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">MEDIUM</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.medium!">
-              </td>
-            </tr>
-            <tr>
-              <td class="uppercase">LOW</td>
-              <td class="px-4">
-                <input type="number" class="max-w-20" min="0" [formControl]="scaForm.controls.low!">
-              </td>
-            </tr>
-          </table>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">MODE</div>
+          <p-select-button [options]="thresholdModeOptions"
+                           optionValue="value"
+                           optionLabel="label"
+                           [formControl]="sastForm.controls.mode!"></p-select-button>
         </div>
-        <button app-button type="primary" class="w-fit" (click)="updateScaSetting()">Update</button>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">CRITICAL</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="sastForm.controls.critical!"></p-input-number>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">HIGH</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="sastForm.controls.high!"></p-input-number>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">MEDIUM</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="sastForm.controls.medium!"/>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">LOW</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="sastForm.controls.low!"/>
+        </div>
+        <p-button severity="primary" label="Update" (onClick)="updateSastSetting()"/>
       </div>
-    </div>
+    </p-panel>
+    <p-panel class="col-span-12 pb-4">
+      <ng-template #header>
+        <div class="text-xl">Software Composition Analysis (SCA)</div>
+      </ng-template>
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">MODE</div>
+          <p-select-button [options]="thresholdModeOptions"
+                           optionValue="value"
+                           optionLabel="label"
+                           [formControl]="scaForm.controls.mode!"></p-select-button>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">CRITICAL</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="scaForm.controls.critical!"/>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">HIGH</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="scaForm.controls.high!"/>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">MEDIUM</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="scaForm.controls.medium!"/>
+        </div>
+        <div class="flex flex-row items-center gap-4">
+          <div class="w-28">LOW</div>
+          <p-input-number inputId="integeronly" min="0" [formControl]="scaForm.controls.low!"/>
+        </div>
+        <p-button severity="primary" label="Update" (onClick)="updateScaSetting()"/>
+      </div>
+    </p-panel>
   </div>
 </div>

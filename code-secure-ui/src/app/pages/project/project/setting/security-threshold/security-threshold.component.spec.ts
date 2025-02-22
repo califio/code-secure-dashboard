@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SecurityThresholdComponent } from './security-threshold.component';
+import {SecurityThresholdComponent} from './security-threshold.component';
 
 describe('SecurityThresholdComponent', () => {
   let component: SecurityThresholdComponent;
@@ -10,7 +10,7 @@ describe('SecurityThresholdComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SecurityThresholdComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(SecurityThresholdComponent);
     component = fixture.componentInstance;

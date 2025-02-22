@@ -32,12 +32,12 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
             ],
-            "scripts": [],
-            "allowedCommonJsDependencies": [
-              "apexcharts"
-            ]
+            "scripts": [
+
+            ],
+            "allowedCommonJsDependencies": []
           },
           "configurations": {
             "production": {

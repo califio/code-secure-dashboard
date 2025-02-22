@@ -12,26 +12,22 @@ import {FindingDetail} from '../../../api/models/finding-detail';
     FindingDetailComponent
   ],
   templateUrl: './finding.component.html',
-  styleUrl: './finding.component.scss'
 })
-export class FindingComponent implements OnInit, OnDestroy {
+export class FindingComponent implements OnDestroy {
   finding: FindingDetail = {};
+
   constructor(
     private findingService: FindingService
   ) {
     getPathParam("id").pipe(
       filter(value => value != null),
       switchMap(findingId => {
-        return findingService.getFinding({id: findingId})
+        return this.findingService.getFinding({id: findingId})
       }),
       takeUntil(this.destroy$)
     ).subscribe(finding => {
       this.finding = finding;
-    })
-  }
-
-  ngOnInit(): void {
-
+    });
   }
 
   private destroy$ = new Subject();

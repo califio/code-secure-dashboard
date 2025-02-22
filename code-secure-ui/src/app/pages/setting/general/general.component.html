@@ -1,84 +1,58 @@
-<div class="mx-auto px-1 md:px-6 flex flex-col pt-6 text-sm">
-  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">General Setting</div>
-  <div class="flex flex-col rounded-xl border border-border bg-background gap-4 p-1 md:p-4 w-full">
-    <div class="overflow-x-auto">
-      <div class="flex flex-col gap-4 w-full">
-        <div class="flex flex-col border-b border-border p-2 gap-2">
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <div class="flex flex-row gap-2 items-center">
-                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
-                  <ng-icon name="heroEnvelope" size="28"/>
-                </div>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">Email</div>
-                  </div>
-                  <div class="hidden md:block">Setting the credential and parameters to enable an application to send emails.</div>
-                </div>
-              </div>
+<div class="flex flex-col">
+  <h5>General Setting</h5>
+  <div class="flex flex-col gap-4">
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2 cursor-pointer">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="heroEnvelope" size="28"/>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Email</div>
             </div>
-            <div class="w-fit">
-              <button app-button type="default" class="w-fit" (click)="config.mail = !config.mail">
-                Configure
-              </button>
+            <div class="hidden md:block">Setting the credential and parameters to enable an application to send
+              emails.
             </div>
           </div>
-          @if (config.mail) {
-            <app-mail-setting class="ml-6 md:ml-12"></app-mail-setting>
-          }
         </div>
-        <div class="flex flex-col border-b border-border p-2 gap-2">
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <div class="flex flex-row gap-2 items-center">
-                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
-                  <ng-icon name="heroKey" size="28"/>
-                </div>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">Authentication</div>
-                  </div>
-                  <div class="hidden md:block">Setting the authentication method.</div>
-                </div>
-              </div>
+      </ng-template>
+      <app-mail-setting></app-mail-setting>
+    </p-panel>
+
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2 cursor-pointer">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="heroKey" size="28"/>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Authentication</div>
             </div>
-            <div class="w-fit">
-              <button app-button type="default" class="w-fit" (click)="config.auth = !config.auth">
-                Configure
-              </button>
+            <div class="hidden md:block">Setting the authentication method.</div>
+          </div>
+        </div>
+      </ng-template>
+      <app-authentication></app-authentication>
+    </p-panel>
+
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2 cursor-pointer">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="heroScale" size="28"/>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Service Level Agreement (SLA)</div>
+            </div>
+            <div class="hidden md:block">Define timeframe for your development and IT teams to resolve the finding.
             </div>
           </div>
-          @if (config.auth) {
-            <app-authentication class="ml-6 md:ml-12"></app-authentication>
-          }
         </div>
-        <div class="flex flex-col border-b border-border p-2 gap-2">
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <div class="flex flex-row gap-2 items-center">
-                <div class="flex flex-row border border-border w-10 h-10 rounded items-center justify-center">
-                  <ng-icon name="heroScale" size="28"/>
-                </div>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">Service Level Agreement (SLA)</div>
-                  </div>
-                  <div class="hidden md:block">Define timeframe for your development and IT teams to resolve the finding.</div>
-                </div>
-              </div>
-            </div>
-            <div class="w-fit">
-              <button app-button type="default" class="w-fit" (click)="config.sla = !config.sla">
-                Configure
-              </button>
-            </div>
-          </div>
-          @if (config.sla) {
-            <app-sla class="ml-6 md:ml-12"></app-sla>
-          }
-        </div>
-      </div>
-    </div>
+      </ng-template>
+      <app-sla></app-sla>
+    </p-panel>
   </div>
 </div>

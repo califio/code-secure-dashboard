@@ -1,54 +1,43 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {UserStore} from '../user.store';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
-import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
 import {UserService} from '../../../api/services/user.service';
 import {CreateUserRequest} from '../../../api/models/create-user-request';
-import {RoleService} from '../../../api/services/role.service';
 import {FormsModule} from '@angular/forms';
 import {finalize} from 'rxjs';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../shared/services/toastr.service';
+import {Select} from 'primeng/select';
+import {Button} from 'primeng/button';
+import {Dialog} from "primeng/dialog";
+import {InputText} from 'primeng/inputtext';
 
 @Component({
   selector: 'app-add-user-popup',
   standalone: true,
   imports: [
-    ButtonDirective,
-    DropdownComponent,
     FormsModule,
+    Select,
+    Button,
+    Dialog,
+    InputText,
   ],
   templateUrl: './add-user-popup.component.html',
-  styleUrl: './add-user-popup.component.scss'
 })
-export class AddUserPopupComponent implements OnInit {
+export class AddUserPopupComponent {
   loading = false;
-  roleOptions: DropdownItem[] = [];
   request: CreateUserRequest = {
-    role: '', email: ''
+    role: 'User', email: ''
   }
+
   constructor(
-    public userStore: UserStore,
+    public store: UserStore,
     private userService: UserService,
-    private roleService: RoleService,
     private toastr: ToastrService
   ) {
   }
 
-  ngOnInit(): void {
-    this.roleService.getRoles().subscribe(roles => {
-      this.roleOptions = this.roleOptions = roles.map(role => <DropdownItem>{
-        value: role.name,
-        label: role.name
-      });
-      if (roles.length > 0) {
-        this.request.role = roles[0].name!;
-      }
-    })
-  }
 
-  onCancel() {
-    this.userStore.showAddUserPopup.set(false);
+  closeDialog() {
+    this.store.showAddUserDialog = false;
     this.resetBody();
   }
 
@@ -59,22 +48,19 @@ export class AddUserPopupComponent implements OnInit {
     }).pipe(
       finalize(() => this.loading = false)
     ).subscribe(user => {
-      const  users = this.userStore.users();
+      const users = this.store.users();
       users.push(user);
-      this.userStore.users.set(users);
-      this.toastr.success('Add user success!');
-      this.userStore.showAddUserPopup.set(false);
-      this.resetBody();
+      this.store.users.set(users);
+      this.toastr.success({
+        message: 'Add user success!'
+      });
+      this.closeDialog();
     })
-  }
-
-  onRoleChange(role: any) {
-    this.request.role = role;
   }
 
   private resetBody() {
     this.request = {
-      role: '', email: ''
+      role: 'User', email: ''
     };
   }
 }

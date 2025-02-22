@@ -1,0 +1,18 @@
+<p-float-label variant="on">
+  <p-multi-select
+    class="min-w-28"
+    (onChange)="onChangeScanners($event)"
+    id="on_scanner"
+    optionLabel="name" optionValue="id"
+    [ngModel]="selected()"
+    [options]="scanners()"
+    [maxSelectedLabels]="1">
+    <ng-template #item let-option>
+      <scanner-label
+        [scanner]="option.name"
+        [type]="option.type">
+      </scanner-label>
+    </ng-template>
+  </p-multi-select>
+  <label for="on_scanner">Scanner</label>
+</p-float-label>

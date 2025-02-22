@@ -1,88 +1,75 @@
-<div class="mx-auto px-2 lg:px-6 flex flex-row pt-6 text-sm gap-4 w-full">
+<div class="flex flex-row w-full gap-4" style="height: calc(100vh - 15rem)">
   <div class="flex flex-col w-full">
-    <div class="flex flex-wrap w-full p-4 gap-2 items-center justify-between border-border border bg-background">
-      <div class="flex flex-row items-center gap-2">
+    <div class="flex flex-wrap p-4 gap-2 items-center justify-between border border-surface">
+      <div class="flex flex-row items-center gap-2 w-full">
         <!--SEARCH-->
-        <div class="flex w-full md:max-w-80">
-          <label class="relative text-muted-foreground w-full">
-            <div class="absolute left-2.5 top-2.5">
-              <ng-icon name="heroMagnifyingGlass"></ng-icon>
-            </div>
-            <input class="py-2 pl-8 pr-2"
-                   placeholder="Search..." type="text"
-                   [(ngModel)]="store.filter.name"
-                   (keyup.enter)="onSearchChange()"/>
-          </label>
-        </div>
-        <div class="flex flex-row gap-2 items-center">
-          <dropdown [options]="sortOptions"
-                     [showSearch]="false"
-                     [selected]="store.filter.sortBy"
-                     (selectedChange)="onSortChange($event)">
-            <div dropdown-label class="font-semibold">Sort By</div>
-          </dropdown>
-          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
-                   (click)="onOrderChange()"></ng-icon>
-        </div>
-        <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
-             (click)="onReload()">
-          <ng-icon name="arrowPath"></ng-icon>
-        </div>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search"/>
+          <input type="text"
+                 pInputText placeholder="Search..."
+                 [(ngModel)]="store.filter.name"
+                 (keyup.enter)="onSearchChange()"/>
+        </p-iconfield>
+        <sort-by [options]="sortOptions"
+                 [sortBy]="store.filter.sortBy"
+                 (onChange)="onSortChange($event)"/>
+        <p-button severity="secondary" icon="pi pi-sync" [loading]="store.loading()" (onClick)="onReload()"/>
       </div>
     </div>
-    <table class="table w-full table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
-      @if(!store.loading()) {
-        <tbody>
-          @for (dependency of store.dependencies(); track $index) {
-            <div class="flex flex-row items-center gap-3 p-4 bg-background border-b border-border hover:bg-card">
-              <risk-level-icon [risk]="dependency.riskLevel"
-                               [impact]="dependency.riskImpact"
-                               class="text-xl"></risk-level-icon>
-              <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency.id)">
-                <div class="flex flex-col gap-1 w-full">
-                  <div class="flex flex-row items-center gap-2">
-                    <div class="font-semibold">
-                      {{ getNameDependency(dependency)  }}
+    <p-table [loading]="store.loading()" [value]="store.dependencies()" [scrollable]="true"
+             class="w-full overflow-y-auto">
+      <ng-template #body let-dependency>
+        <div
+          class="flex flex-row items-center gap-3 p-4 border-b border-surface hover:bg-surface-100 dark:hover:bg-surface-800">
+          <risk-level-icon [risk]="dependency.riskLevel"
+                           [impact]="dependency.riskImpact"
+                           class="text-xl"></risk-level-icon>
+          <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency)">
+            <div class="flex flex-col gap-1 w-full">
+              <div class="flex flex-row items-center gap-2">
+                <div>
+                  {{ getNameDependency(dependency) }}
+                </div>
+                <ng-icon [name]="dependency.type ?? 'unknown'"
+                         size="18"
+                         [pTooltip]="dependency.type"></ng-icon>
+              </div>
+              <div class="flex flex-row items-center justify-between w-full">
+                <div class="flex flex-row items-center gap-1">
+                  <span class="text-sm">{{ dependency.location }}</span>
+                </div>
+                <div class="flex flex-row items-center gap-2">
+                  @if (dependency.fixedVersion) {
+                    <span class="lowercase">fixed version</span>
+                    <div
+                      class="text-xs border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+                      {{ dependency.fixedVersion }}
                     </div>
-                    <ng-icon [name]="dependency.type ?? 'unknown'"
-                             size="18"
-                             [tooltip]="dependency.type"></ng-icon>
-                  </div>
-                  <div class="flex flex-row items-center justify-between w-full">
-                    <div class="flex flex-row items-center gap-1">
-                      <span>{{dependency.location}}</span>
-                    </div>
-                    <div class="flex flex-row items-center gap-2">
-                      @if(dependency.fixedVersion) {
-                        <span class="lowercase">fixed version</span>
-                        <div class="text-xs border border-border px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
-                          {{dependency.fixedVersion}}
-                        </div>
-                      }
-                    </div>
-                  </div>
+                  }
                 </div>
               </div>
             </div>
-          }
-        </tbody>
-      }
-    </table>
-    @if(store.loading()) {
-      <loading-table></loading-table>
-    }
-    <pagination class="sticky bottom-0"
-                (pageChange)="onPageChange($event)"
-                [currentPage]="store.currentPage()"
-                [totalPage]="store.totalPage()">
-    </pagination>
+          </div>
+        </div>
+      </ng-template>
+    </p-table>
+    <div class="flex flex-row justify-end">
+      <p-paginator class="sticky bottom-0"
+                   (onPageChange)="onPageChange($event)"
+                   [first]="store.firstRecord()"
+                   [rows]="store.pageSize()"
+                   [totalRecords]="store.totalRecords()"
+                   [showCurrentPageReport]="isDesktop"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                   [rowsPerPageOptions]="[10, 20, 50, 100]"/>
+    </div>
   </div>
-  <div class="hidden lg:block w-[800px] overflow-x-auto">
-    @if(dependency) {
+  <div class="hidden lg:block w-720px w-full h-full overflow-y-auto">
+    @if (store.dependency() != null) {
       <coming-soon></coming-soon>
     } @else {
-      <div class="flex flex-col items-center justify-center h-[720px] w-full">
-        @if (loadingDependency) {
+      <div class="flex flex-col items-center justify-center h-full w-full">
+        @if (store.loadingDependency()) {
           <ng-icon name="spin" class="animate-spin" size="24"></ng-icon>
         } @else {
           <ng-icon name="cursorArrowRays" size="24"></ng-icon>

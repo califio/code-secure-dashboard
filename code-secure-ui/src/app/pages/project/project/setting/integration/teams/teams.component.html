@@ -1,51 +1,53 @@
-<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
-  <div class="flex flex-col gap-2 w-full">
+<div class="flex flex-col">
+  <form class="flex flex-col gap-2 w-full" [formGroup]="form">
     <div class="flex flex-row gap-2 w-full items-center">
-      <span class="w-36 md:w-48">Enable</span>
+      <span class="w-24 md:w-48">Enable</span>
       <div class="w-full max-w-md">
-        <input type="checkbox" [formControl]="form.controls.active!">
+        <p-toggleswitch [formControl]="form.controls.active!"/>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
-      <span class="w-36 md:w-48">Webhook</span>
+      <span class="w-24 md:w-48">Webhook</span>
       <div class="w-full max-w-md">
-        <input type="text" class="w-full" [formControl]="form.controls.webhook!">
+        <input pInputText class="w-full" [formControl]="form.controls.webhook!">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full">
-      <span class="w-36 md:w-48">Event</span>
+      <span class="w-24 md:w-48">Event</span>
       <div class="flex flex-col gap-1">
         <div class="flex flex-row gap-2 items-center">
-          <input type="checkbox" [formControl]="form.controls.scanCompletedEvent!">
+          <p-toggleswitch [formControl]="form.controls.scanCompletedEvent!"/>
           <label>Scan Completed</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <input type="checkbox" [formControl]="form.controls.scanFailedEvent!">
+          <p-toggleswitch [formControl]="form.controls.scanFailedEvent!"/>
           <label>Scan Failed</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <input type="checkbox" [formControl]="form.controls.securityAlertEvent!">
+          <p-toggleswitch [formControl]="form.controls.securityAlertEvent!"/>
           <label>Security Alert</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <input type="checkbox" [formControl]="form.controls.newFindingEvent!">
+          <p-toggleswitch [formControl]="form.controls.newFindingEvent!"/>
           <label>New Finding</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <input type="checkbox" [formControl]="form.controls.fixedFindingEvent!">
+          <p-toggleswitch [formControl]="form.controls.fixedFindingEvent!"/>
           <label>Fixed Finding</label>
         </div>
       </div>
     </div>
-  </div>
+  </form>
   <div class="flex flex-row gap-2 items-center">
-    <button app-button type="primary" class="w-fit"
+    <button pButton severity="primary"
             [loading]="form.disabled"
             [disabled]="form.disabled"
-            (click)="saveConfig()">Update</button>
-    <button app-button type="primary" class="w-fit"
+            (click)="saveConfig()">Update
+    </button>
+    <button pButton severity="secondary"
             [loading]="loadingTest"
             [disabled]="loadingTest"
-            (click)="testAlert()">Test Alert</button>
+            (click)="testAlert()">Test Alert
+    </button>
   </div>
 </div>

@@ -1,106 +1,130 @@
-<div class="mx-auto px-2 lg:px-6 flex flex-row pt-6 text-sm gap-4 w-full">
-  <div class="flex flex-col w-full">
-    <div class="flex flex-wrap w-full p-4 gap-2 items-center justify-between border border-border bg-background">
-      <div class="flex flex-row items-center gap-2">
-        <!--SEARCH-->
-        <div class="flex w-full md:max-w-80 text-xs">
-          <label class="relative text-muted-foreground w-full">
-            <div class="absolute left-2.5 top-2.5">
-              <ng-icon name="heroMagnifyingGlass"></ng-icon>
-            </div>
-            <input class="py-2 pl-8 pr-2"
-                   placeholder="Search..." type="text"
-                   [(ngModel)]="store.filter.name"
-                   (keyup.enter)="onSearchChange()"/>
-          </label>
-        </div>
-        <!--Branch Filter-->
-        <dropdown [showSearch]="true"
-                  [showMaxOption]="1"
-                  [options]="store.commits()"
-                  [selected]="store.filter.commitId"
-                  (selectedChange)="onSelectScan($event)"
-                  [optionTemplate]="optionBranchTemplate">
-          <span class="font-semibold" dropdown-label>Branch</span>
-        </dropdown>
-        <ng-template #optionBranchTemplate let-option>
-          <scan-branch [action]="option.action"
-                       [branch]="option.branch"
-                       [targetBranch]="option.targetBranch"></scan-branch>
-        </ng-template>
-        <!--Status Filter-->
-        <dropdown [showSearch]="false"
-                  [showMaxOption]="1"
-                  [options]="statusOptions"
-                  mode="multiple"
-                  [selected]="store.filter.status"
-                  (selectedChange)="onStatusChange($event)"
-                  [optionTemplate]="optionStatusTemplate">
-          <span class="font-semibold" dropdown-label>Status</span>
-        </dropdown>
-        <ng-template #optionStatusTemplate let-option>
-          <finding-status-label
-            [status]="option.value"
-            [defaultLabel]="option.label">
-          </finding-status-label>
-        </ng-template>
-        <!--Scanner Filter-->
-        <dropdown [showSearch]="false"
-                  [showMaxOption]="1"
-                  [options]="store.scanners()"
-                  mode="multiple"
-                  [selected]="store.filter.scanner"
-                  (selectedChange)="onChangeScanner($event)"
-                  [optionTemplate]="optionScannerTemplate">
-          <span class="font-semibold" dropdown-label>Scanner</span>
-        </dropdown>
-        <ng-template #optionScannerTemplate let-option>
-          <scanner-label
-            [scanner]="option.name"
-            [type]="option.type">
-          </scanner-label>
-        </ng-template>
-        <div class="flex flex-row gap-2 items-center">
-          <dropdown [options]="sortOptions"
-                    [showSearch]="false"
-                    [selected]="store.filter.sortBy"
-                    (selectedChange)="onSortChange($event)">
-            <div dropdown-label class="font-semibold">Sort By</div>
-          </dropdown>
-          <ng-icon [name]="store.filter.desc ? 'desc' : 'asc'" class="cursor-pointer" size="16"
-                   (click)="onOrderChange()"></ng-icon>
-        </div>
-      </div>
-      <div class="flex flex-row items-center gap-2">
-        <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
-             (click)="onReload()">
-          <ng-icon name="arrowPath"></ng-icon>
-        </div>
-        <finding-status [fixedLabel]="'Mark as'" (statusChange)="onMarkAs($event)"></finding-status>
-      </div>
+<div class="flex flex-row w-full gap-4" style="height: calc(100vh - 15rem)">
+  <div class="flex flex-col">
+    <div class="flex flex-wrap p-4 gap-2 items-center border border-surface">
+      <!--SEARCH-->
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search"/>
+        <input type="text"
+               pInputText placeholder="Search..."
+               [(ngModel)]="store.filter.name"
+               (keyup.enter)="onSearchChange()"/>
+      </p-iconfield>
+      <!--Branch Filter-->
+      <p-float-label variant="on">
+        <p-select
+          showClear
+          [ngModel]="store.filter.commitId"
+          inputId="on_branch"
+          optionValue="commitId"
+          (ngModelChange)="onSelectScan($event)"
+          class="min-w-28"
+          [options]="store.commits()">
+          <ng-template #selectedItem let-option>
+            <scan-branch-label [action]="option.action"
+                               [branch]="option.branch"
+                               [targetBranch]="option.targetBranch"></scan-branch-label>
+          </ng-template>
+          <ng-template let-option #item>
+            <scan-branch-label [action]="option.action"
+                               [branch]="option.branch"
+                               [targetBranch]="option.targetBranch"></scan-branch-label>
+          </ng-template>
+        </p-select>
+        <label for="on_branch">Branch</label>
+      </p-float-label>
+      <!--Rule Filter-->
+      <finding-rule-filter [options]="store.rules()"
+                           [rule]="store.filter.ruleId"
+                           (onChange)="onChangeRule($event)"/>
+      <!--Status Filter-->
+      <finding-status-filter [status]="store.filter.status"
+                             (statusChange)="onChangeStatus($event)"/>
+      <!--Severity Filter-->
+      <finding-severity-filter [severity]="store.filter.severity"
+                               (onChange)="onChangeSeverity($event)"/>
+      <!--Scanner Filter-->
+      <finding-scanner-filter [selected]="store.filter.scanner"
+                              [scanners]="store.scanners()"
+                              (onChange)="onChangeScanners($event)"/>
+      <!--Sort By-->
+      <sort-by [sortBy]="store.filter.sortBy"
+               [options]="store.sortOptions"
+               (onChange)="onSortChange($event)"/>
+      <p-button severity="secondary" icon="pi pi-sync" pTooltip="reload" tooltipPosition="top"
+                (click)="onReload()" [loading]="store.loading()"/>
+      <!--Mark As-->
+      <finding-status-menu [badge]="selectedFindings.size" (onSelect)="onMarkAs($event)"/>
+      <finding-export-menu [loading]="store.loadingExport()" (onSelect)="onExport($event)"></finding-export-menu>
     </div>
-    <list-finding class="w-full max-h-screen overflow-y-auto"
-                  [loading]="store.loading()"
-                  [findings]="store.findings()"
-                  (selectFindings)="selectFindingsChange($event)"
-                  (openFinding)="onOpenFinding($event)">
-    </list-finding>
-    <pagination class="sticky bottom-0"
-                (pageChange)="onPageChange($event)"
-                [currentPage]="store.currentPage()"
-                [totalPage]="store.totalPage()">
-    </pagination>
+    <!--LIST FINDING-->
+    <p-table [loading]="store.loading()" [value]="store.findings()" [scrollable]="true"
+             class="w-full overflow-y-auto">
+      <ng-template #header>
+        <tr class="text-sm">
+          <th class="w-[50px] min-w-[50px] text-center">
+            <p-checkbox binary (onChange)="onSelectAllChange($event)"></p-checkbox>
+          </th>
+          <th>
+            <div class="flex flex-row items-center gap-1">
+              <span>SUMMARY</span>
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-finding>
+        <tr>
+          <td class="text-center">
+            <p-checkbox binary (onChange)="onSelectFinding(finding.id, $event)"
+                        [ngModel]="selectedFindings.has(finding.id)"></p-checkbox>
+          </td>
+          <td>
+            <div class="flex flex-col gap-1 w-full cursor-pointer" (click)="onOpenFinding(finding.id)">
+              <div>
+                {{ finding.name }}
+              </div>
+              <div class="flex flex-row items-center justify-between w-full">
+                <div class="flex flex-row items-center gap-2">
+                  <finding-severity [severity]="finding.severity!"></finding-severity>
+                  <finding-status-label
+                    class="border border-surface rounded w-fit px-3 py-1"
+                    [status]="finding.status">
+                  </finding-status-label>
+                </div>
+                <div class="flex flex-row items-center gap-2">
+                  <div class="flex flex-row items-center gap-1 text-[#00c869]">
+                    <div
+                      class="text-xs border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+                      {{ finding.scanner }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <div class="flex flex-row justify-end">
+      <p-paginator class="sticky bottom-0"
+                   (onPageChange)="onPageChange($event)"
+                   [first]="store.firstRecord()"
+                   [rows]="store.filter.size"
+                   [totalRecords]="store.totalRecords()"
+                   [showCurrentPageReport]="isDesktop"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                   [rowsPerPageOptions]="[10, 20, 50, 100]"/>
+    </div>
   </div>
-  <div class="hidden lg:block w-[800px] overflow-x-auto">
-    @if (finding != null) {
+  <div class="hidden lg:block w-[720px] h-full overflow-y-auto">
+    @if (store.finding() != null) {
       <finding-detail
         [isProjectPage]="true"
         (close)="closeFinding()"
-        [finding]="finding">
+        [finding]="store.finding()!">
       </finding-detail>
     } @else {
-      <div class="flex flex-col items-center justify-center h-[720px] w-full">
-        @if (loadingFinding) {
+      <div class="flex flex-col items-center justify-center h-full w-full">
+        @if (store.loadingFinding()) {
           <ng-icon name="spin" class="animate-spin" size="24"></ng-icon>
         } @else {
           <ng-icon name="cursorArrowRays" size="24"></ng-icon>

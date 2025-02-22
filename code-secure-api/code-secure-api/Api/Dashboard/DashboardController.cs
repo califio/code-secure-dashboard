@@ -10,8 +10,6 @@ public class DashboardController(IDashboardService dashboardService) : BaseContr
     [Route("sast")]
     public async Task<SastStatistic> SastStatistic(DateTime? from = null, DateTime? to = null)
     {
-        Console.WriteLine(from);
-        Console.WriteLine(to);
         return await dashboardService.SastStatisticAsync(from, to);
     }
 

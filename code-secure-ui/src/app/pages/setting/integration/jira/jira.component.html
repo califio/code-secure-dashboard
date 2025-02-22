@@ -1,61 +1,53 @@
-<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
+<div class="flex flex-col gap-4 w-full">
   <div class="flex flex-col gap-2 w-full">
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Enable</span>
       <div class="w-full max-w-md">
-        <input type="checkbox" [formControl]="form.controls.active!">
+        <p-toggle-switch [formControl]="form.controls.active!"></p-toggle-switch>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Jira URL</span>
       <div class="w-full max-w-md">
-        <input type="text" class="w-full" [formControl]="form.controls.webUrl!">
+        <input pInputText type="text" class="w-full" [formControl]="form.controls.webUrl!">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Email or username</span>
       <div class="w-full max-w-md">
-        <input type="text" class="w-full" [formControl]="form.controls.userName!">
+        <input pInputText type="text" class="w-full" [formControl]="form.controls.userName!">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">API token or password</span>
       <div class="w-full max-w-md">
-        <input type="text" class="w-full" [formControl]="form.controls.password!">
+        <p-password [feedback]="false" toggleMask [formControl]="form.controls.password!"
+                    inputStyleClass="w-full" styleClass="w-full"></p-password>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Default Project</span>
       <div class="flex flex-row items-center gap-2">
-        <dropdown [options]="jiraProjects()"
-                  [showLabel]="false"
-                  [selected]="form.controls.projectKey!.value"
-                  (selectedChange)="onChangeProject($event)">
-          <span dropdown-label class="font-semibold text-xs">Select</span>
-        </dropdown>
-        <div class="flex items-center cursor-pointer px-4 py-2 rounded bg-background border border-border"
-             (click)="onReload()">
-          <ng-icon name="arrowPath" [ngClass]="{'animate-spin': loadingJiraProject}"></ng-icon>
-        </div>
+        <p-select optionLabel="name" optionValue="key" placeholder="Select"
+                  [options]="jiraProjects()"
+                  [formControl]="form.controls.projectKey!"
+                  (onChange)="onChangeJiraProject($event)">
+        </p-select>
+        <p-button severity="secondary" icon="pi pi-sync" (click)="onReload()" [loading]="loadingJiraProject"></p-button>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Issue Type</span>
       <div class="flex flex-row items-center gap-2">
-        <dropdown [options]="issueTypes()"
-                  [showLabel]="false"
+        <p-select [options]="issueTypes()" optionValue="value" optionLabel="name" placeholder="Select"
                   [loading]="loadingIssueType"
-                  [selected]="form.controls.issueType!.value"
-                  (selectedChange)="onChangeIssueType($event)">
-          <span dropdown-label class="font-semibold text-xs">Select</span>
-        </dropdown>
+                  [formControl]="form.controls.issueType!">
+        </p-select>
       </div>
     </div>
   </div>
   <div class="flex flex-row gap-2 items-center">
-    <button app-button type="primary" class="w-fit" [loading]="form.disabled" (click)="saveSetting()">Update</button>
-    <button app-button type="primary" class="w-fit"
-            [loading]="loadingTest"
-            (click)="testConnection()">Test Connection</button>
+    <button pButton severity="primary" [loading]="form.disabled" (click)="saveSetting()">Update</button>
+    <button pButton severity="secondary" [loading]="loadingTest" (click)="testConnection()">Test Connection</button>
   </div>
 </div>

@@ -14,12 +14,15 @@ public class ScannerManager(
 {
     private static readonly SemaphoreSlim Lock = new(1, 1);
     private const int ExpiredTime = 5;
-    private static readonly List<ScannerType> ScaTypes = [
+
+    private static readonly List<ScannerType> ScaTypes =
+    [
         ScannerType.Dependency,
         ScannerType.Container
     ];
 
-    private static readonly List<ScannerType> SastTypes = [
+    private static readonly List<ScannerType> SastTypes =
+    [
         ScannerType.Sast,
         ScannerType.Secret
     ];
@@ -59,6 +62,21 @@ public class ScannerManager(
         {
             Lock.Release();
         }
+    }
+
+    public async Task<List<Scanners>> GetScannersAsync(Guid? projectId = null)
+    {
+        if (projectId != null)
+        {
+            return await context.Scans
+                .Include(scan => scan.Scanner)
+                .Where(scan => scan.ProjectId == projectId)
+                .Select(scan => scan.Scanner!)
+                .Distinct().ToListAsync();
+        }
+
+        return await context.Scanners
+            .ToListAsync();
     }
 
     public async Task<List<Scanners>> GetSastScannersAsync()

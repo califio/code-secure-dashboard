@@ -1,27 +1,27 @@
 import {Component, OnInit} from '@angular/core';
-import {ButtonDirective} from '../../../../shared/ui/button/button.directive';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
-import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../../shared/services/toastr.service';
 import {finalize} from 'rxjs';
 import {SlaSetting} from '../../../../api/models/sla-setting';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../core/forms';
 import {Sla} from '../../../../api/models/sla';
 import {SettingService} from '../../../../api/services/setting.service';
+import {Button} from 'primeng/button';
+import {InputNumber} from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-sla',
   standalone: true,
   imports: [
-    ButtonDirective,
     ReactiveFormsModule,
-    DropdownComponent,
-    FormsModule
+    FormsModule,
+    InputNumber,
+    Button
   ],
   templateUrl: './sla.component.html',
   styleUrl: './sla.component.scss'
 })
-export class SlaComponent implements OnInit{
+export class SlaComponent implements OnInit {
 
   formConfig = new FormSection<ConfigOf<SlaSetting>>({
     sast: new FormSection<ConfigOf<Sla>>({
@@ -40,6 +40,7 @@ export class SlaComponent implements OnInit{
     })
   });
   form: FormGroup<ControlsOf<SlaSetting>>;
+
   constructor(
     private formService: FormService,
     private settingService: SettingService,
@@ -61,7 +62,9 @@ export class SlaComponent implements OnInit{
     }).pipe(
       finalize(() => this.form.enable())
     ).subscribe(() => {
-      this.toastr.success('Update success!');
+      this.toastr.success({
+        message: 'Update success!'
+      });
     })
   }
 }

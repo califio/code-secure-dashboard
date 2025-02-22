@@ -1,12 +1,11 @@
 import {Component, EventEmitter, HostListener, Input, Output, signal} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
-import {FindingStatusComponent} from '../finding-status/finding-status.component';
 import {RouterLink} from '@angular/router';
-import {DatePipe, LowerCasePipe, NgClass, NgTemplateOutlet} from '@angular/common';
+import {LowerCasePipe, NgClass} from '@angular/common';
 import {FindingDetail} from '../../../../api/models/finding-detail';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingService} from '../../../../api/services/finding.service';
-import {ToastrService} from '../../toastr/toastr.service';
+import {ToastrService} from '../../../services/toastr.service';
 import {FindingActivity} from '../../../../api/models/finding-activity';
 import {
   FindingLocation,
@@ -18,50 +17,58 @@ import {
   TicketType
 } from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
-import {AvatarComponent} from '../../../ui/avatar/avatar.component';
 import {MarkdownComponent} from 'ngx-markdown';
-import {FindingScanDropdownComponent} from '../finding-scan-dropdown/finding-scan-dropdown.component';
-import {ScanBranchComponent} from '../../scan-branch/scan-branch.component';
-import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
 import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
-import {TooltipDirective} from '../../../ui/tooltip/tooltip.directive';
-import {ButtonDirective} from '../../../ui/button/button.directive';
-import {DatePickerComponent} from '../../../ui/date-picker/date-picker.component';
 import {FindingActivityComponent} from '../finding-activity/finding-activity.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {finalize} from 'rxjs';
-import {TicketDropdownComponent} from '../../ticket-dropdown/ticket-dropdown.component';
+import {TicketMenuComponent} from '../../ticket-menu/ticket-menu.component';
 import {MarkdownEditorComponent} from '../../../ui/markdown-editor/markdown-editor.component';
+import {ScanBranchLabelComponent} from '../../scan/scan-branch-label/scan-branch-label.component';
+import {Select} from 'primeng/select';
+import {Panel} from 'primeng/panel';
+import {DatePicker} from 'primeng/datepicker';
+import {FloatLabel} from 'primeng/floatlabel';
+import {Divider} from 'primeng/divider';
+import {Fieldset} from 'primeng/fieldset';
+import {ButtonDirective} from 'primeng/button';
+import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
+import {getFindingStatusOptions} from '../finding-status';
+import {ScannerLabelComponent} from '../../scanner-label/scanner-label.component';
+import {TruncatePipe} from '../../../pipes/truncate.pipe';
+import {Tooltip} from 'primeng/tooltip';
 
 @Component({
   selector: 'finding-detail',
   standalone: true,
   imports: [
     NgIcon,
-    FindingStatusComponent,
     RouterLink,
     NgClass,
     TimeagoModule,
-    AvatarComponent,
     LowerCasePipe,
     MarkdownComponent,
-    FindingScanDropdownComponent,
-    ScanBranchComponent,
-    FindingStatusLabelComponent,
     FindingSeverityComponent,
-    TooltipDirective,
-    ButtonDirective,
-    DatePipe,
-    DatePickerComponent,
-    NgTemplateOutlet,
     FindingActivityComponent,
     ReactiveFormsModule,
     FormsModule,
-    TicketDropdownComponent,
+    TicketMenuComponent,
     MarkdownEditorComponent,
+    ButtonDirective,
+    ScanBranchLabelComponent,
+    Select,
+    Panel,
+    DatePicker,
+    FloatLabel,
+    Divider,
+    Fieldset,
+    ButtonDirective,
+    FindingStatusLabelComponent,
+    ScannerLabelComponent,
+    TruncatePipe,
+    Tooltip,
   ],
   templateUrl: './finding-detail.component.html',
-  styleUrl: './finding-detail.component.scss'
 })
 export class FindingDetailComponent {
   @Output()
@@ -72,17 +79,18 @@ export class FindingDetailComponent {
     this._finding = value;
     this.ticket.set(value.ticket);
     this.fixDeadline.set(this.parseFixDeadline(value.fixDeadline));
-    this.currentScan = value.scans?.find(scan => scan.isDefault);
-    if (!this.currentScan && value.scans && value.scans.length > 0) {
-      this.currentScan = value.scans[0];
+    let defaultScan = value.scans?.find(scan => scan.isDefault);
+    if (!defaultScan && value.scans && value.scans.length > 0) {
+      defaultScan = value.scans[0];
     }
+    this.currentScan.set(defaultScan);
     if (value.id) {
       this.loadActivities();
     }
   }
 
-  dateFormat = 'dd/MM/yyyy';
-  currentScan: FindingScan | undefined;
+  dateFormat = 'dd/mm/yy';
+  currentScan = signal<FindingScan | undefined>(undefined);
   activities: FindingActivity[] = [];
 
   get finding() {
@@ -101,6 +109,7 @@ export class FindingDetailComponent {
   loadingTicket = false;
   recommendationPreview = true;
   recommendationLoading = false;
+
   constructor(
     private findingService: FindingService,
     private toastr: ToastrService
@@ -115,7 +124,9 @@ export class FindingDetailComponent {
       }
     }).subscribe(finding => {
       this.finding = finding;
-      this.toastr.success("update success");
+      this.toastr.success({
+        message: "Update success"
+      });
       this.loadActivities();
     })
   }
@@ -142,14 +153,14 @@ export class FindingDetailComponent {
 
   source(location: FindingLocation) {
     if (this._finding.project?.sourceType == SourceType.GitLab) {
-      return `${this._finding.project!.repoUrl}/-/blob/${this.currentScan?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
+      return `${this._finding.project!.repoUrl}/-/blob/${this.currentScan()?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
     }
     // todo: support other git
     return '';
   }
 
   onScanChange(scanId: string) {
-    this.currentScan = this.finding.scans?.find(value => value.scanId == scanId);
+    this.currentScan.set(this.finding.scans?.find(value => value.scanId == scanId));
   }
 
   private loadActivities() {
@@ -174,7 +185,7 @@ export class FindingDetailComponent {
       }
     }).subscribe({
       next: (finding) => {
-        this.toastr.success('Change deadline success!');
+        this.toastr.success({message: 'Change deadline success!'});
         this.finding = finding;
         this.loadActivities();
       },
@@ -206,7 +217,7 @@ export class FindingDetailComponent {
         activities.push(...this.activities);
         this.activities = activities;
         this.comment = '';
-        this.toastr.success('Add comment success!');
+        this.toastr.success({message: 'Add comment success!'});
       });
     }
   }
@@ -248,7 +259,9 @@ export class FindingDetailComponent {
     }).pipe(
       finalize(() => this.recommendationLoading = false)
     ).subscribe(() => {
-      this.toastr.success('Update recommendation success!');
+      this.toastr.success({message: 'Update recommendation success!'});
     })
   }
+
+  statusOptions = getFindingStatusOptions();
 }

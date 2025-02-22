@@ -1,41 +1,46 @@
 import {Component, Input} from '@angular/core';
 import {UserInfo} from '../../../api/models/user-info';
-import {AvatarComponent} from '../../../shared/ui/avatar/avatar.component';
 import {UserStore} from '../user.store';
 import {UserInfoComponent} from '../../../shared/components/user-info/user-info.component';
-import {DropdownComponent} from '../../../shared/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../shared/ui/dropdown/dropdown.model';
 import {UpdateUserRequest} from '../../../api/models/update-user-request';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {UserService} from '../../../api/services/user.service';
 import {finalize} from 'rxjs';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../shared/services/toastr.service';
 import {UserStatus} from '../../../api/models';
 import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../core/forms';
+import {Select} from 'primeng/select';
+import {Button} from 'primeng/button';
+import {Dialog} from 'primeng/dialog';
+import {InputText} from 'primeng/inputtext';
+import {SelectButton} from 'primeng/selectbutton';
 
 @Component({
   selector: 'app-update-user-popup',
   standalone: true,
   imports: [
-    AvatarComponent,
     UserInfoComponent,
-    DropdownComponent,
-    ButtonDirective,
     FormsModule,
     ReactiveFormsModule,
+    Select,
+    Button,
+    Dialog,
+    InputText,
+    SelectButton,
   ],
   templateUrl: './update-user-popup.component.html',
   styleUrl: './update-user-popup.component.scss'
 })
 export class UpdateUserPopupComponent {
-  _user: UserInfo | undefined;
   @Input() set user(value: UserInfo | undefined) {
     if (value) {
       this._user = value;
       this.form.patchValue(value);
     }
   }
+
+  _user: UserInfo = {};
+
   formConfig = new FormSection<ConfigOf<UpdateUserRequest>>({
     status: new FormField(UserStatus.Active, Validators.required),
     email: new FormField('', Validators.required),
@@ -43,7 +48,7 @@ export class UpdateUserPopupComponent {
     fullName: new FormField('', Validators.required),
   });
   form: FormGroup<ControlsOf<UpdateUserRequest>>;
-  statusOptions: DropdownItem[] = [
+  statusOptions = [
     {
       value: UserStatus.Active,
       label: 'Active'
@@ -63,14 +68,10 @@ export class UpdateUserPopupComponent {
     this.form = this.formService.group(this.formConfig);
   }
 
-  changeRoleUser($event: any) {
-    this.form.controls.role!.setValue($event)
-  }
-
   onUpdateUser() {
     this.form.disable()
     this.userService.updateUserByAdmin({
-      userId: this._user!.id!,
+      userId: this._user.id!,
       body: this.form.value
     }).pipe(
       finalize(() => this.form.enable())
@@ -82,16 +83,14 @@ export class UpdateUserPopupComponent {
         return user;
       });
       this.store.users.set(users);
-      this.toastr.success('Update user success!');
-      this.store.showUpdateUserPopup.set(false);
+      this.toastr.success({
+        message: 'Update user success!'
+      });
+      this.closeDialog();
     })
   }
 
-  onCancel() {
-    this.store.showUpdateUserPopup.set(false);
-  }
-
-  changeStatusUser($event: any) {
-    this.form.controls.status!.setValue($event)
+  closeDialog() {
+    this.store.showUpdateUserDialog = false;
   }
 }

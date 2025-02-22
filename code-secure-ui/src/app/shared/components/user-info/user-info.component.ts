@@ -1,25 +1,29 @@
 import {Component, Input} from '@angular/core';
-import {AvatarComponent} from "../../ui/avatar/avatar.component";
+import {Avatar} from 'primeng/avatar';
+import {FirstCharPipe} from '../../pipes/firstchar.pipe';
+import {UpperCasePipe} from '@angular/common';
 
 @Component({
   selector: 'user-info',
   standalone: true,
-    imports: [
-        AvatarComponent
-    ],
+  imports: [
+    Avatar,
+    FirstCharPipe,
+    UpperCasePipe
+  ],
   templateUrl: './user-info.component.html',
-  styleUrl: './user-info.component.scss'
 })
 export class UserInfoComponent {
   @Input()
-  avatarSize = 36;
+  avatarShape: 'square' | 'circle' = 'square';
+  @Input()
+  avatarSize: 'normal' | 'large' | 'xlarge' = "large";
   @Input()
   avatar: string | undefined | null;
   @Input()
-  username: string = '';
+  username: string | undefined | null = '';
   @Input()
   fullName: string | undefined | null;
   @Input()
   email: string | undefined | null;
-
 }

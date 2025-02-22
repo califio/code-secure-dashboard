@@ -9,9 +9,12 @@ public class ProjectCommits : BaseEntity
     public required string Branch { get; set; }
 
     public required GitAction Action { get; set; }
+    public string? CommitHash { get; set; }
 
+    public string? CommitTitle { get; set; }
     // use when merge request
-    public string? TargetBranch { get; set; }
+    public required string? TargetBranch { get; set; }
+    public required string? MergeRequestId { get; set; }
 
     //
     public Projects? Project { get; set; }

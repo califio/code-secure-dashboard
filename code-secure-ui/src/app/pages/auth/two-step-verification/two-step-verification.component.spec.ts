@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TwoStepVerificationComponent } from './two-step-verification.component';
+import {TwoStepVerificationComponent} from './two-step-verification.component';
 
 describe('TwoStepVerificationComponent', () => {
   let component: TwoStepVerificationComponent;
@@ -10,7 +10,7 @@ describe('TwoStepVerificationComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TwoStepVerificationComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(TwoStepVerificationComponent);
     component = fixture.componentInstance;
