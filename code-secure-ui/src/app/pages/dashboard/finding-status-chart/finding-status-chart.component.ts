@@ -44,7 +44,15 @@ export class FindingStatusChartComponent {
           }
         },
         datalabels: {
-          display: false
+          display: true,
+          color: '#fff',
+          font: {
+            weight: 'bold',
+            size: 14
+          },
+          formatter: (value: any) => {
+            return value > 0 ? value : '';
+          }
         }
       }
     };
