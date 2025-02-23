@@ -1,29 +1,31 @@
 import {Component, OnDestroy} from '@angular/core';
-import {NgIcon, provideIcons} from "@ng-icons/core";
-import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
-import {NavItem} from '../../core/menu';
+import {NgIcon} from "@ng-icons/core";
+import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {Subject} from 'rxjs';
-import {heroAdjustmentsHorizontal, heroEnvelope, heroKey, heroScale} from '@ng-icons/heroicons/outline';
+import {MenuItem} from 'primeng/api';
+import {Panel} from 'primeng/panel';
+import {Tab, TabList, Tabs} from 'primeng/tabs';
 
 @Component({
   selector: 'app-setting',
   standalone: true,
   imports: [
     NgIcon,
-    RouterLinkActive,
     RouterOutlet,
-    RouterLink
+    RouterLink,
+    Panel,
+    Tab,
+    TabList,
+    Tabs
   ],
   templateUrl: './setting.component.html',
-  styleUrl: './setting.component.scss',
-  viewProviders: [provideIcons({heroEnvelope, heroKey, heroScale, heroAdjustmentsHorizontal})]
 })
 export class SettingComponent implements OnDestroy {
   constructor(
     private router: Router,
   ) {
     if (!this.regexBaseUrl.test(router.url)) {
-      this.router.navigateByUrl(this.navItems[0].route).then();
+      this.router.navigateByUrl(this.navItems[0].routerLink).then();
     }
   }
 
@@ -32,23 +34,41 @@ export class SettingComponent implements OnDestroy {
     this.destroy$.complete();
   }
 
-  navItems: NavItem[] = [
+  navItems: MenuItem[] = [
     {
       label: 'General',
-      route: '/setting/general',
       icon: 'heroAdjustmentsHorizontal',
+      routerLink: '/setting/general',
     },
     {
       label: 'Access Token',
-      route: '/setting/ci-token',
+      routerLink: '/setting/ci-token',
       icon: 'token',
     },
     {
       label: 'Integration',
-      route: '/setting/integration',
+      routerLink: '/setting/integration',
       icon: 'plugin',
     }
   ]
   private destroy$ = new Subject();
   private regexBaseUrl = new RegExp('^\\/setting\\/[^\\/]+$');
+  activeTab = 0;
+  tabs: MenuItem[] = [
+    {
+      label: 'General',
+      icon: 'heroAdjustmentsHorizontal',
+      routerLink: '/setting/general',
+    },
+    {
+      label: 'Access Token',
+      routerLink: '/setting/ci-token',
+      icon: 'token',
+    },
+    {
+      label: 'Integration',
+      routerLink: '/setting/integration',
+      icon: 'plugin',
+    }
+  ];
 }

@@ -3,30 +3,23 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
-  OnInit,
   Output,
   ViewChild
 } from '@angular/core';
 import {MarkdownComponent, provideMarkdown} from 'ngx-markdown';
-import {ControlValueAccessor, FormControl, ReactiveFormsModule} from '@angular/forms';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import '@github/markdown-toolbar-element'
-import {NgIcon, provideIcons} from '@ng-icons/core';
+import {NgIcon} from '@ng-icons/core';
 import {NgClass} from '@angular/common';
-import {
-  bold,
-  codeBracket,
-  eye,
-  italic,
-  link,
-  listBullet,
-  listNumber,
-  listTask,
-  media,
-  quote,
-  table
-} from '../../../icons';
-import {heroPencilSquare} from '@ng-icons/heroicons/outline';
+import {Textarea} from 'primeng/textarea';
+
+export const CUSTOM_CONROL_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MarkdownEditorComponent),
+  multi: true,
+};
 
 @Component({
   selector: 'markdown-editor',
@@ -35,65 +28,39 @@ import {heroPencilSquare} from '@ng-icons/heroicons/outline';
     MarkdownComponent,
     NgIcon,
     ReactiveFormsModule,
-    NgClass
+    NgClass,
+    Textarea,
+    FormsModule,
   ],
   templateUrl: './markdown-editor.component.html',
   styleUrl: './markdown-editor.component.scss',
   providers: [
-    provideMarkdown()
+    provideMarkdown(),
+    CUSTOM_CONROL_VALUE_ACCESSOR
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  viewProviders: [provideIcons({
-    bold,
-    quote,
-    italic,
-    link,
-    media,
-    listBullet,
-    listNumber,
-    listTask,
-    table,
-    eye,
-    codeBracket,
-    heroPencilSquare
-  })]
 })
-export class MarkdownEditorComponent implements OnInit, ControlValueAccessor {
+export class MarkdownEditorComponent implements ControlValueAccessor {
   controlId: string = `md-editor-${Math.floor(100000 * Math.random())}`;
   @ViewChild('textarea')
   textarea!: ElementRef;
-  control = new FormControl<string>('');
-
+  data = '';
   @Input() previewClass = "";
-
-  @Input() set data(value: string) {
-    this.onChange(value);
-    this.control.setValue(value);
-  }
-
-  @Output() dataChange = new EventEmitter<string | null>();
   @Input() editable = true;
   @Input() row: number = 2;
   @Input() preview = false;
   @Output()
   previewChange = new EventEmitter<boolean>();
   @Input() loading = false;
-  focus = false;
   iconSize = "15";
-
-  constructor() {
-  }
-
+  disabled = false;
   private onChange = (value: any) => {
   };
   private onTouched = () => {
   };
 
-  ngOnInit(): void {
-  }
-
   writeValue(value: string): void {
-    this.control.setValue(value);
+    this.data = value;
   }
 
   registerOnChange(onChange: any): void {
@@ -105,22 +72,16 @@ export class MarkdownEditorComponent implements OnInit, ControlValueAccessor {
   }
 
   setDisabledState(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   onEdit() {
     this.preview = false;
     this.previewChange.emit(false);
-    this.focus = true;
-  }
-
-  onBlur() {
-    this.onChange(this.control.value);
-    this.dataChange.emit(this.control.value);
-    this.focus = false;
   }
 
   onPreview() {
-    if (this.control.value) {
+    if (this.data) {
       this.preview = true;
       this.previewChange.emit(true);
     }
@@ -136,14 +97,17 @@ export class MarkdownEditorComponent implements OnInit, ControlValueAccessor {
   private insertText(text: string) {
     var startPos = this.textarea.nativeElement.selectionStart;
     this.textarea.nativeElement.focus();
-
     const content = this.textarea.nativeElement.value.substr(0, this.textarea.nativeElement.selectionStart)
       + text + this.textarea.nativeElement.value.substr(
         this.textarea.nativeElement.selectionStart, this.textarea.nativeElement.value.length);
-    //this.control.setValue(content);
-    this.control.setValue(content);
+    this.data = content;
     this.textarea.nativeElement.selectionStart = startPos + text.length;
     this.textarea.nativeElement.selectionEnd = startPos + text.length;
+    this.onChange(this.data);
+  }
+
+  changeValue($event: any) {
+    this.onChange($event);
   }
 }
 

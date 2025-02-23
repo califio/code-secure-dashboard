@@ -1,29 +1,32 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {ButtonDirective} from "../../../../shared/ui/button/button.directive";
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
-import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
-import {NgIcon} from '@ng-icons/core';
 import {JiraSetting} from '../../../../api/models/jira-setting';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../core/forms';
-import {finalize, forkJoin, switchMap, tap} from 'rxjs';
-import {ToastrService} from '../../../../shared/components/toastr/toastr.service';
+import {finalize, forkJoin, tap} from 'rxjs';
+import {ToastrService} from '../../../../shared/services/toastr.service';
 import {IntegrationService} from '../../../../api/services/integration.service';
-import {map} from 'rxjs/operators';
+import {JiraProject} from '../../../../api/models/jira-project';
+import {Select, SelectChangeEvent} from 'primeng/select';
+import {Button, ButtonDirective} from 'primeng/button';
+import {ToggleSwitch} from 'primeng/toggleswitch';
+import {InputText} from 'primeng/inputtext';
+import {Password} from 'primeng/password';
 
 
 @Component({
   selector: 'app-jira',
   standalone: true,
   imports: [
-    ButtonDirective,
     FormsModule,
-    DropdownComponent,
-    NgIcon,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Select,
+    ButtonDirective,
+    ToggleSwitch,
+    InputText,
+    Password,
+    Button
   ],
   templateUrl: './jira.component.html',
-  styleUrl: './jira.component.scss'
 })
 export class JiraComponent implements OnInit {
   formConfig = new FormSection<ConfigOf<JiraSetting>>({
@@ -35,11 +38,12 @@ export class JiraComponent implements OnInit {
     issueType: new FormField(''),
   })
   form: FormGroup<ControlsOf<JiraSetting>>
-  jiraProjects = signal<DropdownItem[]>([]);
-  issueTypes = signal<DropdownItem[]>([]);
+  jiraProjects = signal<JiraProject[]>([]);
+  issueTypes = signal<{ name: string, value: string }[]>([]);
   loadingJiraProject = false;
   loadingIssueType = false;
   loadingTest = false;
+
   constructor(
     private integrationService: IntegrationService,
     private formService: FormService,
@@ -60,7 +64,9 @@ export class JiraComponent implements OnInit {
             this.form.patchValue(jiraSetting);
           })
         ).subscribe(issueTypes => {
-          this.issueTypes.set(issueTypes);
+          this.issueTypes.set(issueTypes.map(item => {
+            return {name: item, value: item}
+          }));
         });
       }
     });
@@ -69,7 +75,9 @@ export class JiraComponent implements OnInit {
   onChangeProject(projectKey: string) {
     this.form.controls.projectKey!.setValue(projectKey);
     this.loadIssueType(projectKey).subscribe(issueTypes => {
-      this.issueTypes.set(issueTypes);
+      this.issueTypes.set(issueTypes.map(item => {
+        return {name: item, value: item}
+      }));
     });
   }
 
@@ -83,13 +91,9 @@ export class JiraComponent implements OnInit {
       projectKey: projectKey
     }).pipe(
       finalize(() => this.loadingIssueType = false),
-      map(result => {
-        return result.map(item => {
-          return <DropdownItem>{value: item, label: item};
-        });
-      })
     );
   }
+
   onReload() {
     if (this.form.controls.password!.value) {
       this.loadJiraProject(true, this.form.getRawValue()).subscribe();
@@ -106,10 +110,7 @@ export class JiraComponent implements OnInit {
     }).pipe(
       finalize(() => this.loadingJiraProject = false),
       tap(projects => {
-        const jiraProjects = projects.map(item => {
-          return {label: item.name, value: item.key}
-        })
-        this.jiraProjects.set(jiraProjects);
+        this.jiraProjects.set(projects);
       })
     )
   }
@@ -121,7 +122,9 @@ export class JiraComponent implements OnInit {
     }).pipe(
       finalize(() => this.form.enable())
     ).subscribe(() => {
-      this.toastr.success('Update success!');
+      this.toastr.success({
+        message: 'Update success!'
+      });
     })
   }
 
@@ -130,7 +133,17 @@ export class JiraComponent implements OnInit {
     this.integrationService.testJiraIntegrationSetting().pipe(
       finalize(() => this.loadingTest = false)
     ).subscribe(() => {
-      this.toastr.success('Success!');
+      this.toastr.success({
+        message: 'Success!'
+      });
     })
+  }
+
+  onChangeJiraProject($event: SelectChangeEvent) {
+    this.loadIssueType($event.value).subscribe(issueTypes => {
+      this.issueTypes.set(issueTypes.map(item => {
+        return {name: item, value: item}
+      }));
+    });
   }
 }

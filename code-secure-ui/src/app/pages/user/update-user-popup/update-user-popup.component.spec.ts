@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { UpdateUserPopupComponent } from './update-user-popup.component';
+import {UpdateUserPopupComponent} from './update-user-popup.component';
 
 describe('UpdateUserPopupComponent', () => {
   let component: UpdateUserPopupComponent;
@@ -10,7 +10,7 @@ describe('UpdateUserPopupComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UpdateUserPopupComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(UpdateUserPopupComponent);
     component = fixture.componentInstance;

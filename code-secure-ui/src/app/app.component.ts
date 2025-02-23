@@ -1,15 +1,20 @@
-import {Component, Inject, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {DOCUMENT} from "@angular/common";
 import {filter, take} from "rxjs";
-import {ModalService} from './core/modal/modal.service';
+import {provideIcons} from '@ng-icons/core';
+import {Toast} from 'primeng/toast';
+import {icons} from './app.icons';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  imports: [RouterOutlet, Toast],
+  template: `
+    <p-toast/>
+    <router-outlet></router-outlet>
+  `,
+  viewProviders: [provideIcons(icons)]
 })
 export class AppComponent implements OnInit {
   title = 'Code Secure';

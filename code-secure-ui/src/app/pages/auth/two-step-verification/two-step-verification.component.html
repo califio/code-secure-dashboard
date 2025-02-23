@@ -4,7 +4,7 @@
     <p class="text-sm text-muted-foreground">Enter the verification code</p>
   </div>
   <div class="grid grid-cols-6">
-    @for (otpValue of otpValues; track $index;) {
+    @for (otpValue of otpValues; track $index; ) {
       <input
         (click)="changeIndex($index)"
         (keydown)="onKeyDown($event, $index)"
@@ -15,13 +15,13 @@
         type="text"
         [name]="'otp-' + $index"
         maxlength="1"
-        class="otp-input h-10 w-10 rounded-md text-xl border border-primary bg-background text-center text-muted-foreground outline-none sm:h-14 sm:w-14 focus:border-none" />
+        class="otp-input h-10 w-10 rounded-md text-xl border border-primary bg-background text-center text-muted-foreground outline-none sm:h-14 sm:w-14 focus:border-none"/>
     }
   </div>
 
   <!-- Submit Button -->
   <div>
-    <button app-button type="primary" class="h-10 w-full">
+    <button pButton severity="primary" class="h-10 w-full">
       Submit
     </button>
   </div>

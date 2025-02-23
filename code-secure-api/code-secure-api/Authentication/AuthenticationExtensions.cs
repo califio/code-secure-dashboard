@@ -43,7 +43,9 @@ public static class AuthenticationExtensions
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.Zero,
                 IssuerSigningKey = Application.Config.AccessTokenSecurityKey
             };
         });

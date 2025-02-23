@@ -30,8 +30,6 @@ export function bindQueryParams(params: Params, obj: any) {
         default:
           obj[key] = params[key];
       }
-    } else {
-      obj[key] = undefined;
     }
   }
   return obj

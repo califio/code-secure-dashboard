@@ -10,9 +10,6 @@ public class Scans : BaseEntity
     public required string JobUrl { get; set; }
     public required DateTime StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
-    public required string CommitHash { get; set; }
-    public string? MergeRequestId { get; set; }
-
     public required Guid CommitId { get; set; }
     public ProjectCommits? Commit { get; set; }
     public required Guid ProjectId { get; set; }

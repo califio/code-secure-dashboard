@@ -13,6 +13,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { createUserByAdmin } from '../fn/user/create-user-by-admin';
 import { CreateUserByAdmin$Params } from '../fn/user/create-user-by-admin';
+import { getProjectManagerUsers } from '../fn/user/get-project-manager-users';
+import { GetProjectManagerUsers$Params } from '../fn/user/get-project-manager-users';
 import { getUser } from '../fn/user/get-user';
 import { GetUser$Params } from '../fn/user/get-user';
 import { getUsers } from '../fn/user/get-users';
@@ -25,6 +27,7 @@ import { updateUserByAdmin } from '../fn/user/update-user-by-admin';
 import { UpdateUserByAdmin$Params } from '../fn/user/update-user-by-admin';
 import { UserInfo } from '../models/user-info';
 import { UserInfoPage } from '../models/user-info-page';
+import { UserSummary } from '../models/user-summary';
 import { UserSummaryPage } from '../models/user-summary-page';
 
 @Injectable({ providedIn: 'root' })
@@ -55,6 +58,31 @@ export class UserService extends BaseService {
   getUsers(params?: GetUsers$Params, context?: HttpContext): Observable<UserSummaryPage> {
     return this.getUsers$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserSummaryPage>): UserSummaryPage => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectManagerUsers()` */
+  static readonly GetProjectManagerUsersPath = '/api/user/project-manager';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectManagerUsers()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectManagerUsers$Response(params?: GetProjectManagerUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<UserSummary>>> {
+    return getProjectManagerUsers(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectManagerUsers$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectManagerUsers(params?: GetProjectManagerUsers$Params, context?: HttpContext): Observable<Array<UserSummary>> {
+    return this.getProjectManagerUsers$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<UserSummary>>): Array<UserSummary> => r.body)
     );
   }
 

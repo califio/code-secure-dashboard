@@ -8,13 +8,13 @@ https://califio.github.io/code-secure-dashboard
 
 ## Demo
 1. Project Overview
-![](docs/assets/images/project_overview.png)
+![](docs/assets/images/demo_project_overview.png)
 
 2. Project Findings
-![](docs/assets/images/project_finding.png)
+![](docs/assets/images/demo_project_finding.png)
 
 3. Comment On Merge Request
-![](docs/assets/images/comment_finding_on_merge_request.png)
+![](docs/assets/images/demo_comment_finding_on_merge_request.png)
 
 4. Weekly security alert
-![](docs/assets/images/weekly_security_alert.png)
+![](docs/assets/images/demo_weekly_security_alert.png)

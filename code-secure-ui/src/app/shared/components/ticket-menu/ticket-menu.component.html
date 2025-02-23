@@ -1,0 +1,38 @@
+@if (ticket) {
+  <div pButton severity="secondary" class="flex flex-row items-center gap-3">
+    <a class="flex flex-row items-center gap-1" target="_blank" [href]="ticket.url">
+      <ng-icon [name]="ticketIcon(ticket.type!)" size="20"></ng-icon>
+      <span class="font-semibold">{{ ticket.name }}</span>
+    </a>
+    <ng-icon name="trash" (click)="deleteTicket()"></ng-icon>
+  </div>
+} @else {
+  <button pButton severity="primary" (click)="op.toggle($event)"
+          class="flex flex-row items-center gap-2 px-3 text-nowrap">
+    @if (loading) {
+      <ng-icon name="spin" class="animate-spin"></ng-icon>
+    } @else {
+      <ng-icon name="heroFlag"></ng-icon>
+    }
+    <span class="font-semibold">Ticket</span>
+    <ng-icon name="heroChevronDown"></ng-icon>
+  </button>
+}
+<p-menu #op [model]="ticketTrackerOptions" popup class="flex justify-center">
+  <ng-template #item let-option>
+    <div (click)="createTicket(option.type)"
+         class="flex flex-row items-center gap-1 cursor-pointer px-2 py-1">
+      <ng-icon [name]="ticketIcon(option.type)" size="20"></ng-icon>
+      <span>{{ option.label }}</span>
+    </div>
+  </ng-template>
+  <ng-template #end>
+    <div class="p-1">
+      <div class="flex flex-row items-center gap-1 rounded cursor-pointer p-2 hover:bg-surface-100 dark:hover:bg-surface-800" routerLink="/setting/integration">
+        <ng-icon name="plugin"></ng-icon>
+        <span>Add Integration</span>
+      </div>
+    </div>
+  </ng-template>
+</p-menu>
+<p-confirm-dialog></p-confirm-dialog>

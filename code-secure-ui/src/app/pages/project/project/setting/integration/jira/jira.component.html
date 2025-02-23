@@ -1,39 +1,38 @@
-<div class="flex flex-col rounded-xl bg-background gap-4 w-full">
-  @if(form.controls.active!.value) {
+<div class="flex flex-col">
+  @if (form.controls.active!.value) {
     <div class="flex flex-col gap-2 w-full">
       <div class="flex flex-row gap-2 w-full items-center">
         <span class="w-36 md:w-48">Default Project</span>
         <div class="flex flex-row items-center gap-2">
-          <dropdown [options]="jiraProjects()"
-                    [showLabel]="false"
-                    [selected]="form.controls.projectKey!.value"
-                    (selectedChange)="onChangeProject($event)">
-            <span dropdown-label class="font-semibold text-xs">Select</span>
-          </dropdown>
-          <button app-button type="default" (click)="onReload()" [loading]="loading">
-            @if(!loading){
-              <ng-icon name="reload"></ng-icon>
-            }
-          </button>
+          <p-select [options]="jiraProjects()"
+                    optionLabel="name" optionValue="key"
+                    placeholder="Jira Project"
+                    [formControl]="form.controls.projectKey!" (onChange)="onChangeProject($event)">
+          </p-select>
+          <p-button severity="secondary" icon="pi pi-sync" (click)="onReload()" [loading]="loading"></p-button>
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">
         <span class="w-36 md:w-48">Issue Type</span>
         <div class="flex flex-row items-center gap-2">
-          <dropdown [options]="issueTypes()"
-                    [showLabel]="false"
-                    [loading]="loadingIssueType"
-                    [selected]="form.controls.issueType!.value"
-                    (selectedChange)="onChangeIssueType($event)">
-            <span dropdown-label class="font-semibold text-xs">Select</span>
-          </dropdown>
+          <p-select [options]="issueTypes()"
+                    optionValue="value"
+                    optionLabel="label"
+                    placeholder="Issue Type"
+                    [formControl]="form.controls.issueType!">
+          </p-select>
         </div>
       </div>
     </div>
   } @else {
-    <div>Not yet integrated with Jira. Go to <a routerLink="/setting/integration" class="font-semibold text-primary">Setting > Integration</a> to configure Jira first.</div>
+    <div>Not yet integrated with Jira. Go to <a routerLink="/setting/integration" class="font-semibold">Setting >
+      Integration</a> to configure Jira first.
+    </div>
   }
   <div class="flex flex-row gap-2 items-center">
-    <button app-button type="primary" class="w-fit" [loading]="form.disabled" (click)="saveJiraSetting()">Update</button>
+    <button pButton severity="primary"
+            [loading]="form.disabled"
+            (click)="saveJiraSetting()">Update
+    </button>
   </div>
 </div>

@@ -404,11 +404,20 @@ namespace CodeSecure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("CommitHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CommitTitle")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("MergeRequestId")
+                        .HasColumnType("text");
 
                     b.Property<string>("Metadata")
                         .HasColumnType("text");
@@ -708,10 +717,6 @@ namespace CodeSecure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CommitHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("CommitId")
                         .HasColumnType("uuid");
 
@@ -729,9 +734,6 @@ namespace CodeSecure.Migrations
 
                     b.Property<string>("JobUrl")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MergeRequestId")
                         .HasColumnType("text");
 
                     b.Property<string>("Metadata")

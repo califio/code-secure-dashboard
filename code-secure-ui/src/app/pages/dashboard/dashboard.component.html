@@ -1,42 +1,43 @@
-<div class="mx-auto flex flex-col text-sm">
-  <div class="flex flex-col overflow-hidden w-full border border-white/5 gap-4 rounded-xl bg-background p-6">
-    <div class="flex flex-wrap gap-4 w-full">
-      <div class="flex flex-col gap-4 w-full">
-        <div class="flex flex-row items-center font-semibold text-lg gap-2">
-          <span>Static Application Security Testing (SAST)</span>
-          @if(loadingSast) {
-            <ng-icon name="spin" class="animate-spin"></ng-icon>
-          }
-        </div>
-        @if (!loadingSast) {
-          <div class="flex flex-wrap gap-4 w-full">
-            <div severity-chart [severity]="sastStatistic.severity"></div>
-            <finding-status-chart [status]="sastStatistic.status"></finding-status-chart>
-            <top-finding-chart
-              class="max-w-screen-sm min-w-[300px] w-full"
-              [categories]="sastStatistic.topFindings">
-            </top-finding-chart>
-          </div>
-        }
-      </div>
-      <div class="flex flex-col gap-4 w-full">
-        <div class="flex flex-row items-center font-semibold text-lg gap-2">
-          <span>Software Composition Analysis (SCA)</span>
-          @if(loadingSca) {
-            <ng-icon name="spin" class="animate-spin"></ng-icon>
-          }
-        </div>
-        @if(!loadingSca){
-          <div class="flex flex-wrap gap-4 w-full">
-            <div severity-chart [severity]="scaStatistic.severity"></div>
-            <finding-status-chart [status]="scaStatistic.status"></finding-status-chart>
-            <top-dependency-chart
-              class="max-w-screen-sm min-w-[300px] w-full"
-              [dependencies]="scaStatistic.topDependencies">
-            </top-dependency-chart>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
+<div class="mb-2">
+  <range-date [type]="rangeDate.type" (onChange)="onRangeDateChange($event)"></range-date>
 </div>
+<p-fluid class="grid grid-cols-12 gap-4">
+  <!--  SAST-->
+  <div class="col-span-12">
+    <div class="text-xl font-semibold">Static Application Security Testing (SAST)</div>
+  </div>
+  <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
+    <p-card styleClass="h-full">
+      <severity-chart [severity]="sastSeverity()"></severity-chart>
+    </p-card>
+  </div>
+  <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
+    <p-card styleClass="h-full">
+      <finding-status-chart [status]="sastStatus()"></finding-status-chart>
+    </p-card>
+  </div>
+  <div class="col-span-12 xl:col-span-6">
+    <p-card styleClass="h-full">
+      <top-finding-chart class="" [categories]="topFindings()"></top-finding-chart>
+    </p-card>
+  </div>
+  <!--  SCA-->
+  <div class="col-span-12">
+    <div class="text-xl font-semibold">Software Composition Analysis (SCA)</div>
+  </div>
+  <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
+    <p-card styleClass="h-full">
+      <severity-chart [severity]="scaSeverity()"></severity-chart>
+    </p-card>
+  </div>
+  <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
+    <p-card styleClass="h-full">
+      <finding-status-chart [status]="scaStatus()"></finding-status-chart>
+    </p-card>
+  </div>
+  <div class="col-span-12 xl:col-span-6">
+    <p-card styleClass="h-full">
+      <top-dependency-chart [dependencies]="topDependencies()"></top-dependency-chart>
+    </p-card>
+  </div>
+</p-fluid>

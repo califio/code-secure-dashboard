@@ -1,16 +1,14 @@
 import {Component} from '@angular/core';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
-import {NgClass} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ButtonDirective} from 'primeng/button';
 
 @Component({
   selector: 'app-two-step-verification',
   standalone: true,
   imports: [
-    ButtonDirective,
-    NgClass,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    ButtonDirective
   ],
   templateUrl: './two-step-verification.component.html',
   styleUrl: './two-step-verification.component.scss'

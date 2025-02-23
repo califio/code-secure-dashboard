@@ -11,11 +11,15 @@ import { RequestBuilder } from '../../request-builder';
 import { SastStatistic } from '../../models/sast-statistic';
 
 export interface SastStatistic$Params {
+  from?: string;
+  to?: string;
 }
 
 export function sastStatistic(http: HttpClient, rootUrl: string, params?: SastStatistic$Params, context?: HttpContext): Observable<StrictHttpResponse<SastStatistic>> {
   const rb = new RequestBuilder(rootUrl, sastStatistic.PATH, 'get');
   if (params) {
+    rb.query('from', params.from, {"style":"form"});
+    rb.query('to', params.to, {"style":"form"});
   }
 
   return http.request(

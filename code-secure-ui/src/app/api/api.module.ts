@@ -16,6 +16,8 @@ import { OpenIdConnectService } from './services/open-id-connect.service';
 import { ProfileService } from './services/profile.service';
 import { ProjectService } from './services/project.service';
 import { RoleService } from './services/role.service';
+import { RuleService } from './services/rule.service';
+import { ScannerService } from './services/scanner.service';
 import { SettingService } from './services/setting.service';
 import { TokenService } from './services/token.service';
 import { UserService } from './services/user.service';
@@ -38,6 +40,8 @@ import { UserService } from './services/user.service';
     ProfileService,
     ProjectService,
     RoleService,
+    RuleService,
+    ScannerService,
     SettingService,
     TokenService,
     UserService,

@@ -1,9 +1,11 @@
 import {Routes} from '@angular/router';
+import {LoginComponent} from './login/login.component';
+import {ForgotPasswordComponent} from './forgot-password/forgot-password.component';
 
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./login/login.component').then(x => x.LoginComponent),
+    component: LoginComponent,
   },
   {
     path: 'confirm-email',
@@ -11,7 +13,7 @@ export const routes: Routes = [
   },
   {
     path: 'forgot-password',
-    loadComponent: () => import('./forgot-password/forgot-password.component').then(x => x.ForgotPasswordComponent),
+    component: ForgotPasswordComponent,
   },
   {
     path: 'reset-password',

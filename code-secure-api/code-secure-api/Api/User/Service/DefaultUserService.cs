@@ -55,6 +55,22 @@ public class DefaultUserService(
         }).OrderBy(filter.SortBy.ToString(), filter.Desc).PageAsync(filter.Page, filter.Size);
     }
 
+    public async Task<List<UserSummary>> GetProjectManagerUsersAsync()
+    {
+        var users = await context.ProjectUsers
+            .Include(record => record.User)
+            .Where(record => record.Role == ProjectRole.Manager)
+            .Select(record => record.User!).Distinct().ToListAsync();
+        return users.Select(user => new UserSummary
+        {
+            Id = user.Id,
+            UserName = user.UserName!,
+            FullName = user.FullName,
+            Avatar = user.Avatar,
+            Email = user.Email
+        }).ToList();
+    }
+
     public async Task<Page<UserSummary>> GetUserSummaryAsync(UserFilter filter)
     {
         var query = context.Users.Where(user => user.Status != UserStatus.Disabled && user.IsDefault == false);

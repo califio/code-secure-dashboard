@@ -20,6 +20,7 @@ export interface FindingDetail {
   name?: string | null;
   project?: FindingProject;
   recommendation?: string | null;
+  ruleId?: string | null;
   scanner?: string | null;
   scans?: Array<FindingScan> | null;
   severity?: FindingSeverity;

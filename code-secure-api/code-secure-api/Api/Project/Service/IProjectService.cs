@@ -1,6 +1,8 @@
 using CodeSecure.Api.Project.Model;
 using CodeSecure.Database.Entity;
 using CodeSecure.Database.Extension;
+using CodeSecure.Enum;
+using CodeSecure.Manager.Finding.Model;
 using CodeSecure.Manager.Project.Model;
 using CodeSecure.Manager.Setting;
 
@@ -13,7 +15,7 @@ public interface IProjectService
     Task<Page<ProjectScan>> GetScansAsync(Guid projectId, ProjectScanFilter filter);
     Task<List<ProjectCommitSummary>> GetCommitsAsync(Guid projectId);
     Task<List<Scanners>> GetScannersAsync(Guid projectId);
-    Task<Page<ProjectFinding>> GetFindingsAsync(Guid projectId, ProjectFindingFilter filter);
+    Task<Page<FindingSummary>> GetFindingsAsync(Guid projectId, ProjectFindingFilter filter);
     Task<Page<ProjectPackage>> GetPackagesAsync(Guid projectId, ProjectPackageFilter filter);
     Task<ProjectStatistics> GetStatisticsAsync(Guid projectId);
     Task<Page<ProjectUser>> GetMembersAsync(Guid projectId, ProjectUserFilter filter);
@@ -34,5 +36,6 @@ public interface IProjectService
     
     Task<AlertSetting> GetMailIntegrationSettingAsync(Guid projectId);
     Task UpdateMailIntegrationSettingAsync(Guid projectId, AlertSetting request);
-    
+    Task<ExportModel> ExportAsync(ExportType type, Guid projectId, ProjectFindingFilter filter);
+
 }

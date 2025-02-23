@@ -1,52 +1,39 @@
-<div [class.hidden]="!store.showUpdateUserPopup()" class="fixed top-0 right-0 left-0 z-50 h-screen w-screen text-sm bg-gray-100/80 dark:bg-gray-700/80">
-  <div class="flex flex-col w-full h-full items-center justify-center">
-    <div class="flex flex-row justify-center w-full h-fit">
-      <div
-        class="flex flex-col gap-3 w-fit h-fit min-w-[480px] border border-border bg-background shadow-lg p-4 rounded-lg">
-        <div class="flex flex-col gap-1 w-full">
-          <span class="font-semibold">User</span>
-          <user-info [username]="_user?.userName ?? 'Unknown'"
-                     [avatar]="_user?.avatar"
-                     [fullName]="form.controls.fullName?.value"
-                     [email]="form.controls.email?.value">
-          </user-info>
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <div class="font-semibold">Email</div>
-          <input type="text" name="email" [formControl]="form.controls.email!">
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <div class="font-semibold">Role</div>
-          <dropdown [options]="store.roleOptions()"
-                     [showLabel]="false"
-                     [selected]="form.controls.role?.value"
-                     (selectedChange)="changeRoleUser($event)">
-          </dropdown>
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <div class="font-semibold">Status</div>
-          <dropdown [options]="statusOptions" class="text-sm"
-                     [selected]="form.controls.status?.value"
-                     [showLabel]="false"
-                     (selectedChange)="changeStatusUser($event)"></dropdown>
-        </div>
-        <div class="flex flex-row items-center gap-4 justify-end">
-          <div class="flex flex-row items-center gap-4 w-fit">
-            <button app-button
-                    type="primary"
-                    [loading]="form.disabled"
-                    (click)="onUpdateUser()">
-              Update
-            </button>
-            <button app-button
-                    type="default"
-                    (click)="onCancel()">
-              Cancel
-            </button>
-          </div>
-        </div>
+<p-dialog header="Update User" [modal]="true" [(visible)]="store.showUpdateUserDialog">
+  <div class="flex flex-col gap-4 w-[320px] md:w-[480px]">
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1 w-full">
+        <span class="font-semibold">User</span>
+        <user-info [username]="_user.userName"
+                   [avatar]="_user.avatar"
+                   [fullName]="_user.fullName"
+                   [email]="_user.email">
+        </user-info>
+      </div>
+      <div class="flex flex-col gap-1 w-full">
+        <div class="font-semibold">Email</div>
+        <input pInputText type="text" name="email" [formControl]="form.controls.email!">
+      </div>
+      <div class="flex flex-col gap-1 w-full">
+        <div class="font-semibold">Role</div>
+        <p-select [options]="store.roles()" optionValue="name" optionLabel="name" appendTo="body"
+                  [formControl]="form.controls.role!">
+        </p-select>
+      </div>
+      <div class="flex flex-col gap-1 w-full">
+        <div class="font-semibold">Status</div>
+        <p-select-button [options]="statusOptions"
+                         [formControl]="form.controls.status!">
+        </p-select-button>
+      </div>
+
+    </div>
+    <div class="flex flex-row items-center gap-4 justify-end">
+      <div class="flex flex-row items-center gap-4 w-fit">
+        <p-button severity="secondary" (click)="closeDialog()" label="Cancel"/>
+        <p-button severity="primary" label="Update" [loading]="form.disabled" [disabled]="form.disabled"
+                  (click)="onUpdateUser()"/>
       </div>
     </div>
   </div>
-</div>
+</p-dialog>
 

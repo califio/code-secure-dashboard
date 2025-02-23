@@ -2,6 +2,8 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CodeSecure.Authentication;
 using CodeSecure.Database;
+using CodeSecure.Manager.Report;
+using CodeSecure.Manager.Report.Pdf;
 using CodeSecure.Middleware;
 using CodeSecure.Scheduler;
 using Microsoft.AspNetCore.Http.Features;

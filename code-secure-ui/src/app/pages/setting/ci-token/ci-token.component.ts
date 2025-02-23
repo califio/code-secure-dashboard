@@ -1,56 +1,56 @@
 import {Component} from '@angular/core';
-import {LoadingTableComponent} from '../../../shared/ui/loading-table/loading-table.component';
-import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {CiTokens} from '../../../api/models/ci-tokens';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
-import {ConfirmPopupComponent} from '../../../shared/ui/confirm-popup/confirm-popup.component';
-import {finalize} from 'rxjs';
-import {TooltipDirective} from '../../../shared/ui/tooltip/tooltip.directive';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
+import {ToastrService} from '../../../shared/services/toastr.service';
 import {TokenService} from '../../../api/services/token.service';
-
-interface CiTokenView {
-  token: CiTokens
-  hidden: boolean
-}
+import {ConfirmDialog} from 'primeng/confirmdialog';
+import {ButtonDirective} from 'primeng/button';
+import {ConfirmationService} from 'primeng/api';
+import {IconField} from "primeng/iconfield";
+import {InputIcon} from "primeng/inputicon";
+import {InputText} from "primeng/inputtext";
+import {TableModule} from 'primeng/table';
+import {Checkbox} from 'primeng/checkbox';
+import {Password} from 'primeng/password';
+import {Tooltip} from 'primeng/tooltip';
+import {Dialog} from 'primeng/dialog';
 
 @Component({
   selector: 'app-ci-token',
   standalone: true,
   imports: [
-    LoadingTableComponent,
-    NgIcon,
-    PaginationComponent,
     ReactiveFormsModule,
     TimeagoModule,
     FormsModule,
-    ConfirmPopupComponent,
-    TooltipDirective,
-    ButtonDirective
+    ConfirmDialog,
+    ButtonDirective,
+    IconField,
+    InputIcon,
+    InputText,
+    TableModule,
+    Checkbox,
+    Password,
+    Tooltip,
+    Dialog,
   ],
   templateUrl: './ci-token.component.html',
-  styleUrl: './ci-token.component.scss'
+  styleUrl: './ci-token.component.scss',
+  providers: [ConfirmationService]
 })
 export class CiTokenComponent {
   loading = false;
-  tokens: CiTokenView[] = [];
-  enableCreateTokenForm = false;
+  tokens: CiTokens[] = [];
+  showCreateTokenDialog = false;
   tokenName = '';
-  showConfirmPopup = false;
 
   constructor(
     private tokenService: TokenService,
     private toastr: ToastrService,
+    private confirmationService: ConfirmationService
   ) {
-
     this.tokenService.getCiTokens().subscribe(tokens => {
-      this.tokens = tokens.map(value => <CiTokenView>{
-        hidden: true,
-        token: value
-      });
+      this.tokens = tokens;
     })
   }
 
@@ -61,42 +61,58 @@ export class CiTokenComponent {
           name: this.tokenName.trim()
         }
       }).subscribe(token => {
-        this.tokens = [<CiTokenView>{hidden: true, token: token}].concat(...this.tokens);
-        this.toastr.success('create success');
-        this.enableCreateTokenForm = false;
+        this.tokens = [token].concat(...this.tokens);
+        this.toastr.success({
+          message: 'Create token success'
+        });
+        this.showCreateTokenDialog = false;
       })
     } else {
-      this.toastr.warning('token name is blank');
-    }
-  }
-
-  copyTokenValue(value: string) {
-    navigator.clipboard.writeText(value);
-    //this.clipboard.writeText(value);
-    this.toastr.success('copy CI token success');
-  }
-
-  confirmDelete() {
-    if (this.deleteTokenId) {
-      this.tokenService.deleteCiToken({
-        id: this.deleteTokenId
-      }).pipe(
-        finalize(() => {
-          this.showConfirmPopup = false;
-        })
-      ).subscribe(success => {
-        if (success) {
-          this.toastr.success('Delete success');
-          this.tokens = this.tokens.filter(value => value.token.id != this.deleteTokenId);
-        }
-      })
+      this.toastr.warning({
+        message: 'Token name is blank'
+      });
     }
   }
 
   onDeleteToken(tokenId: string) {
-    this.deleteTokenId = tokenId;
-    this.showConfirmPopup = true;
+    this.confirmationService.confirm({
+      message: 'Are you sure that you want to delete this token?',
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        severity: 'danger',
+        label: 'Delete',
+      },
+      accept: () => {
+        this.tokenService.deleteCiToken({
+          id: tokenId
+        }).subscribe(success => {
+          if (success) {
+            this.toastr.success({
+              message: 'Delete success'
+            });
+            this.tokens = this.tokens.filter(token => token.id != tokenId);
+          }
+        })
+      }
+    });
   }
 
   private deleteTokenId: string | null = null;
+
+  onSearch() {
+
+  }
+
+  closeDialog() {
+    this.showCreateTokenDialog = false;
+    this.tokenName = '';
+  }
 }

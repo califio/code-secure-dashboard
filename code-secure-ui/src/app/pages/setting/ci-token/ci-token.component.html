@@ -1,90 +1,74 @@
-<div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm">
-  <div class="font-semibold text-foreground mb-2 ml-1 text-xl">CI Access Token</div>
-  <div class="flex min-w-full flex-col rounded-xl border border-border bg-background gap-2">
-    <!--    FILTER-->
-    <div class="flex flex-row items-center justify-between py-1 px-5">
-      <div class="px-1 py-1 whitespace-nowrap">Displaying {{tokens.length}} results</div>
-      <div class="flex flex-row w-fit pt-4">
-        <button app-button type="primary" (click)="enableCreateTokenForm = true">Add CI Token</button>
-      </div>
+<div class="flex flex-col">
+  <h5>Access Token</h5>
+  <div class="flex flex-col w-full">
+    <div class="flex flex-row items-center justify-between border border-surface p-4">
+      <!--SEARCH-->
+      <p-icon-field>
+        <p-inputicon styleClass="pi pi-search"/>
+        <input type="text"
+               pInputText placeholder="Search..."
+               (keyup.enter)="onSearch()"/>
+      </p-icon-field>
+      <button pButton severity="primary" (click)="showCreateTokenDialog = true">
+        Add Token
+      </button>
     </div>
-    <div class="flex flex-col w-full border border-border gap-2 p-4" [class.hidden]="!enableCreateTokenForm">
-      <div class="text-base">Add a CI Token</div>
-      <input type="text" class="max-w-72 py-2" [(ngModel)]="tokenName">
-      <div class="flex flex-row items-center gap-2">
-        <button app-button type="primary" (click)="createCIToken()">Create CI Token</button>
-        <button app-button type="default" (click)="enableCreateTokenForm = false; tokenName = ''">Cancel</button>
-      </div>
-
-    </div>
-    <!--    TABLE-->
-    <div class="overflow-x-auto">
-      <table
-        class="table w-full table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
-        <thead class="border-t border-border text-xs text-muted-foreground">
+    <p-table [value]="tokens" scrollable>
+      <ng-template #header>
         <tr>
-          <th class="w-[50px] min-w-[50px] text-center">
-            <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
+          <th class="w-10 text-center">
+            <p-checkbox binary></p-checkbox>
           </th>
-          <th class="min-w-[300px]">TOKEN</th>
-          <th class="min-w-[180px]">VALUE</th>
-          <th class="min-w-[180px]">CREATED AT</th>
-          <th class="flex flex-row justify-center">
-            <div>ACTION</div>
+          <th class="w-48">TOKEN</th>
+          <th class="min-w-96">VALUE</th>
+          <th class="w-48 text-nowrap">CREATED AT</th>
+          <th class="w-36">
+            <div class="flex flex-row justify-center">ACTION</div>
           </th>
         </tr>
-        </thead>
-        @if(!loading){
-          <tbody>
-            @for (token of tokens; track $index) {
-              <tr>
-                <td class="text-center">
-                  <input
-                    class="checkbox checkbox-sm"
-                    data-datatable-row-check="true"
-                    type="checkbox"
-                    value="28" />
-                </td>
-                <td>
-                  <span class="w-full">{{ token.token.name }}</span>
-                </td>
-                <td>
-                  <div class="flex flex-row items-center gap-2">
-                    @if(token.hidden) {
-                      <span class="w-fit">***********************</span>
-                    } @else {
-                      <span class="w-fit">{{token.token.value}}</span>
-                    }
-                    <div class="p-1 cursor-pointer">
-                      <ng-icon [name]="token.hidden ? 'eye-off' : 'eye'" (click)="token.hidden = !token.hidden"></ng-icon>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="font-semibold text-[#00c869]">
-                    <span [tooltip]="token.token.createdAt">
-                      {{ token.token.createdAt | timeago }}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex flex-row p-2 cursor-pointer w-full justify-center" (click)="onDeleteToken(token.token.id!)">
-                    <ng-icon name="trash"></ng-icon>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        }
-      </table>
-    </div>
-    <!--  FOOTER-->
-    @if (loading) {
-      <loading-table></loading-table>
-    }
+      </ng-template>
+      <ng-template #body let-token>
+        <tr>
+          <td class="text-center">
+            <p-checkbox binary></p-checkbox>
+          </td>
+          <td>
+            <span>{{ token.name }}</span>
+          </td>
+          <td>
+            <p-password styleClass="w-full" inputStyleClass="border-none w-full shadow-none" disabled
+                        [inputStyle]="{'background-color': 'var(--p-panel-background)'}"
+                        [feedback]="false" toggleMask [ngModel]="token.value"/>
+          </td>
+          <td>
+            <div class="font-semibold text-[#00c869]">
+              <span [pTooltip]="token.createdAt" tooltipPosition="top">{{ token.createdAt | timeago }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex flex-row justify-center cursor-pointer" (click)="onDeleteToken(token.id!)">
+              <i class="pi pi-trash cursor-pointer"></i>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 </div>
-<confirm-popup [hidden]="!showConfirmPopup"
-               (cancel)="showConfirmPopup = false"
-               (confirm)="confirmDelete()">
-</confirm-popup>
+<p-confirm-dialog></p-confirm-dialog>
+<p-dialog [(visible)]="showCreateTokenDialog" header="Create Access Token">
+  <div class="flex flex-col gap-4 w-[320px] md:w-[480px]">
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1 w-full">
+        <div class="font-semibold">Name</div>
+        <input pInputText [(ngModel)]="tokenName"/>
+      </div>
+    </div>
+    <div class="flex flex-row items-center gap-4 justify-end">
+      <div class="flex flex-row items-center gap-4 w-fit">
+        <button pButton severity="secondary" (click)="closeDialog()">Cancel</button>
+        <button pButton severity="primary" [loading]="loading" (click)="createCIToken()">Create</button>
+      </div>
+    </div>
+  </div>
+</p-dialog>

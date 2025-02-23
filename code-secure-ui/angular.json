@@ -34,9 +34,15 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
+            "scripts": [
+
+            ],
             "allowedCommonJsDependencies": [
-              "apexcharts"
+              "prismjs",
+              "prismjs/components/prism-go",
+              "prismjs/components/prism-typescript",
+              "prismjs/components/prism-javascript",
+              "prismjs/components/prism-python"
             ]
           },
           "configurations": {
@@ -45,7 +51,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",

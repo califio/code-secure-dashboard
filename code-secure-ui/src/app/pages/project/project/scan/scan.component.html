@@ -1,73 +1,59 @@
-<div class="mx-auto px-2 lg:px-6 flex flex-col pt-6 text-sm gap-4">
-  <div class="flex flex-col overflow-hidden w-full border border-white/5 gap-4 rounded-xl bg-background p-6">
-    <div class="flex w-full items-center">
-      <div class="flex flex-col font-normal gap-2">
-        <div class="flex flex-row gap-2 items-center text-base">
-          <ng-icon [name]="store.project().sourceType! | lowercase"></ng-icon>
-          <a [href]="store.project().repoUrl" target="_blank" class="hover:underline">{{store.project().name}}</a>
-        </div>
-        <div class="flex flex-row items-center gap-1">
-          <div>You have</div>
-          @if(statisticLoading) {
-            <ng-icon name="spin" class="animate-spin"></ng-icon>
-          } @else {
-            <a class="font-bold text-primary hover:underline hover:underline-offset-4"
-               [routerLink]="['/project', store.projectId(), 'finding']"
-               [queryParams]="{'status': 'Open'}">
-              {{statistic.openFinding}}
-            </a>
-          }
-          <div>open vulnerabilities.</div>
-        </div>
-<!--        <div class="flex gap-4">No new vulnerabilities detected last week!</div>-->
-      </div>
+<div class="flex flex-col gap-8">
+  <div class="flex flex-col font-normal gap-2">
+    <div class="flex flex-row gap-2 items-center text-base">
+      <ng-icon [name]="store.project().sourceType! | lowercase"></ng-icon>
+      <a [href]="store.project().repoUrl" target="_blank" class="hover:underline">{{ store.project().name }}</a>
     </div>
-    <div class="flex flex-wrap">
-      @if(statisticLoading) {
-        <loading-table [row]="5"></loading-table>
+    <div class="flex flex-row items-center gap-1">
+      <div>You have</div>
+      @if (statisticLoading) {
+        <ng-icon name="spin" class="animate-spin"></ng-icon>
       } @else {
-        <div class="flex flex-col items-center gap-4">
-          <div class="font-semibold">Static Application Security Testing (SAST)</div>
-          <div class="flex flex-wrap gap-4">
-            <div severity-chart [severity]="statistic.severitySast"></div>
-            <finding-status-chart [status]="statistic.statusSast"></finding-status-chart>
-          </div>
-        </div>
-        <div class="flex flex-col items-center gap-4">
-          <div class="font-semibold">Software Composition Analysis (SCA)</div>
-          <div class="flex flex-wrap gap-4">
-            <div severity-chart [severity]="statistic.severitySca"></div>
-            <finding-status-chart [status]="statistic.statusSca"></finding-status-chart>
-          </div>
-        </div>
+        <a class="font-bold text-primary hover:underline hover:underline-offset-4"
+           [routerLink]="['/project', store.projectId(), 'finding']"
+           [queryParams]="{'status': 'Open'}">
+          {{ statistic.openFinding }}
+        </a>
       }
+      <div>open vulnerabilities</div>
     </div>
   </div>
-  <!--  SCANS-->
-  <div class="flex min-w-full flex-col rounded-xl border border-border bg-background">
-    <!--    FILTER-->
-    <div class="flex flex-col py-3 px-5">
-      <div class="flex flex-row gap-2 w-full ">
-        <!--SEARCH-->
-        <div class="flex w-full md:max-w-80">
-          <label class="relative text-muted-foreground w-full">
-            <div class="absolute left-2.5 top-2.5">
-              <ng-icon name="search"></ng-icon>
-            </div>
-            <input class="py-2 pl-8 pr-2" placeholder="Search..." type="text"
-                   (keyup.enter)="onSearchChange()"/>
-          </label>
+  <div class="flex flex-wrap gap-4">
+    <div class="flex flex-col min-w-96 overflow-x-auto">
+      <h5>Static Application Security Testing (SAST)</h5>
+      <p-panel class="w-full">
+        <div class="flex flex-wrap">
+          <severity-chart [severity]="statistic.severitySast"></severity-chart>
+          <finding-status-chart [status]="statistic.statusSast"></finding-status-chart>
         </div>
+      </p-panel>
+    </div>
+    <div class="flex flex-col">
+      <h5>Software Composition Analysis (SCA)</h5>
+      <p-panel class="w-full">
+        <div class="flex flex-wrap">
+          <severity-chart [severity]="statistic.severitySca"/>
+          <finding-status-chart [status]="statistic.statusSca"></finding-status-chart>
+        </div>
+      </p-panel>
+    </div>
+  </div>
+  <p-panel>
+    <!--    FILTER-->
+    <div class="flex flex-col">
+      <div class="flex flex-row gap-2 w-full">
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search"/>
+          <input type="text" (keyup.enter)="onSearchChange()" pInputText placeholder="Search..."/>
+        </p-iconfield>
       </div>
     </div>
     <!--    TABLE-->
-    <div class="overflow-x-auto">
-      <table
-        class="table w-full min-w-[1024px] table-auto border-collapse border-0 text-left align-middle leading-5 text-muted-foreground">
-        <thead class="border-t border-border text-xs text-muted-foreground">
-        <tr>
+    <p-table [loading]="loading" [value]="scans()" [scrollable]="true" scrollHeight="400px" styleClass="mt-2">
+      <ng-template #header>
+        <tr class="text-sm">
           <th class="w-[50px] min-w-[50px] text-center">
-            <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox"/>
+            <p-checkbox binary></p-checkbox>
           </th>
           <th>
             <div class="flex flex-row items-center gap-1">
@@ -95,7 +81,7 @@
             </div>
           </th>
           <th>
-            <div class="flex flex-row items-center gap-1 w-10">
+            <div class="flex flex-row items-center gap-1 w-10 text-nowrap">
               <span>LAST SCAN</span>
             </div>
           </th>
@@ -104,101 +90,84 @@
           </th>
           <th class="max-w-10">ACTION</th>
         </tr>
-        </thead>
-        @if(!loading) {
-          <tbody>
-            @for (scan of response.items; track scan.id) {
-              <tr>
-                <td class="text-center">
-                  <input
-                    class="checkbox checkbox-sm"
-                    data-datatable-row-check="true"
-                    type="checkbox"
-                    value="28"/>
-                </td>
-                <td>
-                  <a [routerLink]="['/project', store.projectId(), 'finding']"
-                     [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scannerId}"
-                     class="flex flex-col gap-1">
-                    <div [tooltip]="scan.commitTitle" position="dynamic">{{scan.commitTitle! | truncate:50 }}</div>
-                    <scan-branch [action]="scan.gitAction ?? GitAction.CommitBranch"
+      </ng-template>
+      <ng-template #body let-scan>
+        <tr>
+          <td class="text-center">
+            <p-checkbox binary></p-checkbox>
+          </td>
+          <td>
+            <a [routerLink]="['/project', store.projectId(), 'finding']"
+               [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scannerId}"
+               class="flex flex-col gap-1">
+              <span [pTooltip]="scan.commitTitle" tooltipPosition="top">{{ scan.commitTitle! | truncate:50 }}</span>
+              <scan-branch-label [action]="scan.gitAction ?? GitAction.CommitBranch"
                                  [branch]="scan.commitBranch ?? ''"
                                  [targetBranch]="scan.targetBranch">
-                    </scan-branch>
-                  </a>
-                </td>
-                <td>{{ scan.scanner }}</td>
-                <td class="lowercase">{{ scan.type }}</td>
-                <td>
-                  <scan-status [status]="scan.status ?? ScanStatus.Error">
-                  </scan-status>
-                </td>
-                <td class="min-w-32">
-                  <div
-                    class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
-                    <p
-                      class="flex-1 text-center bg-rose-600/20 text-rose-500 flex items-center justify-center opacity-100">
-                      {{scan.severityCritical}}
-                    </p>
-                    <p
-                      class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center opacity-100">
-                      {{scan.severityHigh}}
-                    </p>
-                    <p
-                      class="flex-1 text-center bg-yellow-600/20 text-yellow-500 flex items-center justify-center opacity-100">
-                      {{scan.severityMedium}}
-                    </p>
-                    <p
-                      class="flex-1 text-center bg-indigo-500/20 text-indigo-400 flex items-center justify-center opacity-100">
-                      {{scan.severityLow}}
-                    </p>
-                    <p
-                      class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center opacity-100">
-                      {{scan.severityInfo}}
-                    </p>
-                  </div>
-                </td>
-                <td>
-                  <div class="text-[#00c869]">
-                    <span [tooltip]="scan.startedAt">{{ scan.startedAt | timeago }}</span>
+              </scan-branch-label>
+            </a>
+          </td>
+          <td>{{ scan.scanner }}</td>
+          <td class="lowercase">{{ scan.type }}</td>
+          <td>
+            <scan-status [status]="scan.status ?? ScanStatus.Error"></scan-status>
+          </td>
+          <td class="min-w-32">
+            <div
+              class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
+              <p
+                class="flex-1 text-center bg-rose-600/20 text-rose-500 flex items-center justify-center h-full">
+                {{ scan.severityCritical }}
+              </p>
+              <p
+                class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center h-full">
+                {{ scan.severityHigh }}
+              </p>
+              <p
+                class="flex-1 text-center bg-yellow-600/20 text-yellow-500 flex items-center justify-center h-full">
+                {{ scan.severityMedium }}
+              </p>
+              <p
+                class="flex-1 text-center bg-indigo-500/20 text-indigo-400 flex items-center justify-center h-full">
+                {{ scan.severityLow }}
+              </p>
+              <p
+                class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center h-full">
+                {{ scan.severityInfo }}
+              </p>
+            </div>
+          </td>
+          <td>
+            <div class="text-[#00c869]">
+              <span [pTooltip]="scan.startedAt" tooltipPosition="top">{{ scan.startedAt | timeago }}</span>
+            </div>
+          </td>
+          <td>{{ duration(scan.startedAt, scan.completedAt) }}</td>
+          <td>
+            <div class="flex flex-row items-center gap-2">
+              <a class="cursor-pointer"
+                 [routerLink]="['/project', store.projectId(), 'finding']"
+                 [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}">
+                <ng-icon name="arrowTopRightOnSquare" size="18"></ng-icon>
+              </a>
+              <a class="cursor-pointer" [href]="scan.jobUrl" target="_blank">
+                <ng-icon name="commandLine" size="20"></ng-icon>
+              </a>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
 
-                  </div>
-                </td>
-                <td>{{duration(scan.startedAt, scan.completedAt)}}</td>
-                <td>
-                  <div class="flex flex-row items-center gap-2">
-                    <a class="cursor-pointer"
-                       [routerLink]="['/project', store.projectId(), 'finding']" [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}">
-                      <ng-icon name="external-link" size="18"></ng-icon>
-                    </a>
-                    <a class="cursor-pointer" [href]="scan.jobUrl" target="_blank">
-                      <ng-icon name="command-line" size="20"></ng-icon>
-                    </a>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        }
-      </table>
+    <div class="flex flex-row justify-end">
+      <p-paginator class="sticky bottom-0"
+                   (onPageChange)="onPageChange($event)"
+                   [first]="firstRecord()"
+                   [rows]="pageSize()"
+                   [totalRecords]="totalRecords()"
+                   [showCurrentPageReport]="isDesktop"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                   [rowsPerPageOptions]="[10, 20, 50, 100]"/>
     </div>
-    @if (loading) {
-      <div class="flex flex-col animate-pulse w-full gap-0.5">
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-        <div class="h-12 bg-gray-200 dark:bg-gray-700/40"></div>
-      </div>
-    }
-    <!--  FOOTER-->
-    <pagination class="sticky bottom-0 z-10"
-                [currentPage]="response.currentPage!"
-                [totalPage]="response.pageCount!"
-    ></pagination>
-  </div>
+  </p-panel>
 </div>

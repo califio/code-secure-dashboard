@@ -1,20 +1,22 @@
 import {Component, OnInit} from '@angular/core';
-import {ButtonDirective} from '../../../../../../shared/ui/button/button.directive';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../../core/forms';
 import {AlertSetting} from '../../../../../../api/models/alert-setting';
 import {ProjectService} from '../../../../../../api/services/project.service';
 import {ProjectStore} from '../../../project.store';
 import {finalize} from 'rxjs';
-import {ToastrService} from '../../../../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../../../../shared/services/toastr.service';
+import {ToggleSwitch} from 'primeng/toggleswitch';
+import {ButtonDirective} from 'primeng/button';
 
 @Component({
   selector: 'mail-integration-project',
   standalone: true,
   imports: [
-    ButtonDirective,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToggleSwitch,
+    ButtonDirective
   ],
   templateUrl: './mail.component.html',
   styleUrl: './mail.component.scss'
@@ -55,7 +57,9 @@ export class MailComponent implements OnInit {
     }).pipe(
       finalize(() => this.form.enable())
     ).subscribe(() => {
-      this.toastr.success('Update success!');
+      this.toastr.success({
+        message: 'Update success!'
+      });
     })
   }
 }

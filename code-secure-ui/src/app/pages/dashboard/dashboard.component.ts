@@ -1,91 +1,133 @@
-import {Component, OnInit} from '@angular/core';
-import {ComingSoonComponent} from "../../shared/ui/coming-soon/coming-soon.component";
-import {LoadingTableComponent} from '../../shared/ui/loading-table/loading-table.component';
-import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../shared/ui/pagination/pagination.component';
+import {AfterViewInit, Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
-import {FindingStatusChartComponent} from '../../shared/components/chart/finding-status-chart/finding-status-chart.component';
-import {SeverityChartComponent} from '../../shared/components/chart/severity-chart/severity-chart.component';
-import {SastStatistic} from '../../api/models/sast-statistic';
-import {ScaStatistic} from '../../api/models/sca-statistic';
+import {FindingStatusChartComponent} from './finding-status-chart/finding-status-chart.component';
+import {SeverityChartComponent} from './severity-chart/severity-chart.component';
 import {DashboardService} from '../../api/services/dashboard.service';
-import {TopFindingChartComponent} from '../../shared/components/chart/top-finding-chart/top-finding-chart.component';
-import {finalize} from 'rxjs';
-import {TopDependencyChartComponent} from '../../shared/components/chart/top-dependency-chart/top-dependency-chart.component';
+import {TopFindingChartComponent} from './top-finding-chart/top-finding-chart.component';
+import {debounceTime, Subject, takeUntil} from 'rxjs';
+import {TopDependencyChartComponent} from './top-dependency-chart/top-dependency-chart.component';
+import {Fluid} from 'primeng/fluid';
+import {LayoutService} from '../../layout/layout.service';
+import {Severity} from './severity-chart/severity';
+import {FindingStatusSeries} from './finding-status-chart/finding-status';
+import {TopFinding} from '../../api/models/top-finding';
+import {Chart} from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {TopDependency} from '../../api/models/top-dependency';
+import {Card} from 'primeng/card';
+import {RangeDateComponent} from '../../shared/ui/range-date/range-date.component';
+import {getRangeDate, RangeDateType} from '../../shared/date-util';
+import {RangeDateState} from '../../shared/ui/range-date/range-date.model';
+import {DashboardStore} from './dashboard.store';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    ComingSoonComponent,
-    LoadingTableComponent,
-    NgIcon,
-    PaginationComponent,
     ReactiveFormsModule,
     TimeagoModule,
     FindingStatusChartComponent,
     SeverityChartComponent,
     TopFindingChartComponent,
-    TopDependencyChartComponent
+    TopDependencyChartComponent,
+    Fluid,
+    Card,
+    RangeDateComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
-  sastStatistic: SastStatistic = {
-    severity: {
-      critical: 0,
-      high: 0,
-      info: 0,
-      low: 0,
-      medium: 0
-    },
-    status: {
-      acceptedRisk: 0,
-      confirmed: 0,
-      fixed: 0,
-      open: 0
-    },
-    topFindings: []
-  };
-  scaStatistic: ScaStatistic = {
-    severity: {
-      critical: 0,
-      high: 0,
-      info: 0,
-      low: 0,
-      medium: 0
-    },
-    status: {
-      acceptedRisk: 0,
-      confirmed: 0,
-      fixed: 0,
-      open: 0
-    },
-    topDependencies: [],
-  };
-  loadingSast = false;
-  loadingSca = false;
+export class DashboardComponent implements OnInit, OnDestroy {
+  sastSeverity = signal<Severity>({
+    critical: 0, high: 0, info: 0, low: 0, medium: 0
+  });
+  scaSeverity = signal<Severity>({
+    critical: 0, high: 0, info: 0, low: 0, medium: 0
+  });
+  sastStatus = signal<FindingStatusSeries>({acceptedRisk: 0, confirmed: 0, fixed: 0, open: 0});
+  scaStatus = signal<FindingStatusSeries>({acceptedRisk: 0, confirmed: 0, fixed: 0, open: 0});
+  topFindings = signal<TopFinding[]>([]);
+  topDependencies = signal<TopDependency[]>([]);
+  rangeDate: RangeDateState = {
+    type: RangeDateType.Last30Days,
+    ...getRangeDate(RangeDateType.Last30Days)
+  }
+  private destroy$ = new Subject();
 
   constructor(
-    private dashboardService: DashboardService
+    private layoutService: LayoutService,
+    private dashboardService: DashboardService,
+    private store: DashboardStore
   ) {
+    Chart.register(ChartDataLabels);
+    this.layoutService.configUpdate$.pipe(
+      takeUntil(this.destroy$),
+    ).subscribe(() => {
+      this.initCharts();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
-    this.loadingSast = true;
-    this.loadingSca = true;
-    this.dashboardService.sastStatistic().pipe(
-      finalize(() => this.loadingSast = false)
-    ).subscribe(sast => {
-      this.sastStatistic = sast;
+    this.initCharts();
+  }
+
+  initCharts() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const borderColor = documentStyle.getPropertyValue('--surface-border');
+    this.store.textColor.set(textColor);
+    this.store.borderColor.set(borderColor);
+    const startDate = this.rangeDate.startDate.toISOString()
+    const endDate = this.rangeDate.endDate.toISOString()
+    this.dashboardService.sastStatistic({
+      from: startDate,
+      to: endDate
+    }).subscribe(sast => {
+      this.sastSeverity.set({
+        critical: sast.severity.critical,
+        high: sast.severity.high,
+        info: sast.severity.info,
+        low: sast.severity.low,
+        medium: sast.severity.medium
+      });
+      this.sastStatus.set({
+        acceptedRisk: sast.status.acceptedRisk,
+        confirmed: sast.status.confirmed,
+        fixed: sast.status.fixed,
+        open: sast.status.open
+      });
+      this.topFindings.set(sast.topFindings);
     });
-    this.dashboardService.scaStatistic()
-      .pipe(
-        finalize(() => this.loadingSca = false)
-      ).subscribe(sca => {
-      this.scaStatistic = sca;
-    })
+
+    this.dashboardService.scaStatistic({
+      from: startDate,
+      to: endDate
+    }).subscribe(sca => {
+      this.scaSeverity.set({
+        critical: sca.severity.critical,
+        high: sca.severity.high,
+        info: sca.severity.info,
+        low: sca.severity.low,
+        medium: sca.severity.medium
+      });
+      this.scaStatus.set({
+        acceptedRisk: sca.status.acceptedRisk,
+        confirmed: sca.status.confirmed,
+        fixed: sca.status.fixed,
+        open: sca.status.open
+      });
+      this.topDependencies.set(sca.topDependencies);
+    });
+  }
+
+  onRangeDateChange($event: RangeDateState) {
+    this.rangeDate = $event;
+    this.initCharts();
   }
 }

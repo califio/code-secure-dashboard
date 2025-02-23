@@ -1,26 +1,28 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ResetPasswordRequest} from '../../../api/models/reset-password-request';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {bindQueryParams} from '../../../core/router';
-import {ButtonDirective} from '../../../shared/ui/button/button.directive';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgIcon} from '@ng-icons/core';
 import {AuthService} from '../../../api/services/auth.service';
 import {finalize} from 'rxjs';
-import {ToastrService} from '../../../shared/components/toastr/toastr.service';
+import {ToastrService} from '../../../shared/services/toastr.service';
+import {AppFloatingConfigurator} from '../../../layout/component/app.floatingconfigurator';
+import {ButtonDirective} from 'primeng/button';
+import {Password} from 'primeng/password';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
   imports: [
-    ButtonDirective,
     ReactiveFormsModule,
-    RouterLink,
     NgIcon,
-    FormsModule
+    FormsModule,
+    AppFloatingConfigurator,
+    Password,
+    ButtonDirective
   ],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
 })
 export class ResetPasswordComponent {
   body: ResetPasswordRequest = {
@@ -28,6 +30,7 @@ export class ResetPasswordComponent {
   }
   loading = false;
   passwordTextType = false;
+
   constructor(
     private toastr: ToastrService,
     private authService: AuthService,
@@ -44,7 +47,9 @@ export class ResetPasswordComponent {
     }).pipe(
       finalize(() => this.loading = false)
     ).subscribe(() => {
-      this.toastr.success('Reset password success');
+      this.toastr.success({
+        message: 'Reset password success'
+      });
       this.router.navigateByUrl('/auth/login').then();
     })
   }

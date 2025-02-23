@@ -54,10 +54,10 @@ markdown_extensions:
 nav:
   - Getting Started:
     - Installation: installation.md
-    - Setting:
-      - Notification: setting/notification.md
-      - Authentication: setting/authentication.md
-      - CI Access Token: setting/ci-token.md
+    - System Setting:
+      - General: setting/general.md
+      - Access Token: setting/ci-token.md
+      - Integration: setting/integration.md
     - Security Integration:
       - security-integration/index.md
       - Environment Variables: security-integration/environment-variables.md

@@ -12,9 +12,9 @@ public class Tests
     [Test]
     public void TestNormalized()
     {
-        Console.WriteLine("Test".NormalizeUpper());
-        Console.WriteLine("tEst".NormalizeUpper());
-        Console.WriteLine(" tEsT ".NormalizeUpper());
+        var uri = new Uri("https://gitlab.com////org/project-example#ac?124");
+        Console.WriteLine(uri.AbsolutePath.TrimStart('/'));
+        Console.WriteLine(uri.GetLeftPart(UriPartial.Authority));
     }
     [Test]
     public void TestVersion()

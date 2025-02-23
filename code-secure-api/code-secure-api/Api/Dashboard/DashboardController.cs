@@ -8,15 +8,15 @@ public class DashboardController(IDashboardService dashboardService) : BaseContr
 {
     [HttpGet]
     [Route("sast")]
-    public async Task<SastStatistic> SastStatistic()
+    public async Task<SastStatistic> SastStatistic(DateTime? from = null, DateTime? to = null)
     {
-        return await dashboardService.SastStatisticAsync();
+        return await dashboardService.SastStatisticAsync(from, to);
     }
 
     [HttpGet]
     [Route("sca")]
-    public async Task<ScaStatistic> ScaStatistic()
+    public async Task<ScaStatistic> ScaStatistic(DateTime? from = null, DateTime? to = null)
     {
-        return await dashboardService.ScaStatisticAsync();
+        return await dashboardService.ScaStatisticAsync(from, to);
     }
 }

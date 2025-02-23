@@ -66,25 +66,6 @@ module.exports = {
         custom: '0px 0px 50px 0px rgb(82 63 105 / 15%)',
       },
       colors: {
-        border: 'var(--border)',
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        primary: {
-          DEFAULT: 'var(--primary)',
-          foreground: 'var(--primary-foreground)',
-        },
-        destructive: {
-          DEFAULT: 'var(--destructive)',
-          foreground: 'var(--destructive-foreground)',
-        },
-        muted: {
-          DEFAULT: 'var(--muted)',
-          foreground: 'var(--muted-foreground)',
-        },
-        card: {
-          DEFAULT: 'var(--card)',
-          foreground: 'var(--card-foreground)',
-        },
         critical: '#f43f5e',
         high: '#f97316',
         medium: '#eab308',
@@ -107,6 +88,7 @@ module.exports = {
     },
   },
   plugins: [
+    require('tailwindcss-primeui'),
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
     require('tailwind-scrollbar'),

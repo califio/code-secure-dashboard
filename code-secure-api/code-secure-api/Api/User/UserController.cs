@@ -14,6 +14,13 @@ public class UserController(IUserService userService) : BaseController
     {
         return await userService.GetUserSummaryAsync(filter);
     }
+    
+    [HttpGet]
+    [Route("project-manager")]
+    public async Task<List<UserSummary>> GetProjectManagerUsers()
+    {
+        return await userService.GetProjectManagerUsersAsync();
+    }
 
     [HttpPost]
     [Route("filter")]

@@ -2,66 +2,61 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ComingSoonComponent} from '../../../../shared/ui/coming-soon/coming-soon.component';
 import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectStore} from '../project.store';
-import {FindingDetailComponent} from '../../../../shared/components/finding/finding-detail/finding-detail.component';
-import {FindingStatusComponent} from '../../../../shared/components/finding/finding-status/finding-status.component';
-import {
-  FindingStatusFilterComponent
-} from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
-import {ListFindingComponent} from '../../../../shared/components/finding/list-finding/list-finding.component';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DependencyStore} from './dependency.store';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
 import {ActivatedRoute, Router} from '@angular/router';
 import {finalize, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import {ProjectPackagePage} from '../../../../api/models/project-package-page';
-import {
-  FindingStatusLabelComponent
-} from '../../../../shared/components/finding/finding-status-label/finding-status-label.component';
-import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
 import {ProjectPackage} from '../../../../api/models/project-package';
 import {RiskLevelIconComponent} from '../../../../shared/components/risk-level-icon/risk-level-icon.component';
 import {RiskLevel} from '../../../../api/models/risk-level';
-import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive';
-import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
 import {ProjectPackageSortField} from '../../../../api/models';
+import {IconField} from "primeng/iconfield";
+import {InputIcon} from "primeng/inputicon";
+import {InputText} from "primeng/inputtext";
+import {TableModule} from 'primeng/table';
+import {Paginator, PaginatorState} from 'primeng/paginator';
+import {LayoutService} from '../../../../layout/layout.service';
+import {Tooltip} from 'primeng/tooltip';
+import {SortByComponent} from '../../../../shared/ui/sort-by/sort-by.component';
+import {SortByState} from '../../../../shared/ui/sort-by/sort-by-state';
+import {Button} from 'primeng/button';
 
 @Component({
   selector: 'app-dependency',
   standalone: true,
-    imports: [
-        ComingSoonComponent,
-        FindingDetailComponent,
-        FindingStatusComponent,
-        FindingStatusFilterComponent,
-        ListFindingComponent,
-        NgIcon,
-        PaginationComponent,
-        ReactiveFormsModule,
-        FormsModule,
-        FindingStatusLabelComponent,
-        LoadingTableComponent,
-        RiskLevelIconComponent,
-        TooltipDirective,
-        DropdownComponent,
-    ],
+  imports: [
+    ComingSoonComponent,
+    NgIcon,
+    ReactiveFormsModule,
+    FormsModule,
+    RiskLevelIconComponent,
+    IconField,
+    InputIcon,
+    InputText,
+    TableModule,
+    Paginator,
+    Tooltip,
+    SortByComponent,
+    Button,
+  ],
   templateUrl: './dependency.component.html',
-  styleUrl: './dependency.component.scss'
 })
 export class DependencyComponent implements OnInit, OnDestroy {
+  isDesktop = true;
   private destroy$ = new Subject();
-  loadingDependency = false;
-  dependency = false;
 
   constructor(
     private projectService: ProjectService,
     private projectStore: ProjectStore,
     public store: DependencyStore,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private layoutService: LayoutService
   ) {
+    this.isDesktop = this.layoutService.isDesktop();
   }
 
   ngOnDestroy(): void {
@@ -70,6 +65,13 @@ export class DependencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.store.filter = {
+      desc: true,
+      name: '',
+      page: 1,
+      size: 20,
+      sortBy: ProjectPackageSortField.RiskLevel
+    }
     this.projectService.getProjectPackages({
       projectId: this.projectStore.projectId(),
       body: this.store.filter
@@ -77,6 +79,8 @@ export class DependencyComponent implements OnInit, OnDestroy {
     this.route.queryParams.pipe(
       switchMap(params => {
         bindQueryParams(params, this.store.filter);
+        this.store.pageSize.set(this.store.filter.size!);
+        this.store.currentPage.set(this.store.filter.page!);
         return this.getProjectDependencies()
       }),
       takeUntil(this.destroy$)
@@ -101,18 +105,19 @@ export class DependencyComponent implements OnInit, OnDestroy {
       tap(response => {
         this.store.dependencies.set(response.items!);
         this.store.currentPage.set(response.currentPage!);
-        this.store.totalPage.set(response.pageCount!);
+        this.store.totalRecords.set(response.count!);
       })
     )
   }
 
-  onPageChange(page: number) {
-    this.store.filter.page = page;
+  onPageChange($event: PaginatorState) {
+    this.store.filter.page = $event.page! + 1;
+    this.store.filter.size = $event.rows;
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onOpenDependency(id: string | undefined) {
-    this.dependency = true;
+  onOpenDependency(dependency: ProjectPackage) {
+    this.store.dependency.set(dependency);
   }
 
   getNameDependency(dependency: ProjectPackage) {
@@ -123,24 +128,21 @@ export class DependencyComponent implements OnInit, OnDestroy {
   }
 
   protected readonly RiskLevel = RiskLevel;
-  sortOptions: DropdownItem[] = [
+  sortOptions = [
     {
-      label: 'Name',
+      label: 'name',
       value: ProjectPackageSortField.Name
     },
     {
-      label: 'Impact',
+      label: 'impact',
       value: ProjectPackageSortField.RiskLevel
     }
   ];
 
-  onSortChange(sortBy: any) {
-    this.store.filter.sortBy = sortBy;
-    updateQueryParams(this.router, this.store.filter);
-  }
 
-  onOrderChange() {
-    this.store.filter.desc = !this.store.filter.desc;
+  onSortChange($event: SortByState) {
+    this.store.filter.sortBy = $event.sortBy;
+    this.store.filter.desc = $event.desc;
     updateQueryParams(this.router, this.store.filter);
   }
 }

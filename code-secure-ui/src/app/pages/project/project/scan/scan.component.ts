@@ -1,12 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, computed, OnDestroy, OnInit, signal} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
-import {PaginationComponent} from '../../../../shared/ui/pagination/pagination.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, RouterLink} from '@angular/router';
-import {DropdownComponent} from '../../../../shared/ui/dropdown/dropdown.component';
-import {DropdownItem} from '../../../../shared/ui/dropdown/dropdown.model';
-import {ProjectScanPage} from '../../../../api/models/project-scan-page';
 import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectScanFilter} from '../../../../api/models/project-scan-filter';
 import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
@@ -14,37 +10,48 @@ import {bindQueryParams} from '../../../../core/router';
 import {GitAction} from '../../../../api/models/git-action';
 import {ProjectStatistics} from '../../../../api/models/project-statistics';
 import {ProjectStore} from '../project.store';
-import {ScanBranchComponent} from '../../../../shared/components/scan-branch/scan-branch.component';
-import {ScanStatusComponent} from '../../../../shared/components/scan-status/scan-status.component';
-import {ScanStatus} from '../../../../api/models';
-import {TooltipDirective} from '../../../../shared/ui/tooltip/tooltip.directive';
-import {SeverityChartComponent} from '../../../../shared/components/chart/severity-chart/severity-chart.component';
 import {
-  FindingStatusChartComponent
-} from '../../../../shared/components/chart/finding-status-chart/finding-status-chart.component';
-import {LoadingTableComponent} from '../../../../shared/ui/loading-table/loading-table.component';
+  ScanBranchLabelComponent
+} from '../../../../shared/components/scan/scan-branch-label/scan-branch-label.component';
+import {ScanStatusComponent} from '../../../../shared/components/scan/scan-status/scan-status.component';
+import {ProjectScan, ScanStatus} from '../../../../api/models';
+import {SeverityChartComponent} from '../../../dashboard/severity-chart/severity-chart.component';
+import {FindingStatusChartComponent} from '../../../dashboard/finding-status-chart/finding-status-chart.component';
 import {LowerCasePipe} from '@angular/common';
 import {TruncatePipe} from '../../../../shared/pipes/truncate.pipe';
+import {IconField} from 'primeng/iconfield';
+import {InputIcon} from 'primeng/inputicon';
+import {InputText} from 'primeng/inputtext';
+import {Checkbox} from 'primeng/checkbox';
+import {Paginator, PaginatorState} from 'primeng/paginator';
+import {TableModule} from 'primeng/table';
+import {Tooltip} from 'primeng/tooltip';
+import {LayoutService} from '../../../../layout/layout.service';
+import {Panel} from 'primeng/panel';
 
 @Component({
   selector: 'app-scan',
   standalone: true,
   imports: [
     NgIcon,
-    PaginationComponent,
     ReactiveFormsModule,
     TimeagoModule,
     FormsModule,
     RouterLink,
-    DropdownComponent,
-    ScanBranchComponent,
+    ScanBranchLabelComponent,
     ScanStatusComponent,
-    TooltipDirective,
     SeverityChartComponent,
     FindingStatusChartComponent,
-    LoadingTableComponent,
     LowerCasePipe,
-    TruncatePipe
+    TruncatePipe,
+    IconField,
+    InputIcon,
+    InputText,
+    Checkbox,
+    Paginator,
+    TableModule,
+    Tooltip,
+    Panel,
   ],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'
@@ -80,25 +87,29 @@ export class ScanComponent implements OnInit, OnDestroy {
     }
   };
   statisticLoading = false;
-  response: ProjectScanPage = {
-    count: 0,
-    currentPage: 1,
-    pageCount: 0,
-    items: [],
-    size: 0,
-  };
+  scans = signal<ProjectScan[]>([]);
   filter: ProjectScanFilter = {
     size: 20,
     page: 1,
     desc: true,
     scanner: null,
   }
+  isDesktop = true;
+  // paginator
+  currentPage = signal(1);
+  pageSize = signal(20);
+  totalRecords = signal(0);
+  firstRecord = computed(() => {
+    return (this.currentPage() - 1) * this.pageSize();
+  });
 
   constructor(
     private projectService: ProjectService,
     public store: ProjectStore,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private layoutService: LayoutService
   ) {
+    this.isDesktop = this.layoutService.isDesktop();
   }
 
   ngOnInit(): void {
@@ -116,6 +127,8 @@ export class ScanComponent implements OnInit, OnDestroy {
       switchMap(params => {
         this.loading = true;
         bindQueryParams(params, this.filter);
+        this.currentPage.set(this.filter.page!);
+        this.pageSize.set(this.filter.size!);
         return this.projectService.getProjectScans({
           projectId: this.store.projectId(),
           body: this.filter
@@ -127,15 +140,12 @@ export class ScanComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroy$)
     ).subscribe(response => {
-      this.response = response;
+      this.scans.set(response.items!);
+      this.totalRecords.set(response.count!);
     })
   }
 
   onSearchChange() {
-
-  }
-
-  onStatusChange($event: DropdownItem) {
 
   }
 
@@ -159,9 +169,9 @@ export class ScanComponent implements OnInit, OnDestroy {
   }
 
   private mIcon: Map<GitAction, string> = new Map<GitAction, string>([
-    [GitAction.CommitTag, 'git-tag'],
-    [GitAction.CommitBranch, 'git-branch'],
-    [GitAction.MergeRequest, 'git-merge'],
+    [GitAction.CommitTag, 'gitTag'],
+    [GitAction.CommitBranch, 'gitBranch'],
+    [GitAction.MergeRequest, 'gitMerge'],
   ]);
 
   ngOnDestroy(): void {
@@ -173,4 +183,8 @@ export class ScanComponent implements OnInit, OnDestroy {
   protected readonly GitAction = GitAction;
   protected readonly Date = Date;
   protected readonly ScanStatus = ScanStatus;
+
+  onPageChange($event: PaginatorState) {
+
+  }
 }

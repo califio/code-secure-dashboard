@@ -1,56 +1,67 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, computed, OnDestroy, OnInit} from '@angular/core';
 import {NgIcon} from "@ng-icons/core";
-import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
-import {NavItem} from '../../../core/menu';
+import {NavigationEnd, Router, RouterLink, RouterOutlet} from "@angular/router";
 import {getPathParam} from '../../../core/router';
 import {Subject, switchMap, takeUntil} from 'rxjs';
 import {ProjectStore} from './project.store';
 import {ProjectService} from '../../../api/services';
+import {MenuItem} from 'primeng/api';
+import {Tab, TabList, Tabs} from 'primeng/tabs';
+import {Panel} from 'primeng/panel';
 
 @Component({
   selector: 'app-project',
   standalone: true,
   imports: [
     NgIcon,
-    RouterLinkActive,
     RouterOutlet,
-    RouterLink
+    RouterLink,
+    Tabs,
+    TabList,
+    Tab,
+    Panel,
   ],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
 export class ProjectComponent implements OnInit, OnDestroy {
-  navItems: NavItem[] = [
-    {
-      label: 'Overview',
-      route: 'scan',
-      icon: 'scan',
-      count: 1
-    },
-    {
-      label: 'Finding',
-      route: 'finding',
-      icon: 'bug',
-      count: 123
-    },
-    {
-      label: 'Dependency',
-      route: 'dependency',
-      icon: 'inventory',
-      count: 53
-    },
-    {
-      label: 'Setting',
-      route: 'setting',
-      icon: 'setting',
-    }
-  ]
+  activeTab = 0;
+  tabs = computed<MenuItem[]>(() => {
+    const projectId = this.store.projectId();
+    return [
+      {
+        label: 'Overview',
+        routerLink: `/project/${projectId}/scan`,
+        icon: 'scan',
+        routerLinkActiveOptions: {exact: false}
+      },
+      {
+        label: 'Finding',
+        routerLink: `/project/${projectId}/finding`,
+        icon: 'bug',
+        routerLinkActiveOptions: {exact: false}
+      },
+      {
+        label: 'Dependency',
+        routerLink: `/project/${projectId}/dependency`,
+        icon: 'inventory',
+        routerLinkActiveOptions: {exact: false}
+      },
+      {
+        label: 'Setting',
+        routerLink: `/project/${projectId}/setting`,
+        icon: 'setting',
+        routerLinkActiveOptions: {exact: false}
+      }
+    ]
+  });
 
   constructor(
     private router: Router,
     private store: ProjectStore,
     private projectService: ProjectService,
   ) {
+
     getPathParam('projectId').pipe(
       switchMap(projectId => {
         this.store.projectId.set(projectId);
@@ -73,11 +84,14 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
-  }
-
-  routerLink(route: string): string {
-    return `/project/${this.store.projectId()}/${route}`;
+    this.activeTab = this.tabs().findIndex(tab => this.router.url.includes(tab.routerLink));
+    this.router.events.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.activeTab = this.tabs().findIndex(tab => event.url.includes(tab.routerLink));
+      }
+    });
   }
 
   private destroy$ = new Subject();
