@@ -15,21 +15,33 @@ public class SeverityChart(int critical, int high, int medium, int low, int info
             col.Item().Svg(size =>
             {
                 Plot plot = new();
-                var slices = new PieSlice[]
+                var slices = new List<PieSlice>();
+                if (critical > 0)
                 {
-                    new() { Value = critical, FillColor = new ScottPlot.Color(Colors.Red.Medium.Hex), LegendText = $"Critical - {critical}"},
-                    new() { Value = high, FillColor = new ScottPlot.Color(Colors.Orange.Medium.Hex), LegendText = $"High - {high}"},
-                    new() { Value = medium, FillColor = new ScottPlot.Color(Colors.Yellow.Medium.Hex), LegendText = $"Medium - {medium}" },
-                    new() { Value = low, FillColor = new ScottPlot.Color(Colors.Lime.Medium.Hex), LegendText = $"Low - {low}" },
-                    new() { Value = info, FillColor = new ScottPlot.Color(Colors.LightBlue.Medium.Hex), LegendText = $"Info - {info}" },
-                };
+                    slices.Add(new PieSlice { Value = critical, FillColor = new ScottPlot.Color(Colors.Red.Medium.Hex), Label = $"Critical - {critical}"});
+                }
+                if (high > 0)
+                {
+                    slices.Add(new PieSlice { Value = high, FillColor = new ScottPlot.Color(Colors.Yellow.Medium.Hex), Label = $"High - {high}"});
+                }
+                if (medium > 0)
+                {
+                    slices.Add(new PieSlice { Value = medium, FillColor = new ScottPlot.Color(Colors.Yellow.Medium.Hex), Label = $"Medium - {medium}" });
+                }
+                if (low > 0)
+                {
+                    slices.Add(new PieSlice { Value = low, FillColor = new ScottPlot.Color(Colors.Lime.Medium.Hex), Label = $"Low - {low}" });
+                }
+                if (info > 0)
+                {
+                    slices.Add(new PieSlice { Value = info, FillColor = new ScottPlot.Color(Colors.LightBlue.Medium.Hex), Label = $"Info - {info}" });
+                }
                 var pie = plot.Add.Pie(slices);
-                pie.SliceLabelDistance = 0.7;
+                pie.SliceLabelDistance = 1.2;
                 pie.LineWidth = 1;
                 pie.LineColor = ScottPlot.Colors.White;
-                
                 //
-                plot.ShowLegend();
+                plot.HideLegend();
                 plot.Axes.Frameless();
                 plot.HideGrid();
                 return plot.GetSvgXml((int)size.Width, (int)size.Height);

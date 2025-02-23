@@ -2,7 +2,9 @@ using CodeSecure.Database;
 using CodeSecure.Database.Extension;
 using CodeSecure.Enum;
 using CodeSecure.Manager.Report.Model;
+using CodeSecure.Manager.Report.Pdf;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Companion;
 
 namespace CodeSecure.Manager.Report;
 
@@ -52,11 +54,11 @@ public static class DebugReportDocument
             }).ToList()
         };
 
-        //var document = new ReportDocument(model);
+        var document = new ReportDocument(model);
         //File.WriteAllBytes("report.pdf", document.GeneratePdf());
-        //document.ShowInCompanion();
-        var data = new ReportManager().ExportExcel(model);
-        File.WriteAllBytes("report.xlsx", data);
+        document.ShowInCompanion();
+        // var data = new ReportManager().ExportExcel(model);
+        // File.WriteAllBytes("report.xlsx", data);
         return app;
     }
 }

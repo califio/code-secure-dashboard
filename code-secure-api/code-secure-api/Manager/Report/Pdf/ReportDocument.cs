@@ -1,7 +1,6 @@
 using CodeSecure.Enum;
 using CodeSecure.Extension;
 using CodeSecure.Manager.Report.Model;
-using CodeSecure.Manager.Report.Pdf.Component;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -57,7 +56,6 @@ public class ReportDocument(ReportModel model): IDocument
             page.Item().Element(Information);
             if (model.Findings.Count > 0)
             {
-                page.Item().PageBreak();
                 page.Item().Element(ListFinding);
             }
         });
@@ -109,20 +107,19 @@ public class ReportDocument(ReportModel model): IDocument
             col.Item().Height(20);
             if (model.Findings.Count > 0)
             {
-                var critical = model.Findings.Count(finding => finding.Severity == FindingSeverity.Critical);
-                var high = model.Findings.Count(finding => finding.Severity == FindingSeverity.High);
-                var medium = model.Findings.Count(finding => finding.Severity == FindingSeverity.Medium);
-                var low = model.Findings.Count(finding => finding.Severity == FindingSeverity.Low);
-                var info = model.Findings.Count(finding => finding.Severity == FindingSeverity.Info);
-                var open = model.Findings.Count(finding => finding.Status == FindingStatus.Open);
-                var confirmed = model.Findings.Count(finding => finding.Status == FindingStatus.Confirmed);
-                var acceptedRisk = model.Findings.Count(finding => finding.Status == FindingStatus.AcceptedRisk);
-                var resolved = model.Findings.Count(finding => finding.Status == FindingStatus.Fixed);
-                col.Item().AlignCenter().Row(row =>
-                {
-                    row.AutoItem().MaxWidth(240).AspectRatio(1).Component(new SeverityChart(critical, high, medium, low, info));
-                    row.AutoItem().MaxWidth(240).AspectRatio(1).Component(new StatusFindingChart(open, confirmed, acceptedRisk, resolved));
-                });
+                /*
+                 var critical = model.Findings.Count(finding => finding.Severity == FindingSeverity.Critical);
+                   var high = model.Findings.Count(finding => finding.Severity == FindingSeverity.High);
+                   var medium = model.Findings.Count(finding => finding.Severity == FindingSeverity.Medium);
+                   var low = model.Findings.Count(finding => finding.Severity == FindingSeverity.Low);
+                   var info = model.Findings.Count(finding => finding.Severity == FindingSeverity.Info);
+                   var open = model.Findings.Count(finding => finding.Status == FindingStatus.Open);
+                   var confirmed = model.Findings.Count(finding => finding.Status == FindingStatus.Confirmed);
+                   var acceptedRisk = model.Findings.Count(finding => finding.Status == FindingStatus.AcceptedRisk);
+                   var resolved = model.Findings.Count(finding => finding.Status == FindingStatus.Fixed);
+                   col.Item().MaxWidth(400).AspectRatio(1).Component(new SeverityChart(critical, high, medium, low, info));
+                   col.Item().MaxWidth(400).AspectRatio(1).Component(new StatusFindingChart(open, confirmed, acceptedRisk, resolved));
+                 */
             }
             else
             {

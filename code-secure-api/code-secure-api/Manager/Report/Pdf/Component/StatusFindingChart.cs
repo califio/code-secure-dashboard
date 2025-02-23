@@ -41,6 +41,7 @@ public class StatusFindingChart(int open, int confirmed, int acceptedRisk, int r
                 pie.SliceLabelDistance = 0.7;
                 pie.LineWidth = 1;
                 pie.LineColor = ScottPlot.Colors.White;
+                plot.ShowLegend(Alignment.LowerCenter, Orientation.Horizontal);
                 plot.Axes.Frameless();
                 plot.HideGrid();
                 return plot.GetSvgXml((int)size.Width, (int)size.Height);
