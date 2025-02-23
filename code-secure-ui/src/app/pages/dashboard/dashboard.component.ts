@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, signal} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {FindingStatusChartComponent} from './finding-status-chart/finding-status-chart.component';
@@ -7,21 +7,19 @@ import {DashboardService} from '../../api/services/dashboard.service';
 import {TopFindingChartComponent} from './top-finding-chart/top-finding-chart.component';
 import {debounceTime, Subject, takeUntil} from 'rxjs';
 import {TopDependencyChartComponent} from './top-dependency-chart/top-dependency-chart.component';
-import {ActivatedRoute} from '@angular/router';
 import {Fluid} from 'primeng/fluid';
 import {LayoutService} from '../../layout/layout.service';
 import {Severity} from './severity-chart/severity';
 import {FindingStatusSeries} from './finding-status-chart/finding-status';
 import {TopFinding} from '../../api/models/top-finding';
-import {Chart, registerables} from 'chart.js';
+import {Chart} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {TopDependency} from '../../api/models/top-dependency';
 import {Card} from 'primeng/card';
 import {RangeDateComponent} from '../../shared/ui/range-date/range-date.component';
 import {getRangeDate, RangeDateType} from '../../shared/date-util';
 import {RangeDateState} from '../../shared/ui/range-date/range-date.model';
-
-Chart.register(...registerables, ChartDataLabels);
+import {DashboardStore} from './dashboard.store';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,11 +58,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private layoutService: LayoutService,
     private dashboardService: DashboardService,
-    private route: ActivatedRoute
+    private store: DashboardStore
   ) {
+    Chart.register(ChartDataLabels);
     this.layoutService.configUpdate$.pipe(
       takeUntil(this.destroy$),
-      debounceTime(25)
     ).subscribe(() => {
       this.initCharts();
     });
@@ -80,6 +78,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   initCharts() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const borderColor = documentStyle.getPropertyValue('--surface-border');
+    this.store.textColor.set(textColor);
+    this.store.borderColor.set(borderColor);
     const startDate = this.rangeDate.startDate.toISOString()
     const endDate = this.rangeDate.endDate.toISOString()
     this.dashboardService.sastStatistic({

@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import {TopFinding} from '../../../api/models/top-finding';
 import {UIChart} from 'primeng/chart';
 import {Chart, ChartOptions} from 'chart.js';
+import {DashboardStore} from '../dashboard.store';
 
 @Component({
   selector: 'top-finding-chart',
@@ -14,7 +15,8 @@ import {Chart, ChartOptions} from 'chart.js';
 })
 export class TopFindingChartComponent {
   data: any;
-  option: ChartOptions = {};
+  // option: ChartOptions = {};
+  option: any = {};
   plugins: any[] = [];
 
   @Input()
@@ -22,13 +24,15 @@ export class TopFindingChartComponent {
     this.initChart(value);
   }
 
-  constructor() {
+  constructor(
+    private store: DashboardStore
+  ) {
   }
 
   initChart(input: TopFinding[]) {
     const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+    const textColor = this.store.textColor();
+    const surfaceBorder = this.store.borderColor();
     this.plugins = [
       {
         id: "top-finding-plugin",
@@ -85,12 +89,14 @@ export class TopFindingChartComponent {
         datalabels: {
           align: 'end',
           anchor: 'end',
-          color: textColor
+          color: textColor,
         },
-      }
+      },
+      categoryPercentage: 0.5,
+      barPercentage: 0.5
     };
 
-    const categories = input.map(item => item.category);
+    let categories = input.map(item => item.category);
     const count = input.map(item => item.count);
     this.data = {
       labels: categories,

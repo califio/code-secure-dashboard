@@ -204,7 +204,7 @@ public class ReportDocument(ReportModel model): IDocument
                             if (!string.IsNullOrEmpty(finding.Snippet))
                             {
                                 tb.Cell().Border(1).Padding(5).Text("Snippet").Bold();
-                                tb.Cell().Border(1).Padding(5).Text(finding.Snippet).FontFamily(Fonts.Consolas);
+                                tb.Cell().Border(1).Padding(5).Text(finding.Snippet.Trim()).FontFamily(Fonts.Consolas);
                             }
                         }
                         // ticket

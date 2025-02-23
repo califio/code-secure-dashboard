@@ -9,7 +9,6 @@ import {UIChart} from 'primeng/chart';
     UIChart
   ],
   templateUrl: './finding-status-chart.component.html',
-  styleUrl: './finding-status-chart.component.scss'
 })
 export class FindingStatusChartComponent {
   @Input() set status(value: FindingStatusSeries) {

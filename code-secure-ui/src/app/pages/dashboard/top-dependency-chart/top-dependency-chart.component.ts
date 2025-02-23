@@ -2,6 +2,7 @@ import {Component, Input, OnDestroy} from '@angular/core';
 import {TopDependency} from '../../../api/models/top-dependency';
 import {UIChart} from 'primeng/chart';
 import {Chart, ChartOptions} from 'chart.js';
+import {DashboardStore} from '../dashboard.store';
 
 @Component({
   selector: 'top-dependency-chart',
@@ -22,13 +23,15 @@ export class TopDependencyChartComponent implements OnDestroy {
   option: ChartOptions = {};
   plugins: any[] = [];
 
-  constructor() {
+  constructor(
+    private store: DashboardStore
+  ) {
   }
 
   initChart(input: TopDependency[]) {
     const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+    const textColor = this.store.textColor();
+    const surfaceBorder = this.store.borderColor();
     this.option = {
       maintainAspectRatio: true,
       indexAxis: "y",

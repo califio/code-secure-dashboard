@@ -32,6 +32,7 @@
         <PackageReference Include="QuestPDF" Version="2025.1.2" />
         <PackageReference Include="QuestPDF.Markdown" Version="1.31.1" />
         <PackageReference Include="ScottPlot" Version="5.0.54" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
     <ItemGroup>
