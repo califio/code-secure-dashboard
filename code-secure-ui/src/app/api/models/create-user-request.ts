@@ -5,4 +5,5 @@
 export interface CreateUserRequest {
   email?: string | null;
   role: string;
+  verified?: boolean;
 }

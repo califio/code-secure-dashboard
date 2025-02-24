@@ -1,7 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {UserInfo} from '../../../api/models/user-info';
 import {UserStore} from '../user.store';
-import {UserInfoComponent} from '../../../shared/components/user-info/user-info.component';
 import {UpdateUserRequest} from '../../../api/models/update-user-request';
 import {UserService} from '../../../api/services/user.service';
 import {finalize} from 'rxjs';
@@ -14,12 +13,12 @@ import {Button} from 'primeng/button';
 import {Dialog} from 'primeng/dialog';
 import {InputText} from 'primeng/inputtext';
 import {SelectButton} from 'primeng/selectbutton';
+import {ToggleSwitch} from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-update-user-popup',
   standalone: true,
   imports: [
-    UserInfoComponent,
     FormsModule,
     ReactiveFormsModule,
     Select,
@@ -27,6 +26,7 @@ import {SelectButton} from 'primeng/selectbutton';
     Dialog,
     InputText,
     SelectButton,
+    ToggleSwitch,
   ],
   templateUrl: './update-user-popup.component.html',
   styleUrl: './update-user-popup.component.scss'
@@ -46,6 +46,7 @@ export class UpdateUserPopupComponent {
     email: new FormField('', Validators.required),
     role: new FormField('', Validators.required),
     fullName: new FormField('', Validators.required),
+    verified: new FormField(true)
   });
   form: FormGroup<ControlsOf<UpdateUserRequest>>;
   statusOptions = [

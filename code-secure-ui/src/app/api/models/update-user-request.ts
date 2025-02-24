@@ -8,4 +8,5 @@ export interface UpdateUserRequest {
   fullName?: string | null;
   role?: string | null;
   status?: UserStatus;
+  verified?: boolean | null;
 }

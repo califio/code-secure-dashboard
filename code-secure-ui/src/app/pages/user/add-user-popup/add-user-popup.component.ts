@@ -9,6 +9,7 @@ import {Select} from 'primeng/select';
 import {Button} from 'primeng/button';
 import {Dialog} from "primeng/dialog";
 import {InputText} from 'primeng/inputtext';
+import {ToggleSwitch} from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-add-user-popup',
@@ -19,6 +20,7 @@ import {InputText} from 'primeng/inputtext';
     Button,
     Dialog,
     InputText,
+    ToggleSwitch,
   ],
   templateUrl: './add-user-popup.component.html',
 })

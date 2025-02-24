@@ -1,31 +1,34 @@
 <p-dialog header="Update User" [modal]="true" [(visible)]="store.showUpdateUserDialog">
   <div class="flex flex-col gap-4 w-[320px] md:w-[480px]">
-    <div class="flex flex-col gap-2">
-      <div class="flex flex-col gap-1 w-full">
-        <span class="font-semibold">User</span>
-        <user-info [username]="_user.userName"
-                   [avatar]="_user.avatar"
-                   [fullName]="_user.fullName"
-                   [email]="_user.email">
-        </user-info>
-      </div>
-      <div class="flex flex-col gap-1 w-full">
+    <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Email</div>
-        <input pInputText type="text" name="email" [formControl]="form.controls.email!">
+        <input class="col-span-4" pInputText type="text" name="email" [formControl]="form.controls.email!">
       </div>
-      <div class="flex flex-col gap-1 w-full">
+      <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Role</div>
-        <p-select [options]="store.roles()" optionValue="name" optionLabel="name" appendTo="body"
-                  [formControl]="form.controls.role!">
-        </p-select>
+        <div class="col-span-4">
+          <p-select [options]="store.roles()" optionValue="name" optionLabel="name" appendTo="body"
+                    [formControl]="form.controls.role!">
+          </p-select>
+        </div>
       </div>
-      <div class="flex flex-col gap-1 w-full">
+      <div class="grid grid-cols-5 gap-1 items-center">
+        <div class="font-semibold">Verified</div>
+        <div class="col-span-4">
+          <p-toggle-switch
+            [formControl]="form.controls.verified!">
+          </p-toggle-switch>
+        </div>
+      </div>
+      <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Status</div>
-        <p-select-button [options]="statusOptions"
-                         [formControl]="form.controls.status!">
-        </p-select-button>
+        <div class="col-span-4">
+          <p-select-button [options]="statusOptions"
+                           [formControl]="form.controls.status!">
+          </p-select-button>
+        </div>
       </div>
-
     </div>
     <div class="flex flex-row items-center gap-4 justify-end">
       <div class="flex flex-row items-center gap-4 w-fit">

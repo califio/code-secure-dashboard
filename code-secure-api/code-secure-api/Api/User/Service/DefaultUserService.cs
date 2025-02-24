@@ -123,7 +123,7 @@ public class DefaultUserService(
             Id = Guid.NewGuid(),
             UserName = username,
             Email = request.Email,
-            EmailConfirmed = false,
+            EmailConfirmed = request.Verified,
             TwoFactorEnabled = false,
             FullName = username,
             Status = UserStatus.Active,
@@ -155,7 +155,10 @@ public class DefaultUserService(
 
         if (!string.IsNullOrEmpty(request.FullName) && request.FullName != user.FullName)
             user.FullName = request.FullName;
-
+        if (request.Verified != null)
+        {
+            user.EmailConfirmed = (bool)request.Verified;
+        }
         if (request.Status != null && request.Status != user.Status) user.Status = (UserStatus)request.Status;
         var result = await userManager.UpdateAsync(user);
         if (!result.Succeeded) throw new BadRequestException(result.Errors.First().Description);
