@@ -1,4 +1,15 @@
-import {Component, EventEmitter, HostListener, Input, Output, signal} from '@angular/core';
+import {
+  Component,
+  effect,
+  EffectRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  model,
+  OnDestroy,
+  Output,
+  signal
+} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {RouterLink} from '@angular/router';
 import {LowerCasePipe, NgClass} from '@angular/common';
@@ -70,65 +81,66 @@ import {Tooltip} from 'primeng/tooltip';
   ],
   templateUrl: './finding-detail.component.html',
 })
-export class FindingDetailComponent {
+export class FindingDetailComponent implements OnDestroy {
   @Output()
   close = new EventEmitter();
-
-  @Input()
-  set finding(value: FindingDetail) {
-    this._finding = value;
-    this.ticket.set(value.ticket);
-    this.fixDeadline.set(this.parseFixDeadline(value.fixDeadline));
-    let defaultScan = value.scans?.find(scan => scan.isDefault);
-    if (!defaultScan && value.scans && value.scans.length > 0) {
-      defaultScan = value.scans[0];
-    }
-    this.currentScan.set(defaultScan);
-    if (value.id) {
-      this.loadActivities();
-    }
-  }
-
+  finding = model<FindingDetail>({});
+  ticket = signal<Tickets | undefined>(undefined);
+  fixDeadline = signal<Date | undefined | null>(undefined);
+  currentScan = signal<FindingScan | undefined | null>(undefined);
   dateFormat = 'dd/mm/yy';
-  currentScan = signal<FindingScan | undefined>(undefined);
   activities: FindingActivity[] = [];
-
-  get finding() {
-    return this._finding;
-  }
-
-  private _finding: FindingDetail = {project: {}, scans: []};
   @Input()
   minimal = true;
   @Input()
   isProjectPage: boolean = false;
-  fixDeadline = signal<Date | null>(null);
-  ticket = signal<Tickets | undefined>(undefined);
   comment = '';
   commentLoading = false;
   loadingTicket = false;
   recommendationPreview = true;
   recommendationLoading = false;
+  private effectRef!: EffectRef;
 
   constructor(
     private findingService: FindingService,
     private toastr: ToastrService
   ) {
+    this.effectRef = effect(() => {
+      const finding = this.finding();
+      this.ticket.set(finding.ticket);
+      if (finding.fixDeadline) {
+        this.fixDeadline.set(new Date(finding.fixDeadline));
+      } else {
+        this.fixDeadline.set(undefined);
+      }
+      let defaultScan = finding.scans?.find(scan => scan.isDefault);
+      if (!defaultScan && finding.scans && finding.scans.length > 0) {
+        defaultScan = finding.scans[0];
+      }
+      this.currentScan.set(defaultScan);
+      if (finding.id) {
+        this.loadActivities();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.effectRef.destroy();
   }
 
   onChangeStatus(status: FindingStatus) {
     this.findingService.updateFinding({
-      id: this.finding.id!,
+      id: this.finding().id!,
       body: {
         status: status
       }
     }).subscribe(finding => {
-      this.finding = finding;
+      this.finding.set(finding);
       this.toastr.success({
         message: "Update success"
       });
       this.loadActivities();
-    })
+    });
   }
 
   closeFinding() {
@@ -152,20 +164,20 @@ export class FindingDetailComponent {
   }
 
   source(location: FindingLocation) {
-    if (this._finding.project?.sourceType == SourceType.GitLab) {
-      return `${this._finding.project!.repoUrl}/-/blob/${this.currentScan()?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
+    if (this.finding().project?.sourceType == SourceType.GitLab) {
+      return `${this.finding().project!.repoUrl}/-/blob/${this.currentScan()?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
     }
     // todo: support other git
     return '';
   }
 
   onScanChange(scanId: string) {
-    this.currentScan.set(this.finding.scans?.find(value => value.scanId == scanId));
+    this.currentScan.set(this.finding().scans?.find(value => value.scanId == scanId));
   }
 
   private loadActivities() {
     this.findingService.getFindingActivities({
-      id: this._finding.id!,
+      id: this.finding().id!,
       body: {}
     }).subscribe(activities => {
       this.activities = activities.items!;
@@ -176,37 +188,22 @@ export class FindingDetailComponent {
   protected readonly FindingStatus = FindingStatus;
 
   onChangeFixDeadline($event: Date) {
-    const currentFixDeadline = this.fixDeadline();
-    this.fixDeadline.set($event);
     this.findingService.updateFinding({
-      id: this._finding.id!,
+      id: this.finding().id!,
       body: {
         fixDeadline: $event.toISOString()
       }
-    }).subscribe({
-      next: (finding) => {
-        this.toastr.success({message: 'Change deadline success!'});
-        this.finding = finding;
-        this.loadActivities();
-      },
-      error: () => {
-        this.fixDeadline.set(currentFixDeadline);
-      }
+    }).subscribe(finding => {
+      this.toastr.success({message: 'Change deadline success!'});
+      this.finding.set(finding);
     });
-  }
-
-  private parseFixDeadline(date: string | null | undefined): Date | null {
-    if (date) {
-      return new Date(date);
-    }
-    return null;
   }
 
   postComment() {
     if (this.comment) {
       this.commentLoading = true;
       this.findingService.addComment({
-        id: this.finding.id!,
+        id: this.finding().id!,
         body: {
           comment: this.comment
         }
@@ -225,7 +222,7 @@ export class FindingDetailComponent {
   createTicket(type: TicketType) {
     this.loadingTicket = true;
     this.findingService.createTicket({
-      id: this.finding.id!,
+      id: this.finding().id!,
       type: type
     }).pipe(
       finalize(() => this.loadingTicket = false)
@@ -235,15 +232,15 @@ export class FindingDetailComponent {
   }
 
   isSastFinding() {
-    if (this.finding) {
-      return this.finding.type == ScannerType.Sast || this.finding.type == ScannerType.Secret;
+    if (this.finding()) {
+      return this.finding().type == ScannerType.Sast || this.finding().type == ScannerType.Secret;
     }
     return false;
   }
 
   deleteTicket() {
     this.findingService.deleteTicket({
-      id: this.finding.id!
+      id: this.finding().id!
     }).subscribe(() => {
       this.ticket.set(undefined);
     })
@@ -252,9 +249,9 @@ export class FindingDetailComponent {
   saveRecommendation() {
     this.recommendationLoading = true;
     this.findingService.updateFinding({
-      id: this.finding.id!,
+      id: this.finding().id!,
       body: {
-        recommendation: this.finding.recommendation
+        recommendation: this.finding().recommendation
       }
     }).pipe(
       finalize(() => this.recommendationLoading = false)

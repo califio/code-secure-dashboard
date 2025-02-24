@@ -1,40 +1,40 @@
 <p-panel styleClass="h-full overflow-y-auto">
   <ng-template #header>
     <div class="flex flex-row items-center w-full gap-2">
-      <finding-severity [severity]="finding.severity!"></finding-severity>
-      <div class="text-xl">{{ finding.name }}</div>
+      <finding-severity [severity]="finding().severity!"></finding-severity>
+      <div class="text-xl">{{ finding().name }}</div>
     </div>
   </ng-template>
   <div class="flex flex-col pb-4 gap-4">
     <div class="flex flex-row items-center justify-between">
       <div class="flex flex-row items-center gap-4">
         <div class="flex flex-wrap items-center gap-2">
-          <p-select [options]="finding.scans!" optionValue="scanId"
+          <p-select [options]="finding().scans!" optionValue="scanId"
                     [ngModel]="currentScan()?.scanId"
                     (ngModelChange)="onScanChange($event)">
             <ng-template #selectedItem let-option>
               <scan-branch-label [action]="option.action"
-                           [branch]="option.branch"
-                           [targetBranch]="option.targetBranch">
+                                 [branch]="option.branch"
+                                 [targetBranch]="option.targetBranch">
               </scan-branch-label>
             </ng-template>
             <ng-template #item let-option>
               <scan-branch-label [action]="option.action"
-                           [branch]="option.branch"
-                           [targetBranch]="option.targetBranch">
+                                 [branch]="option.branch"
+                                 [targetBranch]="option.targetBranch">
               </scan-branch-label>
             </ng-template>
           </p-select>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <ng-icon [name]="finding.project?.sourceType! | lowercase"></ng-icon>
-          <a [routerLink]="['/project', finding.project?.id, 'scan']"
-             class="hover:underline">{{ finding.project?.name }}</a>
+          <ng-icon [name]="finding().project?.sourceType! | lowercase"></ng-icon>
+          <a [routerLink]="['/project', finding().project?.id, 'scan']"
+             class="hover:underline">{{ finding().project?.name }}</a>
         </div>
       </div>
       @if (minimal) {
         <div class="flex-row items-center hidden lg:flex">
-          <a [routerLink]="['/finding', finding.id]">
+          <a [routerLink]="['/finding', finding().id]">
             <ng-icon name="arrowsPointingOut" size="18" class="cursor-pointer"></ng-icon>
           </a>
           <p-divider layout="vertical"></p-divider>
@@ -47,7 +47,7 @@
     </div>
     <div class="flex flex-row items-center gap-2">
       <p-select
-        [ngModel]="finding.status"
+        [ngModel]="finding().status"
         optionValue="status"
         (ngModelChange)="onChangeStatus($event)"
         [options]="statusOptions">
@@ -58,7 +58,7 @@
           <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
         </ng-template>
       </p-select>
-      @if (finding.fixDeadline || finding.status == FindingStatus.Confirmed) {
+      @if (finding().fixDeadline || finding().status == FindingStatus.Confirmed) {
         <p-floatlabel variant="on">
           <p-date-picker [ngModel]="fixDeadline()"
                          (ngModelChange)="onChangeFixDeadline($event)"
@@ -78,29 +78,30 @@
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
     <div class="flex flex-col w-full">
-      @if (finding.description) {
+      @if (finding().description) {
         <p-fieldset legend="Description">
-          <p markdown>{{ finding.description }}</p>
+          <markdown [data]="finding().description"></markdown>
         </p-fieldset>
       }
-      @if (finding.location) {
+      @if (finding().location) {
         <p-fieldset legend="Location">
-          <a [href]="source(finding.location)" target="_blank" class="flex flex-row items-center gap-1">
-            <span>{{ finding.location.path }}</span>
+          <a [href]="source(finding().location!)" target="_blank" class="flex flex-row items-center gap-1">
+            <span>{{ finding().location!.path }}</span>
             <ng-icon name="arrowTopRightOnSquare"></ng-icon>
           </a>
-          @if (finding.location.snippet) {
+          @if (finding().location!.snippet) {
             <div class="border border-dashed border-surface p-2 mt-2">
-              <pre style="font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace">{{ finding.location.snippet }}</pre>
+              <pre
+                style="font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace">{{ finding().location!.snippet }}</pre>
             </div>
 
           }
         </p-fieldset>
       }
       <p-fieldset legend="Recommendation">
-        @if (finding.recommendation || !recommendationPreview) {
+        @if (finding().recommendation || !recommendationPreview) {
           <markdown-editor
-            [(ngModel)]="finding.recommendation!"
+            [(ngModel)]="finding().recommendation!"
             [(preview)]="recommendationPreview"
             [loading]="recommendationLoading">
           </markdown-editor>
@@ -114,29 +115,29 @@
           <button pButton severity="secondary" (click)="recommendationPreview = false">Add Recommendation</button>
         }
       </p-fieldset>
-      @if (finding.metadata && finding.metadata.cwes) {
+      @if (finding().metadata && finding().metadata!.cwes) {
         <p-fieldset legend="CWEs">
           <div class="flex flex-co gap-2">
-            @for (cwe of finding.metadata.cwes; track $index) {
+            @for (cwe of finding().metadata!.cwes; track $index) {
               <div>{{ cwe }}</div>
             }
           </div>
         </p-fieldset>
       }
-      @if (finding.metadata && finding.metadata.references) {
+      @if (finding().metadata && finding().metadata!.references) {
         <p-fieldset legend="References">
           <div class="flex flex-co gap-2">
-            @for (reference of finding.metadata.references; track $index) {
+            @for (reference of finding().metadata!.references; track $index) {
               <div markdown>{{ reference }}</div>
             }
           </div>
         </p-fieldset>
       }
 
-      @if (findingFlow(finding).length > 0) {
+      @if (findingFlow(finding()).length > 0) {
         <p-fieldset legend="Finding Flow">
           <div class="flex flex-col justify-between items-center">
-            @for (location of findingFlow(finding); track $index; let isLast = $last) {
+            @for (location of findingFlow(finding()); track $index; let isLast = $last) {
               <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer"
                  target="_blank" [href]="source(location)">
                 {{ location.snippet }}
@@ -152,16 +153,16 @@
         <div class="flex flex-col w-full gap-2">
           <div class="flex flex-row justify-between">
             <div>Scanner</div>
-            <scanner-label [scanner]="finding.scanner" [type]="finding.type"/>
+            <scanner-label [scanner]="finding().scanner" [type]="finding().type"/>
           </div>
-          @if (finding.ruleId){
+          @if (finding().ruleId) {
             <div class="flex flex-row justify-between">
               <div>Rule ID</div>
               <div class="flex flex-row gap-1 items-center">
                 <a target="_blank"
                    pTooltip="Find similar findings" tooltipPosition="top"
-                   routerLink="/finding" [queryParams]="{'ruleId': finding.ruleId}">
-                  <span class="truncate">{{finding.ruleId | truncate:50}}</span>
+                   routerLink="/finding" [queryParams]="{'ruleId': finding().ruleId}">
+                  <span class="truncate">{{ finding().ruleId ?? '' | truncate:50 }}</span>
                 </a>
                 <i class="pi pi-external-link"></i>
               </div>
