@@ -92,13 +92,13 @@ export class ProjectService extends BaseService {
   }
 
   /** Path part for operation `getProjects()` */
-  static readonly GetProjectsPath = '/api/project';
+  static readonly GetProjectsPath = '/api/project/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getProjects()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   getProjects$Response(params?: GetProjects$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSummaryPage>> {
     return getProjects(this.http, this.rootUrl, params, context);
@@ -108,7 +108,7 @@ export class ProjectService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getProjects$Response()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   getProjects(params?: GetProjects$Params, context?: HttpContext): Observable<ProjectSummaryPage> {
     return this.getProjects$Response(params, context).pipe(

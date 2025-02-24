@@ -8,25 +8,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ProjectSortField } from '../../models/project-sort-field';
+import { ProjectFilter } from '../../models/project-filter';
 import { ProjectSummaryPage } from '../../models/project-summary-page';
 
 export interface GetProjects$Params {
-  Name?: string;
-  SortBy?: ProjectSortField;
-  Size?: number;
-  Page?: number;
-  Desc?: boolean;
+      body?: ProjectFilter
 }
 
 export function getProjects(http: HttpClient, rootUrl: string, params?: GetProjects$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSummaryPage>> {
-  const rb = new RequestBuilder(rootUrl, getProjects.PATH, 'get');
+  const rb = new RequestBuilder(rootUrl, getProjects.PATH, 'post');
   if (params) {
-    rb.query('Name', params.Name, {"style":"form"});
-    rb.query('SortBy', params.SortBy, {"style":"form"});
-    rb.query('Size', params.Size, {"style":"form"});
-    rb.query('Page', params.Page, {"style":"form"});
-    rb.query('Desc', params.Desc, {"style":"form"});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -39,4 +31,4 @@ export function getProjects(http: HttpClient, rootUrl: string, params?: GetProje
   );
 }
 
-getProjects.PATH = '/api/project';
+getProjects.PATH = '/api/project/filter';

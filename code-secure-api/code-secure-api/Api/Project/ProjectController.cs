@@ -15,8 +15,9 @@ namespace CodeSecure.Api.Project;
 
 public class ProjectController(IProjectService projectService, IEnvVariableManager envVariableManager) : BaseController
 {
-    [HttpGet]
-    public async Task<Page<ProjectSummary>> GetProjects([FromQuery] ProjectFilter filter)
+    [HttpPost]
+    [Route("filter")]
+    public async Task<Page<ProjectSummary>> GetProjects(ProjectFilter filter)
     {
         return await projectService.GetProjectsAsync(filter);
     }

@@ -4,7 +4,6 @@ import {FormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ProjectService} from '../../../api/services/project.service';
-import {GetProjects$Params} from '../../../api/fn/project/get-projects';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
 import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {ProjectSortField} from '../../../api/models/project-sort-field';
@@ -21,6 +20,11 @@ import {LayoutService} from '../../../layout/layout.service';
 import {ProjectSummary} from '../../../api/models/project-summary';
 import {SortByComponent} from '../../../shared/ui/sort-by/sort-by.component';
 import {SortByState} from '../../../shared/ui/sort-by/sort-by-state';
+import {FloatLabel} from "primeng/floatlabel";
+import {Select} from "primeng/select";
+import {UserSummary} from '../../../api/models/user-summary';
+import {ProjectFilter} from '../../../api/models/project-filter';
+import {UserService} from '../../../api/services/user.service';
 
 @Component({
   selector: 'page-list-project',
@@ -38,7 +42,9 @@ import {SortByState} from '../../../shared/ui/sort-by/sort-by-state';
     InputIcon,
     InputText,
     Checkbox,
-    SortByComponent
+    SortByComponent,
+    FloatLabel,
+    Select
   ],
   templateUrl: './list-project.component.html',
 })
@@ -59,12 +65,13 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     }
   ];
   projects = signal<ProjectSummary[]>([]);
-  filter: GetProjects$Params = {
-    Name: '',
-    SortBy: ProjectSortField.CreatedAt,
-    Size: 20,
-    Page: 1,
-    Desc: true
+  filter: ProjectFilter = {
+    name: '',
+    sortBy: ProjectSortField.CreatedAt,
+    userId: undefined,
+    size: 20,
+    page: 1,
+    desc: true
   }
   isDesktop = true;
   // paginator
@@ -74,25 +81,32 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   firstRecord = computed(() => {
     return (this.currentPage() - 1) * this.pageSize();
   });
+  users = signal<UserSummary[]>([]);
   private destroy$ = new Subject();
 
   constructor(
     private projectService: ProjectService,
     private router: Router,
     private route: ActivatedRoute,
+    private userService: UserService,
     private layoutService: LayoutService
   ) {
     this.isDesktop = this.layoutService.isDesktop();
   }
 
   ngOnInit(): void {
+    this.userService.getProjectManagerUsers().subscribe(users => {
+      this.users.set(users);
+    })
     this.route.queryParams.pipe(
       switchMap(params => {
         this.loading = true;
         bindQueryParams(params, this.filter);
-        this.currentPage.set(this.filter.Page!);
-        this.pageSize.set(this.filter.Size!);
-        return this.projectService.getProjects(this.filter).pipe(
+        this.currentPage.set(this.filter.page!);
+        this.pageSize.set(this.filter.size!);
+        return this.projectService.getProjects({
+          body: this.filter
+        }).pipe(
           finalize(() => {
             this.loading = false;
           }),
@@ -101,7 +115,6 @@ export class ListProjectComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(response => {
       this.projects.set(response.items!);
-      //this.projects.set(response.items!);
       this.totalRecords.set(response.count!);
     })
   }
@@ -124,17 +137,22 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   }
 
   onPageChange($event: PaginatorState) {
-    this.filter.Size = $event.rows;
+    this.filter.size = $event.rows;
     if ($event.page) {
-      this.filter.Page = $event.page + 1;
+      this.filter.page = $event.page + 1;
     }
 
     updateQueryParams(this.router, this.filter);
   }
 
   onSortChange($event: SortByState) {
-    this.filter.SortBy = $event.sortBy;
-    this.filter.Desc = $event.desc;
+    this.filter.sortBy = $event.sortBy;
+    this.filter.desc = $event.desc;
+    updateQueryParams(this.router, this.filter);
+  }
+
+  onChangeUser($event: any) {
+    this.filter.userId = $event;
     updateQueryParams(this.router, this.filter);
   }
 }

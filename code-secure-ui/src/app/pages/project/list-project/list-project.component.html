@@ -6,10 +6,25 @@
     <div class="flex flex-row gap-2 w-full ">
       <p-icon-field>
         <p-inputicon styleClass="pi pi-search"/>
-        <input type="text" [(ngModel)]="filter.Name" (keyup.enter)="onSearchChange()" pInputText
+        <input type="text" [(ngModel)]="filter.name" (keyup.enter)="onSearchChange()" pInputText
                placeholder="Search..."/>
       </p-icon-field>
-      <sort-by [sortBy]="filter.SortBy" [options]="sorts" (onChange)="onSortChange($event)"></sort-by>
+      <!--Project Manager Filter-->
+      <p-float-label variant="on">
+        <p-select id="on_project_manager_user"
+                  filter
+                  filterBy="userName"
+                  [showClear]="true"
+                  styleClass="min-w-28"
+                  [options]="users()"
+                  optionValue="id"
+                  optionLabel="userName"
+                  [ngModel]="filter.userId"
+                  (ngModelChange)="onChangeUser($event)">
+        </p-select>
+        <label for="on_project_manager_user">Manager</label>
+      </p-float-label>
+      <sort-by [sortBy]="filter.sortBy" [options]="sorts" (onChange)="onSortChange($event)"></sort-by>
     </div>
   </div>
   <!--    TABLE-->

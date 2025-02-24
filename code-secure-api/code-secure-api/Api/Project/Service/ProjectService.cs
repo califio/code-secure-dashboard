@@ -46,6 +46,13 @@ public class ProjectService(
             query = query.Where(p => p.Name.Contains(filter.Name));
         }
 
+        if (filter.UserId != null)
+        {
+            query = query.Where(project => context.ProjectUsers.Any(
+                record => record.ProjectId == project.Id && record.UserId == filter.UserId)
+            );
+        }
+
         return await query.OrderBy(filter.SortBy.ToString(), filter.Desc).Select(p => new ProjectSummary
         {
             Id = p.Id,

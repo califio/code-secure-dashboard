@@ -60,6 +60,7 @@ export { MailSetting } from './models/mail-setting';
 export { OpenIdConnectSetting } from './models/open-id-connect-setting';
 export { PackageInfo } from './models/package-info';
 export { ProjectCommitSummary } from './models/project-commit-summary';
+export { ProjectFilter } from './models/project-filter';
 export { ProjectFindingFilter } from './models/project-finding-filter';
 export { ProjectInfo } from './models/project-info';
 export { ProjectIntegration } from './models/project-integration';
