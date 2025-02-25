@@ -202,10 +202,6 @@ public class DefaultFindingService(
 
         if (request.Status != null && request.Status != finding.Status)
         {
-            // can't change fixed finding to other status
-            if (finding.Status == FindingStatus.Fixed)
-                throw new BadRequestException("the finding was fixed. can't change status");
-
             // fixed status will auto update by CI
             if (request.Status != FindingStatus.Fixed)
             {
