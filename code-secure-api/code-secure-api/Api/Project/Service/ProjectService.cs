@@ -37,9 +37,17 @@ public class ProjectService(
 {
     public async Task<Page<ProjectSummary>> GetProjectsAsync(ProjectFilter filter)
     {
-        // note: currently it allows authenticated users list all projects but can't see detail project.
+        var currentUser = CurrentUser();
+        var allowReadProject = currentUser.HasClaim(PermissionType.Project, PermissionAction.Read);
         var query = context.Projects
             .Include(record => record.SourceControl)
+            .Where(project => 
+                allowReadProject == true || 
+                context.ProjectUsers.Any(projectUser => 
+                    projectUser.ProjectId == project.Id && 
+                    projectUser.UserId == currentUser.Id
+                )
+            )
             .Distinct();
         if (!string.IsNullOrEmpty(filter.Name))
         {
