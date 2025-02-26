@@ -1,11 +1,11 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {TimeagoModule} from 'ngx-timeago';
 import {FindingStatusChartComponent} from './finding-status-chart/finding-status-chart.component';
 import {SeverityChartComponent} from './severity-chart/severity-chart.component';
 import {DashboardService} from '../../api/services/dashboard.service';
 import {TopFindingChartComponent} from './top-finding-chart/top-finding-chart.component';
-import {debounceTime, Subject, takeUntil} from 'rxjs';
+import {Subject, takeUntil} from 'rxjs';
 import {TopDependencyChartComponent} from './top-dependency-chart/top-dependency-chart.component';
 import {Fluid} from 'primeng/fluid';
 import {LayoutService} from '../../layout/layout.service';
@@ -20,6 +20,11 @@ import {RangeDateComponent} from '../../shared/ui/range-date/range-date.componen
 import {getRangeDate, RangeDateType} from '../../shared/date-util';
 import {RangeDateState} from '../../shared/ui/range-date/range-date.model';
 import {DashboardStore} from './dashboard.store';
+import {StatisticFilter} from '../../api/models/statistic-filter';
+import {SourceControlSystemService} from '../../api/services/source-control-system.service';
+import {
+  SourceControlSelectComponent
+} from '../../shared/components/source-control-select/source-control-select.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,7 +38,8 @@ import {DashboardStore} from './dashboard.store';
     TopDependencyChartComponent,
     Fluid,
     Card,
-    RangeDateComponent
+    RangeDateComponent,
+    SourceControlSelectComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -53,12 +59,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     type: RangeDateType.Last30Days,
     ...getRangeDate(RangeDateType.Last30Days)
   }
+  filter: StatisticFilter = {}
   private destroy$ = new Subject();
 
   constructor(
     private layoutService: LayoutService,
     private dashboardService: DashboardService,
-    private store: DashboardStore
+    private sourceControlService: SourceControlSystemService,
+    public store: DashboardStore
   ) {
     Chart.register(ChartDataLabels);
     this.layoutService.configUpdate$.pipe(
@@ -74,6 +82,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.sourceControlService.getSourceControlSystem().subscribe(sourceControl => {
+      this.store.sourceControls.set(sourceControl);
+    })
     this.initCharts();
   }
 
@@ -83,11 +94,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const borderColor = documentStyle.getPropertyValue('--surface-border');
     this.store.textColor.set(textColor);
     this.store.borderColor.set(borderColor);
-    const startDate = this.rangeDate.startDate.toISOString()
-    const endDate = this.rangeDate.endDate.toISOString()
+    this.filter.startDate = this.rangeDate.startDate.toISOString();
+    this.filter.endDate = this.rangeDate.endDate.toISOString();
     this.dashboardService.sastStatistic({
-      from: startDate,
-      to: endDate
+      body: this.filter
     }).subscribe(sast => {
       this.sastSeverity.set({
         critical: sast.severity.critical,
@@ -106,8 +116,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
 
     this.dashboardService.scaStatistic({
-      from: startDate,
-      to: endDate
+      body: this.filter
     }).subscribe(sca => {
       this.scaSeverity.set({
         critical: sca.severity.critical,
@@ -128,6 +137,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onRangeDateChange($event: RangeDateState) {
     this.rangeDate = $event;
+    this.initCharts();
+  }
+
+  onChangeSourceControl($event: string) {
+    this.filter.sourceId = $event;
     this.initCharts();
   }
 }

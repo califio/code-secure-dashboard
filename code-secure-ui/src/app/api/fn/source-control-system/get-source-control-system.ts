@@ -8,17 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ScaStatistic } from '../../models/sca-statistic';
-import { StatisticFilter } from '../../models/statistic-filter';
+import { SourceControl } from '../../models/source-control';
 
-export interface ScaStatistic$Params {
-      body?: StatisticFilter
+export interface GetSourceControlSystem$Params {
 }
 
-export function scaStatistic(http: HttpClient, rootUrl: string, params?: ScaStatistic$Params, context?: HttpContext): Observable<StrictHttpResponse<ScaStatistic>> {
-  const rb = new RequestBuilder(rootUrl, scaStatistic.PATH, 'post');
+export function getSourceControlSystem(http: HttpClient, rootUrl: string, params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SourceControl>>> {
+  const rb = new RequestBuilder(rootUrl, getSourceControlSystem.PATH, 'get');
   if (params) {
-    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -26,9 +23,9 @@ export function scaStatistic(http: HttpClient, rootUrl: string, params?: ScaStat
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ScaStatistic>;
+      return r as StrictHttpResponse<Array<SourceControl>>;
     })
   );
 }
 
-scaStatistic.PATH = '/api/dashboard/sca';
+getSourceControlSystem.PATH = '/api/source-control-system';

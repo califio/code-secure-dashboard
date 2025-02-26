@@ -19,6 +19,7 @@ using CodeSecure.Manager.Report.Model;
 using CodeSecure.Manager.Scanner;
 using CodeSecure.Manager.Setting;
 using CodeSecure.Manager.Statistic;
+using CodeSecure.Manager.Statistic.Model;
 using Microsoft.EntityFrameworkCore;
 using FindingModel = CodeSecure.Manager.Report.Model.FindingModel;
 
@@ -52,6 +53,11 @@ public class ProjectService(
         if (!string.IsNullOrEmpty(filter.Name))
         {
             query = query.Where(p => p.Name.Contains(filter.Name));
+        }
+
+        if (filter.SourceControlId != null)
+        {
+            query = query.Where(project => project.SourceControlId == filter.SourceControlId);
         }
 
         if (filter.UserId != null)
@@ -247,14 +253,18 @@ public class ProjectService(
         var project = await FindByIdAsync(projectId);
 
         if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
+        StatisticFilter filter = new StatisticFilter
+        {
+            ProjectId = project.Id
+        };
         return new ProjectStatistics
         {
             OpenFinding = await context.Findings.CountAsync(finding =>
                 finding.ProjectId == project.Id && finding.Status == FindingStatus.Open),
-            SeveritySast = await statisticManager.SeveritySastAsync(project.Id),
-            SeveritySca = await statisticManager.SeverityScaAsync(project.Id),
-            StatusSast = await statisticManager.StatusSastAsync(project.Id),
-            StatusSca = await statisticManager.StatusScaAsync(project.Id)
+            SeveritySast = await statisticManager.SeveritySastAsync(filter),
+            SeveritySca = await statisticManager.SeverityScaAsync(filter),
+            StatusSast = await statisticManager.StatusSastAsync(filter),
+            StatusSca = await statisticManager.StatusScaAsync(filter)
         };
     }
 

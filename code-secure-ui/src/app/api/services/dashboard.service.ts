@@ -31,7 +31,7 @@ export class DashboardService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `sastStatistic()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   sastStatistic$Response(params?: SastStatistic$Params, context?: HttpContext): Observable<StrictHttpResponse<SastStatistic>> {
     return sastStatistic(this.http, this.rootUrl, params, context);
@@ -41,7 +41,7 @@ export class DashboardService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `sastStatistic$Response()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   sastStatistic(params?: SastStatistic$Params, context?: HttpContext): Observable<SastStatistic> {
     return this.sastStatistic$Response(params, context).pipe(
@@ -56,7 +56,7 @@ export class DashboardService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `scaStatistic()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   scaStatistic$Response(params?: ScaStatistic$Params, context?: HttpContext): Observable<StrictHttpResponse<ScaStatistic>> {
     return scaStatistic(this.http, this.rootUrl, params, context);
@@ -66,7 +66,7 @@ export class DashboardService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `scaStatistic$Response()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   scaStatistic(params?: ScaStatistic$Params, context?: HttpContext): Observable<ScaStatistic> {
     return this.scaStatistic$Response(params, context).pipe(

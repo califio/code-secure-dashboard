@@ -25,6 +25,11 @@ import {Select} from "primeng/select";
 import {UserSummary} from '../../../api/models/user-summary';
 import {ProjectFilter} from '../../../api/models/project-filter';
 import {UserService} from '../../../api/services/user.service';
+import {
+  SourceControlSelectComponent
+} from '../../../shared/components/source-control-select/source-control-select.component';
+import {SourceControl} from '../../../api/models/source-control';
+import {SourceControlSystemService} from '../../../api/services/source-control-system.service';
 
 @Component({
   selector: 'page-list-project',
@@ -44,7 +49,8 @@ import {UserService} from '../../../api/services/user.service';
     Checkbox,
     SortByComponent,
     FloatLabel,
-    Select
+    Select,
+    SourceControlSelectComponent
   ],
   templateUrl: './list-project.component.html',
 })
@@ -71,8 +77,10 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     userId: undefined,
     size: 20,
     page: 1,
-    desc: true
+    desc: true,
+    sourceControlId: undefined
   }
+  sourceControls = signal<SourceControl[]>([]);
   isDesktop = true;
   // paginator
   currentPage = signal(1);
@@ -89,12 +97,16 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService,
+    private sourceControlService: SourceControlSystemService,
     private layoutService: LayoutService
   ) {
     this.isDesktop = this.layoutService.isDesktop();
   }
 
   ngOnInit(): void {
+    this.sourceControlService.getSourceControlSystem().subscribe(sourceControls => {
+      this.sourceControls.set(sourceControls);
+    });
     this.userService.getProjectManagerUsers().subscribe(users => {
       this.users.set(users);
     })
@@ -128,7 +140,6 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-
   sourceIcon(source?: SourceType | undefined | null): string {
     if (source) {
       return source.toString().toLowerCase()
@@ -153,6 +164,11 @@ export class ListProjectComponent implements OnInit, OnDestroy {
 
   onChangeUser($event: any) {
     this.filter.userId = $event;
+    updateQueryParams(this.router, this.filter);
+  }
+
+  onChangeSourceControl($event: string) {
+    this.filter.sourceControlId = $event;
     updateQueryParams(this.router, this.filter);
   }
 }

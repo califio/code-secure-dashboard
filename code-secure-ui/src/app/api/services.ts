@@ -15,5 +15,6 @@ export { RoleService } from './services/role.service';
 export { RuleService } from './services/rule.service';
 export { ScannerService } from './services/scanner.service';
 export { SettingService } from './services/setting.service';
+export { SourceControlSystemService } from './services/source-control-system.service';
 export { TokenService } from './services/token.service';
 export { UserService } from './services/user.service';

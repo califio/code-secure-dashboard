@@ -1,5 +1,10 @@
 <div class="mb-2">
-  <range-date [type]="rangeDate.type" (onChange)="onRangeDateChange($event)"></range-date>
+  <div class="flex flex-row items-center gap-2">
+    <range-date [type]="rangeDate.type" (onChange)="onRangeDateChange($event)"></range-date>
+    @if(store.sourceControls().length > 1) {
+      <source-control-select [options]="store.sourceControls()" (onChange)="onChangeSourceControl($event)"></source-control-select>
+    }
+  </div>
 </div>
 <p-fluid class="grid grid-cols-12 gap-4">
   <!--  SAST-->

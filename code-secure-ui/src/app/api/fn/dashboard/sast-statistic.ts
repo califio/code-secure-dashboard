@@ -9,17 +9,16 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { SastStatistic } from '../../models/sast-statistic';
+import { StatisticFilter } from '../../models/statistic-filter';
 
 export interface SastStatistic$Params {
-  from?: string;
-  to?: string;
+      body?: StatisticFilter
 }
 
 export function sastStatistic(http: HttpClient, rootUrl: string, params?: SastStatistic$Params, context?: HttpContext): Observable<StrictHttpResponse<SastStatistic>> {
-  const rb = new RequestBuilder(rootUrl, sastStatistic.PATH, 'get');
+  const rb = new RequestBuilder(rootUrl, sastStatistic.PATH, 'post');
   if (params) {
-    rb.query('from', params.from, {"style":"form"});
-    rb.query('to', params.to, {"style":"form"});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(

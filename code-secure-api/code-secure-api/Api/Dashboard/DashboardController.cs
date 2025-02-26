@@ -1,22 +1,33 @@
 using CodeSecure.Api.Dashboard.Mode;
-using CodeSecure.Api.Dashboard.Service;
+using CodeSecure.Manager.Statistic;
+using CodeSecure.Manager.Statistic.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Dashboard;
 
-public class DashboardController(IDashboardService dashboardService) : BaseController
+public class DashboardController(IStatisticManager statisticManager) : BaseController
 {
-    [HttpGet]
+    [HttpPost]
     [Route("sast")]
-    public async Task<SastStatistic> SastStatistic(DateTime? from = null, DateTime? to = null)
+    public async Task<SastStatistic> SastStatistic(StatisticFilter filter)
     {
-        return await dashboardService.SastStatisticAsync(from, to);
+        return new SastStatistic
+        {
+            Severity = await statisticManager.SeveritySastAsync(filter),
+            Status = await statisticManager.StatusSastAsync(filter),
+            TopFindings = await statisticManager.TopSastFindingAsync(filter, top: 10)
+        };
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("sca")]
-    public async Task<ScaStatistic> ScaStatistic(DateTime? from = null, DateTime? to = null)
+    public async Task<ScaStatistic> ScaStatistic(StatisticFilter filter)
     {
-        return await dashboardService.ScaStatisticAsync(from, to);
+        return new ScaStatistic
+        {
+            Severity = await statisticManager.SeverityScaAsync(filter),
+            Status = await statisticManager.StatusScaAsync(filter),
+            TopDependencies = await statisticManager.TopDependenciesAsync(filter, top: 10)
+        };
     }
 }

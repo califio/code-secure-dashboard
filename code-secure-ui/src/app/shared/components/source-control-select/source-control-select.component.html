@@ -1,0 +1,21 @@
+<p-float-label variant="on">
+  <p-select [options]="options()"
+            styleClass="min-w-44"
+            [ngModel]="sourceControlId()"
+            (ngModelChange)="onChange.emit($event)"
+            optionValue="id" id="on_source">
+    <ng-template #selectedItem let-option>
+      <div class="flex flex-row items-center gap-2">
+        <ng-icon [name]="option.type | lowercase"></ng-icon>
+        <span>{{option.name}}</span>
+      </div>
+    </ng-template>
+    <ng-template #item let-option>
+      <div class="flex flex-row items-center gap-2">
+        <ng-icon [name]="option.type | lowercase"></ng-icon>
+        <span>{{option.name}}</span>
+      </div>
+    </ng-template>
+  </p-select>
+  <label for="on_source">Source Manager</label>
+</p-float-label>

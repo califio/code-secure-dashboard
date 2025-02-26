@@ -9,5 +9,6 @@ export interface ProjectFilter {
   page?: number;
   size?: number;
   sortBy?: ProjectSortField;
+  sourceControlId?: string | null;
   userId?: string | null;
 }
