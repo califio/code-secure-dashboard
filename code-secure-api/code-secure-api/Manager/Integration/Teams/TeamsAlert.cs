@@ -49,11 +49,11 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         logger?.LogInformation($"send mail scan result {model.ScanName} on {model.ProjectName} to ms teams channel");
         var title = $"Scan on \"{model.ProjectName}\" by {model.ScannerName} completed";
         var text = $"**Commit:** [{model.ScanName}]({model.CommitUrl})\n\n";
-        if (model.Action == CommitType.Branch)
+        if (model.Action == CommitType.CommitBranch)
         {
             text += $"**Branch:** {model.CommitBranch}\n\n";
         }
-        else if (model.Action == CommitType.Tag)
+        else if (model.Action == CommitType.CommitTag)
         {
             text += $"\n\n**Tag:** {model.CommitBranch}\n\n";
         }
@@ -90,11 +90,11 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         var text =
             $"We are notifying you that the latest {model.ScannerName} scan has detected {model.Findings.Count()} new security findings.<br>";
         text += $"**Commit:** {model.ScanName}<br>";
-        if (model.Action == CommitType.Branch)
+        if (model.Action == CommitType.CommitBranch)
         {
             text += $"**Branch:** {model.CommitBranch}<br>";
         }
-        else if (model.Action == CommitType.Tag)
+        else if (model.Action == CommitType.CommitTag)
         {
             text += $"**Tag:** {model.CommitBranch}<br>";
         }
@@ -146,11 +146,11 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         var text =
             $"We are pleased to inform you that some previously reported findings have been fixed in **{model.ProjectName}** project.\n\n";
         text += $"**Commit:** {model.ScanName}<br>";
-        if (model.Action == CommitType.Branch)
+        if (model.Action == CommitType.CommitBranch)
         {
             text += $"**Branch:** {model.CommitBranch}<br>";
         }
-        else if (model.Action == CommitType.Tag)
+        else if (model.Action == CommitType.CommitTag)
         {
             text += $"**Tag:** {model.CommitBranch}<br>";
         }

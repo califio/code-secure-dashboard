@@ -5,7 +5,7 @@ namespace CodeSecure.Enum;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum CommitType
 {
-    Branch,
-    Tag,
+    CommitBranch,
+    CommitTag,
     MergeRequest,
 }

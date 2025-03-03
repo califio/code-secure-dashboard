@@ -369,7 +369,7 @@ public class DefaultCiService(
         var defaultCommitBranch = context.ProjectCommits.FirstOrDefault(record =>
             record.ProjectId == scan.ProjectId
             && record.IsDefault
-            && record.Type == CommitType.Branch);
+            && record.Type == CommitType.CommitBranch);
         var isScannedOnDefaultBranch = defaultCommitBranch != null &&
                                        context.Scans.Any(record =>
                                            record.ProjectId == scan.ProjectId &&
@@ -522,7 +522,7 @@ public class DefaultCiService(
                 .Where(record =>
                     record.ProjectId == scan.ProjectId
                     && record.ScannerId == scan.ScannerId
-                    && record.Commit!.Type == CommitType.Branch
+                    && record.Commit!.Type == CommitType.CommitBranch
                     && record.Commit.Branch == scan.Commit.TargetBranch)
                 .Select(record => record.Id).FirstOrDefault();
             context.ScanFindings
