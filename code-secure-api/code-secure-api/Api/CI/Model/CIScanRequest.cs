@@ -15,7 +15,7 @@ public record CiScanRequest
 
     [Required] public required string RepoName { get; set; }
 
-    [Required] public required CommitType Action { get; set; }
+    [Required] public required CommitType GitAction { get; set; }
 
     [Required] public required string ScanTitle { get; set; }
 
