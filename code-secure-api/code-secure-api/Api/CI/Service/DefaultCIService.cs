@@ -66,9 +66,9 @@ public class DefaultCiService(
         // update scan
         var commitQuery = context.ProjectCommits.Where(record =>
             record.ProjectId == project.Id
-            && record.Type == request.CommitType
+            && record.Type == request.Action
             && record.Branch == request.CommitBranch);
-        if (request.CommitType == CommitType.MergeRequest)
+        if (request.Action == CommitType.MergeRequest)
         {
             if (string.IsNullOrEmpty(request.TargetBranch)) throw new BadRequestException("Target branch invalid");
 
@@ -84,7 +84,7 @@ public class DefaultCiService(
                 ProjectId = project.Id,
                 IsDefault = request.IsDefault,
                 Branch = request.CommitBranch,
-                Type = request.CommitType,
+                Type = request.Action,
                 CommitHash = request.CommitHash,
                 CommitTitle = request.ScanTitle,
                 TargetBranch = request.TargetBranch,
