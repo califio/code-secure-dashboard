@@ -1,10 +1,10 @@
 <div class="flex flex-row w-fit items-center gap-2 text-[#00c869]">
   <ng-icon [name]="getGitActionIcon(action)"></ng-icon>
   <span>{{branch}}</span>
-  @if(action == GitAction.CommitTag){
+  @if(action == CommitType.Tag){
     <div class="border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">tag</div>
   }
-  @if(action == GitAction.MergeRequest) {
+  @if(action == CommitType.MergeRequest) {
     <span>to</span>
     <span>{{targetBranch}}</span>
     <div class="border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">merge request</div>

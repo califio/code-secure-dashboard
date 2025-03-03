@@ -19,7 +19,7 @@ import { RoleService } from './services/role.service';
 import { RuleService } from './services/rule.service';
 import { ScannerService } from './services/scanner.service';
 import { SettingService } from './services/setting.service';
-import { SourceControlSystemService } from './services/source-control-system.service';
+import { SourceControlService } from './services/source-control.service';
 import { TokenService } from './services/token.service';
 import { UserService } from './services/user.service';
 
@@ -44,7 +44,7 @@ import { UserService } from './services/user.service';
     RuleService,
     ScannerService,
     SettingService,
-    SourceControlSystemService,
+    SourceControlService,
     TokenService,
     UserService,
     ApiConfiguration

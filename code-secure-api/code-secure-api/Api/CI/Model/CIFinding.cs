@@ -12,7 +12,7 @@ public record CiFinding
     public string? RuleId { get; set; }
     public DateTime? FixDeadline { get; set; }
 
-    [Required] public required string Identity { get; set; }
+    [Required] public required string Identity { get; init; }
 
     [Required] public required string Name { get; set; }
 
@@ -62,5 +62,14 @@ public record CiFinding
                 },
             Metadata = metadata
         };
+    }
+
+    public override int GetHashCode()
+    {
+        return Identity.GetHashCode();
+    }
+    public virtual bool Equals(CiFinding? other)
+    {
+        return Identity.Equals(other?.Identity);
     }
 }

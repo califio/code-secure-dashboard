@@ -4,9 +4,7 @@ import {SourceControl} from '../../../api/models/source-control';
 import {FormsModule} from '@angular/forms';
 import {NgIcon} from '@ng-icons/core';
 import {LowerCasePipe} from '@angular/common';
-import {FindingStatusLabelComponent} from '../finding/finding-status-label/finding-status-label.component';
 import {FloatLabel} from 'primeng/floatlabel';
-import {MultiSelect} from 'primeng/multiselect';
 
 @Component({
   selector: 'source-control-select',
@@ -15,9 +13,7 @@ import {MultiSelect} from 'primeng/multiselect';
     FormsModule,
     NgIcon,
     LowerCasePipe,
-    FindingStatusLabelComponent,
     FloatLabel,
-    MultiSelect
   ],
   templateUrl: './source-control-select.component.html',
   standalone: true,

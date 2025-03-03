@@ -140,7 +140,7 @@ export class FindingComponent implements OnInit, OnDestroy {
     }).subscribe(scanners => {
       this.store.scanners.set(scanners);
     });
-    this.ruleService.getRules({
+    this.ruleService.getRuleId({
       body: {
         projectId: this.projectStore.projectId()
       }

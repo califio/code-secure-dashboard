@@ -2,7 +2,7 @@ using CodeSecure.Enum;
 
 namespace CodeSecure.Database.Entity;
 
-public class Findings : BaseEntity
+public sealed class Findings : BaseEntity
 {
     public required string Identity { get; init; }
     public required string Name { get; init; }
@@ -10,7 +10,7 @@ public class Findings : BaseEntity
     public string? Category { get; init; }
     public string? Recommendation { get; set; }
     public required FindingStatus Status { get; set; }
-    public required FindingSeverity Severity { get; init; }
+    public required FindingSeverity Severity { get; set; }
     public DateTime? VerifiedAt { get; set; }
     public DateTime? FixedAt { get; set; }
     public DateTime? FixDeadline { get; set; }
@@ -28,4 +28,14 @@ public class Findings : BaseEntity
     
     public Guid? TicketId { get; set; }
     public Tickets? Ticket { get; set; }
+
+    public override int GetHashCode()
+    {
+        return Identity.GetHashCode();
+    }
+
+    public bool Equals(Findings? other)
+    {
+        return Identity.Equals(other?.Identity);
+    }
 }

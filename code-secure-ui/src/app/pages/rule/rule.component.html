@@ -1,1 +1,139 @@
-<coming-soon></coming-soon>
+<p-panel>
+  <ng-template #header>
+    <div class="font-semibold text-foreground text-xl">Rule Manager</div>
+  </ng-template>
+  <div class="flex flex-col py-3 px-5">
+    <div class="flex flex-wrap md:flex-row items-center justify-between gap-2">
+      <div class="flex flex-row items-center gap-2">
+        <p-icon-field>
+          <p-inputicon styleClass="pi pi-search"/>
+          <input pInputText type="text"
+                 [(ngModel)]="store.filter.name"
+                 (keyup.enter)="onSearch()"
+                 placeholder="Search..."/>
+        </p-icon-field>
+        <!--Scanner Filter-->
+        <finding-scanner-filter [selected]="store.filter.scannerId"
+                                [scanners]="store.scanners()"
+                                (onChange)="onChangeScanners($event)"/>
+        <!--Status Filter-->
+        <p-float-label variant="on">
+          <p-multi-select
+            class="min-w-28"
+            (onChange)="onFilterStatus($event)"
+            id="on_status"
+            [ngModel]="store.filter.status"
+            [options]="statusOptions"
+            [maxSelectedLabels]="1">
+          </p-multi-select>
+          <label for="on_status">Status</label>
+        </p-float-label>
+        <!--Confidence Filter-->
+        <p-float-label variant="on">
+          <p-multi-select
+            class="min-w-32"
+            (onChange)="onFilterConfidence($event)"
+            id="on_confidence"
+            [ngModel]="store.filter.confidence"
+            [options]="confidenceOptions"
+            [maxSelectedLabels]="1">
+          </p-multi-select>
+          <label for="on_confidence">Confidence</label>
+        </p-float-label>
+      </div>
+      <div class="flex flex-row items-center gap-2">
+        <button pButton severity="primary" [loading]="store.isSync()" (click)="onSync()">Sync</button>
+      </div>
+    </div>
+  </div>
+  <!--    TABLE-->
+  <p-table [loading]="store.loading()" [value]="store.rules()" [scrollable]="true" [scrollHeight]="'calc(100vh - 22rem)'"
+           styleClass="mt-4">
+    <ng-template #header>
+      <tr>
+        <th class="min-w-[300px] uppercase">Rule</th>
+        <th class="w-36 uppercase">Scanner</th>
+        <th class="min-w-96 uppercase">Confidence</th>
+        <th class="w-28 uppercase justify-center">Status</th>
+        <th class="w-16 uppercase justify-center">Action</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-rule>
+      <tr class="p-2">
+        <td>
+          <a class="flex flex-row gap-2" routerLink="/finding" [queryParams]="{'ruleId': rule.id}">
+            <span>{{rule.id}}</span>
+            <i class="pi pi-external-link"></i>
+          </a>
+        </td>
+        <td>
+          <div class="w-fit rounded px-2 py-1 bg-blue-500 dark:bg-blue-700 text-white">
+            {{rule.scannerName}}
+          </div>
+        </td>
+        <td>
+          <div class="flex flex-col gap-2">
+            <div class="font-semibold">{{rule.confidence}}</div>
+            <p-meter-group [max]="ruleConfidenceTotal(rule)" [value]="ruleConfidence(rule)"></p-meter-group>
+          </div>
+
+        </td>
+        <td>
+          <div class="flex justify-center">
+            @if(rule.status == RuleStatus.Enable) {
+              <p-chip [label]="rule.status" class="text-green-500"></p-chip>
+            } @else {
+              <p-chip [label]="rule.status" class="text-red-500"></p-chip>
+            }
+          </div>
+        </td>
+        <td class="justify-center">
+          <div class="flex justify-center">
+            <i class="pi pi-pen-to-square cursor-pointer" (click)="showRuleDialog(rule)"></i>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <div class="flex flex-row justify-end">
+    <p-paginator class="sticky bottom-0"
+                 (onPageChange)="onPageChange($event)"
+                 [first]="store.firstRecord()"
+                 [rows]="store.pageSize()"
+                 [totalRecords]="store.totalRecords()"
+                 [showCurrentPageReport]="store.isDesktop()"
+                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                 [rowsPerPageOptions]="[10, 20, 50, 100]"/>
+  </div>
+</p-panel>
+
+<p-dialog header="Update Rule" [modal]="true" [(visible)]="showUpdateRuleDialog">
+  <div class="flex flex-col gap-4 w-[320px] md:w-[480px]">
+    <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-5 gap-1 items-center">
+        <div class="font-semibold">Rule</div>
+        <div class="col-span-4">{{store.rule?.id}}</div>
+      </div>
+      <div class="grid grid-cols-5 gap-1 items-center">
+        <div class="font-semibold">Confidence</div>
+        <p-select-button [options]="confidenceOptions"
+                         [ngModel]="store.rule?.confidence"
+                         (ngModelChange)="onChangeConfidence($event)"></p-select-button>
+      </div>
+      <div class="grid grid-cols-5 gap-1 items-center">
+        <div class="font-semibold">Status</div>
+        <div class="col-span-4">
+          <p-select-button [options]="statusOptions"
+                           [ngModel]="store.rule?.status"
+                           (ngModelChange)="onChangeRuleStatus($event)"></p-select-button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row items-center gap-4 justify-end">
+      <div class="flex flex-row items-center gap-4 w-fit">
+        <p-button severity="secondary" (click)="closeDialog()" label="Cancel"/>
+        <p-button severity="primary" [loading]="loadingUpdateRule" (click)="onUpdateRule()" label="Update"/>
+      </div>
+    </div>
+  </div>
+</p-dialog>

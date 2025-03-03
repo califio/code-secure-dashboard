@@ -49,15 +49,15 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         logger?.LogInformation($"send mail scan result {model.ScanName} on {model.ProjectName} to ms teams channel");
         var title = $"Scan on \"{model.ProjectName}\" by {model.ScannerName} completed";
         var text = $"**Commit:** [{model.ScanName}]({model.CommitUrl})\n\n";
-        if (model.Action == GitAction.CommitBranch)
+        if (model.Action == CommitType.Branch)
         {
             text += $"**Branch:** {model.CommitBranch}\n\n";
         }
-        else if (model.Action == GitAction.CommitTag)
+        else if (model.Action == CommitType.Tag)
         {
             text += $"\n\n**Tag:** {model.CommitBranch}\n\n";
         }
-        else if (model.Action == GitAction.MergeRequest)
+        else if (model.Action == CommitType.MergeRequest)
         {
             text +=
                 $"\n\n**Merge Request:** **[{model.CommitBranch}]({model.MergeRequestUrl})** to **{model.TargetBranch}**\n\n\n";
@@ -90,15 +90,15 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         var text =
             $"We are notifying you that the latest {model.ScannerName} scan has detected {model.Findings.Count()} new security findings.<br>";
         text += $"**Commit:** {model.ScanName}<br>";
-        if (model.Action == GitAction.CommitBranch)
+        if (model.Action == CommitType.Branch)
         {
             text += $"**Branch:** {model.CommitBranch}<br>";
         }
-        else if (model.Action == GitAction.CommitTag)
+        else if (model.Action == CommitType.Tag)
         {
             text += $"**Tag:** {model.CommitBranch}<br>";
         }
-        else if (model.Action == GitAction.MergeRequest)
+        else if (model.Action == CommitType.MergeRequest)
         {
             text += $"**Merge Request:** **{model.CommitBranch}** to **{model.TargetBranch}**<br><br>";
         }
@@ -126,7 +126,7 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         // action
         message.AddAction(new OpenUriAction("View Detail", model.OpenFindingUrl));
         message.AddAction(new OpenUriAction("View Commit", model.CommitUrl));
-        if (model.Action == GitAction.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
+        if (model.Action == CommitType.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
         {
             message.AddAction(new OpenUriAction("View Merge Request", model.MergeRequestUrl!));
         }
@@ -146,15 +146,15 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         var text =
             $"We are pleased to inform you that some previously reported findings have been fixed in **{model.ProjectName}** project.\n\n";
         text += $"**Commit:** {model.ScanName}<br>";
-        if (model.Action == GitAction.CommitBranch)
+        if (model.Action == CommitType.Branch)
         {
             text += $"**Branch:** {model.CommitBranch}<br>";
         }
-        else if (model.Action == GitAction.CommitTag)
+        else if (model.Action == CommitType.Tag)
         {
             text += $"**Tag:** {model.CommitBranch}<br>";
         }
-        else if (model.Action == GitAction.MergeRequest)
+        else if (model.Action == CommitType.MergeRequest)
         {
             text += $"**Merge Request:** **{model.CommitBranch}** to **{model.TargetBranch}**<br><br>";
         }
@@ -181,7 +181,7 @@ public class TeamsAlert(TeamsSetting setting, ILogger<IAlert>? logger = null) : 
         // action
         message.AddAction(new OpenUriAction("View Detail", model.FixedFindingUrl));
         message.AddAction(new OpenUriAction("View Commit", model.CommitUrl));
-        if (model.Action == GitAction.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
+        if (model.Action == CommitType.MergeRequest && model.MergeRequestUrl.IsHttpUrl())
         {
             message.AddAction(new OpenUriAction("View Merge Request", model.MergeRequestUrl!));
         }

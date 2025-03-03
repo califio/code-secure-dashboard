@@ -8,7 +8,7 @@ public record FindingScan
     public required string Branch { get; set; }
     public required string CommitHash { get; set; }
     public required FindingStatus Status { get; set; }
-    public required GitAction Action { get; set; }
+    public required CommitType Action { get; set; }
     public required string? TargetBranch { get; set; }
     public required bool IsDefault { get; set; }
 }

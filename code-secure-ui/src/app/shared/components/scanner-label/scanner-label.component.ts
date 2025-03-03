@@ -10,5 +10,5 @@ export class ScannerLabelComponent {
   @Input()
   scanner: string | undefined | null = '';
   @Input()
-  type: ScannerType | undefined | null = ScannerType.Sast;
+  type: ScannerType | undefined | null;
 }

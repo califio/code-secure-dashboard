@@ -1,3 +1,6 @@
+using CodeSecure.Api.CI.Model;
+using CodeSecure.Database.Entity;
+using CodeSecure.Enum;
 using CodeSecure.Extension;
 
 namespace CodeSecure.Tests;
@@ -9,6 +12,11 @@ public class Tests
     {
     }
 
+
+    [Test]
+    public void TestHashSet()
+    {
+    }
     [Test]
     public void TestNormalized()
     {

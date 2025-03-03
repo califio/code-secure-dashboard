@@ -29,7 +29,7 @@ import {
   SourceControlSelectComponent
 } from '../../../shared/components/source-control-select/source-control-select.component';
 import {SourceControl} from '../../../api/models/source-control';
-import {SourceControlSystemService} from '../../../api/services/source-control-system.service';
+import {SourceControlService} from '../../../api/services/source-control.service';
 
 @Component({
   selector: 'page-list-project',
@@ -97,7 +97,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService,
-    private sourceControlService: SourceControlSystemService,
+    private sourceControlService: SourceControlService,
     private layoutService: LayoutService
   ) {
     this.isDesktop = this.layoutService.isDesktop();

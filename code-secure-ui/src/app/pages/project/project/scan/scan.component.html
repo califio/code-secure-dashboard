@@ -101,7 +101,7 @@
                [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scannerId}"
                class="flex flex-col gap-1">
               <span [pTooltip]="scan.commitTitle" tooltipPosition="top">{{ scan.commitTitle! | truncate:50 }}</span>
-              <scan-branch-label [action]="scan.gitAction ?? GitAction.CommitBranch"
+              <scan-branch-label [action]="scan.gitAction ?? 'Branch'"
                                  [branch]="scan.commitBranch ?? ''"
                                  [targetBranch]="scan.targetBranch">
               </scan-branch-label>

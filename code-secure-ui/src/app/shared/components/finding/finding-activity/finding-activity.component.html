@@ -28,31 +28,39 @@
         @switch (activity.type) {
           @case (FindingActivityType.ChangeStatus) {
             <span>Change status</span>
-            <div class="flex flex-row items-center gap-2">
-              <div class="flex flex-row items-center gap-2 ">
-                <finding-status-label class="border border-surface rounded px-3 py-1"
-                                      [status]="activity.metadata?.changeStatus?.previousStatus!">
-                </finding-status-label>
+            @if(activity.oldState || activity.newState) {
+              <div class="flex flex-row items-center gap-2">
+                @if(activity.oldState){
+                  <finding-status-label class="border border-surface rounded px-3 py-1"
+                                        [status]="activity.oldState">
+                  </finding-status-label>
+                }
                 <span>to</span>
-                <finding-status-label class="border border-surface rounded px-3 py-1"
-                                      [status]="activity.metadata?.changeStatus?.currentStatus!">
-                </finding-status-label>
+                @if(activity.newState){
+                  <finding-status-label class="border border-surface rounded px-3 py-1"
+                                        [status]="activity.newState">
+                  </finding-status-label>
+                }
               </div>
-            </div>
+            }
           }
           @case (FindingActivityType.ChangeDeadline) {
             <span>Change SLA</span>
-            <div class="flex flex-row items-center gap-2">
-              @if (activity.metadata?.changeDeadline?.previousDate) {
-                <div class="flex text-nowrap border border-surface px-3 py-1 rounded">
-                  {{ parseDate(activity.metadata?.changeDeadline?.previousDate) | date : 'dd/MM/yyyy' }}
-                </div>
-              }
-              <span>to</span>
-              <div class="flex text-nowrap border border-surface px-3 py-1 rounded">
-                {{ parseDate(activity.metadata?.changeDeadline?.currentDate) | date : 'dd/MM/yyyy' }}
+            @if(activity.oldState || activity.newState) {
+              <div class="flex flex-row items-center gap-2">
+                @if (activity.oldState) {
+                  <div class="flex text-nowrap border border-surface px-3 py-1 rounded">
+                    {{ parseDate(activity.oldState) | date : 'dd/MM/yyyy' }}
+                  </div>
+                }
+                <span>to</span>
+                @if (activity.newState) {
+                  <div class="flex text-nowrap border border-surface px-3 py-1 rounded">
+                    {{ parseDate(activity.newState) | date : 'dd/MM/yyyy' }}
+                  </div>
+                }
               </div>
-            </div>
+            }
           }
           @case (FindingActivityType.Open) {
             <span>first seen</span>
@@ -64,11 +72,11 @@
             <span>seen again</span>
           }
         }
-        @if (activity.metadata?.scanInfo) {
+        @if (activity.commit) {
           <span>on</span>
-          <scan-branch-label [action]="activity.metadata?.scanInfo?.action ?? GitAction.CommitBranch"
-                       [branch]="activity.metadata?.scanInfo?.branch ?? ''"
-                       [targetBranch]="activity.metadata?.scanInfo?.targetBranch">
+          <scan-branch-label [action]="activity.commit.action ?? CommitType.Branch"
+                       [branch]="activity.commit.branch ?? ''"
+                       [targetBranch]="activity.commit.targetBranch">
           </scan-branch-label>
         }
       </div>

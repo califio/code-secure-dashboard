@@ -10,6 +10,10 @@ public class FindingActivities : BaseEntity
     public Users? User { get; init; }
     public string? Comment { get; init; }
     public required FindingActivityType Type { get; init; }
+    public string? OldState { get; set; }
+    public string? NewState { get; set; }
+    public Guid? CommitId { get; set; }
+    public GitCommits? Commit { get; set; }
     public required Guid FindingId { get; init; }
     public Findings? Finding { get; init; }
 
@@ -21,37 +25,27 @@ public class FindingActivities : BaseEntity
             Id = Guid.NewGuid(),
             UserId = userId,
             Type = FindingActivityType.ChangeDeadline,
-            Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
-            {
-                ChangeDeadline = new ChangeDeadlineFinding
-                {
-                    PreviousDate = previousDate,
-                    CurrentDate = currentDate
-                }
-            }),
-            FindingId = findingId,
-            Comment = null
+            OldState = previousDate.ToString(),
+            NewState = currentDate.ToString(),
+            FindingId = findingId
         };
     }
 
-    public static FindingActivities ChangeStatus(Guid userId, Guid findingId, FindingStatus previousStatus,
-        FindingStatus currentStatus)
+    public static FindingActivities ChangeStatus(
+        Guid userId,
+        Guid findingId,
+        FindingStatus previousStatus,
+        FindingStatus currentStatus
+    )
     {
         return new FindingActivities
         {
             Id = Guid.NewGuid(),
             UserId = userId,
             Type = FindingActivityType.ChangeStatus,
-            Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
-            {
-                ChangeStatus = new ChangeStatusFinding
-                {
-                    PreviousStatus = previousStatus,
-                    CurrentStatus = currentStatus
-                }
-            }),
-            FindingId = findingId,
-            Comment = null
+            OldState = previousStatus.ToString(),
+            NewState = currentStatus.ToString(),
+            FindingId = findingId
         };
     }
 
@@ -64,6 +58,39 @@ public class FindingActivities : BaseEntity
             Type = FindingActivityType.Comment,
             FindingId = findingId,
             Comment = comment
+        };
+    }
+
+    public static FindingActivities OpenFinding(Guid findingId, Guid commitId)
+    {
+        return new FindingActivities
+        {
+            Id = Guid.NewGuid(),
+            Type = FindingActivityType.Open,
+            CommitId = commitId,
+            FindingId = findingId
+        };
+    }
+    
+    public static FindingActivities FixedFinding(Guid findingId, Guid commitId)
+    {
+        return new FindingActivities
+        {
+            Id = Guid.NewGuid(),
+            Type = FindingActivityType.Fixed,
+            CommitId = commitId,
+            FindingId = findingId
+        };
+    }
+
+    public static FindingActivities ReopenFinding(Guid findingId, Guid commitId)
+    {
+        return new FindingActivities
+        {
+            Id = Guid.NewGuid(),
+            Type = FindingActivityType.Reopen,
+            CommitId = commitId,
+            FindingId = findingId
         };
     }
 }

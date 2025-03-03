@@ -1,17 +1,17 @@
-using CodeSecure.Database.Metadata;
+using CodeSecure.Database.Entity;
 using CodeSecure.Enum;
 
 namespace CodeSecure.Api.Finding.Model;
 
 public record FindingActivity
 {
-    public required Guid? UserId { get; set; }
-    public required string Username { get; set; }
-    public required string Fullname { get; set; }
+    public Guid? UserId { get; set; }
+    public required string? Username { get; set; }
     public required string? Avatar { get; set; }
-    public required string? Comment { get; set; }
-    public required DateTime CreatedAt { get; set; }
     public required FindingActivityType Type { get; set; }
-    public required FindingActivityMetadata? Metadata { get; set; }
-    public required string? MetadataString { get; set; }
+    public string? Comment { get; set; }
+    public string? OldState { get; set; }
+    public string? NewState { get; set; }
+    public GitCommits? Commit { get; set; }
+    public required DateTime CreatedAt { get; set; }
 }

@@ -131,7 +131,7 @@ public class ProjectService(
         var results = await query.OrderBy(nameof(Scans.CompletedAt), true).Select(scan => new ProjectScan
         {
             Id = scan.Id,
-            GitAction = scan.Commit!.Action,
+            CommitType = scan.Commit!.Type,
             Metadata = scan.Metadata,
             ScannerId = scan.Scanner!.Id,
             Scanner = scan.Scanner!.Name,
@@ -189,7 +189,7 @@ public class ProjectService(
             {
                 CommitId = record.Id,
                 Branch = record.Branch,
-                Action = record.Action,
+                Action = record.Type,
                 TargetBranch = record.TargetBranch,
                 IsDefault = record.IsDefault
             })

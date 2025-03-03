@@ -11,7 +11,7 @@ public record ScanInfoModel
     public required string ScannerName { get; set; }
     public required string ScannerType { get; set; }
     public required string BlockStatus { get; set; }
-    public required GitAction Action { get; set; }
+    public required CommitType Action { get; set; }
     public required string CommitUrl { get; set; }
     public required string CommitBranch { get; set; }
     public required string? TargetBranch { get; set; }

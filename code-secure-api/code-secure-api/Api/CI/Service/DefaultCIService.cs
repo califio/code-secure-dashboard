@@ -13,6 +13,7 @@ using CodeSecure.Manager.Integration.TicketTracker;
 using CodeSecure.Manager.Package;
 using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Project.Model;
+using CodeSecure.Manager.Rule;
 using CodeSecure.Manager.Scanner;
 using CodeSecure.Manager.SourceControl;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +29,11 @@ public class DefaultCiService(
     IProjectManager projectManager,
     ISourceControlManager sourceControlManager,
     IAlertManager alertManager,
+    IRuleManager ruleManager,
     ITicketTrackerManager ticketTrackerManager,
     ILogger<DefaultCiService> logger) : ICiService
 {
+
     public async Task<CiScanInfo> InitScan(CiScanRequest request)
     {
         if ((request.Type is ScannerType.Sast or ScannerType.Dependency or ScannerType.Secret) == false)
@@ -63,9 +66,9 @@ public class DefaultCiService(
         // update scan
         var commitQuery = context.ProjectCommits.Where(record =>
             record.ProjectId == project.Id
-            && record.Action == request.GitAction
+            && record.Type == request.CommitType
             && record.Branch == request.CommitBranch);
-        if (request.GitAction == GitAction.MergeRequest)
+        if (request.CommitType == CommitType.MergeRequest)
         {
             if (string.IsNullOrEmpty(request.TargetBranch)) throw new BadRequestException("Target branch invalid");
 
@@ -75,13 +78,13 @@ public class DefaultCiService(
         var commit = await commitQuery.FirstOrDefaultAsync();
         if (commit == null)
         {
-            commit = new ProjectCommits
+            commit = new GitCommits
             {
                 Id = Guid.NewGuid(),
                 ProjectId = project.Id,
                 IsDefault = request.IsDefault,
                 Branch = request.CommitBranch,
-                Action = request.GitAction,
+                Type = request.CommitType,
                 CommitHash = request.CommitHash,
                 CommitTitle = request.ScanTitle,
                 TargetBranch = request.TargetBranch,
@@ -159,20 +162,20 @@ public class DefaultCiService(
     {
         var scan = await context.Scans.FirstOrDefaultAsync(scan => scan.Id == scanId);
         if (scan == null) throw new BadRequestException("Scan not found");
-
+        
         if (request.Status != null && request.Status != scan.Status)
         {
             scan.Status = (ScanStatus)request.Status;
             if (request.Status == ScanStatus.Completed) scan.CompletedAt = DateTime.UtcNow;
         }
-
+        
         if (!string.IsNullOrEmpty(request.Description))
         {
             if (request.Description.Length > 1024) request.Description = request.Description.Substring(0, 1024);
-
+        
             scan.Description = request.Description;
         }
-
+            
         context.Scans.Update(scan);
         await context.SaveChangesAsync();
     }
@@ -215,7 +218,7 @@ public class DefaultCiService(
                         })
                         .ToList(),
                     OpenFindingUrl = $"{findingUrl}&status=Open",
-                    Action = scan.Commit!.Action,
+                    Action = scan.Commit!.Type,
                     CommitBranch = scan.Commit.Branch,
                     TargetBranch = scan.Commit.TargetBranch,
                     ScanName = scan.Scanner.Name,
@@ -238,7 +241,7 @@ public class DefaultCiService(
                     })
                     .ToList(),
                 FixedFindingUrl = $"{findingUrl}&status=Fixed",
-                Action = scan.Commit!.Action,
+                Action = scan.Commit!.Type,
                 CommitBranch = scan.Commit.Branch,
                 TargetBranch = scan.Commit.TargetBranch,
                 ScanName = scan.Scanner.Name,
@@ -262,7 +265,7 @@ public class DefaultCiService(
                     ? "Block"
                     : "Pass",
                 //Action = GetGitAction(scan.Commit!.Action),
-                Action = scan.Commit!.Action,
+                Action = scan.Commit!.Type,
                 CommitBranch = scan.Commit.Branch,
                 TargetBranch = scan.Commit.TargetBranch,
                 MergeRequestUrl = mergeRequestUrl,
@@ -366,7 +369,7 @@ public class DefaultCiService(
         var defaultCommitBranch = context.ProjectCommits.FirstOrDefault(record =>
             record.ProjectId == scan.ProjectId
             && record.IsDefault
-            && record.Action == GitAction.CommitBranch);
+            && record.Type == CommitType.Branch);
         var isScannedOnDefaultBranch = defaultCommitBranch != null &&
                                        context.Scans.Any(record =>
                                            record.ProjectId == scan.ProjectId &&
@@ -449,8 +452,8 @@ public class DefaultCiService(
             });
         }
 
-        var response = await HandleCiFinding(scan, ciFindings);
-        var isBlock = IsBlock(scan.ProjectId, response, scan.Scanner!.Type);
+        // var response = await HandleCiFinding(scan, ciFindings);
+        // var isBlock = IsBlock(scan.ProjectId, response, scan.Scanner!.Type);
         if (isScannedOnDefaultBranch == false || scan.Commit!.IsDefault)
         {
             var report = (await projectManager.DependencyReportAsync(scan.ProjectId))!;
@@ -475,274 +478,172 @@ public class DefaultCiService(
         return new CiUploadDependencyResponse
         {
             Packages = ciPackageInfos,
-            IsBlock = isBlock
+            IsBlock = false
         };
     }
 
     private async Task<CiUploadFindingResponse> HandleCiFinding(Scans scan, List<CiFinding> ciFindings)
     {
-        // project findings
-        var projectFindings = await context.Findings.Where(finding =>
-            finding.ProjectId == scan.ProjectId &&
-            finding.ScannerId == scan.ScannerId).ToListAsync();
-        var mProjectFindings = new Dictionary<string, Findings>();
-        foreach (var finding in projectFindings)
+        foreach (var finding in ciFindings.Where(finding => finding.RuleId != null))
         {
-            mProjectFindings[finding.Identity] = finding;
-        }
-
-        // branch findings
-        List<Findings> branchFindings;
-        Guid? scanId = null;
-        if (scan.Commit!.Action == GitAction.MergeRequest)
-        {
-            // get scan id of target scan
-            var scanTargetBranch = await context.Scans
-                .Include(record => record.Commit)
-                .FirstOrDefaultAsync(record =>
-                    record.ProjectId == scan.ProjectId
-                    && record.ScannerId == scan.ScannerId
-                    && record.Commit!.Action == GitAction.CommitBranch
-                    && record.Commit.Branch == scan.Commit.TargetBranch);
-            if (scanTargetBranch != null) scanId = scanTargetBranch.Id;
-        }
-        else
-        {
-            scanId = scan.Id;
-        }
-
-        if (scanId != null)
-            branchFindings = await context.ScanFindings
-                .Include(record => record.Finding)
-                .Where(record => record.ScanId == scanId)
-                .Select(record => record.Finding!).ToListAsync();
-        else
-            branchFindings = [];
-
-        var mBranchFindings = new Dictionary<string, Findings>();
-        foreach (var finding in branchFindings)
-        {
-            mBranchFindings[finding.Identity] = finding;
-        }
-
-        // new branch findings 
-        var newBranchFindings = new List<Findings>();
-        foreach (var newBranchFinding in ciFindings.Where(finding => !mBranchFindings.ContainsKey(finding.Identity)))
-        {
-            mProjectFindings.TryGetValue(newBranchFinding.Identity, out var projectFinding);
-            if (projectFinding != null)
+            await ruleManager.CreateAsync(new Rules
             {
-                // ignore false positive (incorrect), accepted risk findings.
-                if (projectFinding.Status is (FindingStatus.Incorrect or FindingStatus.AcceptedRisk)) continue;
-                if (projectFinding.Status == FindingStatus.Fixed) projectFinding.Status = FindingStatus.Confirmed;
-
-                newBranchFindings.Add(projectFinding);
-            }
-            else
-            {
-                var newFinding = await findingManager.CreateAsync(new Findings
-                {
-                    Identity = newBranchFinding.Identity,
-                    RuleId = newBranchFinding.RuleId,
-                    Name = newBranchFinding.Name,
-                    Description = newBranchFinding.Description,
-                    Recommendation = newBranchFinding.Recommendation,
-                    Status = FindingStatus.Open,
-                    Severity = newBranchFinding.Severity,
-                    Metadata = JSONSerializer.Serialize(newBranchFinding.Metadata),
-                    ProjectId = scan.ProjectId,
-                    ScannerId = scan.ScannerId,
-                    Location = newBranchFinding.Location?.Path,
-                    Snippet = newBranchFinding.Location?.Snippet,
-                    StartLine = newBranchFinding.Location?.StartLine,
-                    EndLine = newBranchFinding.Location?.EndLine,
-                    StartColumn = newBranchFinding.Location?.StartColumn,
-                    EndColumn = newBranchFinding.Location?.EndColumn,
-                    Category = newBranchFinding.Category
-                });
-                newBranchFindings.Add(newFinding);
-            }
-        }
-
-        await context.SaveChangesAsync();
-        if (newBranchFindings.Count > 0)
-        {
-            // add new scan findings
-            foreach (var finding in newBranchFindings)
-            {
-                try
-                {
-                    context.ScanFindings.Add(new ScanFindings
-                    {
-                        ScanId = scan.Id,
-                        FindingId = finding.Id,
-                        Status = finding.Status,
-                        CommitHash = scan.Commit!.CommitHash ?? string.Empty
-                    });
-                    await context.SaveChangesAsync();
-                    context.FindingActivities.Add(new FindingActivities
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = null,
-                        Comment = null,
-                        Type = FindingActivityType.Open,
-                        Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
-                        {
-                            ScanInfo = new FindingScanActivity
-                            {
-                                Branch = scan.Commit.Branch,
-                                Action = scan.Commit.Action,
-                                TargetBranch = scan.Commit.TargetBranch,
-                                IsDefault = scan.Commit.IsDefault
-                            }
-                        }),
-                        FindingId = finding.Id
-                    });
-                    await context.SaveChangesAsync();
-                }
-                catch (System.Exception e)
-                {
-                    logger.LogError(e.Message);
-                }
-            }
-        }
-
-        // fixed findings
-        var mCiFindings = new Dictionary<string, CiFinding>();
-        foreach (var finding in ciFindings)
-        {
-            mCiFindings[finding.Identity] = finding;
-        }
-
-        var fixedBranchFindings = branchFindings.FindAll(finding => finding.Status != FindingStatus.Fixed && !mCiFindings.ContainsKey(finding.Identity)).ToList();
-        if (fixedBranchFindings.Count > 0)
-        {
-            fixedBranchFindings.ForEach(fixedFinding =>
-            {
-                // update status (fixed) of finding on this scan
-                context.ScanFindings.Where(record => record.ScanId == scan.Id && record.FindingId == fixedFinding.Id)
-                    .ExecuteUpdate(setter => setter.SetProperty(record => record.Status, FindingStatus.Fixed));
-                // add change status activity of finding on scan
-                context.FindingActivities.Add(new FindingActivities
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = null,
-                    Comment = null,
-                    Type = FindingActivityType.Fixed,
-                    Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
-                    {
-                        ScanInfo = new FindingScanActivity
-                        {
-                            Branch = scan.Commit.Branch,
-                            Action = scan.Commit.Action,
-                            TargetBranch = scan.Commit.TargetBranch,
-                            IsDefault = scan.Commit.IsDefault
-                        }
-                    }),
-                    FindingId = fixedFinding.Id
-                });
-                // fixed on default branch or the finding only effected on one branch -> fixed finding
-                if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
-                {
-                    fixedFinding.Status = FindingStatus.Fixed;
-                    context.Findings.Update(fixedFinding);
-                    // todo: notify for security team to recheck 
-                }
-                context.SaveChanges();
+                Id = finding.RuleId!,
+                ScannerId = scan.ScannerId,
+                Status = RuleStatus.Enable,
+                Confidence = RuleConfidence.Unknown,
             });
         }
-
-        // the new findings that found before
-        var oldFindings = ciFindings.Where(finding => mBranchFindings.ContainsKey(finding.Identity))
-            .Select(finding => mBranchFindings[finding.Identity]).ToList();
-
-        // open findings but not verified -> need to verify
-        var openFindings = oldFindings.Where(finding => finding.Status == FindingStatus.Open).ToList();
-
-        // confirmed findings but is not fixed -> need to fix
-        var confirmedFindings = oldFindings.Where(finding => finding.Status == FindingStatus.Confirmed).ToList();
-        oldFindings.ForEach(finding =>
+        List<FindingStatus> activeStatus = [FindingStatus.Open, FindingStatus.Confirmed, FindingStatus.AcceptedRisk];
+        // remove false positive finding & disable finding 
+        var identityFalsePositiveFindings = context.Findings
+            .Where(finding =>
+                finding.ProjectId == scan.ProjectId &&
+                finding.ScannerId == scan.ScannerId &&
+                finding.Status == FindingStatus.Incorrect
+            )
+            .Select(finding => finding.Identity).ToHashSet();
+        var disableRules = context.Rules
+            .Where(rule => rule.ScannerId == scan.ScannerId && rule.Status == RuleStatus.Disable)
+            .Select(rule => rule.Id).ToHashSet();
+        var inputFindings = ciFindings
+            .Where(finding => 
+                identityFalsePositiveFindings.Contains(finding.Identity) == false &&
+                disableRules.Contains(finding.RuleId) == false
+            ).ToHashSet();
+        // load active scan findings
+        var currentBranchFindings = context.ScanFindings
+            .Include(record => record.Finding)
+            .Where(record => record.ScanId == scan.Id && activeStatus.Contains(record.Status))
+            .Select(record => record.Finding!).ToHashSet();
+        if (scan.Commit!.Type == CommitType.MergeRequest)
         {
-            // ignore on merge request
-            if (scan.Commit.Action != GitAction.MergeRequest)
-                // update last commit. ignore false positive (incorrect), accepted risk (ignore) findings 
-                if (finding.Status is FindingStatus.Open or FindingStatus.Confirmed or FindingStatus.Fixed)
+            var targetScanId = context.Scans
+                .Where(record =>
+                    record.ProjectId == scan.ProjectId
+                    && record.ScannerId == scan.ScannerId
+                    && record.Commit!.Type == CommitType.Branch
+                    && record.Commit.Branch == scan.Commit.TargetBranch)
+                .Select(record => record.Id).FirstOrDefault();
+            context.ScanFindings
+                .Include(record => record.Finding)
+                .Where(record => record.ScanId == targetScanId && activeStatus.Contains(record.Status))
+                .Select(record => record.Finding!)
+                .ToList().ForEach(finding =>
                 {
-                    var scanFinding = context.ScanFindings.FirstOrDefault(record =>
-                        record.ScanId == scan.Id && record.FindingId == finding.Id);
-                    if (scanFinding == null)
-                    {
-                        scanFinding = new ScanFindings
-                        {
-                            ScanId = scan.Id,
-                            FindingId = finding.Id,
-                            Status = finding.Status,
-                            CommitHash = scan.Commit.CommitHash ?? string.Empty
-                        };
-                        if (finding.Status == FindingStatus.Fixed) scanFinding.Status = FindingStatus.Confirmed;
-
-                        context.ScanFindings.Add(scanFinding);
-                    }
-                    else
-                    {
-                        scanFinding.CommitHash = scan.Commit.CommitHash ?? string.Empty;
-                        if (finding.Status == FindingStatus.Fixed)
-                            //reopen finding
-                            scanFinding.Status = FindingStatus.Confirmed;
-
-                        context.ScanFindings.Update(scanFinding);
-                    }
-
-                    context.SaveChanges();
-                }
-
-            // finding fixed in the past but found again in this scan -> reopen finding
-            if (finding.Status == FindingStatus.Fixed)
+                    currentBranchFindings.Add(finding);
+                });
+        }
+        
+        // new branch findings 
+        var newBranchFindings = inputFindings
+            .Where(inputFinding => currentBranchFindings.Any(branchFinding => branchFinding.Identity == inputFinding.Identity) == false)
+            .Select(newFinding => findingManager.CreateAsync(new Findings
             {
-                if (scan.Commit.Action == GitAction.MergeRequest)
-                {
-                    newBranchFindings.Add(finding);
-                    context.ScanFindings.Add(new ScanFindings
-                    {
-                        ScanId = scan.Id,
-                        FindingId = finding.Id,
-                        Status = FindingStatus.Confirmed,
-                        CommitHash = scan.Commit.CommitHash ?? string.Empty
-                    });
-                }
-                else
-                {
-                    openFindings.Add(finding);
-                    // add reopen activity of finding on scan
-                    context.FindingActivities.Add(new FindingActivities
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = null,
-                        Comment = "Reopen finding",
-                        Type = FindingActivityType.Reopen,
-                        Metadata = JSONSerializer.Serialize(new FindingActivityMetadata
-                        {
-                            ScanInfo = new FindingScanActivity
-                            {
-                                Branch = scan.Commit.Branch,
-                                Action = scan.Commit.Action,
-                                TargetBranch = scan.Commit.TargetBranch,
-                                IsDefault = scan.Commit.IsDefault
-                            }
-                        }),
-                        FindingId = finding.Id
-                    });
-                    if (scan.Commit.IsDefault ||
-                        context.ScanFindings.Count(record => record.FindingId == finding.Id) == 1)
-                    {
-                        finding.Status = FindingStatus.Confirmed;
-                        context.Findings.Update(finding);
-                    }
-                }
+                Identity = newFinding.Identity,
+                RuleId = newFinding.RuleId,
+                Name = newFinding.Name,
+                Description = newFinding.Description,
+                Recommendation = newFinding.Recommendation,
+                Status = FindingStatus.Open,
+                Severity = newFinding.Severity,
+                Metadata = JSONSerializer.Serialize(newFinding.Metadata),
+                ProjectId = scan.ProjectId,
+                ScannerId = scan.ScannerId,
+                Location = newFinding.Location?.Path,
+                Snippet = newFinding.Location?.Snippet,
+                StartLine = newFinding.Location?.StartLine,
+                EndLine = newFinding.Location?.EndLine,
+                StartColumn = newFinding.Location?.StartColumn,
+                EndColumn = newFinding.Location?.EndColumn,
+                Category = newFinding.Category
+            }).Result).ToList();
+        // fixed branch findings
+        var fixedBranchFindings = currentBranchFindings
+            .Where(finding => 
+                inputFindings.Any(inputFinding => inputFinding.Identity == finding.Identity) == false &&
+                disableRules.Contains(finding.RuleId) == false
+            )
+            .ToList();
 
-                context.SaveChanges();
+        #region Handle Finding
+        #region Handle New Finding
+        foreach (var finding in newBranchFindings)
+        {
+            try
+            {
+                context.ScanFindings.Add(new ScanFindings
+                {
+                    ScanId = scan.Id,
+                    FindingId = finding.Id,
+                    Status = finding.Status,
+                    CommitHash = scan.Commit!.CommitHash ?? string.Empty
+                });
+                await context.SaveChangesAsync();
+                context.FindingActivities.Add(FindingActivities.OpenFinding(finding.Id, scan.CommitId));
+                await context.SaveChangesAsync();
             }
-        });
+            catch (System.Exception e)
+            {
+                logger.LogError(e.Message);
+            }
+        }
+        #endregion
+        #region Handle Fixed Finding
+        foreach (var fixedFinding in fixedBranchFindings)
+        {
+            // update status (fixed) of finding on this scan
+            await context.ScanFindings.Where(record => record.ScanId == scan.Id && record.FindingId == fixedFinding.Id)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.Status, FindingStatus.Fixed));
+            // add change status activity of finding on scan
+            context.FindingActivities.Add(FindingActivities.FixedFinding(fixedFinding.Id, scan.CommitId));
+            // fixed on default branch or the finding only effected on one branch -> fixed finding
+            if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
+            {
+                fixedFinding.Status = FindingStatus.Fixed;
+                context.Findings.Update(fixedFinding);
+                // todo: notify for security team to recheck 
+            }
+            await context.SaveChangesAsync();
+        }
+        #endregion
+        #region Handle Reopen Finding
+        // reopen branch finding: finding fixed in the past but found again in this scan 
+        var reopenFindings = context.ScanFindings
+            .Include(record => record.Finding)
+            .Where(record => record.ScanId == scan.Id && record.Status == FindingStatus.Fixed)
+            .Select(record => record.Finding!)
+            .ToList()
+            .Where(fixedFinding => inputFindings.Any(inputFinding => inputFinding.Identity == fixedFinding.Identity))
+            .ToList();
+        foreach (var finding in reopenFindings)
+        {
+            await context.ScanFindings.Where(record => record.ScanId == scan.Id && record.FindingId == finding.Id)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.Status, FindingStatus.Confirmed));
+            // add reopen activity of finding on scan
+            context.FindingActivities.Add(FindingActivities.ReopenFinding(finding.Id, scan.CommitId));
+            if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == finding.Id) == 1)
+            {
+                finding.Status = FindingStatus.Confirmed;
+                context.Findings.Update(finding);
+            }
+            await context.SaveChangesAsync();
+        }
+        #endregion
+        #endregion
+        // the scan findings that found before
+        var knownFindings = currentBranchFindings
+            .Where(finding => inputFindings.Any(inputFinding => inputFinding.Identity == finding.Identity)).ToList();
+        // update latest commit sha to known finding
+        foreach (var finding in knownFindings)
+        {
+            await context.ScanFindings.Where(record => record.ScanId == scan.Id && record.FindingId == finding.Id)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.CommitHash, scan.Commit.CommitHash));
+        }
+        // open findings but not verified -> need to verify
+        var openFindings = knownFindings.Where(finding => finding.Status == FindingStatus.Open).ToList();
+        // confirmed findings but is not fixed -> need to fix
+        var confirmedFindings = knownFindings.Where(finding => finding.Status == FindingStatus.Confirmed).ToList();
         return new CiUploadFindingResponse
         {
             NewFindings = newBranchFindings.Select(CiFinding.FromFinding),
@@ -839,7 +740,7 @@ public class DefaultCiService(
             .Include(record => record.Project)
             .Where(record => record.ProjectId == projectId)
             .ToListAsync();
-        foreach (var package in projectPackages.FindAll(item => item.TicketId == null && !string.IsNullOrEmpty(item.Package!.FixedVersion)))
+        foreach (var package in projectPackages.Where(item => item.TicketId == null && !string.IsNullOrEmpty(item.Package!.FixedVersion)))
         {
             var vulnerabilities = await context.PackageVulnerabilities
                 .Include(record => record.Vulnerability)

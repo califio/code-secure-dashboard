@@ -2,7 +2,7 @@ using CodeSecure.Api.SourceControlSystem.Model;
 
 namespace CodeSecure.Api.SourceControlSystem.Service;
 
-public interface ISourceControlSystemService
+public interface ISourceControlService
 {
     List<SourceControl> GetSourceControlSystem();
 }

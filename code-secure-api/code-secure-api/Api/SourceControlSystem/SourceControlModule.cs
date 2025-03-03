@@ -2,11 +2,11 @@ using CodeSecure.Api.SourceControlSystem.Service;
 
 namespace CodeSecure.Api.SourceControlSystem;
 
-public class SourceControlSystemModule: IModule
+public class SourceControlModule: IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<ISourceControlSystemService, SourceControlSystemService>();
+        builder.AddScoped<ISourceControlService, SourceControlService>();
         return builder;
     }
 }

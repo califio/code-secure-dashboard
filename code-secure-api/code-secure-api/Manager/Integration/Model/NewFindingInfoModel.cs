@@ -8,7 +8,7 @@ public record NewFindingInfoModel
     public required string ScanName { get; set; }
     public required string CommitUrl { get; set; }
     public required string? MergeRequestUrl { get; set; }
-    public required GitAction Action { get; set; }
+    public required CommitType Action { get; set; }
     public required string CommitBranch { get; set; }
     public required string? TargetBranch { get; set; }
     public required string ProjectName { get; set; }

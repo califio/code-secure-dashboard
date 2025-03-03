@@ -21,7 +21,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<PackageDependencies> PackageDependencies { set; get; } = null!;
     public DbSet<Packages> Packages { set; get; } = null!;
     public DbSet<PackageVulnerabilities> PackageVulnerabilities { set; get; } = null!;
-    public DbSet<ProjectCommits> ProjectCommits { set; get; } = null!;
+    public DbSet<GitCommits> ProjectCommits { set; get; } = null!;
     public DbSet<ProjectContainers> ProjectContainers { set; get; } = null!;
     public DbSet<ProjectEnvironmentVariables> ProjectEnvironmentVariables { set; get; } = null!;
     public DbSet<ProjectSettings> ProjectConfig { set; get; } = null!;
@@ -30,6 +30,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ProjectSettings> ProjectSettings { set; get; } = null!;
     public DbSet<ProjectTags> ProjectTags { set; get; } = null!;
     public DbSet<ProjectUsers> ProjectUsers { set; get; } = null!;
+    public DbSet<Rules> Rules { set; get; } = null!;
     public DbSet<ScanFindings> ScanFindings { set; get; } = null!;
     public DbSet<Scanners> Scanners { set; get; } = null!;
     public DbSet<Scans> Scans { set; get; } = null!;

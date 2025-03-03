@@ -8,26 +8,26 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { RuleFilter } from '../../models/rule-filter';
+import { UpdateRuleRequest } from '../../models/update-rule-request';
 
-export interface GetRules$Params {
-      body?: RuleFilter
+export interface UpdateRule$Params {
+      body?: UpdateRuleRequest
 }
 
-export function getRules(http: HttpClient, rootUrl: string, params?: GetRules$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
-  const rb = new RequestBuilder(rootUrl, getRules.PATH, 'post');
+export function updateRule(http: HttpClient, rootUrl: string, params?: UpdateRule$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateRule.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
 
   return http.request(
-    rb.build({ responseType: 'json', accept: 'application/json', context })
+    rb.build({ responseType: 'text', accept: '*/*', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<string>>;
+      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
     })
   );
 }
 
-getRules.PATH = '/api/rule/filter';
+updateRule.PATH = '/api/rule/update';

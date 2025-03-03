@@ -38,7 +38,10 @@ public class InitDataService(
         new Claim(PermissionType.CiToken, PermissionAction.Create),
         new Claim(PermissionType.CiToken, PermissionAction.Delete),
         new Claim(PermissionType.Config, PermissionAction.Read),
-        new Claim(PermissionType.Config, PermissionAction.Update)
+        new Claim(PermissionType.Config, PermissionAction.Update),
+        new Claim(PermissionType.Rule, PermissionAction.Create),
+        new Claim(PermissionType.Rule, PermissionAction.Update),
+        new Claim(PermissionType.Rule, PermissionAction.Delete),
     ];
 
     private readonly List<Claim> userClaims = [];
@@ -130,7 +133,7 @@ public class InitDataService(
                 RepoId = repoId,
                 RepoUrl = repoUrl,
                 RepoName = repoName,
-                GitAction = GitAction.CommitBranch,
+                CommitType = CommitType.Branch,
                 ScanTitle = $"Fix issue JIRA-23{i}",
                 CommitBranch = "dev",
                 CommitHash = $"35e32b6a00dec02ae7d7{i}",
@@ -227,7 +230,7 @@ public class InitDataService(
                 RepoId = repoId,
                 RepoUrl = repoUrl,
                 RepoName = repoName,
-                GitAction = GitAction.CommitBranch,
+                CommitType = CommitType.Branch,
                 ScanTitle = $"Fix issue JIRA-23{i}",
                 CommitBranch = "dev",
                 CommitHash = $"35e32b6a00dec02ae7d7{i}",

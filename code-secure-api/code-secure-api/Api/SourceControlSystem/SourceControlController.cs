@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.SourceControlSystem;
 
-public class SourceControlSystemController(ISourceControlSystemService sourceControlSystemService) : BaseController
+public class SourceControlController(ISourceControlService sourceControlService) : BaseController
 {
     [HttpGet]
     public List<SourceControl> GetSourceControlSystem()
     {
-        return sourceControlSystemService.GetSourceControlSystem();
+        return sourceControlService.GetSourceControlSystem();
     }
 }

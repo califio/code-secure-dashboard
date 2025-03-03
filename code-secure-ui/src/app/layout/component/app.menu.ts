@@ -31,6 +31,7 @@ export class AppMenu implements  OnInit {
       {
         label: 'Admin',
         items: [
+          { label: 'Rule', icon: PrimeIcons.SHIELD, routerLink: ['/rule'] },
           { label: 'User Manager', icon: PrimeIcons.USERS, routerLink: ['/user'] },
           { label: 'Setting', icon: PrimeIcons.COG, routerLink: ['/setting'] },
         ]

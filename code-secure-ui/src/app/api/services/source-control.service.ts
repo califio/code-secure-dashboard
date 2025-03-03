@@ -11,18 +11,18 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { getSourceControlSystem } from '../fn/source-control-system/get-source-control-system';
-import { GetSourceControlSystem$Params } from '../fn/source-control-system/get-source-control-system';
+import { getSourceControlSystem } from '../fn/source-control/get-source-control-system';
+import { GetSourceControlSystem$Params } from '../fn/source-control/get-source-control-system';
 import { SourceControl } from '../models/source-control';
 
 @Injectable({ providedIn: 'root' })
-export class SourceControlSystemService extends BaseService {
+export class SourceControlService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
 
   /** Path part for operation `getSourceControlSystem()` */
-  static readonly GetSourceControlSystemPath = '/api/source-control-system';
+  static readonly GetSourceControlSystemPath = '/api/source-control';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

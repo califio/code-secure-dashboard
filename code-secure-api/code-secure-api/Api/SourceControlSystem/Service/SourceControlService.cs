@@ -3,7 +3,7 @@ using CodeSecure.Database;
 
 namespace CodeSecure.Api.SourceControlSystem.Service;
 
-public class SourceControlSystemService(AppDbContext context) : ISourceControlSystemService
+public class SourceControlService(AppDbContext context) : ISourceControlService
 {
     public List<SourceControl> GetSourceControlSystem()
     {

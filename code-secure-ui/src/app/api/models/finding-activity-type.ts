@@ -8,5 +8,6 @@ export enum FindingActivityType {
   Reopen = 'Reopen',
   Comment = 'Comment',
   ChangeStatus = 'ChangeStatus',
-  ChangeDeadline = 'ChangeDeadline'
+  ChangeDeadline = 'ChangeDeadline',
+  ChangeSeverity = 'ChangeSeverity'
 }

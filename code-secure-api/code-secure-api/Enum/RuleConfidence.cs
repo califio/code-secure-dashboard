@@ -3,9 +3,10 @@ using System.Text.Json.Serialization;
 namespace CodeSecure.Enum;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GitAction
+public enum RuleConfidence
 {
-    CommitBranch,
-    CommitTag,
-    MergeRequest,
+    High,
+    Medium,
+    Low,
+    Unknown
 }

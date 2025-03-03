@@ -4,7 +4,6 @@ import {FindingStatusLabelComponent} from '../finding-status-label/finding-statu
 import {ScanBranchLabelComponent} from '../../scan/scan-branch-label/scan-branch-label.component';
 import {TimeagoModule} from 'ngx-timeago';
 import {FindingActivityType} from '../../../../api/models/finding-activity-type';
-import {GitAction} from '../../../../api/models/git-action';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {DatePipe, NgClass, UpperCasePipe} from '@angular/common';
 import {Avatar} from 'primeng/avatar';
@@ -13,6 +12,7 @@ import {Timeline} from 'primeng/timeline';
 import {Panel} from 'primeng/panel';
 import {Tooltip} from 'primeng/tooltip';
 import {MarkdownComponent} from 'ngx-markdown';
+import {CommitType} from '../../../../api/models';
 
 @Component({
   selector: 'finding-activity',
@@ -69,6 +69,6 @@ export class FindingActivityComponent {
   }
 
   protected readonly FindingActivityType = FindingActivityType;
-  protected readonly GitAction = GitAction;
   protected readonly FindingStatus = FindingStatus;
+  protected readonly CommitType = CommitType;
 }

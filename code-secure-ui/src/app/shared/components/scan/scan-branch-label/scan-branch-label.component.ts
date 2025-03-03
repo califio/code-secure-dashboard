@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {NgIcon} from "@ng-icons/core";
-import {GitAction} from '../../../../api/models/git-action';
 import {getGitActionIcon} from '../../../helper';
+import {CommitType} from '../../../../api/models/commit-type';
 
 @Component({
   selector: 'scan-branch-label',
@@ -13,11 +13,11 @@ import {getGitActionIcon} from '../../../helper';
 })
 export class ScanBranchLabelComponent {
   @Input()
-  action: GitAction = GitAction.CommitBranch;
+  action: CommitType = CommitType.Branch;
   @Input()
   branch = '';
   @Input()
   targetBranch: string | undefined | null = null;
-  protected readonly GitAction = GitAction;
   protected readonly getGitActionIcon = getGitActionIcon;
+  protected readonly CommitType = CommitType;
 }

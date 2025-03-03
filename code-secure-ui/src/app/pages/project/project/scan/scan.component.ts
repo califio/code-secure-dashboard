@@ -7,7 +7,6 @@ import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectScanFilter} from '../../../../api/models/project-scan-filter';
 import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams} from '../../../../core/router';
-import {GitAction} from '../../../../api/models/git-action';
 import {ProjectStatistics} from '../../../../api/models/project-statistics';
 import {ProjectStore} from '../project.store';
 import {
@@ -168,22 +167,13 @@ export class ScanComponent implements OnInit, OnDestroy {
     return result.length > 0 ? result.join(", ") : "0 seconds";
   }
 
-  private mIcon: Map<GitAction, string> = new Map<GitAction, string>([
-    [GitAction.CommitTag, 'gitTag'],
-    [GitAction.CommitBranch, 'gitBranch'],
-    [GitAction.MergeRequest, 'gitMerge'],
-  ]);
-
   ngOnDestroy(): void {
     this.destroy$.next(null);
     this.destroy$.complete();
   }
 
   private destroy$ = new Subject();
-  protected readonly GitAction = GitAction;
-  protected readonly Date = Date;
   protected readonly ScanStatus = ScanStatus;
-
   onPageChange($event: PaginatorState) {
 
   }

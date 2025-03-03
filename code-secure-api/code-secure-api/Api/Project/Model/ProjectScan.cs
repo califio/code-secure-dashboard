@@ -5,7 +5,7 @@ namespace CodeSecure.Api.Project.Model;
 public record ProjectScan
 {
     public required Guid Id { get; set; }
-    public required GitAction GitAction { get; set; }
+    public required CommitType CommitType { get; set; }
     public required string? Metadata { get; set; }
     public required Guid CommitId { get; set; }
 

@@ -21,7 +21,6 @@ import {FindingActivity} from '../../../../api/models/finding-activity';
 import {
   FindingLocation,
   FindingScan,
-  GitAction,
   ScannerType,
   SourceType,
   Tickets,
@@ -184,7 +183,6 @@ export class FindingDetailComponent implements OnDestroy {
     })
   }
 
-  protected readonly GitAction = GitAction;
   protected readonly FindingStatus = FindingStatus;
 
   onChangeFixDeadline($event: Date) {

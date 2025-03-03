@@ -21,10 +21,10 @@ import {getRangeDate, RangeDateType} from '../../shared/date-util';
 import {RangeDateState} from '../../shared/ui/range-date/range-date.model';
 import {DashboardStore} from './dashboard.store';
 import {StatisticFilter} from '../../api/models/statistic-filter';
-import {SourceControlSystemService} from '../../api/services/source-control-system.service';
 import {
   SourceControlSelectComponent
 } from '../../shared/components/source-control-select/source-control-select.component';
+import {SourceControlService} from '../../api/services/source-control.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private layoutService: LayoutService,
     private dashboardService: DashboardService,
-    private sourceControlService: SourceControlSystemService,
+    private sourceControlService: SourceControlService,
     public store: DashboardStore
   ) {
     Chart.register(ChartDataLabels);

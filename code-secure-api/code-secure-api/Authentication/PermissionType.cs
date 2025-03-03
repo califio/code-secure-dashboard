@@ -8,4 +8,5 @@ public static class PermissionType
     public const string Finding = "finding";
     public const string CiToken = "ci-token";
     public const string Config = "config";
+    public const string Rule = "rule";
 }

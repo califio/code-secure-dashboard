@@ -10,5 +10,6 @@ public enum FindingActivityType
     Reopen,
     Comment,
     ChangeStatus,
-    ChangeDeadline
+    ChangeDeadline,
+    ChangeSeverity,
 }

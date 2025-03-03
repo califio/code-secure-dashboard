@@ -191,6 +191,9 @@ namespace CodeSecure.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CommitId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -198,6 +201,12 @@ namespace CodeSecure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewState")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldState")
                         .HasColumnType("text");
 
                     b.Property<int>("Type")
@@ -210,6 +219,8 @@ namespace CodeSecure.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommitId");
 
                     b.HasIndex("FindingId");
 
@@ -307,6 +318,53 @@ namespace CodeSecure.Migrations
                     b.ToTable("Findings");
                 });
 
+            modelBuilder.Entity("CodeSecure.Database.Entity.GitCommits", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Branch")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CommitHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CommitTitle")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("MergeRequestId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetBranch")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectCommits");
+                });
+
             modelBuilder.Entity("CodeSecure.Database.Entity.PackageDependencies", b =>
                 {
                     b.Property<Guid>("PackageId")
@@ -389,53 +447,6 @@ namespace CodeSecure.Migrations
                         .IsUnique();
 
                     b.ToTable("Packages");
-                });
-
-            modelBuilder.Entity("CodeSecure.Database.Entity.ProjectCommits", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Action")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Branch")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CommitHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CommitTitle")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("MergeRequestId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Metadata")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("TargetBranch")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectCommits");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.ProjectContainers", b =>
@@ -653,6 +664,33 @@ namespace CodeSecure.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("CodeSecure.Database.Entity.Rules", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ScannerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Confidence")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id", "ScannerId");
+
+                    b.HasIndex("ScannerId");
+
+                    b.ToTable("Rules");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.ScanFindings", b =>
@@ -1115,6 +1153,10 @@ namespace CodeSecure.Migrations
 
             modelBuilder.Entity("CodeSecure.Database.Entity.FindingActivities", b =>
                 {
+                    b.HasOne("CodeSecure.Database.Entity.GitCommits", "Commit")
+                        .WithMany()
+                        .HasForeignKey("CommitId");
+
                     b.HasOne("CodeSecure.Database.Entity.Findings", "Finding")
                         .WithMany()
                         .HasForeignKey("FindingId")
@@ -1124,6 +1166,8 @@ namespace CodeSecure.Migrations
                     b.HasOne("CodeSecure.Database.Entity.Users", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Commit");
 
                     b.Navigation("Finding");
 
@@ -1153,6 +1197,17 @@ namespace CodeSecure.Migrations
                     b.Navigation("Scanner");
 
                     b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("CodeSecure.Database.Entity.GitCommits", b =>
+                {
+                    b.HasOne("CodeSecure.Database.Entity.Projects", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.PackageDependencies", b =>
@@ -1191,17 +1246,6 @@ namespace CodeSecure.Migrations
                     b.Navigation("Package");
 
                     b.Navigation("Vulnerability");
-                });
-
-            modelBuilder.Entity("CodeSecure.Database.Entity.ProjectCommits", b =>
-                {
-                    b.HasOne("CodeSecure.Database.Entity.Projects", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.ProjectContainers", b =>
@@ -1306,6 +1350,17 @@ namespace CodeSecure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CodeSecure.Database.Entity.Rules", b =>
+                {
+                    b.HasOne("CodeSecure.Database.Entity.Scanners", "Scanner")
+                        .WithMany()
+                        .HasForeignKey("ScannerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Scanner");
+                });
+
             modelBuilder.Entity("CodeSecure.Database.Entity.ScanFindings", b =>
                 {
                     b.HasOne("CodeSecure.Database.Entity.Findings", "Finding")
@@ -1327,7 +1382,7 @@ namespace CodeSecure.Migrations
 
             modelBuilder.Entity("CodeSecure.Database.Entity.Scans", b =>
                 {
-                    b.HasOne("CodeSecure.Database.Entity.ProjectCommits", "Commit")
+                    b.HasOne("CodeSecure.Database.Entity.GitCommits", "Commit")
                         .WithMany()
                         .HasForeignKey("CommitId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -149,7 +149,7 @@ public class DefaultFindingService(
                 CommitHash = record.CommitHash,
                 IsDefault = record.Scan.Commit.IsDefault,
                 ScanId = record.ScanId,
-                Action = record.Scan.Commit.Action,
+                Action = record.Scan.Commit.Type,
                 TargetBranch = record.Scan.Commit.TargetBranch,
                 Status = record.Status
             }).ToListAsync();
@@ -237,19 +237,22 @@ public class DefaultFindingService(
             }
         }
 
+        if (request.Severity != null && request.Severity != finding.Severity)
+        {
+            finding.Severity = (FindingSeverity)request.Severity;
+        }
+
         if (request.FixDeadline != null && request.FixDeadline != finding.FixDeadline)
         {
             if (request.FixDeadline < DateTime.UtcNow) throw new BadRequestException("Fix deadline invalid");
 
             if (finding.Status != FindingStatus.Confirmed) throw new BadRequestException("Can't set fix deadline");
-
-            var activity = FindingActivities.ChangeDeadline(
+            context.FindingActivities.Add(FindingActivities.ChangeDeadline(
                 CurrentUser().Id,
                 findingId,
                 finding.FixDeadline,
                 request.FixDeadline
-            );
-            context.FindingActivities.Add(activity);
+            ));
             await context.SaveChangesAsync();
             finding.FixDeadline = request.FixDeadline;
         }
@@ -269,37 +272,22 @@ public class DefaultFindingService(
 
         var result = await context.FindingActivities
             .Include(activity => activity.User)
+            .Include(activity => activity.Commit)
             .Where(activity => activity.FindingId == finding.Id)
+            .OrderBy(nameof(FindingActivities.CreatedAt), filter.Desc)
             .Select(activity => new FindingActivity
             {
                 UserId = activity.UserId,
-                Username = activity.User!.UserName!,
-                Fullname = activity.User!.FullName,
-                Avatar = activity.User!.Avatar,
-                Comment = activity.Comment,
+                Username = activity.User != null ? activity.User.UserName : null,
+                Avatar = activity.User != null ? activity.User.Avatar : null,
                 Type = activity.Type,
-                MetadataString = activity.Metadata,
-                Metadata = null,
-                CreatedAt = activity.CreatedAt
+                Comment = activity.Comment,
+                OldState = activity.OldState,
+                NewState = activity.NewState,
+                CreatedAt = activity.CreatedAt,
+                Commit = activity.Commit
             })
-            .OrderBy(nameof(FindingActivities.CreatedAt), filter.Desc)
             .PageAsync(filter.Page, filter.Size);
-        foreach (var item in result.Items)
-        {
-            if (string.IsNullOrEmpty(item.MetadataString)) continue;
-            try
-            {
-                item.Metadata = JSONSerializer.Deserialize<FindingActivityMetadata>(item.MetadataString);
-            }
-            catch (System.Exception e)
-            {
-                item.Metadata = null;
-                logger.LogError(e.Message);
-            }
-
-            item.MetadataString = null;
-        }
-
         return result;
     }
 
@@ -322,10 +310,7 @@ public class DefaultFindingService(
             Comment = commentActivity.Comment,
             CreatedAt = commentActivity.CreatedAt,
             Type = FindingActivityType.Comment,
-            Metadata = null,
-            MetadataString = null,
-            Fullname = string.Empty,
-            Avatar = null
+            Avatar = null,
         };
     }
 

@@ -126,7 +126,7 @@
       }
       @if (finding().metadata && finding().metadata!.references) {
         <p-fieldset legend="References">
-          <div class="flex flex-co gap-2">
+          <div class="flex flex-col gap-2">
             @for (reference of finding().metadata!.references; track $index) {
               <div markdown>{{ reference }}</div>
             }

@@ -109,7 +109,7 @@ export class ListFindingComponent implements OnInit {
     this.scannerService.getScanners().subscribe(scanners => {
       this.store.scanners.set(scanners);
     });
-    this.ruleService.getRules({
+    this.ruleService.getRuleId({
       body: {}
     }).subscribe(rules => {
       this.store.rules.set(rules);
