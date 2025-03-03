@@ -1,8 +1,8 @@
 import {CommitType} from '../api/models';
 
 export const mActionIcon: Map<CommitType, string> = new Map<CommitType, string>([
-  [CommitType.Tag, 'gitTag'],
-  [CommitType.Branch, 'gitBranch'],
+  [CommitType.CommitTag, 'gitTag'],
+  [CommitType.CommitBranch, 'gitBranch'],
   [CommitType.MergeRequest, 'gitMerge'],
 ]);
 

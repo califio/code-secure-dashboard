@@ -1,8 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ComingSoonComponent} from '../../shared/ui/coming-soon/coming-soon.component';
 import {Panel} from 'primeng/panel';
 import {IconField} from 'primeng/iconfield';
-import {SortByComponent} from '../../shared/ui/sort-by/sort-by.component';
 import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
 import {Button, ButtonDirective} from 'primeng/button';
@@ -14,13 +12,10 @@ import {LayoutService} from '../../layout/layout.service';
 import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../core/router';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {Checkbox} from 'primeng/checkbox';
 import {MeterGroup} from 'primeng/metergroup';
 import {RuleInfo} from '../../api/models/rule-info';
-import {ScannerLabelComponent} from '../../shared/components/scanner-label/scanner-label.component';
 import {RuleConfidence, RuleStatus} from '../../api/models';
 import {Chip} from 'primeng/chip';
-import {ToggleButton, ToggleButtonChangeEvent} from 'primeng/togglebutton';
 import {FormsModule} from '@angular/forms';
 import {ToastrService} from '../../shared/services/toastr.service';
 import {
@@ -29,8 +24,6 @@ import {
 import {FloatLabel} from 'primeng/floatlabel';
 import {MultiSelect, MultiSelectChangeEvent} from 'primeng/multiselect';
 import {Dialog} from 'primeng/dialog';
-import {Select} from 'primeng/select';
-import {ToggleSwitch} from 'primeng/toggleswitch';
 import {SelectButton} from 'primeng/selectbutton';
 import {rule} from 'postcss';
 
@@ -38,20 +31,15 @@ import {rule} from 'postcss';
   selector: 'app-rule',
   standalone: true,
   imports: [
-    ComingSoonComponent,
     Panel,
     IconField,
-    SortByComponent,
     InputIcon,
     InputText,
     ButtonDirective,
     TableModule,
     Paginator,
-    Checkbox,
     MeterGroup,
-    ScannerLabelComponent,
     Chip,
-    ToggleButton,
     FormsModule,
     FindingScannerFilterComponent,
     FloatLabel,
@@ -59,8 +47,6 @@ import {rule} from 'postcss';
     RouterLink,
     Dialog,
     Button,
-    Select,
-    ToggleSwitch,
     SelectButton,
   ],
   templateUrl: './rule.component.html',
@@ -72,6 +58,7 @@ export class RuleComponent implements OnInit, OnDestroy {
   statusOptions = [RuleStatus.Enable, RuleStatus.Disable];
   confidenceOptions = [RuleConfidence.High, RuleConfidence.Medium, RuleConfidence.Low, RuleConfidence.Unknown];
   private destroy$ = new Subject();
+
   constructor(
     public store: RuleStore,
     private ruleService: RuleService,
@@ -126,11 +113,12 @@ export class RuleComponent implements OnInit, OnDestroy {
 
   ruleConfidence(rule: RuleInfo) {
     return [
-      { label: 'Incorrect', color: '#F44336', value: rule.incorrectFinding },
-      { label: 'Correct', color: '#4CAF50', value: rule.correctFinding },
-      { label: 'Uncertain', color: '#fbbf24', value: rule.uncertainFinding },
+      {label: 'Incorrect', color: '#F44336', value: rule.incorrectFinding},
+      {label: 'Correct', color: '#4CAF50', value: rule.correctFinding},
+      {label: 'Uncertain', color: '#fbbf24', value: rule.uncertainFinding},
     ];
   }
+
   ruleConfidenceTotal(rule: RuleInfo) {
     return rule.uncertainFinding! + rule.incorrectFinding! + rule.correctFinding!;
   }

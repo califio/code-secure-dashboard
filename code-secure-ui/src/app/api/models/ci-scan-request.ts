@@ -8,8 +8,8 @@ import { SourceType } from '../models/source-type';
 export interface CiScanRequest {
   commitBranch?: string | null;
   commitHash: string;
-  commitType: CommitType;
   containerImage?: string | null;
+  gitAction: CommitType;
   isDefault?: boolean;
   jobUrl: string;
   mergeRequestId?: string | null;

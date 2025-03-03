@@ -13,7 +13,7 @@ import {CommitType} from '../../../../api/models/commit-type';
 })
 export class ScanBranchLabelComponent {
   @Input()
-  action: CommitType = CommitType.Branch;
+  action: CommitType = CommitType.CommitBranch;
   @Input()
   branch = '';
   @Input()
