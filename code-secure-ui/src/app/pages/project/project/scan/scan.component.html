@@ -91,66 +91,66 @@
           <th class="max-w-10">ACTION</th>
         </tr>
       </ng-template>
-      <ng-template #body let-scan>
+      <ng-template #body let-scan let-scanType="ProjectScan">
         <tr>
           <td class="text-center">
             <p-checkbox binary></p-checkbox>
           </td>
           <td>
             <a [routerLink]="['/project', store.projectId(), 'finding']"
-               [queryParams]="{'commitId': scan.commitId, 'scanner': scan.scannerId}"
+               [queryParams]="{'commitId': typedScan(scan).commitId, 'scanner': typedScan(scan).scannerId}"
                class="flex flex-col gap-1">
-              <span [pTooltip]="scan.commitTitle" tooltipPosition="top">{{ scan.commitTitle! | truncate:50 }}</span>
-              <scan-branch-label [action]="scan.gitAction ?? 'Branch'"
-                                 [branch]="scan.commitBranch ?? ''"
-                                 [targetBranch]="scan.targetBranch">
+              <span [pTooltip]="typedScan(scan).commitTitle!" tooltipPosition="top">{{ typedScan(scan).commitTitle! | truncate:50 }}</span>
+              <scan-branch-label [action]="typedScan(scan).commitType ?? CommitType.CommitBranch"
+                                 [branch]="typedScan(scan).commitBranch ?? ''"
+                                 [targetBranch]="typedScan(scan).targetBranch">
               </scan-branch-label>
             </a>
           </td>
-          <td>{{ scan.scanner }}</td>
-          <td class="lowercase">{{ scan.type }}</td>
+          <td>{{ typedScan(scan).scanner }}</td>
+          <td class="lowercase">{{ typedScan(scan).type }}</td>
           <td>
-            <scan-status [status]="scan.status ?? ScanStatus.Error"></scan-status>
+            <scan-status [status]="typedScan(scan).status ?? ScanStatus.Error"></scan-status>
           </td>
           <td class="min-w-32">
             <div
               class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
               <p
                 class="flex-1 text-center bg-rose-600/20 text-rose-500 flex items-center justify-center h-full">
-                {{ scan.severityCritical }}
+                {{ typedScan(scan).severityCritical }}
               </p>
               <p
                 class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center h-full">
-                {{ scan.severityHigh }}
+                {{ typedScan(scan).severityHigh }}
               </p>
               <p
                 class="flex-1 text-center bg-yellow-600/20 text-yellow-500 flex items-center justify-center h-full">
-                {{ scan.severityMedium }}
+                {{ typedScan(scan).severityMedium }}
               </p>
               <p
                 class="flex-1 text-center bg-indigo-500/20 text-indigo-400 flex items-center justify-center h-full">
-                {{ scan.severityLow }}
+                {{ typedScan(scan).severityLow }}
               </p>
               <p
                 class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center h-full">
-                {{ scan.severityInfo }}
+                {{ typedScan(scan).severityInfo }}
               </p>
             </div>
           </td>
           <td>
             <div class="text-[#00c869]">
-              <span [pTooltip]="scan.startedAt" tooltipPosition="top">{{ scan.startedAt | timeago }}</span>
+              <span [pTooltip]="typedScan(scan).startedAt" tooltipPosition="top">{{ typedScan(scan).startedAt | timeago }}</span>
             </div>
           </td>
-          <td>{{ duration(scan.startedAt, scan.completedAt) }}</td>
+          <td>{{ duration(typedScan(scan).startedAt, typedScan(scan).completedAt) }}</td>
           <td>
             <div class="flex flex-row items-center gap-2">
               <a class="cursor-pointer"
                  [routerLink]="['/project', store.projectId(), 'finding']"
-                 [queryParams]="{'scanId': scan.id, 'branch': scan.commitBranch}">
+                 [queryParams]="{'scanId': typedScan(scan).id, 'branch': typedScan(scan).commitBranch}">
                 <ng-icon name="arrowTopRightOnSquare" size="18"></ng-icon>
               </a>
-              <a class="cursor-pointer" [href]="scan.jobUrl" target="_blank">
+              <a class="cursor-pointer" [href]="typedScan(scan).jobUrl" target="_blank">
                 <ng-icon name="commandLine" size="20"></ng-icon>
               </a>
             </div>

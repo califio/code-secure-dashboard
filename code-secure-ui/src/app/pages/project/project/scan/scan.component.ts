@@ -13,7 +13,7 @@ import {
   ScanBranchLabelComponent
 } from '../../../../shared/components/scan/scan-branch-label/scan-branch-label.component';
 import {ScanStatusComponent} from '../../../../shared/components/scan/scan-status/scan-status.component';
-import {ProjectScan, ScanStatus} from '../../../../api/models';
+import {CommitType, ProjectScan, ScanStatus} from '../../../../api/models';
 import {SeverityChartComponent} from '../../../dashboard/severity-chart/severity-chart.component';
 import {FindingStatusChartComponent} from '../../../dashboard/finding-status-chart/finding-status-chart.component';
 import {LowerCasePipe} from '@angular/common';
@@ -148,6 +148,9 @@ export class ScanComponent implements OnInit, OnDestroy {
 
   }
 
+  typedScan(scan: any): ProjectScan {
+    return scan;
+  }
   duration(start?: string, end?: string | null): string {
     if (end == null || start == null) {
       return "-";
@@ -177,4 +180,7 @@ export class ScanComponent implements OnInit, OnDestroy {
   onPageChange($event: PaginatorState) {
 
   }
+
+
+  protected readonly CommitType = CommitType;
 }
