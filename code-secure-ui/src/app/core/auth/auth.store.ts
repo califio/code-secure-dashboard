@@ -8,12 +8,10 @@ export class AuthStore {
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private _accessToken: string | null = null;
-  private _refreshToken: string | null = null;
   currentUser = signal<UserProfile>({});
 
   constructor() {
     this._accessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY)
-    this._refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY)
   }
 
   get accessToken(): string | null {
@@ -26,16 +24,14 @@ export class AuthStore {
   }
 
   get refreshToken(): string | null {
-    return this._refreshToken;
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY)
   }
 
   set refreshToken(value: string) {
-    this._refreshToken = value;
     localStorage.setItem(this.REFRESH_TOKEN_KEY, value);
   }
 
   clearSession() {
-    this._refreshToken = null;
     this._accessToken = null;
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);

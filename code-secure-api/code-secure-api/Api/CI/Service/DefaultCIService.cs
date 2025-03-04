@@ -598,7 +598,8 @@ public class DefaultCiService(
             // add change status activity of finding on scan
             context.FindingActivities.Add(FindingActivities.FixedFinding(fixedFinding.Id, scan.CommitId));
             // fixed on default branch or the finding only effected on one branch -> fixed finding
-            if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
+            if (scan.Commit.IsDefault || 
+                context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
             {
                 fixedFinding.Status = FindingStatus.Fixed;
                 context.Findings.Update(fixedFinding);
