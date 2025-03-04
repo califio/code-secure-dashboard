@@ -128,7 +128,7 @@
         <p-fieldset legend="References">
           <div class="flex flex-col gap-2">
             @for (reference of finding().metadata!.references; track $index) {
-              <div markdown>{{ reference }}</div>
+              <markdown [data]="reference"></markdown>
             }
           </div>
         </p-fieldset>
