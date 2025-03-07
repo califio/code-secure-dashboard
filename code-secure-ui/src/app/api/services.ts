@@ -5,10 +5,10 @@
 export { AuthService } from './services/auth.service';
 export { CiService } from './services/ci.service';
 export { DashboardService } from './services/dashboard.service';
-export { DependencyService } from './services/dependency.service';
 export { FindingService } from './services/finding.service';
 export { IntegrationService } from './services/integration.service';
 export { OpenIdConnectService } from './services/open-id-connect.service';
+export { PackageService } from './services/package.service';
 export { ProfileService } from './services/profile.service';
 export { ProjectService } from './services/project.service';
 export { RoleService } from './services/role.service';

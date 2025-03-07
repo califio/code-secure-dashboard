@@ -1,7 +1,6 @@
 using CodeSecure.Api.CI.Model;
 using CodeSecure.Database;
 using CodeSecure.Database.Entity;
-using CodeSecure.Database.Metadata;
 using CodeSecure.Enum;
 using CodeSecure.Exception;
 using CodeSecure.Extension;
@@ -282,7 +281,7 @@ public class DefaultCiService(
         return response;
     }
 
-    public async Task<CiUploadDependencyResponse> UploadDependency(CiUploadDependencyRequest request)
+    public async Task<ScanDependencyResult> UploadDependency(CiUploadDependencyRequest request)
     {
         var scan = await context.Scans
             .Include(scan => scan.Scanner)
@@ -290,20 +289,23 @@ public class DefaultCiService(
             .FirstOrDefaultAsync(scan => scan.Id == request.ScanId);
         if (scan == null) throw new BadRequestException("scan not found");
         if (scan.Status != ScanStatus.Running) throw new BadRequestException("scan is not running");
+        var scanUrl = $"{Application.Config.FrontendUrl}/#/project/{scan.ProjectId}/scan/{scan.Id}";
         if (request.Packages == null)
         {
-            return new CiUploadDependencyResponse
+            return new ScanDependencyResult
             {
                 Packages = [],
-                IsBlock = false
+                IsBlock = false,
+                Scanner = scan.Scanner!.Name,
+                ScanUrl = scanUrl
             };
         }
-
         // add or update packages
-        List<Packages> packages = new();
+        List<Packages> packages = [];
+        List<ProjectPackages> requestProjectPackages = [];
         foreach (var item in request.Packages)
         {
-            var package = await packageManager.CreateOrUpdateAsync(new Packages
+            var package = await packageManager.CreateAsync(new Packages
             {
                 PkgId = item.PkgId,
                 Group = item.Group,
@@ -316,8 +318,17 @@ public class DefaultCiService(
                 License = item.License
             });
             packages.Add(package);
+            if (string.IsNullOrEmpty(item.Location) == false)
+            {
+                requestProjectPackages.Add(new ProjectPackages
+                {
+                    Id = Guid.NewGuid(),
+                    ProjectId = scan.ProjectId,
+                    PackageId = package.Id,
+                    Location = item.Location,
+                });
+            }
         }
-
         // add or update package's dependencies
         if (request.PackageDependencies != null)
         {
@@ -360,125 +371,129 @@ public class DefaultCiService(
             await packageManager.UpdateRiskImpactAsync(package);
             await packageManager.UpdateRecommendationAsync(package);
         }
-
+        
         // add project packages.
-        /*
-         * we only update project packages if first scan or scan on master branch
-         */
-        // check scan this scanner on default branch
-        var defaultCommitBranch = context.ProjectCommits.FirstOrDefault(record =>
-            record.ProjectId == scan.ProjectId
-            && record.IsDefault
-            && record.Type == CommitType.CommitBranch);
-        var isScannedOnDefaultBranch = defaultCommitBranch != null &&
-                                       context.Scans.Any(record =>
-                                           record.ProjectId == scan.ProjectId &&
-                                           record.CommitId == defaultCommitBranch.Id &&
-                                           record.ScannerId == scan.ScannerId
-                                       );
-
-        if (isScannedOnDefaultBranch == false || scan.Commit!.IsDefault)
+        var projectPackages = context.ProjectPackages
+            .Where(record => record.ProjectId == scan.ProjectId)
+            .ToList();
+        List<ProjectPackages> packagesOfCurrentScan = [];
+        foreach (var requestProjectPackage in requestProjectPackages)
         {
-            var ciProjectPackages =
-                request.Packages.FindAll(package => string.IsNullOrEmpty(package.Location) == false);
-            foreach (var pkg in ciProjectPackages)
+            var projectPackage = projectPackages.FirstOrDefault(item => 
+                    item.PackageId == requestProjectPackage.PackageId && 
+                    item.Location == requestProjectPackage.Location);
+            if (projectPackage == null)
             {
-                await packageManager.AddToProjectAsync(scan.ProjectId, pkg.PkgId, pkg.Location!);
-            }
-
-            /*
-             when upgrade package's version. we will remove the old package in database
-             if the project packages in database not see in CI's project packages -> it's old package
-            */
-            // get all project packages
-            var projectPackages = context.ProjectPackages
-                .Where(record => record.ProjectId == scan.ProjectId)
-                .ToList();
-            foreach (var package in projectPackages)
-            {
-                // if DB 's project package not in CI's project packages
-                if (!ciProjectPackages.Any(ciPackage =>
-                        ciPackage.Location == package.Location &&
-                        packageManager.FindByPkgIdAsync(ciPackage.PkgId).Result?.Id == package.PackageId))
+                try
                 {
-                    await packageManager.RemoveFromProjectAsync(scan.ProjectId, package.PackageId, package.Location);
+                    context.ProjectPackages.Add(requestProjectPackage);
+                    await context.SaveChangesAsync();
+                    packagesOfCurrentScan.Add(requestProjectPackage);
+                }
+                catch (System.Exception e)
+                {
+                    logger.LogError(e.Message);
                 }
             }
+            else
+            {
+                packagesOfCurrentScan.Add(projectPackage);
+            }
         }
-
-        var pPackages = await packageManager.FromProjectAsync(scan.ProjectId);
-        var ciFindings = new List<CiFinding>();
-        var ciPackageInfos = new List<CiPackageInfo>();
-        foreach (var package in pPackages)
+        // scan project packages
+        var packagesOfLastScan = context.ProjectPackages
+            .Include(record => record.Package)
+            .Where(record => context.ScanProjectPackages.Any(scanProject =>
+                record.Id == scanProject.ProjectPackageId && scanProject.ScanId == scan.Id))
+            .ToList();
+        var newPackagesOfScan = packagesOfCurrentScan.Where(package => packagesOfLastScan.Any(record => 
+                record.PackageId == package.PackageId && record.Location == package.Location) == false)
+            .ToList();
+        // add new package of scan
+        foreach (var projectPackage in newPackagesOfScan)
         {
-            var vulnerabilities = await packageManager.GetVulnerabilitiesAsync(package.Package.Id);
-            ciFindings.AddRange(vulnerabilities.Select(vulnerability => new CiFinding
+            try
             {
-                RuleId = null,
-                Identity = $"{vulnerability.Identity}_{package.Package.PkgId}_{package.Location}",
-                Name = vulnerability.Name,
-                Description = vulnerability.Description,
-                Category = null,
-                Recommendation = $"Upgrade {vulnerability.PkgName} to version {vulnerability.FixedVersion}",
-                Severity = vulnerability.Severity,
-                Location = new FindingLocation
+                context.ScanProjectPackages.Add(new ScanProjectPackages
                 {
-                    Path = package.Location
-                },
-                Metadata = JSONSerializer.Deserialize<FindingMetadata>(vulnerability.Metadata)
-            }));
-            ciPackageInfos.Add(new CiPackageInfo
+                    Id = Guid.NewGuid(),
+                    ScanId = scan.Id,
+                    ProjectPackageId = projectPackage.Id,
+                    Status = PackageStatus.Open,
+                });
+                await context.SaveChangesAsync();
+            }
+            catch (System.Exception e)
             {
-                Package = new CiPackage
+                logger.LogError(e.Message);
+            }
+        }
+        var fixedPackageOfScan = packagesOfLastScan.Where(package => 
+                packagesOfCurrentScan.Any(record => 
+                    record.PackageId == package.PackageId && 
+                    record.Location == package.Location) == false)
+            .ToList();
+        // update status of scan
+        foreach (var fixedPackage in fixedPackageOfScan)
+        {
+            if (fixedPackage.Package!.RiskLevel == RiskLevel.None)
+            {
+                await context.ScanProjectPackages
+                    .Where(record => record.ProjectPackageId == fixedPackage.Id && record.ScanId == scan.Id)
+                    .ExecuteDeleteAsync();
+            }
+            else
+            {
+                await context.ScanProjectPackages
+                    .Where(record => record.ProjectPackageId == fixedPackage.Id && record.ScanId == scan.Id)
+                    .ExecuteUpdateAsync(setter => setter
+                        .SetProperty(column => column.Status, PackageStatus.Fixed)
+                        .SetProperty(column => column.ResolvedAt, DateTime.UtcNow)
+                    );
+            }
+        }
+        
+        var packagesOfScan = context.ProjectPackages
+            .Include(record => record.Package)
+            .Where(record => context.ScanProjectPackages.Any(scanProject =>
+                record.Id == scanProject.ProjectPackageId && scanProject.ScanId == scan.Id))
+            .Distinct()
+            .ToList();
+        List<CiPackageInfo> packagesInfo = [];
+        foreach (var package in packagesOfScan)
+        {
+            var vulnerabilities = context.PackageVulnerabilities
+                .Include(record => record.Vulnerability)
+                .Where(record => record.PackageId == package.PackageId)
+                .Select(record => new VulnerabilityInfo
                 {
-                    Id = package.Package.Id,
-                    PkgId = package.Package.PkgId,
-                    Group = package.Package.Group,
-                    Name = package.Package.Name,
-                    Version = package.Package.Version,
-                    Type = package.Package.Type,
-                    Location = package.Location
-                },
-                Vulnerabilities = vulnerabilities.Select(record => new CiVulnerability
-                {
-                    Identity = record.Identity,
-                    Name = record.Name,
-                    FixedVersion = record.FixedVersion,
-                    Severity = record.Severity,
-                    Description = string.Empty,
-                    PkgId = string.Empty,
-                    PkgName = string.Empty
-                }).ToList()
+                    Id = record.Vulnerability!.Identity,
+                    Name = record.Vulnerability.Name,
+                    Description = record.Vulnerability.Description,
+                    Severity = record.Vulnerability.Severity,
+                    FixedVersion = record.Vulnerability.FixedVersion,
+                    PublishedAt = record.Vulnerability.PublishedAt
+                })
+                .OrderByDescending(record => record.Severity)
+                .ToList();
+            packagesInfo.Add(new CiPackageInfo
+            {
+                PkgId = package.Package!.PkgId,
+                Group = package.Package.Group,
+                Name = package.Package.Name,
+                Version = package.Package.Version,
+                Type = package.Package.Type,
+                Location = package.Location,
+                License = package.Package.License,
+                Vulnerabilities = vulnerabilities
             });
         }
-
-        // var response = await HandleCiFinding(scan, ciFindings);
-        // var isBlock = IsBlock(scan.ProjectId, response, scan.Scanner!.Type);
-        if (isScannedOnDefaultBranch == false || scan.Commit!.IsDefault)
+        return new ScanDependencyResult
         {
-            var report = (await projectManager.DependencyReportAsync(scan.ProjectId))!;
-            if (report.Critical + report.High + report.Medium + report.Low > 0 && report.Packages.Any())
-            {
-                await alertManager.AlertVulnerableDependencies(new DependencyReportModel
-                {
-                    RepoUrl = report.RepoUrl,
-                    RepoName = report.RepoName,
-                    ProjectDependencyUrl = report.ProjectDependencyUrl,
-                    Critical = report.Critical,
-                    High = report.High,
-                    Medium = report.Medium,
-                    Low = report.Low,
-                    Packages = report.Packages,
-                    ProjectId = scan.ProjectId
-                });
-            }
-            await CreateIssueTracker(scan.ProjectId);
-        }
-
-        return new CiUploadDependencyResponse
-        {
-            Packages = ciPackageInfos,
-            IsBlock = false
+            Packages = packagesInfo,
+            IsBlock = false,
+            Scanner = scan.Scanner!.Name,
+            ScanUrl = scanUrl
         };
     }
 
@@ -732,29 +747,5 @@ public class DefaultCiService(
         }
 
         return false;
-    }
-    
-    private async Task CreateIssueTracker(Guid projectId)
-    {
-        var projectPackages = await context.ProjectPackages
-            .Include(record => record.Package)
-            .Include(record => record.Project)
-            .Where(record => record.ProjectId == projectId)
-            .ToListAsync();
-        foreach (var package in projectPackages.Where(item => item.TicketId == null && !string.IsNullOrEmpty(item.Package!.FixedVersion)))
-        {
-            var vulnerabilities = await context.PackageVulnerabilities
-                .Include(record => record.Vulnerability)
-                .Where(record => record.PackageId == package.PackageId)
-                .Select(record => record.Vulnerability!)
-                .ToListAsync();
-            await ticketTrackerManager.CreateTicketAsync(new ScaTicket
-            {
-                Location = package.Location,
-                Project = package.Project!,
-                Package = package.Package!,
-                Vulnerabilities = vulnerabilities
-            });
-        }
     }
 }

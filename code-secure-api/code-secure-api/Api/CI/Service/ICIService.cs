@@ -10,5 +10,5 @@ public interface ICiService
     Task UpdateScan(Guid scanId, UpdateCiScanRequest request);
 
     Task<CiUploadFindingResponse> UploadFinding(CiUploadFindingRequest request);
-    Task<CiUploadDependencyResponse> UploadDependency(CiUploadDependencyRequest request);
+    Task<ScanDependencyResult> UploadDependency(CiUploadDependencyRequest request);
 }

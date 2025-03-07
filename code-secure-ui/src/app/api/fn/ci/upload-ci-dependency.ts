@@ -9,13 +9,13 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { CiUploadDependencyRequest } from '../../models/ci-upload-dependency-request';
-import { CiUploadDependencyResponse } from '../../models/ci-upload-dependency-response';
+import { ScanDependencyResult } from '../../models/scan-dependency-result';
 
 export interface UploadCiDependency$Params {
       body?: CiUploadDependencyRequest
 }
 
-export function uploadCiDependency(http: HttpClient, rootUrl: string, params?: UploadCiDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<CiUploadDependencyResponse>> {
+export function uploadCiDependency(http: HttpClient, rootUrl: string, params?: UploadCiDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<ScanDependencyResult>> {
   const rb = new RequestBuilder(rootUrl, uploadCiDependency.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -26,7 +26,7 @@ export function uploadCiDependency(http: HttpClient, rootUrl: string, params?: U
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<CiUploadDependencyResponse>;
+      return r as StrictHttpResponse<ScanDependencyResult>;
     })
   );
 }

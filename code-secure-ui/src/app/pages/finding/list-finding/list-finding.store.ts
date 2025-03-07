@@ -32,8 +32,6 @@ export class ListFindingStore {
     status: [
       FindingStatus.Open,
       FindingStatus.Confirmed,
-      FindingStatus.Fixed,
-      FindingStatus.AcceptedRisk
     ],
     commitId: undefined,
     size: 20,

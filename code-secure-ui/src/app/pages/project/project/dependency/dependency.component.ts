@@ -23,6 +23,12 @@ import {Tooltip} from 'primeng/tooltip';
 import {SortByComponent} from '../../../../shared/ui/sort-by/sort-by.component';
 import {SortByState} from '../../../../shared/ui/sort-by/sort-by-state';
 import {Button} from 'primeng/button';
+import {PackageTypeComponent} from '../../../../shared/components/package/package-type/package-type.component';
+import {PackageDetailComponent} from '../../../../shared/components/package/package-detail/package-detail.component';
+import {
+  ScanBranchLabelComponent
+} from '../../../../shared/components/scan/scan-branch-label/scan-branch-label.component';
+import {BranchFilterComponent, BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 
 @Component({
   selector: 'app-dependency',
@@ -41,6 +47,10 @@ import {Button} from 'primeng/button';
     Tooltip,
     SortByComponent,
     Button,
+    PackageTypeComponent,
+    PackageDetailComponent,
+    ScanBranchLabelComponent,
+    BranchFilterComponent,
   ],
   templateUrl: './dependency.component.html',
 })
@@ -85,6 +95,20 @@ export class DependencyComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroy$)
     ).subscribe();
+
+    this.projectService.getProjectCommits({
+      projectId: this.projectStore.projectId()
+    }).subscribe(commits => {
+      const options = commits.map(item => {
+        return <BranchOption>{
+          commitId: item.commitId,
+          commitBranch: item.branch,
+          commitType: item.action,
+          targetBranch: item.targetBranch
+        }
+      });
+      this.store.branchOptions.set(options);
+    });
   }
 
   onSearchChange() {
@@ -116,15 +140,27 @@ export class DependencyComponent implements OnInit, OnDestroy {
     updateQueryParams(this.router, this.store.filter);
   }
 
-  onOpenDependency(dependency: ProjectPackage) {
-    this.store.dependency.set(dependency);
+  onOpenDependency(pkg: ProjectPackage) {
+    this.store.loadingDependency.set(true);
+    this.projectService.getProjectPackageDetail({
+      projectId: this.projectStore.projectId(),
+      packageId: pkg.packageId!
+    }).pipe(
+      finalize(() => this.store.loadingDependency.set(false))
+    ).subscribe(result => {
+      this.store.packageDetail.set(result);
+    });
   }
 
-  getNameDependency(dependency: ProjectPackage) {
-    if (dependency.group) {
-      return `${dependency.group}.${dependency.name}@${dependency.version}`;
+  getNamePackage(pkg: ProjectPackage) {
+    if (pkg.group) {
+      return `${pkg.group}.${pkg.name}@${pkg.version}`;
     }
-    return `${dependency.name}@${dependency.version}`;
+    return `${pkg.name}@${pkg.version}`;
+  }
+
+  projectPackage(input: ProjectPackage): ProjectPackage {
+    return input;
   }
 
   protected readonly RiskLevel = RiskLevel;
@@ -143,6 +179,11 @@ export class DependencyComponent implements OnInit, OnDestroy {
   onSortChange($event: SortByState) {
     this.store.filter.sortBy = $event.sortBy;
     this.store.filter.desc = $event.desc;
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onChangeBranch($event: string) {
+    this.store.filter.commitId = $event;
     updateQueryParams(this.router, this.store.filter);
   }
 }

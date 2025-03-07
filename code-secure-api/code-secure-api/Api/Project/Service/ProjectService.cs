@@ -227,25 +227,103 @@ public class ProjectService(
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
-
-        var query = context.ProjectPackages
-            .Include(record => record.Package)
-            .Where(record => record.ProjectId == project.Id);
+        var query = context.ScanProjectPackages
+            .Include(record => record.Scan!)
+                .ThenInclude(scan => scan.Commit)
+            .Include(record => record.ProjectPackage!)
+                .ThenInclude(projectPackage => projectPackage.Package!)
+            .Where(record => record.ProjectPackage!.ProjectId == projectId);
+        // name
         if (!string.IsNullOrEmpty(filter.Name))
-            query = query.Where(record => record.Package!.Name.Contains(filter.Name));
+        {
+            query = query.Where(record => record.ProjectPackage!.Package!.PkgId.Contains(filter.Name));
+        }
+        // severity
+        if (filter.Severity is {Count: > 0})
+        {
+            query = query.Where(record => filter.Severity.Contains(record.ProjectPackage!.Package!.RiskLevel));
+        }
+        // status
+        if (filter.Status == null || filter.Status.Count == 0)
+        {
+            filter.Status = [PackageStatus.Open];
+        }
+        query = query.Where(record => filter.Status.Contains(record.Status));
+        // branch
+        if (filter.CommitId != null)
+        {
+            query = query.Where(record => record.Scan!.CommitId == filter.CommitId);
+        }
 
         return await query.Select(record => new ProjectPackage
         {
-            Location = record.Location,
-            Group = record.Package!.Group,
-            Name = record.Package.Name,
-            Version = record.Package.Version,
-            Type = record.Package.Type,
-            Id = record.PackageId,
-            FixedVersion = record.Package.FixedVersion,
-            RiskImpact = record.Package.RiskImpact,
-            RiskLevel = record.Package.RiskLevel
+            Location = record.ProjectPackage!.Location,
+            Group = record.ProjectPackage.Package!.Group,
+            Name = record.ProjectPackage.Package.Name,
+            Version = record.ProjectPackage.Package.Version,
+            Type = record.ProjectPackage.Package.Type,
+            PackageId = record.ProjectPackage.PackageId,
+            FixedVersion = record.ProjectPackage.Package.FixedVersion,
+            RiskImpact = record.ProjectPackage.Package.RiskImpact,
+            RiskLevel = record.ProjectPackage.Package.RiskLevel,
+            Status = record.Status,
+            CommitBranch = record.Scan!.Commit!.Branch,
+            CommitType = record.Scan!.Commit!.Type,
+            TargetBranch = record.Scan!.Commit!.TargetBranch,
         }).OrderBy(filter.SortBy.ToString(), filter.Desc).PageAsync(filter.Page, filter.Size);
+    }
+
+    public async Task<ProjectPackageDetail> GetPackageDetailAsync(Guid projectId, Guid packageId)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
+
+        var projectPackage = await context.ProjectPackages
+            .Include(record => record.Package)
+            .Where(record => record.ProjectId == projectId && record.PackageId == packageId)
+            .FirstOrDefaultAsync();
+        if (projectPackage == null)
+        {
+            throw new BadRequestException("Package not found");
+        }
+        
+        var dependencies = context.PackageDependencies
+            .Include(record => record.Dependency!)
+            .Where(record => record.PackageId == packageId)
+            .Select(record => record.Dependency!)
+            .OrderByDescending(record => record.RiskLevel)
+            .ToList();
+        var vulnerabilities = context.PackageVulnerabilities
+            .Include(record => record.Vulnerability)
+            .Where(record => record.PackageId == packageId)
+            .Select(record => record.Vulnerability!)
+            .OrderByDescending(record => record.Severity)
+            .ToList();
+        var branchStatus = await context.ScanProjectPackages
+            .Include(record => record.Scan)
+            .ThenInclude(scan => scan!.Commit)
+            .Where(record => record.ProjectPackageId == projectPackage.Id)
+            .Distinct()
+            .Select(record => new BranchStatusPackage
+            {
+                CommitHash = record.Scan!.Commit!.CommitHash,
+                CommitTitle = record.Scan!.Commit!.CommitTitle,
+                CommitType = record.Scan!.Commit!.Type,
+                CommitBranch = record.Scan!.Commit!.Branch,
+                TargetBranch = record.Scan!.Commit!.TargetBranch,
+                MergeRequestId = record.Scan!.Commit!.MergeRequestId,
+                Status = record.Status
+            })
+            .ToListAsync();
+            
+        return new ProjectPackageDetail
+        {
+            Info = projectPackage.Package!,
+            Vulnerabilities = vulnerabilities,
+            Dependencies = dependencies,
+            Location = projectPackage.Location,
+            BranchStatus = branchStatus
+        };
     }
 
     public async Task<ProjectStatistics> GetStatisticsAsync(Guid projectId)

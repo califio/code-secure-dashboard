@@ -10,6 +10,11 @@
                  [(ngModel)]="store.filter.name"
                  (keyup.enter)="onSearchChange()"/>
         </p-iconfield>
+        <!--Branch Filter-->
+        <branch-filter [options]="store.branchOptions()"
+                       [commitId]="store.filter.commitId"
+                       (onChange)="onChangeBranch($event)">
+        </branch-filter>
         <sort-by [options]="sortOptions"
                  [sortBy]="store.filter.sortBy"
                  (onChange)="onSortChange($event)"/>
@@ -21,29 +26,27 @@
       <ng-template #body let-dependency>
         <div
           class="flex flex-row items-center gap-3 p-4 border-b border-surface hover:bg-surface-100 dark:hover:bg-surface-800">
-          <risk-level-icon [risk]="dependency.riskLevel"
-                           [impact]="dependency.riskImpact"
+          <risk-level-icon [risk]="projectPackage(dependency).riskLevel"
+                           [impact]="projectPackage(dependency).riskImpact"
                            class="text-xl"></risk-level-icon>
           <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency)">
             <div class="flex flex-col gap-1 w-full">
               <div class="flex flex-row items-center gap-2">
                 <div>
-                  {{ getNameDependency(dependency) }}
+                  {{ getNamePackage(dependency) }}
                 </div>
-                <ng-icon [name]="dependency.type ?? 'unknown'"
-                         size="18"
-                         [pTooltip]="dependency.type"></ng-icon>
+                <package-type [packageType]="projectPackage(dependency).type"></package-type>
               </div>
               <div class="flex flex-row items-center justify-between w-full">
-                <div class="flex flex-row items-center gap-1">
-                  <span class="text-sm">{{ dependency.location }}</span>
+                <div class="flex flex-row items-center gap-2">
+                  <span class="text-sm">{{ projectPackage(dependency).location }}</span>
                 </div>
                 <div class="flex flex-row items-center gap-2">
-                  @if (dependency.fixedVersion) {
+                  @if (projectPackage(dependency).fixedVersion) {
                     <span class="lowercase">fixed version</span>
                     <div
                       class="text-xs border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
-                      {{ dependency.fixedVersion }}
+                      {{ projectPackage(dependency).fixedVersion }}
                     </div>
                   }
                 </div>
@@ -65,8 +68,13 @@
     </div>
   </div>
   <div class="hidden lg:block w-720px w-full h-full overflow-y-auto">
-    @if (store.dependency() != null) {
-      <coming-soon></coming-soon>
+    @if (store.packageDetail() != null) {
+      <package-detail [package]="store.packageDetail()?.info"
+                      [vulnerabilities]="store.packageDetail()?.vulnerabilities"
+                      [dependencies]="store.packageDetail()?.dependencies"
+                      [location]="store.packageDetail()?.location"
+                      [branchStatus]="store.packageDetail()?.branchStatus">
+      </package-detail>
     } @else {
       <div class="flex flex-col items-center justify-center h-full w-full">
         @if (store.loadingDependency()) {

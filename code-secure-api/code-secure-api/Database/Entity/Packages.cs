@@ -6,7 +6,7 @@ namespace CodeSecure.Database.Entity;
 [Index(nameof(PkgId), IsUnique = true)]
 public class Packages : BaseEntity
 {
-    public required string PkgId { get; set; }
+    public required string PkgId { get; init; }
     public string? Group { get; set; }
     public required string Name { get; set; }
     public required string Version { get; set; }
@@ -24,5 +24,19 @@ public class Packages : BaseEntity
         }
 
         return $"{Group}.{Name}";
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Packages pkg)
+        {
+            return PkgId == pkg.PkgId;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return PkgId.GetHashCode();
     }
 }

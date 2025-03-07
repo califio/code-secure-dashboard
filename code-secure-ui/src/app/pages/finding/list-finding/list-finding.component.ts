@@ -50,6 +50,7 @@ import {
 } from '../../../shared/components/finding/finding-export-menu/finding-export-menu.component';
 import {ExportType} from '../../../api/models';
 import {formatDate} from '@angular/common';
+import {toArray} from '../../../core/transform';
 
 @Component({
   selector: 'page-list-finding',
@@ -106,7 +107,7 @@ export class ListFindingComponent implements OnInit {
     this.userService.getProjectManagerUsers().subscribe(users => {
       this.store.users.set(users);
     });
-    this.scannerService.getScanners().subscribe(scanners => {
+    this.scannerService.getSastScanners().subscribe(scanners => {
       this.store.scanners.set(scanners);
     });
     this.ruleService.getRuleId({
@@ -128,14 +129,10 @@ export class ListFindingComponent implements OnInit {
   private getFindings() {
     this.store.loading.set(true);
     if (this.store.filter.scanner) {
-      if (!Array.isArray(this.store.filter.scanner)) {
-        this.store.filter.scanner = [this.store.filter.scanner];
-      }
+      this.store.filter.scanner = toArray<string>(this.store.filter.scanner);
     }
     if (this.store.filter.severity) {
-      if (!Array.isArray(this.store.filter.severity)) {
-        this.store.filter.severity = [this.store.filter.severity];
-      }
+      this.store.filter.severity = toArray<FindingSeverity>(this.store.filter.severity);
     }
     return this.findingService.getFindings({
       body: this.store.filter

@@ -51,7 +51,7 @@ public class CiController(ICiService ciService)
 
     [HttpPost]
     [Route("dependency")]
-    public async Task<CiUploadDependencyResponse> UploadCiDependency(CiUploadDependencyRequest request)
+    public async Task<ScanDependencyResult> UploadCiDependency(CiUploadDependencyRequest request)
     {
         return await ciService.UploadDependency(request);
     }

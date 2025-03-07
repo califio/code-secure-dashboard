@@ -1,0 +1,22 @@
+<p-float-label variant="on">
+  <p-select
+    showClear
+    [ngModel]="commitId()"
+    inputId="on_branch"
+    optionValue="commitId"
+    (ngModelChange)="onSelectedChange($event)"
+    class="min-w-28"
+    [options]="options()">
+    <ng-template #selectedItem let-option>
+      <scan-branch-label [commitType]="typedValue(option).commitType"
+                         [commitBranch]="typedValue(option).commitBranch"
+                         [targetBranch]="typedValue(option).targetBranch"></scan-branch-label>
+    </ng-template>
+    <ng-template let-option #item>
+      <scan-branch-label [commitType]="typedValue(option).commitType"
+                         [commitBranch]="typedValue(option).commitBranch"
+                         [targetBranch]="typedValue(option).targetBranch"></scan-branch-label>
+    </ng-template>
+  </p-select>
+  <label for="on_branch">Branch</label>
+</p-float-label>

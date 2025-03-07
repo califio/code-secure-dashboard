@@ -13,25 +13,26 @@ public class PackageManager(
     IMemoryCache cache,
     ILogger<PackageManager> logger) : IPackageManager
 {
-    private static readonly SemaphoreSlim Lock = new(1, 1);
     private const int ExpiredTime = 5;
-
-    public async Task<Packages> CreateOrUpdateAsync(Packages package)
+    public async Task<Packages> CreateAsync(Packages package)
     {
-        await Lock.WaitAsync();
         try
         {
             var pkg = await FindByPkgIdAsync(package.PkgId);
-            if (pkg != null) return pkg;
+            if (pkg != null)
+            {
+                return pkg;
+            }
             package.Id = Guid.NewGuid();
             context.Packages.Add(package);
             await context.SaveChangesAsync();
-            CachePackage(package);
             return package;
         }
-        finally
+        catch (System.Exception e)
         {
-            Lock.Release();
+            logger.LogError(e.Message);
+            // avoid race condition
+            return (await FindByPkgIdAsync(package.PkgId))!;
         }
     }
 
@@ -72,29 +73,28 @@ public class PackageManager(
         {
             return;
         }
-
-        Dictionary<string, Packages> mDependencies = new();
-        var dependencies = await GetDependenciesAsync(package.Id);
-        foreach (var dependency in dependencies)
-        {
-            mDependencies[dependency.PkgId] = dependency;
-        }
-
+        var dependencies = context.PackageDependencies
+            .Include(record => record.Dependency)
+            .Where(record => record.PackageId == package.Id)
+            .Select(record => record.Dependency!.PkgId)
+            .ToHashSet();
         foreach (var dependencyPkgId in pkgDependencies)
         {
-            if (!mDependencies.ContainsKey(dependencyPkgId))
+            if (dependencies.Contains(dependencyPkgId)) continue;
+            var dependency = await FindByPkgIdAsync(dependencyPkgId);
+            if (dependency == null) continue;
+            try
             {
-                var dependency = await FindByPkgIdAsync(dependencyPkgId);
-                if (dependency != null)
+                context.PackageDependencies.Add(new PackageDependencies
                 {
-                    context.PackageDependencies.Add(new PackageDependencies
-                    {
-                        PackageId = package.Id,
-                        DependencyId = dependency.Id,
-                    });
-                    await context.SaveChangesAsync();
-                    mDependencies[dependency.PkgId] = dependency;
-                }
+                    PackageId = package.Id,
+                    DependencyId = dependency.Id,
+                });
+                await context.SaveChangesAsync();
+            }
+            catch (System.Exception e)
+            {
+                logger.LogError(e.Message);
             }
         }
     }
@@ -140,8 +140,10 @@ public class PackageManager(
             CacheVulnerability(issue);
         }
 
-        if (!context.PackageVulnerabilities.Any(record =>
-                record.PackageId == package.Id && record.VulnerabilityId == issue.Id))
+        if (!context.PackageVulnerabilities.Any(record => 
+                    record.PackageId == package.Id && 
+                    record.VulnerabilityId == issue.Id
+        ))
         {
             context.PackageVulnerabilities.Add(new PackageVulnerabilities
             {

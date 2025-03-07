@@ -62,7 +62,7 @@ public class RuleService(AppDbContext context, IRuleManager ruleManager) : IRule
             query = query.Where(rule => filter.ScannerId.Contains(rule.ScannerId));
         }
 
-        return await query.Distinct().Select(rule => new RuleInfo
+        return await query.Distinct().OrderByDescending(rule => rule.CreatedAt).Select(rule => new RuleInfo
         {
             Id = rule.Id,
             Status = rule.Status,

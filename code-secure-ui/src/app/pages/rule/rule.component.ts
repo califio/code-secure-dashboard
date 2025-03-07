@@ -26,6 +26,7 @@ import {MultiSelect, MultiSelectChangeEvent} from 'primeng/multiselect';
 import {Dialog} from 'primeng/dialog';
 import {SelectButton} from 'primeng/selectbutton';
 import {rule} from 'postcss';
+import {toArray} from '../../core/transform';
 
 @Component({
   selector: 'app-rule',
@@ -85,6 +86,9 @@ export class RuleComponent implements OnInit, OnDestroy {
         bindQueryParams(params, this.store.filter);
         this.store.currentPage.set(this.store.filter.page!);
         this.store.pageSize.set(this.store.filter.size!);
+        this.store.filter.confidence = toArray<any>(this.store.filter.confidence);
+        this.store.filter.scannerId = toArray<any>(this.store.filter.scannerId);
+        this.store.filter.status = toArray<any>(this.store.filter.status);
         return this.ruleService.getRuleInfo({
           body: this.store.filter
         }).pipe(

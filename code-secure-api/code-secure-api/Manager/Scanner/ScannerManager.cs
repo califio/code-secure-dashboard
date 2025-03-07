@@ -79,15 +79,31 @@ public class ScannerManager(
             .ToListAsync();
     }
 
-    public async Task<List<Scanners>> GetSastScannersAsync()
+    public async Task<List<Scanners>> GetSastScannersAsync(Guid? projectId = null)
     {
+        if (projectId != null)
+        {
+            return await context.Scans
+                .Include(scan => scan.Scanner)
+                .Where(scan => scan.ProjectId == projectId && SastTypes.Contains(scan.Scanner!.Type))
+                .Select(scan => scan.Scanner!)
+                .Distinct().ToListAsync();
+        }
         return await context.Scanners
             .Where(scanner => SastTypes.Contains(scanner.Type))
             .ToListAsync();
     }
 
-    public async Task<List<Scanners>> GetScaScannersAsync()
+    public async Task<List<Scanners>> GetScaScannersAsync(Guid? projectId = null)
     {
+        if (projectId != null)
+        {
+            return await context.Scans
+                .Include(scan => scan.Scanner)
+                .Where(scan => scan.ProjectId == projectId && ScaTypes.Contains(scan.Scanner!.Type))
+                .Select(scan => scan.Scanner!)
+                .Distinct().ToListAsync();
+        }
         return await context.Scanners
             .Where(scanner => ScaTypes.Contains(scanner.Type))
             .ToListAsync();

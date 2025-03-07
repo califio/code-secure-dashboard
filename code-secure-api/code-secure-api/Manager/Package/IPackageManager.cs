@@ -5,7 +5,7 @@ namespace CodeSecure.Manager.Package;
 
 public interface IPackageManager
 {
-    Task<Packages> CreateOrUpdateAsync(Packages package);
+    Task<Packages> CreateAsync(Packages package);
     Task<Packages?> FindByPkgIdAsync(string pkgId);
     Task<List<Packages>> GetDependenciesAsync(string pkgId);
     Task<List<Packages>> GetDependenciesAsync(Guid packageId);

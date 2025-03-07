@@ -1,16 +1,13 @@
 import {computed, Injectable, signal} from '@angular/core';
-import {ProjectCommitSummary} from '../../../../api/models/project-commit-summary';
 import {Scanners} from '../../../../api/models/scanners';
 import {FindingDetail} from '../../../../api/models/finding-detail';
 import {FindingSortField, FindingSummary, ProjectFindingFilter} from '../../../../api/models';
+import {BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FindingStore {
-  commits = signal<ProjectCommitSummary[]>([]);
-  scanners = signal<Scanners[]>([]);
-  rules = signal<string[]>([]);
   // list findings
   loading = signal(false);
   findings = signal<FindingSummary[]>([]);
@@ -28,7 +25,10 @@ export class FindingStore {
   firstRecord = computed(() => {
     return (this.currentPage() - 1) * this.pageSize();
   })
-  //
+  // filter options
+  branchOptions = signal<BranchOption[]>([]);
+  scannerOptions = signal<Scanners[]>([]);
+  ruleOptions = signal<string[]>([]);
   sortOptions = [
     {
       value: FindingSortField.Name,

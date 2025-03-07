@@ -11,8 +11,12 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { getSastScanners } from '../fn/scanner/get-sast-scanners';
+import { GetSastScanners$Params } from '../fn/scanner/get-sast-scanners';
 import { getScanners } from '../fn/scanner/get-scanners';
 import { GetScanners$Params } from '../fn/scanner/get-scanners';
+import { getScaScanners } from '../fn/scanner/get-sca-scanners';
+import { GetScaScanners$Params } from '../fn/scanner/get-sca-scanners';
 import { Scanners } from '../models/scanners';
 
 @Injectable({ providedIn: 'root' })
@@ -42,6 +46,56 @@ export class ScannerService extends BaseService {
    */
   getScanners(params?: GetScanners$Params, context?: HttpContext): Observable<Array<Scanners>> {
     return this.getScanners$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<Scanners>>): Array<Scanners> => r.body)
+    );
+  }
+
+  /** Path part for operation `getSastScanners()` */
+  static readonly GetSastScannersPath = '/api/scanner/sast';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSastScanners()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSastScanners$Response(params?: GetSastScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Scanners>>> {
+    return getSastScanners(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSastScanners$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSastScanners(params?: GetSastScanners$Params, context?: HttpContext): Observable<Array<Scanners>> {
+    return this.getSastScanners$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<Scanners>>): Array<Scanners> => r.body)
+    );
+  }
+
+  /** Path part for operation `getScaScanners()` */
+  static readonly GetScaScannersPath = '/api/scanner/sca';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getScaScanners()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getScaScanners$Response(params?: GetScaScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Scanners>>> {
+    return getScaScanners(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getScaScanners$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getScaScanners(params?: GetScaScanners$Params, context?: HttpContext): Observable<Array<Scanners>> {
+    return this.getScaScanners$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<Scanners>>): Array<Scanners> => r.body)
     );
   }

@@ -483,23 +483,40 @@ namespace CodeSecure.Migrations
 
             modelBuilder.Entity("CodeSecure.Database.Entity.ProjectPackages", b =>
                 {
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("PackageId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Location")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("TicketId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("ProjectId", "PackageId", "Location");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("PackageId");
 
                     b.HasIndex("TicketId");
+
+                    b.HasIndex("ProjectId", "PackageId", "Location")
+                        .IsUnique();
 
                     b.ToTable("ProjectPackages");
                 });
@@ -713,6 +730,51 @@ namespace CodeSecure.Migrations
                     b.HasIndex("FindingId");
 
                     b.ToTable("ScanFindings");
+                });
+
+            modelBuilder.Entity("CodeSecure.Database.Entity.ScanProjectPackages", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("IgnoredReason")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProjectPackageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ScanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectPackageId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("ScanId", "ProjectPackageId")
+                        .IsUnique();
+
+                    b.ToTable("ScanProjectPackages");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.Scanners", b =>
@@ -1378,6 +1440,31 @@ namespace CodeSecure.Migrations
                     b.Navigation("Finding");
 
                     b.Navigation("Scan");
+                });
+
+            modelBuilder.Entity("CodeSecure.Database.Entity.ScanProjectPackages", b =>
+                {
+                    b.HasOne("CodeSecure.Database.Entity.ProjectPackages", "ProjectPackage")
+                        .WithMany()
+                        .HasForeignKey("ProjectPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CodeSecure.Database.Entity.Scans", "Scan")
+                        .WithMany()
+                        .HasForeignKey("ScanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CodeSecure.Database.Entity.Users", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("ProjectPackage");
+
+                    b.Navigation("Scan");
+
+                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("CodeSecure.Database.Entity.Scans", b =>

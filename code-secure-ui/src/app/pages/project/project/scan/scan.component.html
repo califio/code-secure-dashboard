@@ -101,8 +101,8 @@
                [queryParams]="{'commitId': typedScan(scan).commitId, 'scanner': typedScan(scan).scannerId}"
                class="flex flex-col gap-1">
               <span [pTooltip]="typedScan(scan).commitTitle!" tooltipPosition="top">{{ typedScan(scan).commitTitle! | truncate:50 }}</span>
-              <scan-branch-label [action]="typedScan(scan).commitType ?? CommitType.CommitBranch"
-                                 [branch]="typedScan(scan).commitBranch ?? ''"
+              <scan-branch-label [commitType]="typedScan(scan).commitType ?? CommitType.CommitBranch"
+                                 [commitBranch]="typedScan(scan).commitBranch ?? ''"
                                  [targetBranch]="typedScan(scan).targetBranch">
               </scan-branch-label>
             </a>

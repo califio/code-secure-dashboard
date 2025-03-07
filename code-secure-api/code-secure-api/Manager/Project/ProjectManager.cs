@@ -114,6 +114,7 @@ public class ProjectManager(
         logger.LogInformation($"Dependency report for project: {project.Name}");
         var scanners = (await scannerManager.GetScannerByTypeAsync(ScannerType.Dependency))
             .Select(item => item.Id);
+        
         var findings = context.Findings
             .Where(record =>
                 record.ProjectId == project.Id &&

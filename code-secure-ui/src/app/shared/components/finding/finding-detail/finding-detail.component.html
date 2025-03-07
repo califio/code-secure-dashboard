@@ -13,14 +13,14 @@
                     [ngModel]="currentScan()?.scanId"
                     (ngModelChange)="onScanChange($event)">
             <ng-template #selectedItem let-option>
-              <scan-branch-label [action]="option.action"
-                                 [branch]="option.branch"
+              <scan-branch-label [commitType]="option.action"
+                                 [commitBranch]="option.branch"
                                  [targetBranch]="option.targetBranch">
               </scan-branch-label>
             </ng-template>
             <ng-template #item let-option>
-              <scan-branch-label [action]="option.action"
-                                 [branch]="option.branch"
+              <scan-branch-label [commitType]="option.action"
+                                 [commitBranch]="option.branch"
                                  [targetBranch]="option.targetBranch">
               </scan-branch-label>
             </ng-template>

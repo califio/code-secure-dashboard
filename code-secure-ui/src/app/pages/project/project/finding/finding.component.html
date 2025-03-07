@@ -10,30 +10,12 @@
                (keyup.enter)="onSearchChange()"/>
       </p-iconfield>
       <!--Branch Filter-->
-      <p-float-label variant="on">
-        <p-select
-          showClear
-          [ngModel]="store.filter.commitId"
-          inputId="on_branch"
-          optionValue="commitId"
-          (ngModelChange)="onSelectScan($event)"
-          class="min-w-28"
-          [options]="store.commits()">
-          <ng-template #selectedItem let-option>
-            <scan-branch-label [action]="option.action"
-                               [branch]="option.branch"
-                               [targetBranch]="option.targetBranch"></scan-branch-label>
-          </ng-template>
-          <ng-template let-option #item>
-            <scan-branch-label [action]="option.action"
-                               [branch]="option.branch"
-                               [targetBranch]="option.targetBranch"></scan-branch-label>
-          </ng-template>
-        </p-select>
-        <label for="on_branch">Branch</label>
-      </p-float-label>
+      <branch-filter [options]="store.branchOptions()"
+                     [commitId]="store.filter.commitId"
+                     (onChange)="onSelectScan($event)">
+      </branch-filter>
       <!--Rule Filter-->
-      <finding-rule-filter [options]="store.rules()"
+      <finding-rule-filter [options]="store.ruleOptions()"
                            [rule]="store.filter.ruleId"
                            (onChange)="onChangeRule($event)"/>
       <!--Status Filter-->
@@ -44,7 +26,7 @@
                                (onChange)="onChangeSeverity($event)"/>
       <!--Scanner Filter-->
       <finding-scanner-filter [selected]="store.filter.scanner"
-                              [scanners]="store.scanners()"
+                              [scanners]="store.scannerOptions()"
                               (onChange)="onChangeScanners($event)"/>
       <!--Sort By-->
       <sort-by [sortBy]="store.filter.sortBy"

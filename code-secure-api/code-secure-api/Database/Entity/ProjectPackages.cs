@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeSecure.Database.Entity;
 
-[PrimaryKey(nameof(ProjectId), nameof(PackageId), nameof(Location))]
-public class ProjectPackages
+[Index(nameof(ProjectId), nameof(PackageId), nameof(Location), IsUnique = true)]
+public class ProjectPackages: BaseEntity
 {
     public required Guid ProjectId { get; set; }
     public required Guid PackageId { get; set; }

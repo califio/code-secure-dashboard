@@ -74,8 +74,8 @@
         }
         @if (activity.commit) {
           <span>on</span>
-          <scan-branch-label [action]="activity.commit.action ?? CommitType.CommitBranch"
-                       [branch]="activity.commit.branch ?? ''"
+          <scan-branch-label [commitType]="activity.commit.action ?? CommitType.CommitBranch"
+                       [commitBranch]="activity.commit.branch ?? ''"
                        [targetBranch]="activity.commit.targetBranch">
           </scan-branch-label>
         }

@@ -37,6 +37,8 @@ import { getProjectFindings } from '../fn/project/get-project-findings';
 import { GetProjectFindings$Params } from '../fn/project/get-project-findings';
 import { getProjectInfo } from '../fn/project/get-project-info';
 import { GetProjectInfo$Params } from '../fn/project/get-project-info';
+import { getProjectPackageDetail } from '../fn/project/get-project-package-detail';
+import { GetProjectPackageDetail$Params } from '../fn/project/get-project-package-detail';
 import { getProjectPackages } from '../fn/project/get-project-packages';
 import { GetProjectPackages$Params } from '../fn/project/get-project-packages';
 import { getProjects } from '../fn/project/get-projects';
@@ -57,6 +59,7 @@ import { JiraProjectSettingResponse } from '../models/jira-project-setting-respo
 import { ProjectCommitSummary } from '../models/project-commit-summary';
 import { ProjectInfo } from '../models/project-info';
 import { ProjectIntegration } from '../models/project-integration';
+import { ProjectPackageDetail } from '../models/project-package-detail';
 import { ProjectPackagePage } from '../models/project-package-page';
 import { ProjectScanPage } from '../models/project-scan-page';
 import { ProjectSetting } from '../models/project-setting';
@@ -288,6 +291,31 @@ export class ProjectService extends BaseService {
   getProjectPackages(params: GetProjectPackages$Params, context?: HttpContext): Observable<ProjectPackagePage> {
     return this.getProjectPackages$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectPackagePage>): ProjectPackagePage => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectPackageDetail()` */
+  static readonly GetProjectPackageDetailPath = '/api/project/{projectId}/package/{packageId}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectPackageDetail()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectPackageDetail$Response(params: GetProjectPackageDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackageDetail>> {
+    return getProjectPackageDetail(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectPackageDetail$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProjectPackageDetail(params: GetProjectPackageDetail$Params, context?: HttpContext): Observable<ProjectPackageDetail> {
+    return this.getProjectPackageDetail$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectPackageDetail>): ProjectPackageDetail => r.body)
     );
   }
 

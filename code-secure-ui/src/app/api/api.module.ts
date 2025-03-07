@@ -9,10 +9,10 @@ import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 import { AuthService } from './services/auth.service';
 import { CiService } from './services/ci.service';
 import { DashboardService } from './services/dashboard.service';
-import { DependencyService } from './services/dependency.service';
 import { FindingService } from './services/finding.service';
 import { IntegrationService } from './services/integration.service';
 import { OpenIdConnectService } from './services/open-id-connect.service';
+import { PackageService } from './services/package.service';
 import { ProfileService } from './services/profile.service';
 import { ProjectService } from './services/project.service';
 import { RoleService } from './services/role.service';
@@ -34,10 +34,10 @@ import { UserService } from './services/user.service';
     AuthService,
     CiService,
     DashboardService,
-    DependencyService,
     FindingService,
     IntegrationService,
     OpenIdConnectService,
+    PackageService,
     ProfileService,
     ProjectService,
     RoleService,

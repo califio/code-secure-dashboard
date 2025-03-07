@@ -58,6 +58,8 @@ import {
 import {ExportType} from '../../../../api/models/export-type';
 import {FindingSortField} from '../../../../api/models/finding-sort-field';
 import {formatDate} from '@angular/common';
+import {toArray} from '../../../../core/transform';
+import {BranchFilterComponent, BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 
 @Component({
   selector: 'app-finding',
@@ -87,6 +89,7 @@ import {formatDate} from '@angular/common';
     FindingRuleFilterComponent,
     FindingSeverityFilterComponent,
     FindingExportMenuComponent,
+    BranchFilterComponent,
   ],
   templateUrl: './finding.component.html',
 })
@@ -124,8 +127,6 @@ export class FindingComponent implements OnInit, OnDestroy {
       status: [
         FindingStatus.Open,
         FindingStatus.Confirmed,
-        FindingStatus.Fixed,
-        FindingStatus.AcceptedRisk
       ],
       commitId: undefined,
       size: 20,
@@ -133,19 +134,27 @@ export class FindingComponent implements OnInit, OnDestroy {
     this.projectService.getProjectCommits({
       projectId: this.projectStore.projectId()
     }).subscribe(commits => {
-      this.store.commits.set(commits);
+      const options = commits.map(item => {
+        return <BranchOption>{
+          commitId: item.commitId,
+          commitBranch: item.branch,
+          commitType: item.action,
+          targetBranch: item.targetBranch
+        }
+      });
+      this.store.branchOptions.set(options);
     });
-    this.scannerService.getScanners({
+    this.scannerService.getSastScanners({
       projectId: this.projectStore.projectId()
     }).subscribe(scanners => {
-      this.store.scanners.set(scanners);
+      this.store.scannerOptions.set(scanners);
     });
     this.ruleService.getRuleId({
       body: {
         projectId: this.projectStore.projectId()
       }
     }).subscribe(rules => {
-      this.store.rules.set(rules);
+      this.store.ruleOptions.set(rules);
     });
     this.route.queryParams.pipe(
       switchMap(params => {
@@ -197,14 +206,10 @@ export class FindingComponent implements OnInit, OnDestroy {
   private getFindings() {
     this.store.loading.set(true);
     if (this.store.filter.scanner) {
-      if (!Array.isArray(this.store.filter.scanner)) {
-        this.store.filter.scanner = [this.store.filter.scanner];
-      }
+      this.store.filter.scanner = toArray<string>(this.store.filter.scanner);
     }
     if (this.store.filter.severity) {
-      if (!Array.isArray(this.store.filter.severity)) {
-        this.store.filter.severity = [this.store.filter.severity];
-      }
+      this.store.filter.severity = toArray<FindingSeverity>(this.store.filter.severity);
     }
     return this.projectService.getProjectFindings({
       projectId: this.projectStore.projectId(),

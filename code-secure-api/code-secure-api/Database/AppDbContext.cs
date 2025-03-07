@@ -33,6 +33,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Rules> Rules { set; get; } = null!;
     public DbSet<ScanFindings> ScanFindings { set; get; } = null!;
     public DbSet<Scanners> Scanners { set; get; } = null!;
+    public DbSet<ScanProjectPackages> ScanProjectPackages { set; get; } = null!;
     public DbSet<Scans> Scans { set; get; } = null!;
     public DbSet<SourceControls> SourceControls { set; get; } = null!;
     public DbSet<Tags> Tags { set; get; } = null!;

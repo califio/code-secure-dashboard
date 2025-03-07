@@ -12,7 +12,6 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { CiScanInfo } from '../models/ci-scan-info';
-import { CiUploadDependencyResponse } from '../models/ci-upload-dependency-response';
 import { CiUploadFindingResponse } from '../models/ci-upload-finding-response';
 import { EnvironmentVariable } from '../models/environment-variable';
 import { getScanEnvironmentVariables } from '../fn/ci/get-scan-environment-variables';
@@ -21,6 +20,7 @@ import { initCiScan } from '../fn/ci/init-ci-scan';
 import { InitCiScan$Params } from '../fn/ci/init-ci-scan';
 import { ping } from '../fn/ci/ping';
 import { Ping$Params } from '../fn/ci/ping';
+import { ScanDependencyResult } from '../models/scan-dependency-result';
 import { updateCiScan } from '../fn/ci/update-ci-scan';
 import { UpdateCiScan$Params } from '../fn/ci/update-ci-scan';
 import { uploadCiDependency } from '../fn/ci/upload-ci-dependency';
@@ -168,7 +168,7 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  uploadCiDependency$Response(params?: UploadCiDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<CiUploadDependencyResponse>> {
+  uploadCiDependency$Response(params?: UploadCiDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<ScanDependencyResult>> {
     return uploadCiDependency(this.http, this.rootUrl, params, context);
   }
 
@@ -178,9 +178,9 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  uploadCiDependency(params?: UploadCiDependency$Params, context?: HttpContext): Observable<CiUploadDependencyResponse> {
+  uploadCiDependency(params?: UploadCiDependency$Params, context?: HttpContext): Observable<ScanDependencyResult> {
     return this.uploadCiDependency$Response(params, context).pipe(
-      map((r: StrictHttpResponse<CiUploadDependencyResponse>): CiUploadDependencyResponse => r.body)
+      map((r: StrictHttpResponse<ScanDependencyResult>): ScanDependencyResult => r.body)
     );
   }
 

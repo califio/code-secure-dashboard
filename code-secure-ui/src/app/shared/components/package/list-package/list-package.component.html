@@ -1,0 +1,28 @@
+<p-table [value]="packages()" [scrollable]="true" scrollHeight="30rem" class="w-full overflow-y-auto">
+  <ng-template #body let-package>
+    <div
+      class="flex flex-row items-center gap-2 p-2 border-b border-surface hover:bg-surface-100 dark:hover:bg-surface-800">
+      <risk-level-icon [risk]="typedPackage(package).riskLevel"
+                       [impact]="typedPackage(package).riskImpact"
+                       class="text-xl">
+      </risk-level-icon>
+      <div class="flex flex-row items-center gap-3 cursor-pointer w-full">
+        <div class="flex flex-col gap-1 w-full">
+          <div class="flex flex-row items-center gap-2">
+            <div>
+              {{ packageName(package) }}
+            </div>
+            <package-type [packageType]="typedPackage(package).type"></package-type>
+          </div>
+          @if (typedPackage(package).fixedVersion) {
+            <span class="lowercase">fixed version</span>
+            <div
+              class="text-xs border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+              {{ typedPackage(package).fixedVersion }}
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-table>

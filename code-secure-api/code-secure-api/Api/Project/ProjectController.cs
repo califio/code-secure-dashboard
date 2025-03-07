@@ -49,6 +49,7 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
     {
         return await projectService.GetScannersAsync(projectId);
     }
+    
 
     [HttpPost]
     [Route("{projectId}/scan/filter")]
@@ -69,6 +70,13 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
     public async Task<Page<ProjectPackage>> GetProjectPackages(Guid projectId, ProjectPackageFilter filter)
     {
         return await projectService.GetPackagesAsync(projectId, filter);
+    }
+    
+    [HttpGet]
+    [Route("{projectId:guid}/package/{packageId:guid}")]
+    public async Task<ProjectPackageDetail> GetProjectPackageDetail(Guid projectId, Guid packageId)
+    {
+        return await projectService.GetPackageDetailAsync(projectId, packageId);
     }
 
     [HttpPost]
