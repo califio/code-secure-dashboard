@@ -1,1 +1,9 @@
-<p-tag [severity]="severity()" [value]="label()" />
+<p-tag class="px-4 py-2"
+       [severity]="severity()">
+  <div class="flex items-center gap-2 text-nowrap" [ngClass]="styleClass()">
+    <i [ngClass]="icon()"></i>
+    <span>
+        {{label()}}
+      </span>
+  </div>
+</p-tag>

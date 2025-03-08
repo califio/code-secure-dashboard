@@ -5,6 +5,7 @@ import {Tag} from 'primeng/tag';
 import {transformValueNotNull} from '../../../../core/transform';
 import {NgClass} from '@angular/common';
 import {ButtonDirective} from 'primeng/button';
+import {PackageStatusComponent} from '../package-status/package-status.component';
 
 @Component({
   selector: 'package-status-menu',
@@ -12,46 +13,35 @@ import {ButtonDirective} from 'primeng/button';
     Menu,
     Tag,
     NgClass,
-    ButtonDirective
+    ButtonDirective,
+    PackageStatusComponent
   ],
   templateUrl: './package-status-menu.component.html',
   standalone: true,
 })
 export class PackageStatusMenuComponent {
-  styleClass = input('px-4 py-2')
+  styleClass = input('')
   status = input(PackageStatus.Open, {
     transform: (value: PackageStatus | null | undefined) => transformValueNotNull(value, PackageStatus.Open)
   });
   @Output()
   onChange = new EventEmitter<PackageStatus>();
-  selectedOption = signal<any>(null);
+  selectedOption = signal<PackageStatus>(PackageStatus.Open);
 
   constructor() {
     effect(() => {
-      this.selectedOption.set(this.menuItems.find(item => item.status == this.status()));
+      this.selectedOption.set(this.status());
     });
   }
 
-  onChangeStatus(option: any) {
-    this.selectedOption.set(option);
-    this.onChange.emit(option.status);
+  onChangeStatus(status: PackageStatus) {
+    this.selectedOption.set(status);
+    this.onChange.emit(status);
   }
 
   menuItems: any[] = [
-    {
-      label: 'Open',
-      status: PackageStatus.Open,
-      severity: 'info'
-    },
-    {
-      label: 'Accepted Risk',
-      status: PackageStatus.Ignore,
-      severity: 'warn'
-    },
-    {
-      label: 'Fixed',
-      status: PackageStatus.Fixed,
-      severity: 'success'
-    }
+    PackageStatus.Open,
+    PackageStatus.Ignore,
+    PackageStatus.Fixed
   ];
 }
