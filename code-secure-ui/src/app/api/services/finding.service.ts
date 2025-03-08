@@ -29,11 +29,15 @@ import { getFinding } from '../fn/finding/get-finding';
 import { GetFinding$Params } from '../fn/finding/get-finding';
 import { getFindingActivities } from '../fn/finding/get-finding-activities';
 import { GetFindingActivities$Params } from '../fn/finding/get-finding-activities';
+import { getFindingRules } from '../fn/finding/get-finding-rules';
+import { GetFindingRules$Params } from '../fn/finding/get-finding-rules';
 import { getFindings } from '../fn/finding/get-findings';
 import { GetFindings$Params } from '../fn/finding/get-findings';
 import { Tickets } from '../models/tickets';
 import { updateFinding } from '../fn/finding/update-finding';
 import { UpdateFinding$Params } from '../fn/finding/update-finding';
+import { updateStatusScanFinding } from '../fn/finding/update-status-scan-finding';
+import { UpdateStatusScanFinding$Params } from '../fn/finding/update-status-scan-finding';
 
 @Injectable({ providedIn: 'root' })
 export class FindingService extends BaseService {
@@ -163,6 +167,31 @@ export class FindingService extends BaseService {
     );
   }
 
+  /** Path part for operation `updateStatusScanFinding()` */
+  static readonly UpdateStatusScanFindingPath = '/api/finding/{findingId}/scan-status';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateStatusScanFinding()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateStatusScanFinding$Response(params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateStatusScanFinding(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateStatusScanFinding$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateStatusScanFinding(params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<void> {
+    return this.updateStatusScanFinding$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
   /** Path part for operation `getFindingActivities()` */
   static readonly GetFindingActivitiesPath = '/api/finding/{id}/activity';
 
@@ -260,6 +289,31 @@ export class FindingService extends BaseService {
   deleteTicket(params: DeleteTicket$Params, context?: HttpContext): Observable<void> {
     return this.deleteTicket$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getFindingRules()` */
+  static readonly GetFindingRulesPath = '/api/finding/rule';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getFindingRules()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getFindingRules$Response(params?: GetFindingRules$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return getFindingRules(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getFindingRules$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getFindingRules(params?: GetFindingRules$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.getFindingRules$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
     );
   }
 

@@ -202,39 +202,50 @@ public class DefaultFindingService(
 
         if (request.Status != null && request.Status != finding.Status)
         {
-            // fixed status will auto update by CI
-            if (request.Status != FindingStatus.Fixed)
+            var activity = FindingActivities.ChangeStatus(
+                CurrentUser().Id,
+                findingId,
+                finding.Status,
+                (FindingStatus)request.Status
+            );
+            context.FindingActivities.Add(activity);
+            await context.SaveChangesAsync();
+            // auto change fix deadline base on SLA when change status to confirmed
+            if (finding.FixDeadline == null && request.Status == FindingStatus.Confirmed)
             {
-                var activity = FindingActivities.ChangeStatus(
-                    CurrentUser().Id,
-                    findingId,
-                    finding.Status,
-                    (FindingStatus)request.Status
-                );
-                context.FindingActivities.Add(activity);
-                await context.SaveChangesAsync();
-                // auto change fix deadline base on SLA when change status to confirmed
-                if (finding.FixDeadline == null && request.Status == FindingStatus.Confirmed)
+                var sla = await findingManager.GetSlaAsync(finding);
+                if (sla > 0)
                 {
-                    var sla = await findingManager.GetSlaAsync(finding);
-                    if (sla > 0)
-                    {
-                        finding.FixDeadline = DateTime.UtcNow.AddDays(sla);
-                        activity = FindingActivities.ChangeDeadline(
-                            null,
-                            findingId,
-                            null,
-                            finding.FixDeadline
-                        );
-                        context.FindingActivities.Add(activity);
-                        await context.SaveChangesAsync();
-                    }
+                    finding.FixDeadline = DateTime.UtcNow.AddDays(sla);
+                    activity = FindingActivities.ChangeDeadline(
+                        null,
+                        findingId,
+                        null,
+                        finding.FixDeadline
+                    );
+                    context.FindingActivities.Add(activity);
+                    await context.SaveChangesAsync();
                 }
-                await context.ScanFindings
-                    .Where(record => record.FindingId == findingId)
-                    .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.Status, (FindingStatus)request.Status));
-                finding.Status = (FindingStatus)request.Status;
             }
+            if (request.Status == FindingStatus.Fixed)
+            {
+                await context.ScanFindings
+                    .Where(record => record.FindingId == findingId && record.Status == finding.Status)
+                    .ExecuteUpdateAsync(setter => setter
+                        .SetProperty(record => record.Status, (FindingStatus)request.Status)
+                        .SetProperty(record => record.FixedAt, DateTime.UtcNow)
+                    );
+                finding.FixedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                await context.ScanFindings
+                    .Where(record => record.FindingId == findingId && record.Status == finding.Status)
+                    .ExecuteUpdateAsync(setter => setter
+                        .SetProperty(record => record.Status, (FindingStatus)request.Status)
+                    );
+            }
+            finding.Status = (FindingStatus)request.Status;
         }
 
         if (request.Severity != null && request.Severity != finding.Severity)
@@ -263,6 +274,33 @@ public class DefaultFindingService(
         }
         await findingManager.UpdateAsync(finding);
         return await GetFindingAsync(findingId);
+    }
+
+    public async Task UpdateStatusScanFindingAsync(Guid findingId, Guid scanId, FindingStatus status)
+    {
+        var finding = await FindByIdAsync(findingId);
+        if (!HasPermission(finding, PermissionAction.Update)) throw new AccessDeniedException();
+        var scanFinding = await context.ScanFindings
+            .Include(record => record.Scan)
+            .FirstOrDefaultAsync(record => record.ScanId == scanId && record.FindingId == findingId);
+        if (scanFinding == null)
+        {
+            throw new BadRequestException("Not Found");
+        }
+
+        if (scanFinding.Status != status)
+        {
+            var currentUser = CurrentUser();
+            var commentActivity = FindingActivities.ChangeStatus(currentUser.Id, findingId, scanFinding.Status, status, scanFinding.Scan!.CommitId);
+            context.FindingActivities.Add(commentActivity);
+            scanFinding.Status = status;
+            if (status == FindingStatus.Fixed)
+            {
+                scanFinding.FixedAt = DateTime.UtcNow;
+            }
+            context.ScanFindings.Update(scanFinding);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task<Page<FindingActivity>> GetFindingActivitiesAsync(Guid id, QueryFilter filter)
@@ -365,7 +403,70 @@ public class DefaultFindingService(
             await context.Tickets.Where(record => record.Id == ticketId).ExecuteDeleteAsync();
         }
     }
-    
+
+    public async Task<List<string>> GetFindingRulesAsync(FindingFilter filter)
+    {
+        var query = context.Findings.AsQueryable();
+        if (filter.ProjectId != null)
+        {
+            query = query.Where(finding => finding.ProjectId == filter.ProjectId);
+        }
+
+        if (filter.CommitId != null)
+        {
+            query = query.Where(finding =>
+                context.ScanFindings.Any(record =>
+                    record.FindingId == finding.Id &&
+                    record.Scan!.CommitId == filter.CommitId
+                )
+            );
+        }
+
+        if (filter.Status is { Count: > 0 })
+        {
+            if (filter.CommitId != null)
+            {
+                query = query.Where(finding => 
+                    context.ScanFindings.Any(record => 
+                        record.FindingId == finding.Id && 
+                        filter.Status.Contains(record.Status)
+                    )
+                );
+            }
+            else
+            {
+                query = query.Where(finding => filter.Status.Contains(finding.Status));
+            }
+        }
+
+        if (filter.Scanner is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Scanner.Contains(finding.ScannerId));
+        }
+
+        if (filter.Severity is { Count: > 0 })
+        {
+            query = query.Where(finding => filter.Severity.Contains(finding.Severity));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(finding => finding.Name.Contains(filter.Name));
+        }
+        
+        if (filter.ProjectManagerId != null)
+        {
+            query = query.Where(finding => context.ProjectUsers.Any(record =>
+                record.Role == ProjectRole.Manager 
+                && finding.ProjectId == record.ProjectId
+                && record.UserId == filter.ProjectManagerId)
+            );
+        }
+        return await query.Where(record => record.RuleId != null)
+            .GroupBy(record => record.RuleId)
+            .Select(group => group.Key!).ToListAsync();
+    }
+
     protected override bool HasPermission(Findings entity, string action)
     {
         var currentUser = CurrentUser();

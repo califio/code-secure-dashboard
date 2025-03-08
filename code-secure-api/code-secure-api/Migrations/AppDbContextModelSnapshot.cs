@@ -490,6 +490,12 @@ namespace CodeSecure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("FixedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("IgnoredReason")
+                        .HasColumnType("text");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("text");
@@ -502,6 +508,9 @@ namespace CodeSecure.Migrations
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TicketId")
                         .HasColumnType("uuid");
@@ -722,6 +731,9 @@ namespace CodeSecure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("FixedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -741,6 +753,9 @@ namespace CodeSecure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("FixedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("IgnoredReason")
                         .HasColumnType("text");
 
@@ -749,9 +764,6 @@ namespace CodeSecure.Migrations
 
                     b.Property<Guid>("ProjectPackageId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ResolvedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ScanId")
                         .HasColumnType("uuid");

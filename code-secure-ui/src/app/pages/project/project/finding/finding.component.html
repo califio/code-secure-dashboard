@@ -11,7 +11,7 @@
       </p-iconfield>
       <!--Branch Filter-->
       <branch-filter [options]="store.branchOptions()"
-                     [commitId]="store.filter.commitId"
+                     [value]="store.filter.commitId"
                      (onChange)="onSelectScan($event)">
       </branch-filter>
       <!--Rule Filter-->
@@ -35,7 +35,7 @@
       <p-button severity="secondary" icon="pi pi-sync" pTooltip="reload" tooltipPosition="top"
                 (click)="onReload()" [loading]="store.loading()"/>
       <!--Mark As-->
-      <finding-status-menu [badge]="selectedFindings.size" (onSelect)="onMarkAs($event)"/>
+      <finding-status-mark-as [badge]="selectedFindings.size" (onSelect)="onMarkAs($event)"/>
       <finding-export-menu [loading]="store.loadingExport()" (onSelect)="onExport($event)"></finding-export-menu>
     </div>
     <!--LIST FINDING-->

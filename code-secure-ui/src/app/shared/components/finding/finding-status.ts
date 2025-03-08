@@ -18,8 +18,8 @@ const mFindingStatusIcon: Map<FindingStatus, string> = new Map<FindingStatus, st
 ]);
 
 const mFindingStatusLabel: Map<FindingStatus, string> = new Map<FindingStatus, string>([
-  [FindingStatus.Open, 'Open'],
-  [FindingStatus.Confirmed, 'In Fixing'],
+  [FindingStatus.Open, 'Need Triage'],
+  [FindingStatus.Confirmed, 'Confirmed'],
   [FindingStatus.Incorrect, 'False Positive'],
   [FindingStatus.AcceptedRisk, 'Accepted Risk'],
   [FindingStatus.Fixed, 'Fixed'],

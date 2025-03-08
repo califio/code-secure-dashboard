@@ -1,3 +1,4 @@
+using CodeSecure.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeSecure.Database.Entity;
@@ -8,6 +9,9 @@ public class ProjectPackages: BaseEntity
     public required Guid ProjectId { get; set; }
     public required Guid PackageId { get; set; }
     public required string Location { get; set; }
+    public required PackageStatus? Status { get; set; }
+    public string? IgnoredReason { get; set; }
+    public DateTime? FixedAt { get; set; }
     public Guid? TicketId { get; set; }
     public Tickets? Ticket { get; set; }
     public Projects? Project { get; set; }

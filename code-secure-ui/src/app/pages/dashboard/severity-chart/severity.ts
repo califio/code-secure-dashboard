@@ -3,5 +3,4 @@ export interface Severity {
   high: number;
   medium: number;
   low: number;
-  info: number;
 }

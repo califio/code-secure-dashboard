@@ -25,6 +25,8 @@ import {
   SourceControlSelectComponent
 } from '../../shared/components/source-control-select/source-control-select.component';
 import {SourceControlService} from '../../api/services/source-control.service';
+import {PackageStatusSeries} from './package-status-chart/package-status';
+import {PackageStatusChartComponent} from './package-status-chart/package-status-chart.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,20 +41,21 @@ import {SourceControlService} from '../../api/services/source-control.service';
     Fluid,
     Card,
     RangeDateComponent,
-    SourceControlSelectComponent
+    SourceControlSelectComponent,
+    PackageStatusChartComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   sastSeverity = signal<Severity>({
-    critical: 0, high: 0, info: 0, low: 0, medium: 0
+    critical: 0, high: 0, low: 0, medium: 0
   });
   scaSeverity = signal<Severity>({
-    critical: 0, high: 0, info: 0, low: 0, medium: 0
+    critical: 0, high: 0, low: 0, medium: 0
   });
   sastStatus = signal<FindingStatusSeries>({acceptedRisk: 0, confirmed: 0, fixed: 0, open: 0});
-  scaStatus = signal<FindingStatusSeries>({acceptedRisk: 0, confirmed: 0, fixed: 0, open: 0});
+  scaStatus = signal<PackageStatusSeries>({ignore: 0, fixed: 0, open: 0});
   topFindings = signal<TopFinding[]>([]);
   topDependencies = signal<TopDependency[]>([]);
   rangeDate: RangeDateState = {
@@ -102,7 +105,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.sastSeverity.set({
         critical: sast.severity.critical,
         high: sast.severity.high,
-        info: sast.severity.info,
         low: sast.severity.low,
         medium: sast.severity.medium
       });
@@ -121,13 +123,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.scaSeverity.set({
         critical: sca.severity.critical,
         high: sca.severity.high,
-        info: sca.severity.info,
         low: sca.severity.low,
         medium: sca.severity.medium
       });
       this.scaStatus.set({
-        acceptedRisk: sca.status.acceptedRisk,
-        confirmed: sca.status.confirmed,
+        ignore: sca.status.ignore,
         fixed: sca.status.fixed,
         open: sca.status.open
       });

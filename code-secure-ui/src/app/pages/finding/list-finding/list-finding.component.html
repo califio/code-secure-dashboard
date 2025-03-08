@@ -52,7 +52,7 @@
         <p-button severity="secondary" icon="pi pi-sync" pTooltip="reload" tooltipPosition="top"
                   (click)="onReload()" [loading]="store.loading()"/>
         <!--Mark As-->
-        <finding-status-menu [badge]="selectedFindings.size" (onSelect)="onMarkAs($event)"/>
+        <finding-status-mark-as [badge]="selectedFindings.size" (onSelect)="onMarkAs($event)"/>
         <finding-export-menu [exportTypes]="exportTypes"
                              [loading]="loadingExport"
                              (onSelect)="onExport($event)"></finding-export-menu>

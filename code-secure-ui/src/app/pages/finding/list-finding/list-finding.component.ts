@@ -18,8 +18,8 @@ import {ListFindingStore} from './list-finding.store';
 import {finalize, forkJoin, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import {FindingStatus} from '../../../api/models/finding-status';
 import {
-  FindingStatusMenuComponent
-} from '../../../shared/components/finding/finding-status-menu/finding-status-menu.component';
+  FindingStatusMarkAsComponent
+} from '../../../shared/components/finding/finding-status-mark-as/finding-status-mark-as.component';
 import {FindingService} from '../../../api/services/finding.service';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -68,7 +68,7 @@ import {toArray} from '../../../core/transform';
     Paginator,
     TableModule,
     Tooltip,
-    FindingStatusMenuComponent,
+    FindingStatusMarkAsComponent,
     Panel,
     FindingStatusFilterComponent,
     FindingScannerFilterComponent,
@@ -118,14 +118,30 @@ export class ListFindingComponent implements OnInit {
     this.route.queryParams.pipe(
       switchMap(params => {
         bindQueryParams(params, this.store.filter);
+        this.store.filter.scanner = toArray(this.store.filter.scanner);
+        this.store.filter.status = toArray(this.store.filter.status);
+        this.store.filter.severity = toArray(this.store.filter.severity);
         this.store.pageSize.set(this.store.filter.size!);
         this.store.currentPage.set(this.store.filter.page!);
-        return this.getFindings();
+        return forkJoin({
+          findingPage: this.getFindings(),
+          rules: this.getRules()
+        })
       }),
       takeUntil(this.destroy$)
-    ).subscribe()
+    ).subscribe(result => {
+      this.store.findings.set(result.findingPage.items!);
+      this.store.currentPage.set(result.findingPage.currentPage!);
+      this.store.totalRecords.set(result.findingPage.count!);
+      this.store.rules.set(result.rules);
+    })
   }
 
+  private getRules() {
+    return this.findingService.getFindingRules({
+      body: this.store.filter
+    });
+  }
   private getFindings() {
     this.store.loading.set(true);
     if (this.store.filter.scanner) {
@@ -139,11 +155,6 @@ export class ListFindingComponent implements OnInit {
     }).pipe(
       finalize(() => {
         this.store.loading.set(false);
-      }),
-      tap(response => {
-        this.store.findings.set(response.items!);
-        this.store.currentPage.set(response.currentPage!);
-        this.store.totalRecords.set(response.count!);
       })
     );
   }

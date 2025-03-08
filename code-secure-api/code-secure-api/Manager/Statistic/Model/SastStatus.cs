@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CodeSecure.Manager.Statistic.Model;
 
-public record StatusSeries
+public record SastStatus
 {
     [Required] public required int Open { get; set; }
 

@@ -1,0 +1,17 @@
+<div class="flex flex-col">
+  <p-tag class="max-w-56 cursor-pointer text-base" [ngClass]="styleClass()"
+         [value]="selectedOption().label"
+         [severity]="selectedOption().severity"
+         (click)="menu.toggle($event)"/>
+
+  <p-menu #menu [model]="menuItems" [popup]="true">
+    <ng-template #item let-option>
+      <div class="p-1 cursor-pointer">
+        <p-tag
+               [value]="option.label"
+               [severity]="option.severity" (click)="onChangeStatus(option)"/>
+      </div>
+    </ng-template>
+  </p-menu>
+</div>
+

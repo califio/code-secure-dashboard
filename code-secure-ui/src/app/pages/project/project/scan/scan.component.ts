@@ -27,6 +27,7 @@ import {TableModule} from 'primeng/table';
 import {Tooltip} from 'primeng/tooltip';
 import {LayoutService} from '../../../../layout/layout.service';
 import {Panel} from 'primeng/panel';
+import {PackageStatusChartComponent} from '../../../dashboard/package-status-chart/package-status-chart.component';
 
 @Component({
   selector: 'app-scan',
@@ -51,6 +52,7 @@ import {Panel} from 'primeng/panel';
     TableModule,
     Tooltip,
     Panel,
+    PackageStatusChartComponent,
   ],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'
@@ -61,14 +63,12 @@ export class ScanComponent implements OnInit, OnDestroy {
     severitySast: {
       critical: 0,
       high: 0,
-      info: 0,
       low: 0,
       medium: 0
     },
     severitySca: {
       critical: 0,
       high: 0,
-      info: 0,
       low: 0,
       medium: 0
     },
@@ -79,8 +79,7 @@ export class ScanComponent implements OnInit, OnDestroy {
       open: 0
     },
     statusSca: {
-      acceptedRisk: 0,
-      confirmed: 0,
+      ignore: 0,
       fixed: 0,
       open: 0
     }

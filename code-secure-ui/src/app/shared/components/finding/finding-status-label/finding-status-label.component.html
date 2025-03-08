@@ -1,10 +1,10 @@
 <div class="flex flex-col gap-1">
-  <div class="flex flex-row items-center gap-2 text-nowrap" [ngClass]="[getFindingStatusColor(status), styleClass]">
-    <ng-icon [name]="getFindingStatusIcon(status)"></ng-icon>
-    <div>{{ getFindingStatusLabel(status) }}</div>
+  <div class="flex flex-row items-center gap-2 text-nowrap" [ngClass]="[getFindingStatusColor(status()), styleClass]">
+    <ng-icon [name]="getFindingStatusIcon(status())"></ng-icon>
+    <div>{{ getFindingStatusLabel(status()) }}</div>
   </div>
   @if(showDescription) {
-    <span class="text-[#A1A1AB] text-sm">{{ getFindingStatusDescription(status) }}</span>
+    <span class="text-[#A1A1AB] text-sm">{{ getFindingStatusDescription(status()) }}</span>
   }
 </div>
 

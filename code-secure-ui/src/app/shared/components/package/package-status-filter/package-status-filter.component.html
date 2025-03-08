@@ -1,0 +1,13 @@
+<p-float-label variant="on">
+  <p-select
+    class="min-w-28"
+    (onChange)="onChangeStatus($event)"
+    id="on_status"
+    [ngModel]="status()"
+    [options]="options">
+    <ng-template #item let-option>
+      <package-status [status]="option.value"/>
+    </ng-template>
+  </p-select>
+  <label for="on_status">Status</label>
+</p-float-label>

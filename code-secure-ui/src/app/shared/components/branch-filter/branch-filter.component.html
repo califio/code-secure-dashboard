@@ -1,11 +1,11 @@
 <p-float-label variant="on">
   <p-select
-    showClear
-    [ngModel]="commitId()"
+    [showClear]="showClear()"
+    [ngModel]="value()"
     inputId="on_branch"
-    optionValue="commitId"
+    optionValue="id"
     (ngModelChange)="onSelectedChange($event)"
-    class="min-w-28"
+    class="min-w-28 max-w-72"
     [options]="options()">
     <ng-template #selectedItem let-option>
       <scan-branch-label [commitType]="typedValue(option).commitType"

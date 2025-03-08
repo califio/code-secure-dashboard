@@ -13,5 +13,5 @@ export interface ProjectPackageFilter {
   severity?: Array<RiskLevel> | null;
   size?: number;
   sortBy?: ProjectPackageSortField;
-  status?: Array<PackageStatus> | null;
+  status?: PackageStatus;
 }

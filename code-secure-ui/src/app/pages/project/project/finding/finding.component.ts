@@ -3,7 +3,7 @@ import {NgIcon} from '@ng-icons/core';
 import {FindingDetailComponent} from '../../../../shared/components/finding/finding-detail/finding-detail.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectService} from '../../../../api/services/project.service';
-import {finalize, forkJoin, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {finalize, forkJoin, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
 import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../../../shared/services/toastr.service';
@@ -33,8 +33,8 @@ import {LayoutService} from '../../../../layout/layout.service';
 import {MenuItem} from 'primeng/api';
 import {Tooltip} from 'primeng/tooltip';
 import {
-  FindingStatusMenuComponent
-} from '../../../../shared/components/finding/finding-status-menu/finding-status-menu.component';
+  FindingStatusMarkAsComponent
+} from '../../../../shared/components/finding/finding-status-mark-as/finding-status-mark-as.component';
 import {
   FindingStatusFilterComponent
 } from '../../../../shared/components/finding/finding-status-filter/finding-status-filter.component';
@@ -47,7 +47,6 @@ import {
   FindingRuleFilterComponent
 } from '../../../../shared/components/finding/finding-rule-filter/finding-rule-filter.component';
 import {ScannerService} from '../../../../api/services/scanner.service';
-import {RuleService} from '../../../../api/services/rule.service';
 import {
   FindingSeverityFilterComponent
 } from '../../../../shared/components/finding/finding-severity-filter/finding-severity-filter.component';
@@ -82,7 +81,7 @@ import {BranchFilterComponent, BranchOption} from '../../../../shared/components
     TableModule,
     Button,
     Tooltip,
-    FindingStatusMenuComponent,
+    FindingStatusMarkAsComponent,
     FindingStatusFilterComponent,
     FindingScannerFilterComponent,
     SortByComponent,
@@ -104,7 +103,6 @@ export class FindingComponent implements OnInit, OnDestroy {
     private scannerService: ScannerService,
     private findingService: FindingService,
     private projectStore: ProjectStore,
-    private ruleService: RuleService,
     private route: ActivatedRoute,
     private router: Router,
     public store: FindingStore,
@@ -136,7 +134,7 @@ export class FindingComponent implements OnInit, OnDestroy {
     }).subscribe(commits => {
       const options = commits.map(item => {
         return <BranchOption>{
-          commitId: item.commitId,
+          id: item.commitId,
           commitBranch: item.branch,
           commitType: item.action,
           targetBranch: item.targetBranch
@@ -149,23 +147,28 @@ export class FindingComponent implements OnInit, OnDestroy {
     }).subscribe(scanners => {
       this.store.scannerOptions.set(scanners);
     });
-    this.ruleService.getRuleId({
-      body: {
-        projectId: this.projectStore.projectId()
-      }
-    }).subscribe(rules => {
-      this.store.ruleOptions.set(rules);
-    });
     this.route.queryParams.pipe(
       switchMap(params => {
         bindQueryParams(params, this.store.filter);
+        this.store.filter.status = toArray(this.store.filter.status);
+        this.store.filter.severity = toArray(this.store.filter.severity);
+        this.store.filter.scanner = toArray(this.store.filter.scanner);
         this.store.pageSize.set(this.store.filter.size!);
         this.store.currentPage.set(this.store.filter.page!);
-        return this.getFindings();
+        return forkJoin({
+          findingPage: this.getFindings(),
+          rules: this.getRules()
+        })
       }),
       takeUntil(this.destroy$)
-    ).subscribe()
+    ).subscribe(result => {
+      this.store.findings.set(result.findingPage.items!);
+      this.store.currentPage.set(result.findingPage.currentPage!);
+      this.store.totalRecords.set(result.findingPage.count!);
+      this.store.ruleOptions.set(result.rules);
+    })
   }
+
 
   onOpenFinding(findingId: string) {
     if (this.showDetailFinding) {
@@ -203,25 +206,23 @@ export class FindingComponent implements OnInit, OnDestroy {
     this.getFindings().subscribe();
   }
 
+  private getRules() {
+    return this.findingService.getFindingRules({
+      body: {
+        ...this.store.filter,
+        projectId: this.projectStore.projectId()
+      }
+    });
+  }
+
   private getFindings() {
     this.store.loading.set(true);
-    if (this.store.filter.scanner) {
-      this.store.filter.scanner = toArray<string>(this.store.filter.scanner);
-    }
-    if (this.store.filter.severity) {
-      this.store.filter.severity = toArray<FindingSeverity>(this.store.filter.severity);
-    }
     return this.projectService.getProjectFindings({
       projectId: this.projectStore.projectId(),
       body: this.store.filter
     }).pipe(
       finalize(() => {
         this.store.loading.set(false);
-      }),
-      tap(response => {
-        this.store.findings.set(response.items!);
-        this.store.currentPage.set(response.currentPage!);
-        this.store.totalRecords.set(response.count!);
       })
     );
   }

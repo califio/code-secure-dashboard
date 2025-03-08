@@ -5,7 +5,6 @@
 export interface SeveritySeries {
   critical: number;
   high: number;
-  info: number;
   low: number;
   medium: number;
 }

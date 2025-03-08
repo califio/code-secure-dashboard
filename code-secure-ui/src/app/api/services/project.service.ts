@@ -14,8 +14,12 @@ import { StrictHttpResponse } from '../strict-http-response';
 import { addMember } from '../fn/project/add-member';
 import { AddMember$Params } from '../fn/project/add-member';
 import { AlertSetting } from '../models/alert-setting';
+import { createProjectTicket } from '../fn/project/create-project-ticket';
+import { CreateProjectTicket$Params } from '../fn/project/create-project-ticket';
 import { deleteProjectMember } from '../fn/project/delete-project-member';
 import { DeleteProjectMember$Params } from '../fn/project/delete-project-member';
+import { deleteProjectTicket } from '../fn/project/delete-project-ticket';
+import { DeleteProjectTicket$Params } from '../fn/project/delete-project-ticket';
 import { EnvironmentVariable } from '../models/environment-variable';
 import { EnvironmentVariablePage } from '../models/environment-variable-page';
 import { export$Any } from '../fn/project/export-any';
@@ -75,12 +79,15 @@ import { SetProjectEnvironment$Params } from '../fn/project/set-project-environm
 import { TeamsSetting } from '../models/teams-setting';
 import { testTeamsIntegrationProject } from '../fn/project/test-teams-integration-project';
 import { TestTeamsIntegrationProject$Params } from '../fn/project/test-teams-integration-project';
+import { Tickets } from '../models/tickets';
 import { updateJiraIntegrationProject } from '../fn/project/update-jira-integration-project';
 import { UpdateJiraIntegrationProject$Params } from '../fn/project/update-jira-integration-project';
 import { updateMailIntegrationProject } from '../fn/project/update-mail-integration-project';
 import { UpdateMailIntegrationProject$Params } from '../fn/project/update-mail-integration-project';
 import { updateProjectMember } from '../fn/project/update-project-member';
 import { UpdateProjectMember$Params } from '../fn/project/update-project-member';
+import { updateProjectPackage } from '../fn/project/update-project-package';
+import { UpdateProjectPackage$Params } from '../fn/project/update-project-package';
 import { updateSastSettingProject } from '../fn/project/update-sast-setting-project';
 import { UpdateSastSettingProject$Params } from '../fn/project/update-sast-setting-project';
 import { updateScaSettingProject } from '../fn/project/update-sca-setting-project';
@@ -316,6 +323,81 @@ export class ProjectService extends BaseService {
   getProjectPackageDetail(params: GetProjectPackageDetail$Params, context?: HttpContext): Observable<ProjectPackageDetail> {
     return this.getProjectPackageDetail$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectPackageDetail>): ProjectPackageDetail => r.body)
+    );
+  }
+
+  /** Path part for operation `updateProjectPackage()` */
+  static readonly UpdateProjectPackagePath = '/api/project/{projectId}/package/{packageId}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateProjectPackage()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectPackage$Response(params: UpdateProjectPackage$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackageDetail>> {
+    return updateProjectPackage(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateProjectPackage$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectPackage(params: UpdateProjectPackage$Params, context?: HttpContext): Observable<ProjectPackageDetail> {
+    return this.updateProjectPackage$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectPackageDetail>): ProjectPackageDetail => r.body)
+    );
+  }
+
+  /** Path part for operation `createProjectTicket()` */
+  static readonly CreateProjectTicketPath = '/api/project/{projectId}/package/{packageId}/ticket';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `createProjectTicket()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createProjectTicket$Response(params: CreateProjectTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<Tickets>> {
+    return createProjectTicket(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `createProjectTicket$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createProjectTicket(params: CreateProjectTicket$Params, context?: HttpContext): Observable<Tickets> {
+    return this.createProjectTicket$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Tickets>): Tickets => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteProjectTicket()` */
+  static readonly DeleteProjectTicketPath = '/api/project/{projectId}/package/{packageId}/ticket';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteProjectTicket()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteProjectTicket$Response(params: DeleteProjectTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return deleteProjectTicket(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteProjectTicket$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteProjectTicket(params: DeleteProjectTicket$Params, context?: HttpContext): Observable<void> {
+    return this.deleteProjectTicket$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

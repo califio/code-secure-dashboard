@@ -78,6 +78,27 @@ public class ProjectController(IProjectService projectService, IEnvVariableManag
     {
         return await projectService.GetPackageDetailAsync(projectId, packageId);
     }
+    
+    [HttpPost]
+    [Route("{projectId:guid}/package/{packageId:guid}/ticket")]
+    public async Task<Tickets> CreateProjectTicket(Guid projectId, Guid packageId, TicketType ticketType)
+    {
+        return await projectService.CreateTicketAsync(projectId, packageId, ticketType);
+    }
+    
+    [HttpDelete]
+    [Route("{projectId:guid}/package/{packageId:guid}/ticket")]
+    public async Task DeleteProjectTicket(Guid projectId, Guid packageId)
+    {
+        await projectService.DeleteTicketAsync(projectId, packageId);
+    }
+    
+    [HttpPatch]
+    [Route("{projectId:guid}/package/{packageId:guid}")]
+    public async Task<ProjectPackageDetail> UpdateProjectPackage(Guid projectId, Guid packageId, UpdateProjectPackageRequest request)
+    {
+        return await projectService.UpdateProjectPackageAsync(projectId, packageId, request);
+    }
 
     [HttpPost]
     [Route("{projectId}/member/filter")]

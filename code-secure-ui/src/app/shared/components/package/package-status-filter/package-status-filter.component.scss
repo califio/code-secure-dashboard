@@ -1,0 +1,5 @@
+::ng-deep {
+  .p-select-option-selected {
+    @apply bg-surface-100 dark:bg-surface-800 text-primary;;
+  }
+}

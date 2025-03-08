@@ -174,6 +174,7 @@ public class PackageManager(
                 ProjectId = projectId,
                 PackageId = package.Id,
                 Location = location,
+                Status = PackageStatus.Open,
             });
             await context.SaveChangesAsync();
         }

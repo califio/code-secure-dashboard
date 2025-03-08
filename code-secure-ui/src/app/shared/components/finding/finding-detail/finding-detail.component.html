@@ -8,24 +8,6 @@
   <div class="flex flex-col pb-4 gap-4">
     <div class="flex flex-row items-center justify-between">
       <div class="flex flex-row items-center gap-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <p-select [options]="finding().scans!" optionValue="scanId"
-                    [ngModel]="currentScan()?.scanId"
-                    (ngModelChange)="onScanChange($event)">
-            <ng-template #selectedItem let-option>
-              <scan-branch-label [commitType]="option.action"
-                                 [commitBranch]="option.branch"
-                                 [targetBranch]="option.targetBranch">
-              </scan-branch-label>
-            </ng-template>
-            <ng-template #item let-option>
-              <scan-branch-label [commitType]="option.action"
-                                 [commitBranch]="option.branch"
-                                 [targetBranch]="option.targetBranch">
-              </scan-branch-label>
-            </ng-template>
-          </p-select>
-        </div>
         <div class="flex flex-row gap-2 items-center">
           <ng-icon [name]="finding().project?.sourceType! | lowercase"></ng-icon>
           <a [routerLink]="['/project', finding().project?.id, 'scan']"
@@ -46,18 +28,7 @@
       }
     </div>
     <div class="flex flex-row items-center gap-2">
-      <p-select
-        [ngModel]="finding().status"
-        optionValue="status"
-        (ngModelChange)="onChangeStatus($event)"
-        [options]="statusOptions">
-        <ng-template #selectedItem let-option>
-          <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
-        </ng-template>
-        <ng-template let-option #item>
-          <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
-        </ng-template>
-      </p-select>
+      <finding-status-menu styleClass="text-base" [status]="finding().status" (onChange)="onChangeStatus($event)"/>
       @if (finding().fixDeadline || finding().status == FindingStatus.Confirmed) {
         <p-floatlabel variant="on">
           <p-date-picker [ngModel]="fixDeadline()"
@@ -68,34 +39,44 @@
           <label for="on_deadline">Deadline</label>
         </p-floatlabel>
       }
-      @if (isSastFinding()) {
-        <ticket-menu [loading]="loadingTicket"
-                     [ticket]="ticket()"
-                     (onDelete)="deleteTicket()"
-                     (onTicket)="createTicket($event)"></ticket-menu>
-      }
+      <ticket-menu [loading]="loadingTicket"
+                   [ticket]="ticket()"
+                   (onDelete)="deleteTicket()"
+                   (onTicket)="createTicket($event)"/>
     </div>
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
     <div class="flex flex-col w-full">
+      <p-fieldset legend="Location">
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1">
+            @if(finding().location){
+              <span>{{ finding().location!.path }}</span>
+              @if (finding().location!.snippet) {
+                <div class="border border-dashed border-surface p-2 mt-2">
+              <pre
+                style="font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace">{{ finding().location!.snippet?.trim() }}</pre>
+                </div>
+              }
+            }
+          </div>
+          @for (scan of finding().scans; track $index) {
+            <div class="flex flex-row items-center gap-2 justify-between">
+              <a [href]="findingLocation(finding().location!, scan.commitHash)" target="_blank" class="flex flex-row items-center gap-1">
+                <scan-branch-label [commitBranch]="scan.branch"
+                                   [commitType]="scan.action"
+                                   [targetBranch]="scan.targetBranch">
+                </scan-branch-label>
+                <ng-icon name="arrowTopRightOnSquare"></ng-icon>
+              </a>
+              <finding-status-menu styleClass="text-xs" [status]="scan.status" (onChange)="onChangeScanStatus(scan.scanId!, $event)"/>
+            </div>
+          }
+        </div>
+      </p-fieldset>
       @if (finding().description) {
         <p-fieldset legend="Description">
           <markdown [data]="finding().description"></markdown>
-        </p-fieldset>
-      }
-      @if (finding().location) {
-        <p-fieldset legend="Location">
-          <a [href]="source(finding().location!)" target="_blank" class="flex flex-row items-center gap-1">
-            <span>{{ finding().location!.path }}</span>
-            <ng-icon name="arrowTopRightOnSquare"></ng-icon>
-          </a>
-          @if (finding().location!.snippet) {
-            <div class="border border-dashed border-surface p-2 mt-2">
-              <pre
-                style="font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace">{{ finding().location!.snippet }}</pre>
-            </div>
-
-          }
         </p-fieldset>
       }
       <p-fieldset legend="Recommendation">
@@ -136,10 +117,17 @@
 
       @if (findingFlow(finding()).length > 0) {
         <p-fieldset legend="Finding Flow">
+          @if (branchOptions.length > 1) {
+            <branch-filter [showClear]="false"
+                           [options]="branchOptions"
+                           [value]="currentScan()?.scanId"
+                           (onChange)="onScanChange($event)">
+            </branch-filter>
+          }
           <div class="flex flex-col justify-between items-center">
             @for (location of findingFlow(finding()); track $index; let isLast = $last) {
               <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer"
-                 target="_blank" [href]="source(location)">
+                 target="_blank" [href]="findingLocation(location)">
                 {{ location.snippet }}
               </a>
               @if (!isLast) {

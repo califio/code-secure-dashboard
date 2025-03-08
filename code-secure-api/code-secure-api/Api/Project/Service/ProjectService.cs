@@ -11,6 +11,7 @@ using CodeSecure.Manager.Finding.Model;
 using CodeSecure.Manager.Integration.Mail;
 using CodeSecure.Manager.Integration.Model;
 using CodeSecure.Manager.Integration.Teams;
+using CodeSecure.Manager.Integration.TicketTracker;
 using CodeSecure.Manager.Integration.TicketTracker.Jira;
 using CodeSecure.Manager.Project;
 using CodeSecure.Manager.Project.Model;
@@ -33,6 +34,7 @@ public class ProjectService(
     IJiraManager jiraManager,
     IStatisticManager statisticManager,
     IMailSender mailSender,
+    JiraTicketTracker jiraTicketTracker,
     IReportManager reportManager,
     IHttpContextAccessor contextAccessor) : BaseService<Projects>(contextAccessor), IProjectService
 {
@@ -227,50 +229,71 @@ public class ProjectService(
     {
         var project = await FindByIdAsync(projectId);
         if (!HasPermission(project, PermissionAction.Read)) throw new AccessDeniedException();
-        var query = context.ScanProjectPackages
-            .Include(record => record.Scan!)
-                .ThenInclude(scan => scan.Commit)
-            .Include(record => record.ProjectPackage!)
-                .ThenInclude(projectPackage => projectPackage.Package!)
-            .Where(record => record.ProjectPackage!.ProjectId == projectId);
-        // name
+        var query = context.ProjectPackages
+            .Include(record => record.Package)
+            .Where(record => record.ProjectId == projectId);
         if (!string.IsNullOrEmpty(filter.Name))
         {
-            query = query.Where(record => record.ProjectPackage!.Package!.PkgId.Contains(filter.Name));
+            query = query.Where(record => record.Package!.PkgId.Contains(filter.Name));
+        }
+        // branch
+        if (filter.CommitId != null)
+        {
+            query = query.Where(record => context.ScanProjectPackages.Any(packageOfBranch => 
+                packageOfBranch.ProjectPackageId == record.Id && packageOfBranch.Scan!.CommitId == filter.CommitId));
         }
         // severity
         if (filter.Severity is {Count: > 0})
         {
-            query = query.Where(record => filter.Severity.Contains(record.ProjectPackage!.Package!.RiskLevel));
+            query = query.Where(record => filter.Severity.Contains(record.Package!.RiskLevel));
         }
         // status
-        if (filter.Status == null || filter.Status.Count == 0)
+        query = query.Where(record => context.ScanProjectPackages.Any(packageOfBranch => 
+            packageOfBranch.ProjectPackageId == record.Id && 
+            packageOfBranch.Status == filter.Status && 
+            (filter.CommitId == null || packageOfBranch.Scan!.CommitId == filter.CommitId))
+        );
+
+        return await query.Distinct().Select(record => new ProjectPackage
         {
-            filter.Status = [PackageStatus.Open];
-        }
-        query = query.Where(record => filter.Status.Contains(record.Status));
-        // branch
-        if (filter.CommitId != null)
+            Location = record.Location,
+            Group = record.Package!.Group,
+            Name = record.Package.Name,
+            Version = record.Package.Version,
+            Type = record.Package.Type,
+            PackageId = record.PackageId,
+            FixedVersion = record.Package.FixedVersion,
+            RiskImpact = record.Package.RiskImpact,
+            RiskLevel = record.Package.RiskLevel,
+        }).OrderBy(filter.SortBy.ToString(), filter.Desc).PageAsync(filter.Page, filter.Size);
+    }
+
+    public async Task<ProjectPackageDetail> UpdateProjectPackageAsync(Guid projectId, Guid packageId, UpdateProjectPackageRequest request)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        var projectPackage = await context.ProjectPackages.FirstOrDefaultAsync(record =>
+            record.ProjectId == projectId && record.PackageId == packageId);
+        if (projectPackage == null)
         {
-            query = query.Where(record => record.Scan!.CommitId == filter.CommitId);
+            throw new BadRequestException("Not Found");
         }
 
-        return await query.Select(record => new ProjectPackage
+        if (request.Status != null && projectPackage.Status != request.Status)
         {
-            Location = record.ProjectPackage!.Location,
-            Group = record.ProjectPackage.Package!.Group,
-            Name = record.ProjectPackage.Package.Name,
-            Version = record.ProjectPackage.Package.Version,
-            Type = record.ProjectPackage.Package.Type,
-            PackageId = record.ProjectPackage.PackageId,
-            FixedVersion = record.ProjectPackage.Package.FixedVersion,
-            RiskImpact = record.ProjectPackage.Package.RiskImpact,
-            RiskLevel = record.ProjectPackage.Package.RiskLevel,
-            Status = record.Status,
-            CommitBranch = record.Scan!.Commit!.Branch,
-            CommitType = record.Scan!.Commit!.Type,
-            TargetBranch = record.Scan!.Commit!.TargetBranch,
-        }).OrderBy(filter.SortBy.ToString(), filter.Desc).PageAsync(filter.Page, filter.Size);
+            projectPackage.Status = request.Status;
+            await context.ScanProjectPackages
+                .Where(record => record.ProjectPackageId == projectPackage.Id)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(column => column.Status, request.Status));
+        }
+
+        if (!string.IsNullOrEmpty(request.IgnoreReason))
+        {
+            projectPackage.IgnoredReason = request.IgnoreReason;
+        }
+        context.ProjectPackages.Update(projectPackage);
+        await context.SaveChangesAsync();
+        return await GetPackageDetailAsync(projectId, packageId);
     }
 
     public async Task<ProjectPackageDetail> GetPackageDetailAsync(Guid projectId, Guid packageId)
@@ -280,6 +303,7 @@ public class ProjectService(
 
         var projectPackage = await context.ProjectPackages
             .Include(record => record.Package)
+            .Include(record => record.Ticket)
             .Where(record => record.ProjectId == projectId && record.PackageId == packageId)
             .FirstOrDefaultAsync();
         if (projectPackage == null)
@@ -322,8 +346,71 @@ public class ProjectService(
             Vulnerabilities = vulnerabilities,
             Dependencies = dependencies,
             Location = projectPackage.Location,
-            BranchStatus = branchStatus
+            BranchStatus = branchStatus,
+            Status = projectPackage.Status,
+            IgnoreReason = projectPackage.IgnoredReason,
+            Ticket = projectPackage.Ticket
         };
+    }
+
+    public async Task<Tickets> CreateTicketAsync(Guid projectId, Guid packageId, TicketType ticketType)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        var projectPackage = context.ProjectPackages
+            .Include(record => record.Project)
+            .Include(record => record.Package)
+            .FirstOrDefault(record => record.ProjectId == projectId && record.PackageId == packageId);
+        if (projectPackage == null)
+        {
+            throw new BadRequestException("Not Found");
+        }
+
+        var vulnerabilities = context.PackageVulnerabilities
+            .Include(record => record.Vulnerability)
+            .Where(record => record.PackageId == packageId)
+            .Select(record => record.Vulnerability!)
+            .ToList();
+        TicketResult<Tickets>? result = null;
+        if (ticketType == TicketType.Jira)
+        {
+            result = await jiraTicketTracker.CreateTicketAsync(new ScaTicket
+            {
+                Location = projectPackage.Location,
+                Project = projectPackage.Project!,
+                Package = projectPackage.Package!,
+                Vulnerabilities = vulnerabilities
+            });
+        }
+        if (result != null)
+        {
+            if (result.Succeeded == false)
+            {
+                throw new BadRequestException(result.Error);
+            }
+            return result.Data!;
+        }
+        throw new BadRequestException();
+    }
+
+    public async Task DeleteTicketAsync(Guid projectId, Guid packageId)
+    {
+        var project = await FindByIdAsync(projectId);
+        if (!HasPermission(project, PermissionAction.Update)) throw new AccessDeniedException();
+        var projectPackage = context.ProjectPackages
+            .FirstOrDefault(record => record.ProjectId == projectId && record.PackageId == packageId);
+        if (projectPackage == null)
+        {
+            throw new BadRequestException("Not Found");
+        }
+        if (projectPackage.TicketId != null)
+        {
+            var ticketId = projectPackage.TicketId;
+            
+            await context.ProjectPackages.Where(record => record.Id == projectPackage.Id)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.TicketId, (Guid?)null));
+            await context.Tickets.Where(record => record.Id == ticketId).ExecuteDeleteAsync();
+        }
     }
 
     public async Task<ProjectStatistics> GetStatisticsAsync(Guid projectId)

@@ -1,0 +1,12 @@
+<p-select
+  [ngModel]="status()"
+  optionValue="status"
+  (ngModelChange)="onChangeStatus($event)"
+  [options]="statusOptions">
+  <ng-template #selectedItem let-option>
+    <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
+  </ng-template>
+  <ng-template let-option #item>
+    <finding-status-label class="font-semibold" [status]="option.status"></finding-status-label>
+  </ng-template>
+</p-select>

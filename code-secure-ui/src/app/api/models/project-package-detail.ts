@@ -4,11 +4,16 @@
 
 import { BranchStatusPackage } from '../models/branch-status-package';
 import { Packages } from '../models/packages';
+import { PackageStatus } from '../models/package-status';
+import { Tickets } from '../models/tickets';
 import { Vulnerabilities } from '../models/vulnerabilities';
 export interface ProjectPackageDetail {
   branchStatus?: Array<BranchStatusPackage> | null;
   dependencies?: Array<Packages> | null;
+  ignoreReason?: string | null;
   info?: Packages;
   location?: string | null;
+  status?: PackageStatus;
+  ticket?: Tickets;
   vulnerabilities?: Array<Vulnerabilities> | null;
 }

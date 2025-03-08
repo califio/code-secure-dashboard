@@ -34,8 +34,9 @@ public class FindingActivities : BaseEntity
     public static FindingActivities ChangeStatus(
         Guid userId,
         Guid findingId,
-        FindingStatus previousStatus,
-        FindingStatus currentStatus
+        FindingStatus oldStatus,
+        FindingStatus newStatus,
+        Guid? commitId = null
     )
     {
         return new FindingActivities
@@ -43,9 +44,10 @@ public class FindingActivities : BaseEntity
             Id = Guid.NewGuid(),
             UserId = userId,
             Type = FindingActivityType.ChangeStatus,
-            OldState = previousStatus.ToString(),
-            NewState = currentStatus.ToString(),
-            FindingId = findingId
+            OldState = oldStatus.ToString(),
+            NewState = newStatus.ToString(),
+            FindingId = findingId,
+            CommitId = commitId
         };
     }
 

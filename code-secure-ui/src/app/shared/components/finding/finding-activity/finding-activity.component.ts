@@ -13,6 +13,7 @@ import {Panel} from 'primeng/panel';
 import {Tooltip} from 'primeng/tooltip';
 import {MarkdownComponent} from 'ngx-markdown';
 import {CommitType} from '../../../../api/models';
+import {FindingStatusComponent} from '../finding-status/finding-status.component';
 
 @Component({
   selector: 'finding-activity',
@@ -29,7 +30,8 @@ import {CommitType} from '../../../../api/models';
     Panel,
     NgClass,
     Tooltip,
-    MarkdownComponent
+    MarkdownComponent,
+    FindingStatusComponent
   ],
   templateUrl: './finding-activity.component.html',
   styleUrl: './finding-activity.component.scss',

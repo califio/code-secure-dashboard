@@ -12,33 +12,135 @@ public class StatisticManager(AppDbContext context, IScannerManager scannerManag
     {
         filter.StartDate ??= DateTime.MinValue;
         filter.EndDate ??= DateTime.UtcNow;
-        var scanners = await scannerManager.GetSastScannersAsync();
-        return await GetSeverityByScannerAsync(filter, scanners.Select(item => item.Id));
+        return new SeveritySeries
+        {
+            Critical = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Severity == FindingSeverity.Critical &&
+                finding.Status != FindingStatus.Incorrect &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            High = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Severity == FindingSeverity.High &&
+                finding.Status != FindingStatus.Incorrect &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Medium = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Severity == FindingSeverity.Medium &&
+                finding.Status != FindingStatus.Incorrect &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Low = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Severity == FindingSeverity.Low &&
+                finding.Status != FindingStatus.Incorrect &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+        };
     }
 
     public async Task<SeveritySeries> SeverityScaAsync(StatisticFilter filter)
     {
         filter.StartDate ??= DateTime.MinValue;
         filter.EndDate ??= DateTime.UtcNow;
-        var scanners = await scannerManager.GetScaScannersAsync();
-        return await GetSeverityByScannerAsync(filter, scanners.Select(item => item.Id));
+        return new SeveritySeries
+        {
+            Critical = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel == RiskLevel.Critical &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            High = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel == RiskLevel.High &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Medium = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel == RiskLevel.Medium &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Low = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel == RiskLevel.Low &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+        };
 
     }
 
-    public async Task<StatusSeries> StatusSastAsync(StatisticFilter filter)
+    public async Task<SastStatus> StatusSastAsync(StatisticFilter filter)
     {
         filter.StartDate ??= DateTime.MinValue;
         filter.EndDate ??= DateTime.UtcNow;
-        var scanners = await scannerManager.GetSastScannersAsync();
-        return await GetStatusByScannerAsync(filter, scanners.Select(item => item.Id));
+        return new SastStatus
+        {
+            Open = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Status == FindingStatus.Open &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Confirmed = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Status == FindingStatus.Confirmed &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            AcceptedRisk = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Status == FindingStatus.AcceptedRisk &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Fixed = await context.Findings.CountAsync(finding =>
+                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
+                finding.Status == FindingStatus.Fixed &&
+                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+        };
     }
 
-    public async Task<StatusSeries> StatusScaAsync(StatisticFilter filter)
+    public async Task<ScaStatus> StatusScaAsync(StatisticFilter filter)
     {
         filter.StartDate ??= DateTime.MinValue;
         filter.EndDate ??= DateTime.UtcNow;
-        var scanners = await scannerManager.GetScaScannersAsync();
-        return await GetStatusByScannerAsync(filter, scanners.Select(item => item.Id));
+        
+        return new ScaStatus
+        {
+            Open = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel != RiskLevel.None &&
+                package.Status == PackageStatus.Open &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Ignore = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel != RiskLevel.None &&
+                package.Status == PackageStatus.Ignore &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+            Fixed = await context.ProjectPackages.CountAsync(package =>
+                (filter.ProjectId == null || package.ProjectId == filter.ProjectId) &&
+                package.Package!.RiskLevel != RiskLevel.None &&
+                package.Status == PackageStatus.Fixed &&
+                (package.CreatedAt >= filter.StartDate && package.CreatedAt < filter.EndDate) &&
+                (filter.SourceId == null || context.Projects.Any(record => record.Id == package.ProjectId && record.SourceControlId == filter.SourceId))
+            ),
+        };
     }
 
     public async Task<List<TopFinding>> TopSastFindingAsync(StatisticFilter filter, int top = 10)
@@ -90,11 +192,11 @@ public class StatisticManager(AppDbContext context, IScannerManager scannerManag
     public async Task<List<TopDependency>> TopDependenciesAsync(StatisticFilter filter, int top = 10)
     {
         var topVulnerablePackages = await context.PackageVulnerabilities
-            .Where(record => 
-                context.ProjectPackages.Any(temp => temp.PackageId == record.PackageId) &&
-                (filter.SourceId == null || context.ProjectPackages.Any(projectPackage => 
-                    projectPackage.PackageId == record.PackageId && projectPackage.Project!.SourceControlId == filter.SourceId)
-                )
+            .Where(record => context.ProjectPackages.Any(temp => 
+                    temp.PackageId == record.PackageId && 
+                    (filter.SourceId == null || temp.Project!.SourceControlId == filter.SourceId) && 
+                    (filter.StartDate == null || temp.CreatedAt > filter.StartDate) &&
+                    (filter.EndDate == null || temp.CreatedAt < filter.EndDate))
             ).Distinct()
             .GroupBy(record => record.PackageId)
             .OrderByDescending(g => g.Count())
@@ -123,87 +225,5 @@ public class StatisticManager(AppDbContext context, IScannerManager scannerManag
             package2.Critical + package2.High + package2.Medium + package2.Low -
             (package1.Critical + package1.High + package1.Medium + package1.Low));
         return packages;
-    }
-
-    private async Task<StatusSeries> GetStatusByScannerAsync(StatisticFilter filter, IEnumerable<Guid> scanners)
-    {
-        return new StatusSeries
-        {
-            Open = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Status == FindingStatus.Open &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            Confirmed = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Status == FindingStatus.Confirmed &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            AcceptedRisk = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Status == FindingStatus.AcceptedRisk &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            Fixed = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Status == FindingStatus.Fixed &&
-                scanners.Contains(finding.ScannerId) && 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-        };
-    }
-
-    private async Task<SeveritySeries> GetSeverityByScannerAsync(StatisticFilter filter, IEnumerable<Guid> scanners)
-    {
-        return new SeveritySeries
-        {
-            Critical = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Severity == FindingSeverity.Critical &&
-                finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)  && 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            High = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Severity == FindingSeverity.High &&
-                finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            Medium = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Severity == FindingSeverity.Medium &&
-                finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            Low = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Severity == FindingSeverity.Low &&
-                finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-            Info = await context.Findings.CountAsync(finding =>
-                (filter.ProjectId == null || finding.ProjectId == filter.ProjectId) &&
-                finding.Severity == FindingSeverity.Info &&
-                finding.Status != FindingStatus.Incorrect &&
-                scanners.Contains(finding.ScannerId)&& 
-                (finding.CreatedAt >= filter.StartDate && finding.CreatedAt < filter.EndDate) &&
-                (filter.SourceId == null || context.Projects.Any(record => record.Id == finding.ProjectId && record.SourceControlId == filter.SourceId))
-            ),
-        };
     }
 }

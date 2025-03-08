@@ -10,11 +10,21 @@
                  [(ngModel)]="store.filter.name"
                  (keyup.enter)="onSearchChange()"/>
         </p-iconfield>
+        <!--Status Filter-->
+        <package-status-filter
+          [status]="store.filter.status"
+          (onChange)="onChangeStatus($event)">
+        </package-status-filter>
         <!--Branch Filter-->
         <branch-filter [options]="store.branchOptions()"
-                       [commitId]="store.filter.commitId"
+                       [value]="store.filter.commitId"
                        (onChange)="onChangeBranch($event)">
         </branch-filter>
+        <!--Severity Filter-->
+        <package-severity-filter
+          [severity]="store.filter.severity"
+          (onChange)="onChangeSeverity($event)">
+        </package-severity-filter>
         <sort-by [options]="sortOptions"
                  [sortBy]="store.filter.sortBy"
                  (onChange)="onSortChange($event)"/>
@@ -72,8 +82,11 @@
       <package-detail [package]="store.packageDetail()?.info"
                       [vulnerabilities]="store.packageDetail()?.vulnerabilities"
                       [dependencies]="store.packageDetail()?.dependencies"
+                      [projectId]="projectStore.projectId()"
                       [location]="store.packageDetail()?.location"
-                      [branchStatus]="store.packageDetail()?.branchStatus">
+                      [branchStatus]="store.packageDetail()?.branchStatus"
+                      [ticket]="store.packageDetail()?.ticket"
+                      [status]="store.packageDetail()?.status">
       </package-detail>
     } @else {
       <div class="flex flex-col items-center justify-center h-full w-full">

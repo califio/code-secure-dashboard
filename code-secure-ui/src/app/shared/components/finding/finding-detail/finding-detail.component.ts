@@ -18,14 +18,7 @@ import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingService} from '../../../../api/services/finding.service';
 import {ToastrService} from '../../../services/toastr.service';
 import {FindingActivity} from '../../../../api/models/finding-activity';
-import {
-  FindingLocation,
-  FindingScan,
-  ScannerType,
-  SourceType,
-  Tickets,
-  TicketType
-} from '../../../../api/models';
+import {FindingLocation, FindingScan, ScannerType, SourceType, Tickets, TicketType} from '../../../../api/models';
 import {TimeagoModule} from 'ngx-timeago';
 import {MarkdownComponent} from 'ngx-markdown';
 import {FindingSeverityComponent} from '../finding-severity/finding-severity.component';
@@ -43,10 +36,12 @@ import {Divider} from 'primeng/divider';
 import {Fieldset} from 'primeng/fieldset';
 import {ButtonDirective} from 'primeng/button';
 import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
-import {getFindingStatusOptions} from '../finding-status';
 import {ScannerLabelComponent} from '../../scanner-label/scanner-label.component';
 import {TruncatePipe} from '../../../pipes/truncate.pipe';
 import {Tooltip} from 'primeng/tooltip';
+import {BranchFilterComponent, BranchOption} from '../../branch-filter/branch-filter.component';
+import {FindingStatusSelectComponent} from '../finding-status-select/finding-status-select.component';
+import {FindingStatusMenuComponent} from '../finding-status-menu/finding-status-menu.component';
 
 @Component({
   selector: 'finding-detail',
@@ -77,8 +72,13 @@ import {Tooltip} from 'primeng/tooltip';
     ScannerLabelComponent,
     TruncatePipe,
     Tooltip,
+    BranchFilterComponent,
+    FindingStatusSelectComponent,
+    FindingStatusMenuComponent,
+    FindingStatusMenuComponent,
   ],
   templateUrl: './finding-detail.component.html',
+  styleUrl: 'finding-detail.component.scss'
 })
 export class FindingDetailComponent implements OnDestroy {
   @Output()
@@ -99,6 +99,7 @@ export class FindingDetailComponent implements OnDestroy {
   recommendationPreview = true;
   recommendationLoading = false;
   private effectRef!: EffectRef;
+  branchOptions: BranchOption[] = [];
 
   constructor(
     private findingService: FindingService,
@@ -112,11 +113,22 @@ export class FindingDetailComponent implements OnDestroy {
       } else {
         this.fixDeadline.set(undefined);
       }
-      let defaultScan = finding.scans?.find(scan => scan.isDefault);
-      if (!defaultScan && finding.scans && finding.scans.length > 0) {
-        defaultScan = finding.scans[0];
+      // scan
+      if (finding.scans) {
+        let defaultScan = finding.scans.find(scan => scan.isDefault);
+        if (!defaultScan && finding.scans.length > 0) {
+          defaultScan = finding.scans[0];
+        }
+        this.currentScan.set(defaultScan);
+        this.branchOptions = finding.scans.map(item => {
+          return <BranchOption>{
+            commitType: item.action,
+            commitBranch: item.branch,
+            targetBranch: item.targetBranch,
+            id: item.scanId
+          }
+        });
       }
-      this.currentScan.set(defaultScan);
       if (finding.id) {
         this.loadActivities();
       }
@@ -162,9 +174,12 @@ export class FindingDetailComponent implements OnDestroy {
     return [];
   }
 
-  source(location: FindingLocation) {
+  findingLocation(location: FindingLocation, commitSha: string | null | undefined = undefined) {
+    if (!commitSha) {
+      commitSha = this.currentScan()?.commitHash;
+    }
     if (this.finding().project?.sourceType == SourceType.GitLab) {
-      return `${this.finding().project!.repoUrl}/-/blob/${this.currentScan()?.commitHash}/${location.path}#L${location.startLine ?? '1'}`;
+      return `${this.finding().project!.repoUrl}/-/blob/${commitSha}/${location.path}#L${location.startLine ?? '1'}`;
     }
     // todo: support other git
     return '';
@@ -258,5 +273,17 @@ export class FindingDetailComponent implements OnDestroy {
     })
   }
 
-  statusOptions = getFindingStatusOptions();
+  onChangeScanStatus(scanId: string, $event: FindingStatus) {
+    this.findingService.updateStatusScanFinding({
+      findingId: this.finding().id!,
+      body: {
+        scanId: scanId,
+        status: $event
+      }
+    }).subscribe(() => {
+      this.toastr.success({
+        message: 'Update status success!'
+      });
+    })
+  }
 }

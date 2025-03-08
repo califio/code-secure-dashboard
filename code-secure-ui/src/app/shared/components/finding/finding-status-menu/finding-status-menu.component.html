@@ -1,24 +1,12 @@
 <div class="flex flex-col">
-  @if (badge() > 0) {
-    <p-overlay-badge [value]="badge()" badgeSize="small">
-      <p-button (click)="menu.toggle($event)"
-                label="Mark as"
-                severity="primary"
-                iconPos="right"
-                icon="pi pi-chevron-down"/>
-    </p-overlay-badge>
-  } @else {
-    <p-button (click)="menu.toggle($event)"
-              label="Mark as"
-              severity="secondary"
-              iconPos="right"
-              icon="pi pi-chevron-down"/>
-  }
-  <p-menu #menu [model]="menuItems" [popup]="true">
+  <finding-status class="cursor-pointer"
+                  [styleClass]="styleClass()"
+                  [status]="selectedOption()"
+                  (click)="menu.toggle($event)"/>
+  <p-menu #menu [model]="statusOptions" [popup]="true">
     <ng-template #item let-option>
-      <div class="max-w-80 cursor-pointer px-4 py-2" (click)="onSelect.emit(option.status)">
-        <finding-status-label [status]="option.status" [showDescription]="true"
-                              styleClass="font-semibold"></finding-status-label>
+      <div class="p-1 cursor-pointer rounded" [ngClass]="{'bg-surface-100 dark:bg-surface-800': option == selectedOption()}">
+        <finding-status styleClass="text-sm" [status]="option" (click)="onChangeStatus(option)"/>
       </div>
     </ng-template>
   </p-menu>

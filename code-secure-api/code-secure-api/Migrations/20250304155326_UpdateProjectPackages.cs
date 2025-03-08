@@ -24,14 +24,14 @@ namespace CodeSecure.Migrations
             // Cập nhật các bản ghi hiện có với Guid ngẫu nhiên
             migrationBuilder.Sql(
                 "UPDATE \"ProjectPackages\" SET \"Id\" = gen_random_uuid() WHERE \"Id\" = '00000000-0000-0000-0000-000000000000';"
-            ); // Dùng cho PostgreSQL
+            ); 
+            
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
                 table: "ProjectPackages",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
+                defaultValue: DateTime.UtcNow);
             migrationBuilder.AddColumn<string>(
                 name: "Metadata",
                 table: "ProjectPackages",

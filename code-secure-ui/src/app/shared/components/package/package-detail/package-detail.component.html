@@ -11,18 +11,27 @@
     </div>
   </ng-template>
   <div class="flex flex-col gap-4">
-    @if(branchStatus().length > 0) {
+    @if(package()?.riskLevel != RiskLevel.None) {
+      <div class="flex flex-row items-center gap-2">
+        <package-status-menu [status]="status()" (onChange)="onChangeStatus($event)"/>
+        <ticket-menu [loading]="loadingTicket"
+                     [ticket]="ticket()!"
+                     (onDelete)="deleteTicket()"
+                     (onTicket)="createTicket($event)"/>
+      </div>
+    }
+    @if(branchStatus() && branchStatus()!.length > 0) {
       <p-fieldset [legend]="location() ?? ''">
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-3">
           @for (branch of branchStatus(); track $index) {
-            <div class="flex flex-row gap-2 items-center">
+            <div class="flex flex-row gap-2 items-center justify-between">
               <scan-branch-label
                 [commitBranch]="branch.commitBranch"
                 [commitType]="branch.commitType"
                 [targetBranch]="branch.targetBranch">
               </scan-branch-label>
               @if (package()?.riskLevel != RiskLevel.None) {
-                <package-status [status]="branch.status"/>
+                <package-status-menu styleClass="text-sm" [status]="branch.status!" (onChange)="onChangeBranchStatus($event)"/>
               }
             </div>
           }

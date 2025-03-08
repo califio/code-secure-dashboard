@@ -17,7 +17,11 @@ public interface IProjectService
     Task<List<Scanners>> GetScannersAsync(Guid projectId);
     Task<Page<FindingSummary>> GetFindingsAsync(Guid projectId, ProjectFindingFilter filter);
     Task<Page<ProjectPackage>> GetPackagesAsync(Guid projectId, ProjectPackageFilter filter);
+    Task<ProjectPackageDetail> UpdateProjectPackageAsync(Guid projectId, Guid packageId, UpdateProjectPackageRequest request);
     Task<ProjectPackageDetail> GetPackageDetailAsync(Guid projectId, Guid packageId);
+    Task<Tickets> CreateTicketAsync(Guid projectId, Guid packageId, TicketType ticketType);
+    Task DeleteTicketAsync(Guid projectId, Guid packageId);
+    
     Task<ProjectStatistics> GetStatisticsAsync(Guid projectId);
     Task<Page<ProjectUser>> GetMembersAsync(Guid projectId, ProjectUserFilter filter);
     Task<ProjectUser> AddMemberAsync(Guid projectId, AddMemberRequest request);

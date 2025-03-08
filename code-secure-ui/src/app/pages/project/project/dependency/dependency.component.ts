@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, input, OnDestroy, OnInit} from '@angular/core';
 import {ComingSoonComponent} from '../../../../shared/ui/coming-soon/coming-soon.component';
 import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectStore} from '../project.store';
@@ -12,7 +12,7 @@ import {ProjectPackagePage} from '../../../../api/models/project-package-page';
 import {ProjectPackage} from '../../../../api/models/project-package';
 import {RiskLevelIconComponent} from '../../../../shared/components/risk-level-icon/risk-level-icon.component';
 import {RiskLevel} from '../../../../api/models/risk-level';
-import {ProjectPackageSortField} from '../../../../api/models';
+import {PackageStatus, ProjectPackageSortField} from '../../../../api/models';
 import {IconField} from "primeng/iconfield";
 import {InputIcon} from "primeng/inputicon";
 import {InputText} from "primeng/inputtext";
@@ -29,6 +29,13 @@ import {
   ScanBranchLabelComponent
 } from '../../../../shared/components/scan/scan-branch-label/scan-branch-label.component';
 import {BranchFilterComponent, BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
+import {
+  PackageSeverityFilterComponent
+} from '../../../../shared/components/package/package-severity-filter/package-severity-filter.component';
+import {toArray} from '../../../../core/transform';
+import {
+  PackageStatusFilterComponent
+} from '../../../../shared/components/package/package-status-filter/package-status-filter.component';
 
 @Component({
   selector: 'app-dependency',
@@ -51,16 +58,19 @@ import {BranchFilterComponent, BranchOption} from '../../../../shared/components
     PackageDetailComponent,
     ScanBranchLabelComponent,
     BranchFilterComponent,
+    PackageSeverityFilterComponent,
+    PackageStatusFilterComponent,
   ],
   templateUrl: './dependency.component.html',
 })
 export class DependencyComponent implements OnInit, OnDestroy {
+
   isDesktop = true;
   private destroy$ = new Subject();
 
   constructor(
     private projectService: ProjectService,
-    private projectStore: ProjectStore,
+    public projectStore: ProjectStore,
     public store: DependencyStore,
     private router: Router,
     private route: ActivatedRoute,
@@ -91,6 +101,7 @@ export class DependencyComponent implements OnInit, OnDestroy {
         bindQueryParams(params, this.store.filter);
         this.store.pageSize.set(this.store.filter.size!);
         this.store.currentPage.set(this.store.filter.page!);
+        this.store.filter.severity = toArray(this.store.filter.severity);
         return this.getProjectDependencies()
       }),
       takeUntil(this.destroy$)
@@ -101,7 +112,7 @@ export class DependencyComponent implements OnInit, OnDestroy {
     }).subscribe(commits => {
       const options = commits.map(item => {
         return <BranchOption>{
-          commitId: item.commitId,
+          id: item.commitId,
           commitBranch: item.branch,
           commitType: item.action,
           targetBranch: item.targetBranch
@@ -184,6 +195,16 @@ export class DependencyComponent implements OnInit, OnDestroy {
 
   onChangeBranch($event: string) {
     this.store.filter.commitId = $event;
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onChangeSeverity($event: RiskLevel[]) {
+    this.store.filter.severity = $event;
+    updateQueryParams(this.router, this.store.filter);
+  }
+
+  onChangeStatus($event: PackageStatus) {
+    this.store.filter.status = $event;
     updateQueryParams(this.router, this.store.filter);
   }
 }

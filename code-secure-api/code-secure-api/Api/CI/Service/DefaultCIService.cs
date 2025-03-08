@@ -326,6 +326,7 @@ public class DefaultCiService(
                     ProjectId = scan.ProjectId,
                     PackageId = package.Id,
                     Location = item.Location,
+                    Status = PackageStatus.Open,
                 });
             }
         }
@@ -376,7 +377,7 @@ public class DefaultCiService(
         var projectPackages = context.ProjectPackages
             .Where(record => record.ProjectId == scan.ProjectId)
             .ToList();
-        List<ProjectPackages> packagesOfCurrentScan = [];
+        List<ProjectPackages> projectPackagesOfCurrentScan = [];
         foreach (var requestProjectPackage in requestProjectPackages)
         {
             var projectPackage = projectPackages.FirstOrDefault(item => 
@@ -388,7 +389,7 @@ public class DefaultCiService(
                 {
                     context.ProjectPackages.Add(requestProjectPackage);
                     await context.SaveChangesAsync();
-                    packagesOfCurrentScan.Add(requestProjectPackage);
+                    projectPackagesOfCurrentScan.Add(requestProjectPackage);
                 }
                 catch (System.Exception e)
                 {
@@ -397,20 +398,20 @@ public class DefaultCiService(
             }
             else
             {
-                packagesOfCurrentScan.Add(projectPackage);
+                projectPackagesOfCurrentScan.Add(projectPackage);
             }
         }
         // scan project packages
-        var packagesOfLastScan = context.ProjectPackages
+        var projectPackagesOfLastScan = context.ProjectPackages
             .Include(record => record.Package)
             .Where(record => context.ScanProjectPackages.Any(scanProject =>
                 record.Id == scanProject.ProjectPackageId && scanProject.ScanId == scan.Id))
             .ToList();
-        var newPackagesOfScan = packagesOfCurrentScan.Where(package => packagesOfLastScan.Any(record => 
+        var newProjectPackagesOfScan = projectPackagesOfCurrentScan.Where(package => projectPackagesOfLastScan.Any(record => 
                 record.PackageId == package.PackageId && record.Location == package.Location) == false)
             .ToList();
         // add new package of scan
-        foreach (var projectPackage in newPackagesOfScan)
+        foreach (var projectPackage in newProjectPackagesOfScan)
         {
             try
             {
@@ -428,39 +429,45 @@ public class DefaultCiService(
                 logger.LogError(e.Message);
             }
         }
-        var fixedPackageOfScan = packagesOfLastScan.Where(package => 
-                packagesOfCurrentScan.Any(record => 
+        var fixedPackageOfScan = projectPackagesOfLastScan.Where(package => 
+                projectPackagesOfCurrentScan.Any(record => 
                     record.PackageId == package.PackageId && 
                     record.Location == package.Location) == false)
             .ToList();
         // update status of scan
-        foreach (var fixedPackage in fixedPackageOfScan)
+        foreach (var fixedProjectPackage in fixedPackageOfScan)
         {
-            if (fixedPackage.Package!.RiskLevel == RiskLevel.None)
+            if (fixedProjectPackage.Package!.RiskLevel == RiskLevel.None)
             {
                 await context.ScanProjectPackages
-                    .Where(record => record.ProjectPackageId == fixedPackage.Id && record.ScanId == scan.Id)
+                    .Where(record => record.ProjectPackageId == fixedProjectPackage.Id && record.ScanId == scan.Id)
                     .ExecuteDeleteAsync();
             }
             else
             {
                 await context.ScanProjectPackages
-                    .Where(record => record.ProjectPackageId == fixedPackage.Id && record.ScanId == scan.Id)
+                    .Where(record => record.ProjectPackageId == fixedProjectPackage.Id && record.ScanId == scan.Id)
                     .ExecuteUpdateAsync(setter => setter
                         .SetProperty(column => column.Status, PackageStatus.Fixed)
-                        .SetProperty(column => column.ResolvedAt, DateTime.UtcNow)
+                        .SetProperty(column => column.FixedAt, DateTime.UtcNow)
                     );
+                if (scan.Commit!.IsDefault || scan.Commit!.Branch == "main" || scan.Commit.Branch == "master" ||
+                    context.ScanProjectPackages.Count(record => record.ProjectPackageId == fixedProjectPackage.Id) == 1)
+                {
+                    await context.ProjectPackages.Where(record => record.Id == fixedProjectPackage.Id)
+                        .ExecuteUpdateAsync(setter => setter.SetProperty(column => column.Status, PackageStatus.Fixed));
+                }
             }
         }
         
-        var packagesOfScan = context.ProjectPackages
+        var projectPackagesOfScan = context.ProjectPackages
             .Include(record => record.Package)
             .Where(record => context.ScanProjectPackages.Any(scanProject =>
                 record.Id == scanProject.ProjectPackageId && scanProject.ScanId == scan.Id))
             .Distinct()
             .ToList();
         List<CiPackageInfo> packagesInfo = [];
-        foreach (var package in packagesOfScan)
+        foreach (var package in projectPackagesOfScan)
         {
             var vulnerabilities = context.PackageVulnerabilities
                 .Include(record => record.Vulnerability)
@@ -524,7 +531,7 @@ public class DefaultCiService(
         var inputFindings = ciFindings
             .Where(finding => 
                 identityFalsePositiveFindings.Contains(finding.Identity) == false &&
-                disableRules.Contains(finding.RuleId) == false
+                finding.RuleId != null && disableRules.Contains(finding.RuleId) == false
             ).ToHashSet();
         // load active scan findings
         var currentBranchFindings = context.ScanFindings
@@ -609,16 +616,20 @@ public class DefaultCiService(
         {
             // update status (fixed) of finding on this scan
             await context.ScanFindings.Where(record => record.ScanId == scan.Id && record.FindingId == fixedFinding.Id)
-                .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.Status, FindingStatus.Fixed));
+                .ExecuteUpdateAsync(setter => setter
+                    .SetProperty(column => column.Status, FindingStatus.Fixed)
+                    .SetProperty(column => column.FixedAt, DateTime.UtcNow)
+                );
             // add change status activity of finding on scan
             context.FindingActivities.Add(FindingActivities.FixedFinding(fixedFinding.Id, scan.CommitId));
             // fixed on default branch or the finding only effected on one branch -> fixed finding
-            if (scan.Commit.IsDefault || 
+            if (scan.Commit.IsDefault || scan.Commit!.Branch == "main" || scan.Commit.Branch == "master" ||
                 context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
             {
                 fixedFinding.Status = FindingStatus.Fixed;
+                fixedFinding.FixedAt = DateTime.UtcNow;
                 context.Findings.Update(fixedFinding);
-                // todo: notify for security team to recheck 
+                // todo: notify 
             }
             await context.SaveChangesAsync();
         }
@@ -641,6 +652,7 @@ public class DefaultCiService(
             if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == finding.Id) == 1)
             {
                 finding.Status = FindingStatus.Confirmed;
+                finding.FixedAt = null;
                 context.Findings.Update(finding);
             }
             await context.SaveChangesAsync();

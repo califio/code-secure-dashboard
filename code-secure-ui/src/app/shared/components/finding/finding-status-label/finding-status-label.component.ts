@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input, Input} from '@angular/core';
 import {NgIcon} from "@ng-icons/core";
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {NgClass} from '@angular/common';
@@ -8,6 +8,7 @@ import {
   getFindingStatusIcon,
   getFindingStatusLabel
 } from '../finding-status';
+import {transformValueNotNull} from '../../../../core/transform';
 
 @Component({
   selector: 'finding-status-label',
@@ -19,7 +20,9 @@ import {
   templateUrl: './finding-status-label.component.html',
 })
 export class FindingStatusLabelComponent {
-  @Input() status: FindingStatus = FindingStatus.Open;
+  status = input(FindingStatus.Open, {
+    transform: (value: FindingStatus | null | undefined) => transformValueNotNull(value, FindingStatus.Open)
+  });
   @Input() showDescription = false;
   @Input() styleClass: string = '';
   protected readonly getFindingStatusLabel = getFindingStatusLabel;

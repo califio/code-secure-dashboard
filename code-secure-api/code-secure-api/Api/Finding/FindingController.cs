@@ -45,6 +45,14 @@ public class FindingController(IFindingService findingService) : BaseController
         return await findingService.UpdateFindingAsync(id, request);
     }
 
+    [HttpPatch]
+    [Route("{findingId:guid}/scan-status")]
+    public async Task UpdateStatusScanFinding(Guid findingId, UpdateStatusScanFindingRequest request)
+    {
+        await findingService.UpdateStatusScanFindingAsync(findingId, request.ScanId, request.Status);
+    }
+
+
     [HttpPost]
     [Route("{id:guid}/activity")]
     public async Task<Page<FindingActivity>> GetFindingActivities(Guid id, QueryFilter filter)
@@ -71,5 +79,12 @@ public class FindingController(IFindingService findingService) : BaseController
     public async Task DeleteTicket(Guid id)
     {
         await findingService.DeleteTicketAsync(id);
+    }
+    
+    [HttpPost]
+    [Route("rule")]
+    public async Task<List<string>> GetFindingRules(FindingFilter filter)
+    {
+        return await findingService.GetFindingRulesAsync(filter);
     }
 }

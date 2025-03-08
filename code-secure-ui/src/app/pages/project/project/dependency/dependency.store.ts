@@ -4,6 +4,7 @@ import {ProjectPackageFilter} from '../../../../api/models/project-package-filte
 import {ProjectPackageSortField} from '../../../../api/models/project-package-sort-field';
 import {ProjectPackageDetail} from '../../../../api/models/project-package-detail';
 import {BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
+import {PackageStatus} from '../../../../api/models/package-status';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,9 @@ export class DependencyStore {
     desc: true,
     name: undefined,
     page: 1,
-    commitId: undefined
+    commitId: undefined,
+    severity: undefined,
+    status: PackageStatus.Open
   }
   // paginator
   currentPage = signal(1);

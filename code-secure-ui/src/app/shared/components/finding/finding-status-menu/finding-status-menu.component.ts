@@ -1,33 +1,49 @@
-import {Component, EventEmitter, model, Output} from '@angular/core';
+import {Component, effect, EventEmitter, input, Output, signal} from '@angular/core';
+import {transformValueNotNull} from '../../../../core/transform';
+import {FindingStatus} from '../../../../api/models';
+import {Tag} from 'primeng/tag';
+import {NgClass} from '@angular/common';
 import {Menu} from 'primeng/menu';
-import {FindingStatusLabelComponent} from '../finding-status-label/finding-status-label.component';
-import {Button} from 'primeng/button';
-import {OverlayBadge} from 'primeng/overlaybadge';
-import {MenuItem} from 'primeng/api';
-import {getFindingStatusOptions} from '../finding-status';
-import {FindingStatus} from "../../../../api/models/finding-status";
+import {FindingStatusComponent} from '../finding-status/finding-status.component';
 
 @Component({
-    selector: 'finding-status-menu',
-    imports: [
-        Menu,
-        FindingStatusLabelComponent,
-        Button,
-        OverlayBadge
-    ],
-    templateUrl: './finding-status-menu.component.html',
-    standalone: true,
+  selector: 'finding-status-menu',
+  imports: [
+    Tag,
+    NgClass,
+    Menu,
+    FindingStatusComponent
+  ],
+  templateUrl: './finding-status-menu.component.html',
+  standalone: true,
 })
 export class FindingStatusMenuComponent {
-    badge = model(0);
-    @Output()
-    onSelect = new EventEmitter<FindingStatus>();
+  styleClass = input('')
+  status = input(FindingStatus.Open, {
+    transform: (value: FindingStatus | null | undefined) => transformValueNotNull(value, FindingStatus.Open)
+  });
+  @Output()
+  onChange = new EventEmitter<FindingStatus>();
+  statusOptions: any[] = [
+    FindingStatus.Open,
+    FindingStatus.Confirmed,
+    FindingStatus.AcceptedRisk,
+    FindingStatus.Fixed,
+    FindingStatus.Incorrect,
+  ];
+  selectedOption = signal<FindingStatus>(this.statusOptions[0]);
 
-    menuItems: MenuItem[] = getFindingStatusOptions().map(item => {
-        return {
-            status: item.status,
-            label: item.label
-        }
+  constructor() {
+    effect(() => {
+      this.selectedOption.set(this.status());
     });
+  }
+
+  onChangeStatus(status: FindingStatus) {
+    if (status != this.status()) {
+      this.selectedOption.set(status);
+      this.onChange.emit(status);
+    }
+  }
 
 }
