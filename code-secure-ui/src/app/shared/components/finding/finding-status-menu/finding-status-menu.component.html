@@ -3,7 +3,7 @@
                   [styleClass]="styleClass()"
                   [status]="selectedOption()"
                   (click)="menu.toggle($event)"/>
-  <p-menu #menu [model]="statusOptions" [popup]="true">
+  <p-menu #menu [model]="statusOptions" [popup]="true" appendTo="body">
     <ng-template #item let-option>
       <div class="p-1 cursor-pointer rounded" [ngClass]="{'bg-surface-100 dark:bg-surface-800': option == selectedOption()}">
         <finding-status styleClass="text-sm" [status]="option" (click)="onChangeStatus(option)"/>

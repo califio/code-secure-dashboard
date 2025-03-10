@@ -1,174 +1,190 @@
-<p-panel styleClass="h-full overflow-y-auto">
-  <ng-template #header>
-    <div class="flex flex-row items-center w-full gap-2">
-      <finding-severity [severity]="finding().severity!"></finding-severity>
-      <div class="text-xl">{{ finding().name }}</div>
-    </div>
-  </ng-template>
-  <div class="flex flex-col pb-4 gap-4">
+<div class="h-full">
+  <div class="flex flex-row items-center w-full gap-2 py-3">
+    @if (finding) {
+      <finding-severity [severity]="finding.severity"></finding-severity>
+      <div class="text-xl">{{ finding.name }}</div>
+    } @else {
+      <p-skeleton height="3rem" class="w-full"/>
+    }
+  </div>
+  <div class="flex flex-col gap-4">
     <div class="flex flex-row items-center justify-between">
       <div class="flex flex-row items-center gap-4">
         <div class="flex flex-row gap-2 items-center">
-          <ng-icon [name]="finding().project?.sourceType! | lowercase"></ng-icon>
-          <a [routerLink]="['/project', finding().project?.id, 'scan']"
-             class="hover:underline">{{ finding().project?.name }}</a>
+          @if (finding) {
+            <ng-icon [name]="finding.project!.sourceType! | lowercase"></ng-icon>
+            <a [routerLink]="['/project', finding.project?.id, 'scan']"
+               class="hover:underline">{{ finding.project?.name }}</a>
+          } @else {
+            <p-skeleton width="12rem"/>
+          }
         </div>
       </div>
-      @if (minimal) {
-        <div class="flex-row items-center hidden lg:flex">
-          <a [routerLink]="['/finding', finding().id]">
-            <ng-icon name="arrowsPointingOut" size="18" class="cursor-pointer"></ng-icon>
-          </a>
-          <p-divider layout="vertical"></p-divider>
-          <ng-icon
-            (click)="closeFinding()"
-            name="x" size="18"
-            class="cursor-pointer"></ng-icon>
-        </div>
-      }
     </div>
     <div class="flex flex-row items-center gap-2">
-      <finding-status-menu styleClass="text-base" [status]="finding().status" (onChange)="onChangeStatus($event)"/>
-      @if (finding().fixDeadline || finding().status == FindingStatus.Confirmed) {
-        <p-floatlabel variant="on">
-          <p-date-picker [ngModel]="fixDeadline()"
-                         (ngModelChange)="onChangeFixDeadline($event)"
-                         [dateFormat]="dateFormat"
-                         styleClass="w-36"
-                         inputId="on_deadline" showIcon iconDisplay="input"></p-date-picker>
-          <label for="on_deadline">Deadline</label>
-        </p-floatlabel>
+      @if (finding) {
+        <finding-status-menu styleClass="text-base" [status]="finding.status" (onChange)="onChangeStatus($event)"/>
+        @if (finding.fixDeadline || finding.status == FindingStatus.Confirmed) {
+          <p-floatlabel variant="on">
+            <p-date-picker [ngModel]="fixDeadline()"
+                           (ngModelChange)="onChangeFixDeadline($event)"
+                           [dateFormat]="dateFormat"
+                           styleClass="w-36"
+                           inputId="on_deadline" showIcon iconDisplay="input"></p-date-picker>
+            <label for="on_deadline">Deadline</label>
+          </p-floatlabel>
+        }
+        <ticket-menu [loading]="loading.ticket"
+                     [ticket]="finding.ticket"
+                     (onDelete)="deleteTicket()"
+                     (onTicket)="createTicket($event)"/>
+      } @else {
+        <p-skeleton width="8rem" height="2rem" styleClass="mb-4"/>
+        <p-skeleton width="8rem" height="2rem" styleClass="mb-4"/>
+        <p-skeleton width="8rem" height="2rem" styleClass="mb-4"/>
       }
-      <ticket-menu [loading]="loadingTicket"
-                   [ticket]="ticket()"
-                   (onDelete)="deleteTicket()"
-                   (onTicket)="createTicket($event)"/>
     </div>
   </div>
   <div class="flex gap-4 w-full" [ngClass]="minimal ? 'flex-col' : 'flex-row'">
     <div class="flex flex-col w-full">
-      <p-fieldset legend="Location">
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col gap-1">
-            @if(finding().location){
-              <span>{{ finding().location!.path }}</span>
-              @if (finding().location!.snippet) {
-                <div class="border border-dashed border-surface p-2 mt-2">
-              <pre
-                style="font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace">{{ finding().location!.snippet?.trim() }}</pre>
-                </div>
-              }
-            }
-          </div>
-          @for (scan of finding().scans; track $index) {
-            <div class="flex flex-row items-center gap-2 justify-between">
-              <a [href]="findingLocation(finding().location!, scan.commitHash)" target="_blank" class="flex flex-row items-center gap-1">
-                <scan-branch-label [commitBranch]="scan.branch"
-                                   [commitType]="scan.action"
-                                   [targetBranch]="scan.targetBranch">
-                </scan-branch-label>
-                <ng-icon name="arrowTopRightOnSquare"></ng-icon>
-              </a>
-              <finding-status-menu styleClass="text-xs" [status]="scan.status" (onChange)="onChangeScanStatus(scan.scanId!, $event)"/>
-            </div>
-          }
-        </div>
-      </p-fieldset>
-      @if (finding().description) {
-        <p-fieldset legend="Description">
-          <markdown [data]="finding().description"></markdown>
-        </p-fieldset>
-      }
-      <p-fieldset legend="Recommendation">
-        @if (finding().recommendation || !recommendationPreview) {
-          <markdown-editor
-            [(ngModel)]="finding().recommendation!"
-            [(preview)]="recommendationPreview"
-            [loading]="recommendationLoading">
-          </markdown-editor>
-          @if (!recommendationPreview) {
-            <div class="flex flex-row items-center gap-2 mt-2">
-              <button pButton severity="primary" (click)="saveRecommendation()">Save</button>
-              <button pButton severity="secondary" (click)="recommendationPreview = true">Cancel</button>
-            </div>
-          }
-        } @else {
-          <button pButton severity="secondary" (click)="recommendationPreview = false">Add Recommendation</button>
-        }
-      </p-fieldset>
-      @if (finding().metadata && finding().metadata!.cwes) {
-        <p-fieldset legend="CWEs">
-          <div class="flex flex-co gap-2">
-            @for (cwe of finding().metadata!.cwes; track $index) {
-              <div>{{ cwe }}</div>
-            }
-          </div>
-        </p-fieldset>
-      }
-      @if (finding().metadata && finding().metadata!.references) {
-        <p-fieldset legend="References">
-          <div class="flex flex-col gap-2">
-            @for (reference of finding().metadata!.references; track $index) {
-              <markdown [data]="reference"></markdown>
-            }
-          </div>
-        </p-fieldset>
-      }
-
-      @if (findingFlow(finding()).length > 0) {
-        <p-fieldset legend="Finding Flow">
-          @if (branchOptions.length > 1) {
-            <branch-filter [showClear]="false"
-                           [options]="branchOptions"
-                           [value]="currentScan()?.scanId"
-                           (onChange)="onScanChange($event)">
-            </branch-filter>
-          }
-          <div class="flex flex-col justify-between items-center">
-            @for (location of findingFlow(finding()); track $index; let isLast = $last) {
-              <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer"
-                 target="_blank" [href]="findingLocation(location)">
-                {{ location.snippet }}
-              </a>
-              @if (!isLast) {
-                <div class="bg-primary w-0.5 h-10"></div>
-              }
-            }
-          </div>
-        </p-fieldset>
-      }
-      <p-fieldset legend="Found By">
-        <div class="flex flex-col w-full gap-2">
-          <div class="flex flex-row justify-between">
-            <div>Scanner</div>
-            <scanner-label [scanner]="finding().scanner" [type]="finding().type"/>
-          </div>
-          @if (finding().ruleId) {
-            <div class="flex flex-row justify-between">
-              <div>Rule ID</div>
-              <div class="flex flex-row gap-1 items-center">
-                <a target="_blank"
-                   pTooltip="Find similar findings" tooltipPosition="top"
-                   routerLink="/finding" [queryParams]="{'ruleId': finding().ruleId}">
-                  <span class="truncate">{{ finding().ruleId ?? '' | truncate:50 }}</span>
-                </a>
-                <i class="pi pi-external-link"></i>
+      @if (finding) {
+        @if (finding.location) {
+          <p-fieldset legend="Location">
+            <div class="flex flex-col gap-3">
+              <div class="flex flex-col gap-1">
+                <span>{{ finding.location.path }}</span>
+                @if (finding.location.snippet) {
+                  <div class="border border-dashed border-surface p-2 mt-2">
+                    <pre class="whitespace-pre-wrap"
+                         style="font-family: Consolas, Monaco, monospace">{{ finding.location.snippet.trim() }}</pre>
+                  </div>
+                }
+                @for (scan of finding.scans; track $index) {
+                  <div class="flex flex-row items-center gap-2 justify-between">
+                    <a [href]="findingLocation(finding.location, scan.commitHash)" target="_blank"
+                       class="flex flex-row items-center gap-1">
+                      <scan-branch-label [commitBranch]="scan.branch"
+                                         [commitType]="scan.action"
+                                         [targetBranch]="scan.targetBranch">
+                      </scan-branch-label>
+                      <ng-icon name="arrowTopRightOnSquare"></ng-icon>
+                    </a>
+                    <finding-status-menu styleClass="text-xs" [status]="scan.status"
+                                         (onChange)="onChangeScanStatus(scan.scanId!, $event)"/>
+                  </div>
+                }
               </div>
             </div>
+          </p-fieldset>
+        }
+
+        @if (finding.description) {
+          <p-fieldset legend="Description">
+            <markdown [data]="finding.description"></markdown>
+          </p-fieldset>
+        }
+
+        <p-fieldset legend="Recommendation">
+          @if (finding.recommendation || !recommendationPreview) {
+            <markdown-editor
+              [(ngModel)]="finding.recommendation!"
+              [(preview)]="recommendationPreview"
+              [loading]="loading.recommendation">
+            </markdown-editor>
+            @if (!recommendationPreview) {
+              <div class="flex flex-row items-center gap-2 mt-2">
+                <button pButton severity="primary" (click)="saveRecommendation()">Save</button>
+                <button pButton severity="secondary" (click)="recommendationPreview = true">Cancel</button>
+              </div>
+            }
+          } @else {
+            <button pButton severity="secondary" (click)="recommendationPreview = false">Add Recommendation</button>
           }
-        </div>
-      </p-fieldset>
+        </p-fieldset>
+
+        @if (finding.metadata && finding.metadata.cwes) {
+          <p-fieldset legend="CWEs">
+            <div class="flex flex-co gap-2">
+              @for (cwe of finding.metadata.cwes; track $index) {
+                <div>{{ cwe }}</div>
+              }
+            </div>
+          </p-fieldset>
+        }
+
+        @if (finding.metadata && finding.metadata.references) {
+          <p-fieldset legend="References">
+            <div class="flex flex-col gap-2">
+              @for (reference of finding.metadata.references; track $index) {
+                <markdown [data]="reference"></markdown>
+              }
+            </div>
+          </p-fieldset>
+        }
+
+        @if (findingFlow(finding).length > 0) {
+          <p-fieldset legend="Finding Flow">
+            @if (branchOptions.length > 1) {
+              <branch-filter [showClear]="false"
+                             [options]="branchOptions"
+                             [value]="currentScan()?.scanId"
+                             (onChange)="onScanChange($event)">
+              </branch-filter>
+            }
+            <div class="flex flex-col justify-between items-center">
+              @for (location of findingFlow(finding); track $index; let isLast = $last) {
+                <a class="flex items-center justify-center bg-blue-100 px-2 py-1 dark:bg-blue-900 cursor-pointer"
+                   target="_blank" [href]="findingLocation(location)">
+                  {{ location.snippet }}
+                </a>
+                @if (!isLast) {
+                  <div class="bg-primary w-0.5 h-10"></div>
+                }
+              }
+            </div>
+          </p-fieldset>
+        }
+
+        <p-fieldset legend="Found By">
+          <div class="flex flex-col w-full gap-2">
+            <div class="flex flex-row justify-between">
+              <div>Scanner</div>
+              <scanner-label [scanner]="finding.scanner" [type]="finding.type"/>
+            </div>
+            @if (finding.ruleId) {
+              <div class="flex flex-row justify-between">
+                <div>Rule ID</div>
+                <div class="flex flex-row gap-1 items-center">
+                  <a target="_blank"
+                     pTooltip="Find similar findings" tooltipPosition="top"
+                     routerLink="/finding" [queryParams]="{'ruleId': finding.ruleId}">
+                    <span class="truncate">{{ finding.ruleId | truncate:50 }}</span>
+                  </a>
+                  <i class="pi pi-external-link"></i>
+                </div>
+              </div>
+            }
+          </div>
+        </p-fieldset>
+
+      } @else {
+        <p-skeleton height="5rem" styleClass="mb-4"/>
+        <p-skeleton height="5rem" styleClass="mb-4"/>
+        <p-skeleton height="5rem" styleClass="mb-4"/>
+        <p-skeleton height="5rem" styleClass="mb-4"/>
+        <p-skeleton height="5rem" styleClass="mb-4"/>
+      }
     </div>
     <!--    ACTIVITIES-->
     <div class="flex flex-col gap-2"
          [ngClass]="minimal ? '' : 'min-w-[550px] max-w-[600px]'">
-      <p-fieldset legend="Activity" styleClass="overflow-y-auto" [style]="{'max-height': 'calc(100vh - 20.5rem)'}">
+      <p-fieldset legend="Activity" styleClass="overflow-y-auto" [style]="{'max-height': 'calc(100vh - 17.5rem)'}">
         <div class="flex flex-col w-full gap-2">
           <markdown-editor [(ngModel)]="comment"></markdown-editor>
           <div class="flex flex-row gap-2 items-center justify-end">
             <button pButton severity="primary"
-                    [loading]="commentLoading"
-                    [disabled]="commentLoading"
+                    [loading]="loading.comment"
+                    [disabled]="loading.comment"
                     (click)="postComment()">Comment
             </button>
           </div>
@@ -177,4 +193,4 @@
       </p-fieldset>
     </div>
   </div>
-</p-panel>
+</div>

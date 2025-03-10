@@ -1,7 +1,7 @@
-import {Component, HostListener, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, LOCALE_ID, OnDestroy, OnInit, signal} from '@angular/core';
 import {NgIcon} from '@ng-icons/core';
 import {FindingDetailComponent} from '../../../../shared/components/finding/finding-detail/finding-detail.component';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ProjectService} from '../../../../api/services/project.service';
 import {finalize, forkJoin, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../../../core/router';
@@ -11,9 +11,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FindingStatus} from '../../../../api/models/finding-status';
 import {FindingStore} from './finding.store';
 import {ProjectStore} from '../project.store';
-import {
-  FindingStatusLabelComponent
-} from '../../../../shared/components/finding/finding-status-label/finding-status-label.component';
 import {IconField} from "primeng/iconfield";
 import {InputIcon} from "primeng/inputicon";
 import {InputText} from "primeng/inputtext";
@@ -54,6 +51,9 @@ import {FindingSortField} from '../../../../api/models/finding-sort-field';
 import {formatDate} from '@angular/common';
 import {toArray} from '../../../../core/transform';
 import {BranchFilterComponent, BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
+import {Divider} from 'primeng/divider';
+import {Drawer} from 'primeng/drawer';
+import {FindingStatusComponent} from '../../../../shared/components/finding/finding-status/finding-status.component';
 
 @Component({
   selector: 'app-finding',
@@ -63,7 +63,6 @@ import {BranchFilterComponent, BranchOption} from '../../../../shared/components
     FindingDetailComponent,
     ReactiveFormsModule,
     FormsModule,
-    FindingStatusLabelComponent,
     IconField,
     InputIcon,
     InputText,
@@ -81,6 +80,10 @@ import {BranchFilterComponent, BranchOption} from '../../../../shared/components
     FindingSeverityFilterComponent,
     FindingExportMenuComponent,
     BranchFilterComponent,
+    Divider,
+    Drawer,
+    RouterLink,
+    FindingStatusComponent,
   ],
   templateUrl: './finding.component.html',
 })
@@ -88,6 +91,8 @@ export class FindingComponent implements OnInit, OnDestroy {
   showDetailFinding = false;
   selectedFindings = new Set<string>();
   isDesktop = true;
+  findingId = signal('');
+  showFinding = false;
   private destroy$ = new Subject();
 
   constructor(
@@ -163,24 +168,8 @@ export class FindingComponent implements OnInit, OnDestroy {
 
 
   onOpenFinding(findingId: string) {
-    if (this.showDetailFinding) {
-      this.router.navigate(['/finding', findingId]).then();
-    } else {
-      this.store.loadingFinding.set(true);
-      this.findingService.getFinding({
-        id: findingId
-      }).pipe(
-        finalize(() => {
-          this.store.loadingFinding.set(false);
-        })
-      ).subscribe(finding => {
-        this.store.finding.set(finding);
-      })
-    }
-  }
-
-  closeFinding() {
-    this.store.finding.set(null);
+    this.showFinding = true;
+    this.findingId.set(findingId);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -195,7 +184,11 @@ export class FindingComponent implements OnInit, OnDestroy {
   }
 
   onReload() {
-    this.getFindings().subscribe();
+    this.getFindings().subscribe(result => {
+      this.store.findings.set(result.items!);
+      this.store.currentPage.set(result.currentPage!);
+      this.store.totalRecords.set(result.count!);
+    });
   }
 
   private getRules() {
@@ -247,6 +240,7 @@ export class FindingComponent implements OnInit, OnDestroy {
           message: `Change status of ${results.length} findings success`
         });
         this.selectedFindings.clear();
+        this.checkAll = false;
         this.onReload();
       });
     } else {
@@ -300,6 +294,8 @@ export class FindingComponent implements OnInit, OnDestroy {
       icon: 'pi pi-upload'
     }
   ];
+  checkAll = false;
+
 
   onSelectAllChange($event: CheckboxChangeEvent) {
     if ($event.checked) {
@@ -347,4 +343,5 @@ export class FindingComponent implements OnInit, OnDestroy {
       URL.revokeObjectURL(objectUrl);
     });
   }
+
 }

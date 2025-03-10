@@ -2,7 +2,7 @@
   <ng-template #header>
     <div class="font-semibold text-foreground text-xl">The Finding</div>
   </ng-template>
-  <div class="flex flex-row w-full gap-4" style="height: calc(100vh - 13rem)">
+  <div class="flex flex-row w-full gap-4" style="height: calc(100vh - 13.5rem)">
     <div class="flex flex-col">
       <div class="flex flex-wrap p-4 gap-2 items-center border border-surface">
         <!--SEARCH-->
@@ -83,7 +83,7 @@
         <ng-template #header>
           <tr class="text-sm">
             <th class="w-[50px] min-w-[50px] text-center">
-              <p-checkbox binary (onChange)="onSelectAllChange($event)"></p-checkbox>
+              <p-checkbox binary [(ngModel)]="checkAll" (onChange)="onSelectAllChange($event)"></p-checkbox>
             </th>
             <th>
               <div class="flex flex-row items-center gap-1">
@@ -106,10 +106,7 @@
                 <div class="flex flex-row items-center justify-between w-full">
                   <div class="flex flex-row items-center gap-2">
                     <finding-severity [severity]="finding.severity!"></finding-severity>
-                    <finding-status-label
-                      class="border border-surface rounded w-fit px-3 py-1"
-                      [status]="finding.status">
-                    </finding-status-label>
+                    <finding-status styleClass="text-xs" [status]="finding.status"/>
                   </div>
                   <div class="flex flex-row items-center gap-2">
                     <div class="flex flex-row items-center gap-1 text-[#00c869]">
@@ -136,23 +133,24 @@
                      [rowsPerPageOptions]="[10, 20, 50, 100]"/>
       </div>
     </div>
-    <div class="hidden lg:block w-[820px] h-full overflow-y-auto">
-      @if (store.finding() != null) {
-        <finding-detail
-          [isProjectPage]="true"
-          (close)="closeFinding()"
-          [finding]="store.finding()!">
-        </finding-detail>
-      } @else {
-        <div class="flex flex-col items-center justify-center h-full w-full">
-          @if (store.loadingFinding()) {
-            <ng-icon name="spin" class="animate-spin" size="24"></ng-icon>
-          } @else {
-            <ng-icon name="cursorArrowRays" size="24"></ng-icon>
-            <div>Select vulnerability to see its details.</div>
-          }
-        </div>
-      }
-    </div>
   </div>
+  <p-drawer [(visible)]="showFinding" [closable]="false" position="right" styleClass="w-1/2">
+    <ng-template #header>
+      <div class="flex flex-row items-center w-full justify-end">
+        <a [routerLink]="['/finding', findingId()]">
+          <ng-icon name="arrowsPointingOut" size="18" class="cursor-pointer"></ng-icon>
+        </a>
+        <p-divider layout="vertical"></p-divider>
+        <ng-icon
+          (click)="showFinding = false"
+          name="x" size="18"
+          class="cursor-pointer"></ng-icon>
+      </div>
+    </ng-template>
+    <finding-detail
+      [findingId]="findingId()"
+      [isProjectPage]="true"
+      (close)="showFinding = false">
+    </finding-detail>
+  </p-drawer>
 </p-panel>

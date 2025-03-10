@@ -14,7 +14,7 @@
               iconPos="right"
               icon="pi pi-chevron-down"/>
   }
-  <p-menu #menu [model]="menuItems" [popup]="true">
+  <p-menu #menu [model]="menuItems" [popup]="true" appendTo="body">
     <ng-template #item let-option>
       <div class="max-w-80 cursor-pointer px-4 py-2" (click)="onSelect.emit(option.status)">
         <finding-status-label [status]="option.status" [showDescription]="true"

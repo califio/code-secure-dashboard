@@ -14,7 +14,9 @@ import {Tooltip} from 'primeng/tooltip';
   templateUrl: './finding-severity.component.html',
 })
 export class FindingSeverityComponent {
-  severity = input(FindingSeverity.Low, {transform: transformSeverity})
+  severity = input(FindingSeverity.Low, {
+    transform: transformSeverity
+  })
 
   style(): string {
     if (this.severity() == FindingSeverity.Critical) {

@@ -1,7 +1,9 @@
 <div class="w-full" style="height: calc(100vh - 8rem)">
-  <finding-detail class="h-full"
-                  [finding]="finding"
-                  [minimal]="false">
-  </finding-detail>
+  <p-panel class="h-full" [showHeader]="false">
+    <finding-detail class="h-full"
+                    [findingId]="findingId()"
+                    [minimal]="false">
+    </finding-detail>
+  </p-panel>
 </div>
 

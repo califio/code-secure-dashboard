@@ -1,6 +1,6 @@
 <div class="flex flex-col">
   <package-status class="cursor-pointer" [styleClass]="styleClass()" [status]="selectedOption()" (click)="menu.toggle($event)"/>
-  <p-menu #menu [model]="menuItems" [popup]="true">
+  <p-menu #menu [model]="menuItems" [popup]="true" appendTo="body">
     <ng-template #item let-option>
       <div class="p-1 cursor-pointer">
         <package-status class="cursor-pointer" [status]="option" (click)="onChangeStatus(option)"/>

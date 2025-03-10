@@ -18,7 +18,7 @@
     <ng-icon name="heroChevronDown"></ng-icon>
   </button>
 }
-<p-menu #op [model]="ticketTrackerOptions" popup class="flex justify-center">
+<p-menu #op [model]="ticketTrackerOptions" popup class="flex justify-center" appendTo="body">
   <ng-template #item let-option>
     <div (click)="createTicket(option.type)"
          class="flex flex-row items-center gap-1 cursor-pointer px-2 py-1">

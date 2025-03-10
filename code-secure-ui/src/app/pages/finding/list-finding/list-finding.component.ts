@@ -1,12 +1,9 @@
-import {Component, HostListener, Inject, LOCALE_ID, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, LOCALE_ID, OnInit, signal} from '@angular/core';
 import {Button} from 'primeng/button';
 import {Checkbox, CheckboxChangeEvent} from 'primeng/checkbox';
 import {FindingDetailComponent} from '../../../shared/components/finding/finding-detail/finding-detail.component';
 import {FindingSeverityComponent} from '../../../shared/components/finding/finding-severity/finding-severity.component';
-import {
-  FindingStatusLabelComponent
-} from '../../../shared/components/finding/finding-status-label/finding-status-label.component';
-import {FormsModule} from '@angular/forms';
+import {FormControl, FormsModule} from '@angular/forms';
 import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
@@ -15,14 +12,14 @@ import {Paginator, PaginatorState} from 'primeng/paginator';
 import {TableModule} from 'primeng/table';
 import {Tooltip} from 'primeng/tooltip';
 import {ListFindingStore} from './list-finding.store';
-import {finalize, forkJoin, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {finalize, forkJoin, Subject, switchMap, takeUntil} from 'rxjs';
 import {FindingStatus} from '../../../api/models/finding-status';
 import {
   FindingStatusMarkAsComponent
 } from '../../../shared/components/finding/finding-status-mark-as/finding-status-mark-as.component';
 import {FindingService} from '../../../api/services/finding.service';
 import {bindQueryParams, updateQueryParams} from '../../../core/router';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ToastrService} from '../../../shared/services/toastr.service';
 import {Panel} from 'primeng/panel';
 import {
@@ -34,7 +31,6 @@ import {
 import {SortByComponent} from '../../../shared/ui/sort-by/sort-by.component';
 import {SortByState} from '../../../shared/ui/sort-by/sort-by-state';
 import {ScannerService} from '../../../api/services/scanner.service';
-import {RuleService} from '../../../api/services/rule.service';
 import {
   FindingRuleFilterComponent
 } from '../../../shared/components/finding/finding-rule-filter/finding-rule-filter.component';
@@ -60,6 +56,9 @@ import {
 } from '../../../shared/components/finding/finding-category-filter/finding-category-filter.component';
 import {RangeDateComponent} from '../../../shared/ui/range-date/range-date.component';
 import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
+import {Drawer} from 'primeng/drawer';
+import {Divider} from 'primeng/divider';
+import {FindingStatusComponent} from '../../../shared/components/finding/finding-status/finding-status.component';
 
 @Component({
   selector: 'page-list-finding',
@@ -68,7 +67,6 @@ import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
     Checkbox,
     FindingDetailComponent,
     FindingSeverityComponent,
-    FindingStatusLabelComponent,
     FormsModule,
     IconField,
     InputIcon,
@@ -89,17 +87,21 @@ import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
     FindingExportMenuComponent,
     SourceControlSelectComponent,
     FindingCategoryFilterComponent,
-    RangeDateComponent
+    RangeDateComponent,
+    Drawer,
+    Divider,
+    RouterLink,
+    FindingStatusComponent
   ],
   templateUrl: './list-finding.component.html',
   standalone: true
 })
 export class ListFindingComponent implements OnInit {
-
   exportTypes = [ExportType.Excel]
   showDetailFinding = false;
   selectedFindings = new Set<string>();
   isDesktop = true;
+  findingId = signal<string>('');
   // filter
   filter: FindingFilter & {
     fixedAtRange?: string
@@ -125,6 +127,8 @@ export class ListFindingComponent implements OnInit {
   };
   private destroy$ = new Subject();
   loadingExport = false;
+  showFinding = false;
+  checkAll = false;
 
   constructor(
     public store: ListFindingStore,
@@ -171,7 +175,8 @@ export class ListFindingComponent implements OnInit {
           }
         }
         if (this.filter.createdAtRange) {
-          const createdAtRange = JSON.parse(this.filter.createdAtRange) as RangeDateState;;
+          const createdAtRange = JSON.parse(this.filter.createdAtRange) as RangeDateState;
+          ;
           if (createdAtRange && createdAtRange.type != null) {
             if (createdAtRange.startDate) {
               createdAtRange.startDate = new Date(createdAtRange.startDate);
@@ -213,6 +218,7 @@ export class ListFindingComponent implements OnInit {
       body: this.filter
     });
   }
+
   private getFindings() {
     this.store.loading.set(true);
     console.log(this.store.createdAtRangeDate());
@@ -249,24 +255,8 @@ export class ListFindingComponent implements OnInit {
   }
 
   onOpenFinding(findingId: string) {
-    if (this.showDetailFinding) {
-      this.router.navigate(['/finding', findingId]).then();
-    } else {
-      this.store.loadingFinding.set(true);
-      this.findingService.getFinding({
-        id: findingId
-      }).pipe(
-        finalize(() => {
-          this.store.loadingFinding.set(false);
-        })
-      ).subscribe(finding => {
-        this.store.finding.set(finding);
-      })
-    }
-  }
-
-  closeFinding() {
-    this.store.finding.set(null);
+    this.showFinding = true;
+    this.findingId.set(findingId);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -280,7 +270,11 @@ export class ListFindingComponent implements OnInit {
   }
 
   onReload() {
-    this.getFindings().subscribe();
+    this.getFindings().subscribe(result => {
+      this.store.findings.set(result.items!);
+      this.store.currentPage.set(result.currentPage!);
+      this.store.totalRecords.set(result.count!);
+    });
   }
 
   onSearchChange() {
@@ -306,6 +300,7 @@ export class ListFindingComponent implements OnInit {
           message: `Change status of ${results.length} findings success`
         });
         this.selectedFindings.clear();
+        this.checkAll = false;
         this.onReload();
       });
     } else {
