@@ -455,7 +455,10 @@ public class DefaultCiService(
                     context.ScanProjectPackages.Count(record => record.ProjectPackageId == fixedProjectPackage.Id) == 1)
                 {
                     await context.ProjectPackages.Where(record => record.Id == fixedProjectPackage.Id)
-                        .ExecuteUpdateAsync(setter => setter.SetProperty(column => column.Status, PackageStatus.Fixed));
+                        .ExecuteUpdateAsync(setter => setter
+                            .SetProperty(column => column.Status, PackageStatus.Fixed)
+                            .SetProperty(column => column.FixedAt, DateTime.UtcNow)
+                        );
                 }
             }
         }
