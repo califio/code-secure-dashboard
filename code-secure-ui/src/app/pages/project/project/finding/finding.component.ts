@@ -14,14 +14,9 @@ import {ProjectStore} from '../project.store';
 import {
   FindingStatusLabelComponent
 } from '../../../../shared/components/finding/finding-status-label/finding-status-label.component';
-import {
-  ScanBranchLabelComponent
-} from '../../../../shared/components/scan/scan-branch-label/scan-branch-label.component';
 import {IconField} from "primeng/iconfield";
 import {InputIcon} from "primeng/inputicon";
 import {InputText} from "primeng/inputtext";
-import {FloatLabel} from 'primeng/floatlabel';
-import {Select} from 'primeng/select';
 import {Button} from 'primeng/button';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 import {Checkbox, CheckboxChangeEvent} from 'primeng/checkbox';
@@ -69,12 +64,9 @@ import {BranchFilterComponent, BranchOption} from '../../../../shared/components
     ReactiveFormsModule,
     FormsModule,
     FindingStatusLabelComponent,
-    ScanBranchLabelComponent,
     IconField,
     InputIcon,
     InputText,
-    FloatLabel,
-    Select,
     Paginator,
     Checkbox,
     FindingSeverityComponent,

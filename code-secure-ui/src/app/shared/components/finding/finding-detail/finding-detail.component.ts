@@ -40,7 +40,6 @@ import {ScannerLabelComponent} from '../../scanner-label/scanner-label.component
 import {TruncatePipe} from '../../../pipes/truncate.pipe';
 import {Tooltip} from 'primeng/tooltip';
 import {BranchFilterComponent, BranchOption} from '../../branch-filter/branch-filter.component';
-import {FindingStatusSelectComponent} from '../finding-status-select/finding-status-select.component';
 import {FindingStatusMenuComponent} from '../finding-status-menu/finding-status-menu.component';
 
 @Component({
@@ -61,19 +60,16 @@ import {FindingStatusMenuComponent} from '../finding-status-menu/finding-status-
     MarkdownEditorComponent,
     ButtonDirective,
     ScanBranchLabelComponent,
-    Select,
     Panel,
     DatePicker,
     FloatLabel,
     Divider,
     Fieldset,
     ButtonDirective,
-    FindingStatusLabelComponent,
     ScannerLabelComponent,
     TruncatePipe,
     Tooltip,
     BranchFilterComponent,
-    FindingStatusSelectComponent,
     FindingStatusMenuComponent,
     FindingStatusMenuComponent,
   ],

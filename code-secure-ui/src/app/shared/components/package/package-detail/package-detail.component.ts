@@ -1,21 +1,7 @@
 import {Component, input, model} from '@angular/core';
-import {ButtonDirective} from 'primeng/button';
-import {DatePicker} from 'primeng/datepicker';
-import {Divider} from 'primeng/divider';
 import {Fieldset} from 'primeng/fieldset';
-import {FindingActivityComponent} from '../../finding/finding-activity/finding-activity.component';
-import {FindingSeverityComponent} from '../../finding/finding-severity/finding-severity.component';
-import {FindingStatusLabelComponent} from '../../finding/finding-status-label/finding-status-label.component';
-import {FloatLabel} from 'primeng/floatlabel';
-import {LowerCasePipe} from '@angular/common';
-import {MarkdownComponent} from 'ngx-markdown';
-import {MarkdownEditorComponent} from '../../../ui/markdown-editor/markdown-editor.component';
-import {NgIcon} from '@ng-icons/core';
 import {Panel} from 'primeng/panel';
-import {RouterLink} from '@angular/router';
 import {ScanBranchLabelComponent} from '../../scan/scan-branch-label/scan-branch-label.component';
-import {ScannerLabelComponent} from '../../scanner-label/scanner-label.component';
-import {Select} from 'primeng/select';
 import {RiskLevelIconComponent} from '../../risk-level-icon/risk-level-icon.component';
 import {
   BranchStatusPackage,
@@ -31,8 +17,6 @@ import {ListPackageComponent} from '../list-package/list-package.component';
 import {ListVulnerabilityComponent} from '../list-vulnerability/list-vulnerability.component';
 import {Message} from 'primeng/message';
 import {transformArrayNotNull} from '../../../../core/transform';
-import {Chip} from 'primeng/chip';
-import {PackageStatusComponent} from '../package-status/package-status.component';
 import {PackageStatusMenuComponent} from '../package-status-menu/package-status-menu.component';
 import {ProjectService} from '../../../../api/services/project.service';
 import {TicketMenuComponent} from '../../ticket-menu/ticket-menu.component';
@@ -44,30 +28,14 @@ const defaultValue: BranchStatusPackage[] = [];
 @Component({
   selector: 'package-detail',
   imports: [
-    ButtonDirective,
-    DatePicker,
-    Divider,
     Fieldset,
-    FindingActivityComponent,
-    FindingSeverityComponent,
-    FindingStatusLabelComponent,
-    FloatLabel,
-    LowerCasePipe,
-    MarkdownComponent,
-    MarkdownEditorComponent,
-    NgIcon,
     Panel,
-    RouterLink,
     ScanBranchLabelComponent,
-    ScannerLabelComponent,
-    Select,
     RiskLevelIconComponent,
     PackageTypeComponent,
     ListPackageComponent,
     ListVulnerabilityComponent,
     Message,
-    Chip,
-    PackageStatusComponent,
     PackageStatusMenuComponent,
     TicketMenuComponent,
   ],

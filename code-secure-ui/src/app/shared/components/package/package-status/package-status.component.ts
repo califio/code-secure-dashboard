@@ -2,7 +2,6 @@ import {Component, effect, input, signal} from '@angular/core';
 import {PackageStatus} from '../../../../api/models/package-status';
 import {transformValueNotNull} from '../../../../core/transform';
 import {NgClass} from '@angular/common';
-import {Message} from 'primeng/message';
 import {Tag} from 'primeng/tag';
 import {FindingStatus} from '../../../../api/models/finding-status';
 
@@ -10,7 +9,6 @@ import {FindingStatus} from '../../../../api/models/finding-status';
   selector: 'package-status',
   imports: [
     NgClass,
-    Message,
     Tag
   ],
   templateUrl: './package-status.component.html',

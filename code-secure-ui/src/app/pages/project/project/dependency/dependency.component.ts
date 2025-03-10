@@ -1,5 +1,4 @@
-import {Component, input, OnDestroy, OnInit} from '@angular/core';
-import {ComingSoonComponent} from '../../../../shared/ui/coming-soon/coming-soon.component';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../../../api/services/project.service';
 import {ProjectStore} from '../project.store';
 import {NgIcon} from '@ng-icons/core';
@@ -19,15 +18,11 @@ import {InputText} from "primeng/inputtext";
 import {TableModule} from 'primeng/table';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 import {LayoutService} from '../../../../layout/layout.service';
-import {Tooltip} from 'primeng/tooltip';
 import {SortByComponent} from '../../../../shared/ui/sort-by/sort-by.component';
 import {SortByState} from '../../../../shared/ui/sort-by/sort-by-state';
 import {Button} from 'primeng/button';
 import {PackageTypeComponent} from '../../../../shared/components/package/package-type/package-type.component';
 import {PackageDetailComponent} from '../../../../shared/components/package/package-detail/package-detail.component';
-import {
-  ScanBranchLabelComponent
-} from '../../../../shared/components/scan/scan-branch-label/scan-branch-label.component';
 import {BranchFilterComponent, BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 import {
   PackageSeverityFilterComponent
@@ -41,7 +36,6 @@ import {
   selector: 'app-dependency',
   standalone: true,
   imports: [
-    ComingSoonComponent,
     NgIcon,
     ReactiveFormsModule,
     FormsModule,
@@ -51,12 +45,10 @@ import {
     InputText,
     TableModule,
     Paginator,
-    Tooltip,
     SortByComponent,
     Button,
     PackageTypeComponent,
     PackageDetailComponent,
-    ScanBranchLabelComponent,
     BranchFilterComponent,
     PackageSeverityFilterComponent,
     PackageStatusFilterComponent,

@@ -1,7 +1,5 @@
 import {Component, EventEmitter, input, Output} from '@angular/core';
-import {FindingStatusLabelComponent} from '../../finding/finding-status-label/finding-status-label.component';
 import {FloatLabel} from 'primeng/floatlabel';
-import {MultiSelect} from 'primeng/multiselect';
 import {Select, SelectChangeEvent} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 import {PackageStatus} from '../../../../api/models/package-status';
@@ -11,9 +9,7 @@ import {PackageStatusComponent} from '../package-status/package-status.component
 @Component({
   selector: 'package-status-filter',
   imports: [
-    FindingStatusLabelComponent,
     FloatLabel,
-    MultiSelect,
     Select,
     FormsModule,
     PackageStatusComponent

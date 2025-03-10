@@ -1,19 +1,13 @@
 import {Component, effect, EventEmitter, input, Output, signal} from '@angular/core';
 import {Menu} from 'primeng/menu';
 import {PackageStatus} from '../../../../api/models';
-import {Tag} from 'primeng/tag';
 import {transformValueNotNull} from '../../../../core/transform';
-import {NgClass} from '@angular/common';
-import {ButtonDirective} from 'primeng/button';
 import {PackageStatusComponent} from '../package-status/package-status.component';
 
 @Component({
   selector: 'package-status-menu',
   imports: [
     Menu,
-    Tag,
-    NgClass,
-    ButtonDirective,
     PackageStatusComponent
   ],
   templateUrl: './package-status-menu.component.html',

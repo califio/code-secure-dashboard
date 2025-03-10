@@ -1,7 +1,6 @@
 import {Component, effect, EventEmitter, input, Output, signal} from '@angular/core';
 import {transformValueNotNull} from '../../../../core/transform';
 import {FindingStatus} from '../../../../api/models';
-import {Tag} from 'primeng/tag';
 import {NgClass} from '@angular/common';
 import {Menu} from 'primeng/menu';
 import {FindingStatusComponent} from '../finding-status/finding-status.component';
@@ -9,7 +8,6 @@ import {FindingStatusComponent} from '../finding-status/finding-status.component
 @Component({
   selector: 'finding-status-menu',
   imports: [
-    Tag,
     NgClass,
     Menu,
     FindingStatusComponent
