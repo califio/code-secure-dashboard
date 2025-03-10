@@ -58,11 +58,37 @@ public class FindingManager(
                     projectUser.UserId == actor.Id
                 )
             );
+        if (filter.SourceControlId != null)
+        {
+            query = query.Where(finding => context.Projects.Any(record =>
+                record.Id == finding.ProjectId && record.SourceControlId == filter.SourceControlId));
+        }
         if (filter.ProjectId != null)
         {
             query = query.Where(finding => finding.ProjectId == filter.ProjectId);
         }
+        if (filter.StartCreatedAt != null)
+        {
+            query = query.Where(finding => finding.CreatedAt >= filter.StartCreatedAt);
+        }
 
+        if (filter.EndCreatedAt != null)
+        {
+            query = query.Where(finding => finding.CreatedAt <= filter.EndCreatedAt);
+        }
+
+        if (filter.StartFixedAt != null)
+        {
+            query = query.Where(finding => finding.FixedAt != null && finding.FixedAt >= filter.StartFixedAt);
+        }
+        if (filter.EndFixedAt != null)
+        {
+            query = query.Where(finding => finding.FixedAt != null && finding.FixedAt <= filter.EndFixedAt);
+        }
+        if (!string.IsNullOrEmpty(filter.Category))
+        {
+            query = query.Where(finding => finding.Category == filter.Category);
+        }
         if (filter.CommitId != null)
         {
             query = query.Where(finding =>

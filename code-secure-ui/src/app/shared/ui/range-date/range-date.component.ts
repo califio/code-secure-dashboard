@@ -1,4 +1,4 @@
-import {Component, computed, EventEmitter, Inject, LOCALE_ID, model, Output, ViewChild} from '@angular/core';
+import {Component, computed, EventEmitter, Inject, input, LOCALE_ID, model, Output, ViewChild} from '@angular/core';
 import {RangeDateState} from './range-date.model';
 import {Popover} from 'primeng/popover';
 import {Button} from 'primeng/button';
@@ -6,6 +6,10 @@ import {formatDate, NgClass} from '@angular/common';
 import {DatePicker} from 'primeng/datepicker';
 import {FormsModule} from '@angular/forms';
 import {getRangeDate, RangeDateType} from '../../date-util';
+import {FloatLabel} from 'primeng/floatlabel';
+import {InputText} from 'primeng/inputtext';
+import {IconField} from 'primeng/iconfield';
+import {InputIcon} from 'primeng/inputicon';
 
 @Component({
   selector: 'range-date',
@@ -14,26 +18,42 @@ import {getRangeDate, RangeDateType} from '../../date-util';
     Button,
     DatePicker,
     FormsModule,
-    NgClass
+    NgClass,
+    FloatLabel,
+    InputText,
+    IconField,
+    InputIcon
   ],
   templateUrl: './range-date.component.html',
   standalone: true,
   styleUrl: './range-date.component.scss'
 })
 export class RangeDateComponent {
+  showClear = input(false);
+  styleClassInput = input('');
+  label = input('Range Date');
+  labelType = input<'button' | 'text'>('button');
+  severity = input<'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast' | null | undefined>('primary');
   @ViewChild('op') op!: Popover;
-  type = model(RangeDateType.Last30Days);
-  startDate = model<Date>();
-  endDate = model<Date>();
+  type = model<RangeDateType | null | undefined>(RangeDateType.Last30Days);
+
+  startDate = model<Date | null>();
+  endDate = model<Date | null>();
 
   currentLabel = computed(() => {
-    if (this.type() != RangeDateType.Custom) {
-      return this.mRangeDateLabel.get(this.type())
+    const dateType = this.type();
+    if (dateType != null) {
+      if (dateType != RangeDateType.Custom) {
+        return this.mRangeDateLabel.get(dateType);
+      }
+      if (dateType== RangeDateType.Custom) {
+        return `${formatDate(this.startDate()!, 'dd/MM/yyyy', this.locale)} - ${formatDate(this.endDate()!, 'dd/MM/yyyy', this.locale)}`;
+      }
     }
-    if (this.type() == RangeDateType.Custom) {
-      return `${formatDate(this.startDate()!, 'dd/MM/yyyy', this.locale)} - ${formatDate(this.endDate()!, 'dd/MM/yyyy', this.locale)}`;
+    if (this.labelType() == "button") {
+      return this.label()
     }
-    return 'Select'
+    return '';
   });
   @Output()
   onChange = new EventEmitter<RangeDateState>();
@@ -46,6 +66,7 @@ export class RangeDateComponent {
     RangeDateType.ThisMonth,
     RangeDateType.ThisYear,
     RangeDateType.LastYear,
+    RangeDateType.AllTime
   ];
   mRangeDateLabel = new Map<RangeDateType, string>([
     [RangeDateType.Last7Days, 'Last 7 Days'],
@@ -54,6 +75,7 @@ export class RangeDateComponent {
     [RangeDateType.ThisMonth, 'This Month'],
     [RangeDateType.ThisYear, 'This Year'],
     [RangeDateType.LastYear, 'Last Year'],
+    [RangeDateType.AllTime, 'All Time'],
   ]);
   showCustomRangeDate = false;
 
@@ -74,6 +96,15 @@ export class RangeDateComponent {
       this.op.hide();
       this.showCustomRangeDate = false;
     }
+  }
+
+  clearRangeDate() {
+    this.onChange.emit({
+      type: null,
+      startDate: null,
+      endDate: null
+    });
+    this.op.hide();
   }
 
   updateCustomRangeDateLabel() {

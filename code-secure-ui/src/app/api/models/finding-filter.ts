@@ -6,8 +6,11 @@ import { FindingSeverity } from '../models/finding-severity';
 import { FindingSortField } from '../models/finding-sort-field';
 import { FindingStatus } from '../models/finding-status';
 export interface FindingFilter {
+  category?: string | null;
   commitId?: string | null;
   desc?: boolean;
+  endCreatedAt?: string | null;
+  endFixedAt?: string | null;
   name?: string | null;
   page?: number;
   projectId?: string | null;
@@ -17,5 +20,8 @@ export interface FindingFilter {
   severity?: Array<FindingSeverity> | null;
   size?: number;
   sortBy?: FindingSortField;
+  sourceControlId?: string | null;
+  startCreatedAt?: string | null;
+  startFixedAt?: string | null;
   status?: Array<FindingStatus> | null;
 }

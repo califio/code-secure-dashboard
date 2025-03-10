@@ -13,17 +13,17 @@
   </div>
   <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
     <p-card styleClass="h-full">
-      <severity-chart [severity]="sastSeverity()"></severity-chart>
+      <severity-chart [severity]="sastSeverity()" type="sast" [rangeDate]="rangeDate"></severity-chart>
     </p-card>
   </div>
   <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
     <p-card styleClass="h-full">
-      <finding-status-chart [status]="sastStatus()"></finding-status-chart>
+      <finding-status-chart [status]="sastStatus()" [rangeDate]="rangeDate"></finding-status-chart>
     </p-card>
   </div>
   <div class="col-span-12 xl:col-span-6">
     <p-card styleClass="h-full">
-      <top-finding-chart class="" [categories]="topFindings()"></top-finding-chart>
+      <top-finding-chart class="" [categories]="topFindings()" [rangeDate]="rangeDate"></top-finding-chart>
     </p-card>
   </div>
   <!--  SCA-->
@@ -32,7 +32,7 @@
   </div>
   <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">
     <p-card styleClass="h-full">
-      <severity-chart [severity]="scaSeverity()"></severity-chart>
+      <severity-chart [severity]="scaSeverity()" type="sca" [rangeDate]="rangeDate"></severity-chart>
     </p-card>
   </div>
   <div class="col-span-12 xl:col-span-3 md:col-span-6 min-w-96">

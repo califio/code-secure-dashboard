@@ -48,9 +48,18 @@ import {Select} from 'primeng/select';
 import {
   FindingExportMenuComponent
 } from '../../../shared/components/finding/finding-export-menu/finding-export-menu.component';
-import {ExportType} from '../../../api/models';
+import {ExportType, FindingFilter, FindingSortField} from '../../../api/models';
 import {formatDate} from '@angular/common';
 import {toArray} from '../../../core/transform';
+import {SourceControlService} from '../../../api/services/source-control.service';
+import {
+  SourceControlSelectComponent
+} from '../../../shared/components/source-control-select/source-control-select.component';
+import {
+  FindingCategoryFilterComponent
+} from '../../../shared/components/finding/finding-category-filter/finding-category-filter.component';
+import {RangeDateComponent} from '../../../shared/ui/range-date/range-date.component';
+import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
 
 @Component({
   selector: 'page-list-finding',
@@ -77,16 +86,43 @@ import {toArray} from '../../../core/transform';
     FindingSeverityFilterComponent,
     FloatLabel,
     Select,
-    FindingExportMenuComponent
+    FindingExportMenuComponent,
+    SourceControlSelectComponent,
+    FindingCategoryFilterComponent,
+    RangeDateComponent
   ],
   templateUrl: './list-finding.component.html',
   standalone: true
 })
 export class ListFindingComponent implements OnInit {
+
   exportTypes = [ExportType.Excel]
   showDetailFinding = false;
   selectedFindings = new Set<string>();
   isDesktop = true;
+  // filter
+  filter: FindingFilter & {
+    fixedAtRange?: string
+    createdAtRange?: string
+  } = {
+    desc: true,
+    name: '',
+    page: 1,
+    scanner: [],
+    severity: [],
+    sortBy: FindingSortField.CreatedAt,
+    ruleId: undefined,
+    status: [
+      FindingStatus.Open,
+      FindingStatus.Confirmed,
+    ],
+    commitId: undefined,
+    sourceControlId: undefined,
+    size: 20,
+    fixedAtRange: undefined,
+    createdAtRange: undefined,
+    category: undefined
+  };
   private destroy$ = new Subject();
   loadingExport = false;
 
@@ -94,8 +130,8 @@ export class ListFindingComponent implements OnInit {
     public store: ListFindingStore,
     private findingService: FindingService,
     private scannerService: ScannerService,
-    private ruleService: RuleService,
     private userService: UserService,
+    private sourceControlService: SourceControlService,
     private route: ActivatedRoute,
     private router: Router,
     private toastr: ToastrService,
@@ -104,28 +140,56 @@ export class ListFindingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.sourceControlService.getSourceControlSystem().subscribe(sourceControl => {
+      this.store.sourceControls.set(sourceControl);
+    });
     this.userService.getProjectManagerUsers().subscribe(users => {
       this.store.users.set(users);
     });
     this.scannerService.getSastScanners().subscribe(scanners => {
       this.store.scanners.set(scanners);
     });
-    this.ruleService.getRuleId({
-      body: {}
-    }).subscribe(rules => {
-      this.store.rules.set(rules);
-    });
     this.route.queryParams.pipe(
       switchMap(params => {
-        bindQueryParams(params, this.store.filter);
-        this.store.filter.scanner = toArray(this.store.filter.scanner);
-        this.store.filter.status = toArray(this.store.filter.status);
-        this.store.filter.severity = toArray(this.store.filter.severity);
-        this.store.pageSize.set(this.store.filter.size!);
-        this.store.currentPage.set(this.store.filter.page!);
+        bindQueryParams(params, this.filter);
+        this.filter.scanner = toArray(this.filter.scanner);
+        this.filter.status = toArray(this.filter.status);
+        this.filter.severity = toArray(this.filter.severity);
+        if (this.filter.fixedAtRange) {
+          const fixedAtRange = JSON.parse(this.filter.fixedAtRange) as RangeDateState;
+          console.log(fixedAtRange);
+          if (fixedAtRange && fixedAtRange.type != null) {
+            if (fixedAtRange.startDate) {
+              fixedAtRange.startDate = new Date(fixedAtRange.startDate);
+            }
+            if (fixedAtRange.endDate) {
+              fixedAtRange.endDate = new Date(fixedAtRange.endDate);
+            }
+            this.store.fixedAtRangeDate.set(fixedAtRange);
+          } else {
+            this.store.fixedAtRangeDate.set({});
+          }
+        }
+        if (this.filter.createdAtRange) {
+          const createdAtRange = JSON.parse(this.filter.createdAtRange) as RangeDateState;;
+          if (createdAtRange && createdAtRange.type != null) {
+            if (createdAtRange.startDate) {
+              createdAtRange.startDate = new Date(createdAtRange.startDate);
+            }
+            if (createdAtRange.endDate) {
+              createdAtRange.endDate = new Date(createdAtRange.endDate);
+            }
+            this.store.createdAtRangeDate.set(createdAtRange);
+          } else {
+            this.store.createdAtRangeDate.set({});
+          }
+        }
+        this.store.pageSize.set(this.filter.size!);
+        this.store.currentPage.set(this.filter.page!);
         return forkJoin({
           findingPage: this.getFindings(),
-          rules: this.getRules()
+          rules: this.getRules(),
+          categories: this.getCategories()
         })
       }),
       takeUntil(this.destroy$)
@@ -134,24 +198,49 @@ export class ListFindingComponent implements OnInit {
       this.store.currentPage.set(result.findingPage.currentPage!);
       this.store.totalRecords.set(result.findingPage.count!);
       this.store.rules.set(result.rules);
+      this.store.categories.set(result.categories);
     })
   }
 
   private getRules() {
     return this.findingService.getFindingRules({
-      body: this.store.filter
+      body: this.filter
+    });
+  }
+
+  private getCategories() {
+    return this.findingService.getFindingCategories({
+      body: this.filter
     });
   }
   private getFindings() {
     this.store.loading.set(true);
-    if (this.store.filter.scanner) {
-      this.store.filter.scanner = toArray<string>(this.store.filter.scanner);
+    console.log(this.store.createdAtRangeDate());
+    if (this.store.createdAtRangeDate().startDate) {
+      this.filter.startCreatedAt = this.store.createdAtRangeDate().startDate!.toISOString();
+    } else {
+      this.filter.startCreatedAt = undefined;
     }
-    if (this.store.filter.severity) {
-      this.store.filter.severity = toArray<FindingSeverity>(this.store.filter.severity);
+    if (this.store.createdAtRangeDate().endDate) {
+      this.filter.endCreatedAt = this.store.createdAtRangeDate().endDate!.toISOString();
+    } else {
+      this.filter.endCreatedAt = undefined;
     }
+    //fixed
+    if (this.store.fixedAtRangeDate().startDate) {
+      this.filter.startFixedAt = this.store.fixedAtRangeDate().startDate!.toISOString();
+    } else {
+      this.filter.startFixedAt = undefined;
+    }
+    if (this.store.fixedAtRangeDate().endDate) {
+      this.filter.endFixedAt = this.store.fixedAtRangeDate().endDate!.toISOString();
+    } else {
+      this.filter.endFixedAt = undefined;
+    }
+    this.filter.fixedAtRange = undefined;
+    this.filter.createdAtRange = undefined;
     return this.findingService.getFindings({
-      body: this.store.filter
+      body: this.filter
     }).pipe(
       finalize(() => {
         this.store.loading.set(false);
@@ -195,13 +284,13 @@ export class ListFindingComponent implements OnInit {
   }
 
   onSearchChange() {
-    updateQueryParams(this.router, this.store.filter);
+    updateQueryParams(this.router, this.filter);
   }
 
   onPageChange($event: PaginatorState) {
-    this.store.filter.page = $event.page! + 1;
-    this.store.filter.size = $event.rows;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.page = $event.page! + 1;
+    this.filter.size = $event.rows;
+    updateQueryParams(this.router, this.filter);
   }
 
   onMarkAs(status: FindingStatus) {
@@ -227,13 +316,13 @@ export class ListFindingComponent implements OnInit {
   }
 
   onChangeStatus($event: FindingStatus[]) {
-    this.store.filter.status = $event;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.status = $event;
+    updateQueryParams(this.router, this.filter);
   }
 
   onChangeScanners($event: string[]) {
-    this.store.filter.scanner = $event;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.scanner = $event;
+    updateQueryParams(this.router, this.filter);
   }
 
   onSelectFinding(findingId: string, $event: CheckboxChangeEvent) {
@@ -256,30 +345,30 @@ export class ListFindingComponent implements OnInit {
   }
 
   onSortChange($event: SortByState) {
-    this.store.filter.sortBy = $event.sortBy;
-    this.store.filter.desc = $event.desc;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.sortBy = $event.sortBy;
+    this.filter.desc = $event.desc;
+    updateQueryParams(this.router, this.filter);
   }
 
   onChangeRule($event: string) {
-    this.store.filter.ruleId = $event;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.ruleId = $event;
+    updateQueryParams(this.router, this.filter);
   }
 
   onChangeSeverity($event: FindingSeverity[]) {
-    this.store.filter.severity = $event;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.severity = $event;
+    updateQueryParams(this.router, this.filter);
   }
 
   onChangeProjectManager($event: any) {
-    this.store.filter.projectManagerId = $event;
-    updateQueryParams(this.router, this.store.filter);
+    this.filter.projectManagerId = $event;
+    updateQueryParams(this.router, this.filter);
   }
 
   onExport($event: ExportType) {
     this.loadingExport = true;
     this.findingService.exportFinding$Any({
-      body: this.store.filter
+      body: this.filter
     }).pipe(
       finalize(() => {
         this.loadingExport = false;
@@ -293,5 +382,25 @@ export class ListFindingComponent implements OnInit {
       a.click();
       URL.revokeObjectURL(objectUrl);
     });
+  }
+
+  onChangeSourceControl($event: string) {
+    this.filter.sourceControlId = $event;
+    updateQueryParams(this.router, this.filter);
+  }
+
+  onChangeCategory($event: string) {
+    this.filter.category = $event;
+    updateQueryParams(this.router, this.filter);
+  }
+
+  onChangeFixedAtRangeDate($event: RangeDateState) {
+    this.filter.fixedAtRange = JSON.stringify($event);
+    updateQueryParams(this.router, this.filter);
+  }
+
+  onChangeCreatedAtRangeDate($event: RangeDateState) {
+    this.filter.createdAtRange = JSON.stringify($event);
+    updateQueryParams(this.router, this.filter);
   }
 }

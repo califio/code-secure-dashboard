@@ -1,4 +1,16 @@
-<p-button (click)="op.toggle($event)" icon="pi pi-calendar" [label]="currentLabel()" />
+@if (labelType() == 'button') {
+  <p-button [severity]="severity()" (click)="op.toggle($event)" icon="pi pi-calendar" [label]="currentLabel()" />
+} @else {
+  <p-floatlabel variant="on">
+    <p-icon-field id="on_label">
+      <input [ngClass]="styleClassInput()" pInputText [ngModel]="currentLabel()" (click)="op.toggle($event)" />
+      @if(type() != null && showClear()) {
+        <p-inputicon class="pi pi-times cursor-pointer" (click)="clearRangeDate()"/>
+      }
+    </p-icon-field>
+    <label for="on_label">{{label()}}</label>
+  </p-floatlabel>
+}
 <p-popover #op>
   <div class="flex flex-col gap-2">
     <div class="flex flex-row">

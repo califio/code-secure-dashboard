@@ -1,6 +1,9 @@
-import {Component, Input} from '@angular/core';
+import {Component, input, Input} from '@angular/core';
 import {Severity} from './severity';
 import {UIChart} from 'primeng/chart';
+import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
+import {Router} from '@angular/router';
+import {FindingSeverity} from '../../../api/models';
 
 @Component({
   selector: 'severity-chart',
@@ -11,15 +14,18 @@ import {UIChart} from 'primeng/chart';
   templateUrl: './severity-chart.component.html',
 })
 export class SeverityChartComponent {
-
+  rangeDate = input<RangeDateState>();
+  type = input<'sast' | 'sca'>('sast');
   @Input() set severity(value: Severity) {
     this.initCharts(value);
   }
-
+  findingSeverity = [FindingSeverity.Critical, FindingSeverity.High, FindingSeverity.Medium, FindingSeverity.Low, FindingSeverity.Info]
   option: any;
   data: any;
 
-  constructor() {
+  constructor(
+    private router: Router
+  ) {
   }
 
   initCharts(severity: Severity) {
@@ -51,6 +57,19 @@ export class SeverityChartComponent {
           },
           formatter: (value: any) => {
             return value > 0 ? value : '';
+          }
+        }
+      },
+      onClick: (event: any, elements: any) => {
+        if (elements.length > 0) {
+          if (this.type() == "sast"){
+            const index = elements[0].index;
+            this.router.navigate(['/finding'], {
+              queryParams: {
+                severity: [this.findingSeverity[index]],
+                createdAtRange: JSON.stringify(this.rangeDate())
+              }
+            }).then();
           }
         }
       }

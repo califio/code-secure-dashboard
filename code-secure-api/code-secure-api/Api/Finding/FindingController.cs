@@ -87,4 +87,11 @@ public class FindingController(IFindingService findingService) : BaseController
     {
         return await findingService.GetFindingRulesAsync(filter);
     }
+    
+    [HttpPost]
+    [Route("category")]
+    public async Task<List<string>> GetFindingCategories(FindingFilter filter)
+    {
+        return await findingService.GetFindingCategoriesAsync(filter);
+    }
 }

@@ -1,0 +1,11 @@
+<p-float-label variant="on">
+  <p-select id="on_rule"
+            filter
+            [showClear]="true"
+            styleClass="max-w-36 min-w-28"
+            [options]="options()"
+            [ngModel]="category()"
+            (ngModelChange)="onChange.emit($event)">
+  </p-select>
+  <label for="on_rule">Category</label>
+</p-float-label>

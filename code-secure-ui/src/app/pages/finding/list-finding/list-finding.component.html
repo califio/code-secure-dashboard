@@ -9,15 +9,36 @@
         <p-icon-field>
           <p-inputicon styleClass="pi pi-search"/>
           <input type="text"
+                 class="text-sm"
                  pInputText placeholder="Search..."
-                 [(ngModel)]="store.filter.name"
+                 [(ngModel)]="filter.name"
                  (keyup.enter)="onSearchChange()"/>
         </p-icon-field>
-
+        <!--Created At Filter-->
+        <range-date styleClassInput="text-sm" labelType="text" label="Created At"
+                    [showClear]="true"
+                    [type]="store.createdAtRangeDate().type"
+                    [startDate]="store.createdAtRangeDate().startDate"
+                    [endDate]="store.createdAtRangeDate().endDate"
+                    (onChange)="onChangeCreatedAtRangeDate($event)"/>
+        <!--Fixed At Filter-->
+        <range-date styleClassInput="text-sm" labelType="text" label="Fixed At"
+                    [showClear]="true"
+                    [type]="store.fixedAtRangeDate().type"
+                    [startDate]="store.fixedAtRangeDate().startDate"
+                    [endDate]="store.fixedAtRangeDate().endDate"
+                    (onChange)="onChangeFixedAtRangeDate($event)"/>
+        @if(store.sourceControls().length > 1) {
+          <source-control-select [options]="store.sourceControls()" (onChange)="onChangeSourceControl($event)"/>
+        }
         <!--Rule Filter-->
         <finding-rule-filter [options]="store.rules()"
-                             [rule]="store.filter.ruleId"
+                             [rule]="filter.ruleId"
                              (onChange)="onChangeRule($event)"/>
+        <!--Category Filter-->
+        <finding-category-filter [options]="store.categories()"
+                             [category]="filter.category"
+                             (onChange)="onChangeCategory($event)"/>
         <!--Project Manager Filter-->
         <p-float-label variant="on">
           <p-select id="on_project_manager_user"
@@ -28,24 +49,23 @@
                     [options]="store.users()"
                     optionValue="id"
                     optionLabel="userName"
-                    [ngModel]="store.filter.projectManagerId"
+                    [ngModel]="filter.projectManagerId"
                     (ngModelChange)="onChangeProjectManager($event)">
           </p-select>
           <label for="on_project_manager_user">Manager</label>
         </p-float-label>
-
         <!--Status Filter-->
-        <finding-status-filter [status]="store.filter.status"
+        <finding-status-filter [status]="filter.status"
                                (statusChange)="onChangeStatus($event)"/>
         <!--Severity Filter-->
-        <finding-severity-filter [severity]="store.filter.severity"
+        <finding-severity-filter [severity]="filter.severity"
                                  (onChange)="onChangeSeverity($event)"/>
         <!--Scanner Filter-->
-        <finding-scanner-filter [selected]="store.filter.scanner"
+        <finding-scanner-filter [selected]="filter.scanner"
                                 [scanners]="store.scanners()"
                                 (onChange)="onChangeScanners($event)"/>
         <!--Sort By-->
-        <sort-by [sortBy]="store.filter.sortBy"
+        <sort-by [sortBy]="filter.sortBy"
                  [options]="store.sortOptions"
                  (onChange)="onSortChange($event)"></sort-by>
         <!--Reload-->
@@ -109,7 +129,7 @@
         <p-paginator class="sticky bottom-0"
                      (onPageChange)="onPageChange($event)"
                      [first]="store.firstRecord()"
-                     [rows]="store.filter.size"
+                     [rows]="filter.size"
                      [totalRecords]="store.totalRecords()"
                      [showCurrentPageReport]="isDesktop"
                      currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"

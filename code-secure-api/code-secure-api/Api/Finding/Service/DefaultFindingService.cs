@@ -69,6 +69,24 @@ public class DefaultFindingService(
             query = query.Where(finding => filter.Severity.Contains(finding.Severity));
         }
 
+        if (filter.StartCreatedAt != null)
+        {
+            query = query.Where(finding => finding.CreatedAt >= filter.StartCreatedAt);
+        }
+
+        if (filter.EndCreatedAt != null)
+        {
+            query = query.Where(finding => finding.CreatedAt <= filter.EndCreatedAt);
+        }
+
+        if (filter.StartFixedAt != null)
+        {
+            query = query.Where(finding => finding.FixedAt != null && finding.FixedAt >= filter.StartFixedAt);
+        }
+        if (filter.EndFixedAt != null)
+        {
+            query = query.Where(finding => finding.FixedAt != null && finding.FixedAt <= filter.EndFixedAt);
+        }
         if (!string.IsNullOrEmpty(filter.Name))
         {
             query = query.Where(finding => finding.Name.Contains(filter.Name));
@@ -406,10 +424,37 @@ public class DefaultFindingService(
 
     public async Task<List<string>> GetFindingRulesAsync(FindingFilter filter)
     {
+        var query = FindingFilterAsQueryable(filter);
+        if (string.IsNullOrEmpty(filter.Category))
+        {
+            query = query.Where(finding => finding.Category == filter.Category);
+        }
+        return await query.Where(record => record.RuleId != null)
+            .GroupBy(record => record.RuleId)
+            .Select(group => group.Key!).ToListAsync();
+    }
+
+    public async Task<List<string>> GetFindingCategoriesAsync(FindingFilter filter)
+    {
+        
+        var query = FindingFilterAsQueryable(filter);
+        return await query.Where(record => record.Category != null)
+            .GroupBy(record => record.Category)
+            .Select(group => group.Key!).ToListAsync();
+    }
+
+    private IQueryable<Findings> FindingFilterAsQueryable(FindingFilter filter)
+    {
         var query = context.Findings.AsQueryable();
         if (filter.ProjectId != null)
         {
             query = query.Where(finding => finding.ProjectId == filter.ProjectId);
+        }
+
+        if (filter.SourceControlId != null)
+        {
+            query = query.Where(finding => context.Projects.Any(project => project.Id == finding.ProjectId &&
+                project.SourceControlId == filter.SourceControlId));
         }
 
         if (filter.CommitId != null)
@@ -448,6 +493,25 @@ public class DefaultFindingService(
         {
             query = query.Where(finding => filter.Severity.Contains(finding.Severity));
         }
+        
+        if (filter.StartCreatedAt != null)
+        {
+            query = query.Where(finding => finding.CreatedAt >= filter.StartCreatedAt);
+        }
+
+        if (filter.EndCreatedAt != null)
+        {
+            query = query.Where(finding => finding.CreatedAt <= filter.EndCreatedAt);
+        }
+
+        if (filter.StartFixedAt != null)
+        {
+            query = query.Where(finding => finding.FixedAt != null && finding.FixedAt >= filter.StartFixedAt);
+        }
+        if (filter.EndFixedAt != null)
+        {
+            query = query.Where(finding => finding.FixedAt != null && finding.FixedAt <= filter.EndFixedAt);
+        }
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -462,9 +526,8 @@ public class DefaultFindingService(
                 && record.UserId == filter.ProjectManagerId)
             );
         }
-        return await query.Where(record => record.RuleId != null)
-            .GroupBy(record => record.RuleId)
-            .Select(group => group.Key!).ToListAsync();
+
+        return query;
     }
 
     protected override bool HasPermission(Findings entity, string action)

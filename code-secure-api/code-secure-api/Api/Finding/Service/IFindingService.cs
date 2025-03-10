@@ -20,4 +20,5 @@ public interface IFindingService
     Task<Tickets> CreateTicketAsync(Guid findingId, TicketType ticketType);
     Task DeleteTicketAsync(Guid findingId);
     Task<List<string>> GetFindingRulesAsync(FindingFilter filter);
+    Task<List<string>> GetFindingCategoriesAsync(FindingFilter filter);
 }

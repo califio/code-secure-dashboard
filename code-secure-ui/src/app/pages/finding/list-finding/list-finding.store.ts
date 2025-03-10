@@ -3,8 +3,9 @@ import {Scanners} from '../../../api/models/scanners';
 import {FindingDetail} from '../../../api/models/finding-detail';
 import {FindingSummary} from '../../../api/models/finding-summary';
 import {FindingFilter} from '../../../api/models/finding-filter';
-import {FindingSortField, FindingStatus, UserSummary} from '../../../api/models';
+import {FindingSortField, FindingStatus, SourceControls, UserSummary} from '../../../api/models';
 import {getFindingStatusOptions} from '../../../shared/components/finding/finding-status';
+import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,8 @@ export class ListFindingStore {
   users = signal<UserSummary[]>([]);
   scanners = signal<Scanners[]>([]);
   rules = signal<string[]>([]);
+  categories = signal<string[]>([]);
+  sourceControls = signal<SourceControls[]>([]);
   // list findings
   loading = signal(false);
   findings = signal<FindingSummary[]>([]);
@@ -20,22 +23,8 @@ export class ListFindingStore {
   showFinding = signal(false);
   loadingFinding = signal(false);
   finding = signal<FindingDetail | null>(null);
-  // filter
-  filter: FindingFilter = {
-    desc: true,
-    name: '',
-    page: 1,
-    scanner: [],
-    severity: [],
-    sortBy: FindingSortField.CreatedAt,
-    ruleId: undefined,
-    status: [
-      FindingStatus.Open,
-      FindingStatus.Confirmed,
-    ],
-    commitId: undefined,
-    size: 20,
-  };
+  createdAtRangeDate = signal<RangeDateState>({});
+  fixedAtRangeDate = signal<RangeDateState>({});
   //paginator
   currentPage = signal(1);
   pageSize = signal(20);

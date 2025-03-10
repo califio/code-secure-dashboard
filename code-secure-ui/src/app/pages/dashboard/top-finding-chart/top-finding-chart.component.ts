@@ -1,8 +1,11 @@
-import {Component, Input} from '@angular/core';
+import {Component, input, Input} from '@angular/core';
 import {TopFinding} from '../../../api/models/top-finding';
 import {UIChart} from 'primeng/chart';
 import {Chart, ChartOptions} from 'chart.js';
 import {DashboardStore} from '../dashboard.store';
+import {Router} from '@angular/router';
+import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
+import {FindingStatus} from '../../../api/models';
 
 @Component({
   selector: 'top-finding-chart',
@@ -11,12 +14,12 @@ import {DashboardStore} from '../dashboard.store';
     UIChart
   ],
   templateUrl: './top-finding-chart.component.html',
-  styleUrl: './top-finding-chart.component.scss'
 })
 export class TopFindingChartComponent {
+  rangeDate = input<RangeDateState>();
   data: any;
   // option: ChartOptions = {};
-  option: any = {};
+  option: ChartOptions = {};
   plugins: any[] = [];
 
   @Input()
@@ -25,7 +28,8 @@ export class TopFindingChartComponent {
   }
 
   constructor(
-    private store: DashboardStore
+    private store: DashboardStore,
+    private router: Router
   ) {
   }
 
@@ -92,8 +96,19 @@ export class TopFindingChartComponent {
           color: textColor,
         },
       },
-      categoryPercentage: 0.5,
-      barPercentage: 0.5
+      onClick: (event: any, elements: any) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const category = this.data.labels[index];
+          this.router.navigate(['/finding'], {
+            queryParams: {
+              category: category,
+              status: [FindingStatus.Open, FindingStatus.Confirmed, FindingStatus.AcceptedRisk, FindingStatus.Fixed],
+              createdAtRange: JSON.stringify(this.rangeDate())
+            }
+          }).then();
+        }
+      }
     };
 
     let categories = input.map(item => item.category);

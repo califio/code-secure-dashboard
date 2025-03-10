@@ -97,8 +97,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const borderColor = documentStyle.getPropertyValue('--surface-border');
     this.store.textColor.set(textColor);
     this.store.borderColor.set(borderColor);
-    this.filter.startDate = this.rangeDate.startDate.toISOString();
-    this.filter.endDate = this.rangeDate.endDate.toISOString();
+    if (this.rangeDate.startDate) {
+      this.filter.startDate = this.rangeDate.startDate.toISOString();
+    } else {
+      this.filter.startDate = undefined;
+    }
+    if (this.rangeDate.endDate) {
+      this.filter.endDate = this.rangeDate.endDate.toISOString();
+    } else {
+      this.filter.endDate = undefined;
+    }
     this.dashboardService.sastStatistic({
       body: this.filter
     }).subscribe(sast => {

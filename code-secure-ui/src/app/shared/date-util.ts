@@ -1,17 +1,18 @@
 export enum RangeDateType {
-  ThisWeek,
   Last7Days,
-  ThisMonth,
+  ThisWeek,
   Last30Days,
+  ThisMonth,
   ThisYear,
   LastYear,
+  AllTime,
   Custom
 }
 
-export function getRangeDate(rangeType: RangeDateType): { startDate: Date, endDate: Date } {
+export function getRangeDate(rangeType: RangeDateType): { startDate?: Date, endDate?: Date } {
   const today = new Date();
-  let startDate: Date;
-  let endDate: Date = today;
+  let startDate: Date | undefined;
+  let endDate: Date | undefined = today;
   switch (rangeType) {
     case RangeDateType.Last7Days:
       startDate = new Date();
@@ -39,6 +40,10 @@ export function getRangeDate(rangeType: RangeDateType): { startDate: Date, endDa
     case RangeDateType.LastYear:
       startDate = new Date(today.getFullYear() - 1, 0, 1); // Ngày đầu năm ngoái
       endDate = new Date(today.getFullYear() - 1, 11, 31); // Ngày cuối năm ngoái
+      break;
+    case RangeDateType.AllTime:
+      startDate = undefined;
+      endDate = undefined;
       break;
     default:
       startDate = new Date();

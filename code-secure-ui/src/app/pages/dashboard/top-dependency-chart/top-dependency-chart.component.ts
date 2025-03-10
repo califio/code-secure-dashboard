@@ -78,6 +78,11 @@ export class TopDependencyChartComponent implements OnDestroy {
         datalabels: {
           display: false,
         }
+      },
+      onClick: (event: any, elements: any) => {
+        const element = elements[0];
+        const index = element.index;
+        console.log(this.data.labels[index]);
       }
     };
     this.plugins = [

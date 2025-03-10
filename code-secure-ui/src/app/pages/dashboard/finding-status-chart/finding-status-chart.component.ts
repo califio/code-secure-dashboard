@@ -1,6 +1,10 @@
-import {Component, Input} from '@angular/core';
+import {Component, input, Input} from '@angular/core';
 import {FindingStatusSeries} from './finding-status';
 import {UIChart} from 'primeng/chart';
+import {ChartOptions} from 'chart.js';
+import {Router} from '@angular/router';
+import {RangeDateState} from '../../../shared/ui/range-date/range-date.model';
+import {FindingStatus} from '../../../api/models';
 
 @Component({
   selector: 'finding-status-chart',
@@ -11,14 +15,18 @@ import {UIChart} from 'primeng/chart';
   templateUrl: './finding-status-chart.component.html',
 })
 export class FindingStatusChartComponent {
+  rangeDate = input<RangeDateState>();
+
   @Input() set status(value: FindingStatusSeries) {
     this.initCharts(value);
   }
-
-  option: any;
+  findingStatus = [FindingStatus.Open, FindingStatus.Confirmed, FindingStatus.AcceptedRisk, FindingStatus.Fixed];
+  option: ChartOptions = {};
   data: any;
 
-  constructor() {
+  constructor(
+    private router: Router
+  ) {
 
   }
 
@@ -53,8 +61,20 @@ export class FindingStatusChartComponent {
             return value > 0 ? value : '';
           }
         }
+      },
+      onClick: (event: any, elements: any) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          this.router.navigate(['/finding'], {
+            queryParams: {
+              status: [this.findingStatus[index]],
+              createdAtRange: JSON.stringify(this.rangeDate())
+            }
+          }).then();
+        }
       }
     };
+
     this.data = {
       labels: ['Open', 'Fixing', 'Accepted Risk', 'Fixed'],
       datasets: [

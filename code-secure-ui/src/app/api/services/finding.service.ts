@@ -29,6 +29,8 @@ import { getFinding } from '../fn/finding/get-finding';
 import { GetFinding$Params } from '../fn/finding/get-finding';
 import { getFindingActivities } from '../fn/finding/get-finding-activities';
 import { GetFindingActivities$Params } from '../fn/finding/get-finding-activities';
+import { getFindingCategories } from '../fn/finding/get-finding-categories';
+import { GetFindingCategories$Params } from '../fn/finding/get-finding-categories';
 import { getFindingRules } from '../fn/finding/get-finding-rules';
 import { GetFindingRules$Params } from '../fn/finding/get-finding-rules';
 import { getFindings } from '../fn/finding/get-findings';
@@ -313,6 +315,31 @@ export class FindingService extends BaseService {
    */
   getFindingRules(params?: GetFindingRules$Params, context?: HttpContext): Observable<Array<string>> {
     return this.getFindingRules$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+    );
+  }
+
+  /** Path part for operation `getFindingCategories()` */
+  static readonly GetFindingCategoriesPath = '/api/finding/category';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getFindingCategories()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getFindingCategories$Response(params?: GetFindingCategories$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return getFindingCategories(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getFindingCategories$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getFindingCategories(params?: GetFindingCategories$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.getFindingCategories$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
     );
   }
