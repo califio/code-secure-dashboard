@@ -26,7 +26,7 @@ interface MenuChangeEvent {
   providedIn: 'root'
 })
 export class LayoutService {
-  LOCAL_STORE_KEY = "theme";
+  LOCAL_STORE_KEY = "_theme";
   _config: layoutConfig = {
     preset: 'Aura',
     primary: 'noir',
