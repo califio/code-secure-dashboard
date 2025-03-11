@@ -1,7 +1,9 @@
 using CodeSecure.Enum;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeSecure.Database.Entity;
 
+[Index(nameof(Identity), nameof(ProjectId), IsUnique = true)]
 public sealed class Findings : BaseEntity
 {
     public required string Identity { get; init; }

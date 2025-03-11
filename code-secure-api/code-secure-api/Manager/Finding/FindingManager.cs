@@ -161,29 +161,23 @@ public class FindingManager(
 
     public async Task<Findings> CreateAsync(Findings finding)
     {
-        var findings = await FindByIdentityAsync(finding.ProjectId, finding.Identity);
-        if (findings != null)
+        try
         {
-            return findings;
-        }
-
-        finding.Id = Guid.NewGuid();
-        if (await scannerManager.IsScaScanner(finding.ScannerId))
-        {
-            finding.Status = FindingStatus.Confirmed;
-            if (finding.FixDeadline == null)
+            var existFinding = await context.Findings.FirstOrDefaultAsync(record =>
+                record.Identity == finding.Identity && record.ProjectId == finding.ProjectId);
+            if (existFinding != null)
             {
-                var sla = await GetSlaAsync(finding);
-                if (sla > 0)
-                {
-                    finding.FixDeadline = DateTime.UtcNow.AddDays(sla);
-                }
+                return existFinding;
             }
+            finding.Id = Guid.NewGuid();
+            context.Findings.Add(finding);
+            await context.SaveChangesAsync();
+            return finding;
         }
-
-        context.Findings.Add(finding);
-        await context.SaveChangesAsync();
-        return finding;
+        catch (System.Exception)
+        {
+            return finding;
+        }
     }
 
     public async Task<Findings> UpdateAsync(Findings finding)
