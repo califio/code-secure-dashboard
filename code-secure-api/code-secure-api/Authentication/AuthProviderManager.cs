@@ -1,5 +1,5 @@
 using Aguacongas.AspNetCore.Authentication;
-using CodeSecure.Database.Entity;
+using CodeSecure.Core.Entity;
 using Microsoft.AspNetCore.Authentication;
 
 namespace CodeSecure.Authentication;

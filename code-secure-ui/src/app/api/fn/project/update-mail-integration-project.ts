@@ -8,14 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { AlertSetting } from '../../models/alert-setting';
+import { MailProjectAlertSetting } from '../../models/mail-project-alert-setting';
 
 export interface UpdateMailIntegrationProject$Params {
   projectId: string;
-      body?: AlertSetting
+      body?: MailProjectAlertSetting
 }
 
-export function updateMailIntegrationProject(http: HttpClient, rootUrl: string, params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+export function updateMailIntegrationProject(http: HttpClient, rootUrl: string, params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
   const rb = new RequestBuilder(rootUrl, updateMailIntegrationProject.PATH, 'post');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -23,11 +23,11 @@ export function updateMailIntegrationProject(http: HttpClient, rootUrl: string, 
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return (r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }) as StrictHttpResponse<boolean>;
     })
   );
 }

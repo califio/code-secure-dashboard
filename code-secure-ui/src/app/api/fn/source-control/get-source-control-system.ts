@@ -8,12 +8,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { SourceControl } from '../../models/source-control';
+import { SourceControlSummary } from '../../models/source-control-summary';
 
 export interface GetSourceControlSystem$Params {
 }
 
-export function getSourceControlSystem(http: HttpClient, rootUrl: string, params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SourceControl>>> {
+export function getSourceControlSystem(http: HttpClient, rootUrl: string, params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SourceControlSummary>>> {
   const rb = new RequestBuilder(rootUrl, getSourceControlSystem.PATH, 'get');
   if (params) {
   }
@@ -23,7 +23,7 @@ export function getSourceControlSystem(http: HttpClient, rootUrl: string, params
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<SourceControl>>;
+      return r as StrictHttpResponse<Array<SourceControlSummary>>;
     })
   );
 }

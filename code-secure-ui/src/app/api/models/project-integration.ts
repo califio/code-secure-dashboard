@@ -4,5 +4,6 @@
 
 export interface ProjectIntegration {
   jira?: boolean;
+  mail?: boolean;
   teams?: boolean;
 }

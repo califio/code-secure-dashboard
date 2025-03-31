@@ -45,7 +45,7 @@ export class AddUserPopupComponent {
 
   onAddUser() {
     this.loading = true;
-    this.userService.createUserByAdmin({
+    this.userService.createUser({
       body: this.request
     }).pipe(
       finalize(() => this.loading = false)

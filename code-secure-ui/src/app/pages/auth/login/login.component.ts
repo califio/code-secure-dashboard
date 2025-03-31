@@ -3,12 +3,10 @@ import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/
 import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from "../../../core/forms";
 import {NgIcon} from '@ng-icons/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {AuthRequest} from '../../../api/models/auth-request';
 import {AuthService} from '../../../api/services/auth.service';
 import {finalize} from 'rxjs';
 import {AuthStore} from '../../../core/auth/auth.store';
 import {environment} from '../../../../environments/environment';
-import {AuthResponse} from '../../../api/models/auth-response';
 import {bindQueryParams} from '../../../core/router';
 import {ToastrService} from '../../../shared/services/toastr.service';
 import {AuthConfig} from '../../../api/models/auth-config';
@@ -18,6 +16,8 @@ import {Password} from 'primeng/password';
 import {Checkbox} from 'primeng/checkbox';
 import {ButtonDirective} from 'primeng/button';
 import {Divider} from 'primeng/divider';
+import {SignInRequest} from '../../../api/models/sign-in-request';
+import {SignInResponse} from '../../../api/models/sign-in-response';
 
 @Component({
   selector: 'app-login',
@@ -37,12 +37,12 @@ import {Divider} from 'primeng/divider';
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit {
-  formConfig = new FormSection<ConfigOf<AuthRequest>>({
+  formConfig = new FormSection<ConfigOf<SignInRequest>>({
     password: new FormField('', Validators.required),
     userName: new FormField('', Validators.required),
   });
-  form: FormGroup<ControlsOf<AuthRequest>>;
-  authResponse: AuthResponse = {
+  form: FormGroup<ControlsOf<SignInRequest>>;
+  authResponse: SignInResponse = {
     accessToken: null,
     refreshToken: null,
     requireConfirmEmail: null,

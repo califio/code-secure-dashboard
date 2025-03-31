@@ -25,11 +25,11 @@ import { getTeamsIntegrationSetting } from '../fn/integration/get-teams-integrat
 import { GetTeamsIntegrationSetting$Params } from '../fn/integration/get-teams-integration-setting';
 import { getTicketTrackers } from '../fn/integration/get-ticket-trackers';
 import { GetTicketTrackers$Params } from '../fn/integration/get-ticket-trackers';
-import { IntegrationSetting } from '../models/integration-setting';
+import { IntegrationStatus } from '../models/integration-status';
 import { JiraProject } from '../models/jira-project';
 import { JiraSetting } from '../models/jira-setting';
 import { MailAlertSetting } from '../models/mail-alert-setting';
-import { TeamsSetting } from '../models/teams-setting';
+import { TeamsAlertSetting } from '../models/teams-alert-setting';
 import { testJiraIntegrationSetting } from '../fn/integration/test-jira-integration-setting';
 import { TestJiraIntegrationSetting$Params } from '../fn/integration/test-jira-integration-setting';
 import { testTeamsIntegrationSetting } from '../fn/integration/test-teams-integration-setting';
@@ -57,7 +57,7 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getIntegrationSetting$Response(params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<IntegrationSetting>> {
+  getIntegrationSetting$Response(params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<IntegrationStatus>> {
     return getIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -67,9 +67,9 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getIntegrationSetting(params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<IntegrationSetting> {
+  getIntegrationSetting(params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<IntegrationStatus> {
     return this.getIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<IntegrationSetting>): IntegrationSetting => r.body)
+      map((r: StrictHttpResponse<IntegrationStatus>): IntegrationStatus => r.body)
     );
   }
 
@@ -132,7 +132,7 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getTeamsIntegrationSetting$Response(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
+  getTeamsIntegrationSetting$Response(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsAlertSetting>> {
     return getTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -142,9 +142,9 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getTeamsIntegrationSetting(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<TeamsSetting> {
+  getTeamsIntegrationSetting(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<TeamsAlertSetting> {
     return this.getTeamsIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<TeamsSetting>): TeamsSetting => r.body)
+      map((r: StrictHttpResponse<TeamsAlertSetting>): TeamsAlertSetting => r.body)
     );
   }
 
@@ -157,7 +157,7 @@ export class IntegrationService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateTeamsIntegrationSetting$Response(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  updateTeamsIntegrationSetting$Response(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return updateTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -167,9 +167,9 @@ export class IntegrationService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateTeamsIntegrationSetting(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+  updateTeamsIntegrationSetting(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
     return this.updateTeamsIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 
@@ -182,7 +182,7 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  testTeamsIntegrationSetting$Response(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  testTeamsIntegrationSetting$Response(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return testTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -192,9 +192,9 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  testTeamsIntegrationSetting(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+  testTeamsIntegrationSetting(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
     return this.testTeamsIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 
@@ -232,7 +232,7 @@ export class IntegrationService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateJiraIntegrationSetting$Response(params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  updateJiraIntegrationSetting$Response(params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return updateJiraIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -242,9 +242,9 @@ export class IntegrationService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateJiraIntegrationSetting(params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+  updateJiraIntegrationSetting(params?: UpdateJiraIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
     return this.updateJiraIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 
@@ -257,7 +257,7 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  testJiraIntegrationSetting$Response(params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  testJiraIntegrationSetting$Response(params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return testJiraIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
@@ -267,9 +267,9 @@ export class IntegrationService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  testJiraIntegrationSetting(params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+  testJiraIntegrationSetting(params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
     return this.testJiraIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

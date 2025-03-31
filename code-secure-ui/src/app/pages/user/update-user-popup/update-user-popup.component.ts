@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, effect, input, signal} from '@angular/core';
 import {UserInfo} from '../../../api/models/user-info';
 import {UserStore} from '../user.store';
 import {UpdateUserRequest} from '../../../api/models/update-user-request';
@@ -29,19 +29,12 @@ import {ToggleSwitch} from 'primeng/toggleswitch';
     ToggleSwitch,
   ],
   templateUrl: './update-user-popup.component.html',
-  styleUrl: './update-user-popup.component.scss'
 })
 export class UpdateUserPopupComponent {
-  @Input() set user(value: UserInfo | undefined) {
-    if (value) {
-      this._user = value;
-      this.form.patchValue(value);
-    }
-  }
-
-  _user: UserInfo = {};
-
+  user = input<UserInfo>();
+  userId = signal('');
   formConfig = new FormSection<ConfigOf<UpdateUserRequest>>({
+    userId: new FormField<string>(''),
     status: new FormField(UserStatus.Active, Validators.required),
     email: new FormField('', Validators.required),
     role: new FormField('', Validators.required),
@@ -67,13 +60,21 @@ export class UpdateUserPopupComponent {
     private formService: FormService,
   ) {
     this.form = this.formService.group(this.formConfig);
+    effect(() => {
+      const user = this.user();
+      if (user) {
+        this.userId.set(user.id!);
+        this.form.patchValue(user);
+        this.form.controls.userId.setValue(user.id!);
+      }
+    });
   }
 
   onUpdateUser() {
     this.form.disable()
-    this.userService.updateUserByAdmin({
-      userId: this._user.id!,
-      body: this.form.value
+    this.userService.updateUser({
+      userId: this.userId(),
+      body: this.form.value as any
     }).pipe(
       finalize(() => this.form.enable())
     ).subscribe(user => {

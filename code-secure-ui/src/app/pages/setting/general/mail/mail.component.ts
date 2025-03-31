@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../core/forms';
-import {MailSetting} from '../../../../api/models/mail-setting';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SettingService} from '../../../../api/services/setting.service';
 import {ToastrService} from '../../../../shared/services/toastr.service';
 import {finalize} from 'rxjs';
@@ -9,6 +7,7 @@ import {Button} from 'primeng/button';
 import {InputText} from 'primeng/inputtext';
 import {Password} from 'primeng/password';
 import {ToggleSwitch} from 'primeng/toggleswitch';
+import {SmtpSetting} from '../../../../api/models/smtp-setting';
 
 @Component({
   selector: 'app-mail-setting',
@@ -25,36 +24,34 @@ import {ToggleSwitch} from 'primeng/toggleswitch';
   styleUrl: './mail.component.scss'
 })
 export class MailComponent implements OnInit {
-  formConfig = new FormSection<ConfigOf<MailSetting>>({
-    password: new FormField(''),
-    port: new FormField(0),
-    server: new FormField(''),
-    userName: new FormField(''),
-    useSsl: new FormField(false),
-  });
-  form: FormGroup<ControlsOf<MailSetting>>
+  smtpSetting: SmtpSetting = {
+    name: '',
+    password: '',
+    port: 0,
+    server: '',
+    userName: ''
+  }
+  loading = false;
   loadingTestMail = false;
 
   constructor(
-    private formService: FormService,
     private settingService: SettingService,
     private toastr: ToastrService
   ) {
-    this.form = this.formService.group(this.formConfig);
   }
 
   ngOnInit(): void {
-    this.settingService.getMailSetting().subscribe(mailSetting => {
-      this.form.patchValue(mailSetting);
+    this.settingService.getSmtpSetting().subscribe(setting => {
+      this.smtpSetting = setting;
     })
   }
 
   saveConfig() {
-    this.form.disable();
-    this.settingService.updateMailSetting({
-      body: this.form.getRawValue()
+    this.loading = true;
+    this.settingService.updateSmtpSetting({
+      body: this.smtpSetting
     }).pipe(
-      finalize(() => this.form.enable())
+      finalize(() => this.loading = false)
     ).subscribe(() => {
       this.toastr.success({
         message: 'Update config success!'
@@ -62,9 +59,9 @@ export class MailComponent implements OnInit {
     })
   }
 
-  testMail() {
+  testConnection() {
     this.loadingTestMail = true;
-    this.settingService.testMailSetting({
+    this.settingService.testSmtpSetting({
       email: undefined
     }).pipe(
       finalize(() => this.loadingTestMail = false)

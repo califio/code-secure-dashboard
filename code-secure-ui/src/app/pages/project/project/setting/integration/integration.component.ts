@@ -26,7 +26,6 @@ import {Panel} from 'primeng/panel';
     MailComponent
   ],
   templateUrl: './integration.component.html',
-  styleUrl: './integration.component.scss',
 })
 export class IntegrationComponent {
   integrationSetting: ProjectIntegration = {};

@@ -1,4 +1,4 @@
-using CodeSecure.Enum;
+using CodeSecure.Core.Enum;
 
 namespace CodeSecure.Api.CI.Model;
 

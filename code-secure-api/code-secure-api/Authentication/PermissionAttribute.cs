@@ -7,7 +7,7 @@ public class PermissionAttribute : TypeFilterAttribute
 {
     public PermissionAttribute(string type, string action) : base(typeof(PermissionFilter))
     {
-        Arguments = new object[] { type, action };
+        Arguments = [type, action];
     }
 }
 

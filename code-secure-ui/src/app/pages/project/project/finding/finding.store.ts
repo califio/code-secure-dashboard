@@ -1,7 +1,12 @@
 import {computed, Injectable, signal} from '@angular/core';
 import {Scanners} from '../../../../api/models/scanners';
 import {FindingDetail} from '../../../../api/models/finding-detail';
-import {FindingSortField, FindingSummary, ProjectFindingFilter} from '../../../../api/models';
+import {
+  FindingFilter,
+  FindingSortField,
+  FindingStatus,
+  FindingSummary,
+} from '../../../../api/models';
 import {BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 
 @Injectable({
@@ -17,7 +22,21 @@ export class FindingStore {
   finding = signal<FindingDetail | null>(null);
   loadingExport = signal(false);
   // filter
-  filter: ProjectFindingFilter = {};
+  filter: FindingFilter = {
+    desc: true,
+    name: '',
+    page: 1,
+    scanner: [],
+    severity: undefined,
+    sortBy: FindingSortField.CreatedAt,
+    ruleId: undefined,
+    status: [
+      FindingStatus.Open,
+      FindingStatus.Confirmed,
+    ],
+    commitId: undefined,
+    size: 20,
+  };
   //paginator
   currentPage = signal(1);
   pageSize = signal(20);

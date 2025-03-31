@@ -13,8 +13,6 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { getProfile } from '../fn/profile/get-profile';
 import { GetProfile$Params } from '../fn/profile/get-profile';
-import { updateProfile } from '../fn/profile/update-profile';
-import { UpdateProfile$Params } from '../fn/profile/update-profile';
 import { UserProfile } from '../models/user-profile';
 
 @Injectable({ providedIn: 'root' })
@@ -44,31 +42,6 @@ export class ProfileService extends BaseService {
    */
   getProfile(params?: GetProfile$Params, context?: HttpContext): Observable<UserProfile> {
     return this.getProfile$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserProfile>): UserProfile => r.body)
-    );
-  }
-
-  /** Path part for operation `updateProfile()` */
-  static readonly UpdateProfilePath = '/api/profile';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateProfile()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateProfile$Response(params?: UpdateProfile$Params, context?: HttpContext): Observable<StrictHttpResponse<UserProfile>> {
-    return updateProfile(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateProfile$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateProfile(params?: UpdateProfile$Params, context?: HttpContext): Observable<UserProfile> {
-    return this.updateProfile$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserProfile>): UserProfile => r.body)
     );
   }

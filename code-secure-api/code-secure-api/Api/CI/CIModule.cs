@@ -1,4 +1,5 @@
 using CodeSecure.Api.CI.Service;
+using CodeSecure.Core;
 
 namespace CodeSecure.Api.CI;
 

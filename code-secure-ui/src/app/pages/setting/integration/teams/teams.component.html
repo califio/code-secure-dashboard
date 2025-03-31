@@ -3,45 +3,53 @@
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Enable</span>
       <div class="w-full max-w-md">
-        <p-toggle-switch [formControl]="form.controls.active!"></p-toggle-switch>
+        <p-toggle-switch [(ngModel)]="setting.active"></p-toggle-switch>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Webhook</span>
       <div class="w-full max-w-md">
-        <input pInputText type="text" class="w-full" [formControl]="form.controls.webhook!">
+        <input pInputText type="text" class="w-full" [(ngModel)]="setting.webhook">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full">
       <span class="w-36 md:w-48">Event</span>
       <div class="flex flex-col gap-1">
         <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.scanCompletedEvent!"></p-toggle-switch>
-          <label>Scan Completed</label>
-        </div>
-        <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.scanFailedEvent!"></p-toggle-switch>
-          <label>Scan Failed</label>
-        </div>
-        <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.securityAlertEvent!"></p-toggle-switch>
+          <p-toggle-switch [(ngModel)]="setting.securityAlertEvent"></p-toggle-switch>
           <label>Security Alert</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.newFindingEvent!"></p-toggle-switch>
+          <p-toggle-switch [(ngModel)]="setting.newFindingEvent"></p-toggle-switch>
           <label>New Finding</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.fixedFindingEvent!"></p-toggle-switch>
+          <p-toggle-switch [(ngModel)]="setting.fixedFindingEvent"></p-toggle-switch>
           <label>Fixed Finding</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.needTriageFindingEvent"></p-toggle-switch>
+          <label>Need Triage Finding</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.scanCompletedEvent"></p-toggle-switch>
+          <label>Scan Completed</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.scanFailedEvent"></p-toggle-switch>
+          <label>Scan Failed</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.projectWithoutMemberEvent"></p-toggle-switch>
+          <label>Project Without Member</label>
         </div>
       </div>
     </div>
   </div>
   <div class="flex flex-row gap-2 items-center">
     <button pButton severity="primary"
-            [loading]="form.disabled"
-            [disabled]="form.disabled"
+            [loading]="loading"
+            [disabled]="loading"
             (click)="saveConfig()">Update
     </button>
     <button pButton severity="secondary"

@@ -12,10 +12,9 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { AuthConfig } from '../models/auth-config';
-import { AuthResponse } from '../models/auth-response';
 import { confirmEmail } from '../fn/auth/confirm-email';
 import { ConfirmEmail$Params } from '../fn/auth/confirm-email';
-import { ConfirmEmailResult } from '../models/confirm-email-result';
+import { ConfirmEmailResponse } from '../models/confirm-email-response';
 import { forgotPassword } from '../fn/auth/forgot-password';
 import { ForgotPassword$Params } from '../fn/auth/forgot-password';
 import { getAuthConfig } from '../fn/auth/get-auth-config';
@@ -26,15 +25,43 @@ import { logout } from '../fn/auth/logout';
 import { Logout$Params } from '../fn/auth/logout';
 import { refreshToken } from '../fn/auth/refresh-token';
 import { RefreshToken$Params } from '../fn/auth/refresh-token';
+import { renderMail } from '../fn/auth/render-mail';
+import { RenderMail$Params } from '../fn/auth/render-mail';
 import { resetPassword } from '../fn/auth/reset-password';
 import { ResetPassword$Params } from '../fn/auth/reset-password';
 import { server } from '../fn/auth/server';
 import { Server$Params } from '../fn/auth/server';
+import { SignInResponse } from '../models/sign-in-response';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `renderMail()` */
+  static readonly RenderMailPath = '/api/render-mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `renderMail()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  renderMail$Response(params?: RenderMail$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+    return renderMail(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `renderMail$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  renderMail(params?: RenderMail$Params, context?: HttpContext): Observable<string> {
+    return this.renderMail$Response(params, context).pipe(
+      map((r: StrictHttpResponse<string>): string => r.body)
+    );
   }
 
   /** Path part for operation `server()` */
@@ -96,7 +123,7 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  login$Response(params?: Login$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthResponse>> {
+  login$Response(params?: Login$Params, context?: HttpContext): Observable<StrictHttpResponse<SignInResponse>> {
     return login(this.http, this.rootUrl, params, context);
   }
 
@@ -106,9 +133,9 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  login(params?: Login$Params, context?: HttpContext): Observable<AuthResponse> {
+  login(params?: Login$Params, context?: HttpContext): Observable<SignInResponse> {
     return this.login$Response(params, context).pipe(
-      map((r: StrictHttpResponse<AuthResponse>): AuthResponse => r.body)
+      map((r: StrictHttpResponse<SignInResponse>): SignInResponse => r.body)
     );
   }
 
@@ -121,7 +148,7 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  refreshToken$Response(params?: RefreshToken$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthResponse>> {
+  refreshToken$Response(params?: RefreshToken$Params, context?: HttpContext): Observable<StrictHttpResponse<SignInResponse>> {
     return refreshToken(this.http, this.rootUrl, params, context);
   }
 
@@ -131,9 +158,9 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  refreshToken(params?: RefreshToken$Params, context?: HttpContext): Observable<AuthResponse> {
+  refreshToken(params?: RefreshToken$Params, context?: HttpContext): Observable<SignInResponse> {
     return this.refreshToken$Response(params, context).pipe(
-      map((r: StrictHttpResponse<AuthResponse>): AuthResponse => r.body)
+      map((r: StrictHttpResponse<SignInResponse>): SignInResponse => r.body)
     );
   }
 
@@ -221,7 +248,7 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  confirmEmail$Response(params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<ConfirmEmailResult>> {
+  confirmEmail$Response(params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<ConfirmEmailResponse>> {
     return confirmEmail(this.http, this.rootUrl, params, context);
   }
 
@@ -231,9 +258,9 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  confirmEmail(params?: ConfirmEmail$Params, context?: HttpContext): Observable<ConfirmEmailResult> {
+  confirmEmail(params?: ConfirmEmail$Params, context?: HttpContext): Observable<ConfirmEmailResponse> {
     return this.confirmEmail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ConfirmEmailResult>): ConfirmEmailResult => r.body)
+      map((r: StrictHttpResponse<ConfirmEmailResponse>): ConfirmEmailResponse => r.body)
     );
   }
 

@@ -24,6 +24,7 @@ import { ExportFinding$Json$Params } from '../fn/finding/export-finding-json';
 import { FindingActivity } from '../models/finding-activity';
 import { FindingActivityPage } from '../models/finding-activity-page';
 import { FindingDetail } from '../models/finding-detail';
+import { FindingStatus } from '../models/finding-status';
 import { FindingSummaryPage } from '../models/finding-summary-page';
 import { getFinding } from '../fn/finding/get-finding';
 import { GetFinding$Params } from '../fn/finding/get-finding';
@@ -178,7 +179,7 @@ export class FindingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateStatusScanFinding$Response(params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  updateStatusScanFinding$Response(params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingStatus>> {
     return updateStatusScanFinding(this.http, this.rootUrl, params, context);
   }
 
@@ -188,9 +189,9 @@ export class FindingService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateStatusScanFinding(params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<void> {
+  updateStatusScanFinding(params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<FindingStatus> {
     return this.updateStatusScanFinding$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<FindingStatus>): FindingStatus => r.body)
     );
   }
 
@@ -278,7 +279,7 @@ export class FindingService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  deleteTicket$Response(params: DeleteTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  deleteTicket$Response(params: DeleteTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return deleteTicket(this.http, this.rootUrl, params, context);
   }
 
@@ -288,9 +289,9 @@ export class FindingService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  deleteTicket(params: DeleteTicket$Params, context?: HttpContext): Observable<void> {
+  deleteTicket(params: DeleteTicket$Params, context?: HttpContext): Observable<boolean> {
     return this.deleteTicket$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

@@ -47,13 +47,13 @@ import {
   FindingExportMenuComponent
 } from '../../../../shared/components/finding/finding-export-menu/finding-export-menu.component';
 import {ExportType} from '../../../../api/models/export-type';
-import {FindingSortField} from '../../../../api/models/finding-sort-field';
 import {formatDate} from '@angular/common';
 import {toArray} from '../../../../core/transform';
 import {BranchFilterComponent, BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 import {Divider} from 'primeng/divider';
 import {Drawer} from 'primeng/drawer';
 import {FindingStatusComponent} from '../../../../shared/components/finding/finding-status/finding-status.component';
+import {ScannerType} from '../../../../api/models/scanner-type';
 
 @Component({
   selector: 'app-finding',
@@ -111,39 +111,11 @@ export class FindingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.filter = {
-      desc: true,
-      name: '',
-      page: 1,
-      scanner: [],
-      severity: undefined,
-      sortBy: FindingSortField.CreatedAt,
-      ruleId: undefined,
-      status: [
-        FindingStatus.Open,
-        FindingStatus.Confirmed,
-      ],
-      commitId: undefined,
-      size: 20,
-    };
-    this.projectService.getProjectCommits({
-      projectId: this.projectStore.projectId()
-    }).subscribe(commits => {
-      const options = commits.map(item => {
-        return <BranchOption>{
-          id: item.commitId,
-          commitBranch: item.branch,
-          commitType: item.action,
-          targetBranch: item.targetBranch
-        }
-      });
-      this.store.branchOptions.set(options);
-    });
-    this.scannerService.getSastScanners({
-      projectId: this.projectStore.projectId()
-    }).subscribe(scanners => {
-      this.store.scannerOptions.set(scanners);
-    });
+    this.store.filter.name = undefined;
+    this.store.filter.scanner = [];
+    this.store.filter.ruleId = undefined;
+    this.store.filter.commitId = undefined;
+    this.store.filter.projectId = this.projectStore.projectId();
     this.route.queryParams.pipe(
       switchMap(params => {
         bindQueryParams(params, this.store.filter);
@@ -163,7 +135,28 @@ export class FindingComponent implements OnInit, OnDestroy {
       this.store.currentPage.set(result.findingPage.currentPage!);
       this.store.totalRecords.set(result.findingPage.count!);
       this.store.ruleOptions.set(result.rules);
-    })
+    });
+    this.projectService.getProjectCommits({
+      projectId: this.projectStore.projectId()
+    }).subscribe(commits => {
+      const options = commits.map(item => {
+        return <BranchOption>{
+          id: item.commitId,
+          commitBranch: item.branch,
+          commitType: item.action,
+          targetBranch: item.targetBranch
+        }
+      });
+      this.store.branchOptions.set(options);
+    });
+    this.scannerService.getScanners({
+      body: {
+        projectId: this.projectStore.projectId(),
+        type: [ScannerType.Secret, ScannerType.Sast]
+      }
+    }).subscribe(scanners => {
+      this.store.scannerOptions.set(scanners);
+    });
   }
 
 
@@ -202,8 +195,7 @@ export class FindingComponent implements OnInit, OnDestroy {
 
   private getFindings() {
     this.store.loading.set(true);
-    return this.projectService.getProjectFindings({
-      projectId: this.projectStore.projectId(),
+    return this.findingService.getFindings({
       body: this.store.filter
     }).pipe(
       finalize(() => {
@@ -319,8 +311,10 @@ export class FindingComponent implements OnInit, OnDestroy {
 
     this.projectService.export$Any({
       projectId: this.projectStore.projectId(),
-      format: $event,
-      body: this.store.filter
+      body: {
+        exportType: $event,
+        filter: this.store.filter
+      }
     }).pipe(
       finalize(() => {
         this.store.loadingExport.set(false);

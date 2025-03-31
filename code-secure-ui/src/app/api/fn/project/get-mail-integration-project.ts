@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { AlertSetting } from '../../models/alert-setting';
+import { ProjectAlertEvent } from '../../models/project-alert-event';
 
 export interface GetMailIntegrationProject$Params {
   projectId: string;
 }
 
-export function getMailIntegrationProject(http: HttpClient, rootUrl: string, params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<AlertSetting>> {
+export function getMailIntegrationProject(http: HttpClient, rootUrl: string, params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectAlertEvent>> {
   const rb = new RequestBuilder(rootUrl, getMailIntegrationProject.PATH, 'get');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -25,7 +25,7 @@ export function getMailIntegrationProject(http: HttpClient, rootUrl: string, par
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<AlertSetting>;
+      return r as StrictHttpResponse<ProjectAlertEvent>;
     })
   );
 }

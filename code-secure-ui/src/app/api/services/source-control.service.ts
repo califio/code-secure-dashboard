@@ -13,7 +13,7 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { getSourceControlSystem } from '../fn/source-control/get-source-control-system';
 import { GetSourceControlSystem$Params } from '../fn/source-control/get-source-control-system';
-import { SourceControl } from '../models/source-control';
+import { SourceControlSummary } from '../models/source-control-summary';
 
 @Injectable({ providedIn: 'root' })
 export class SourceControlService extends BaseService {
@@ -30,7 +30,7 @@ export class SourceControlService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getSourceControlSystem$Response(params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SourceControl>>> {
+  getSourceControlSystem$Response(params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SourceControlSummary>>> {
     return getSourceControlSystem(this.http, this.rootUrl, params, context);
   }
 
@@ -40,9 +40,9 @@ export class SourceControlService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getSourceControlSystem(params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<Array<SourceControl>> {
+  getSourceControlSystem(params?: GetSourceControlSystem$Params, context?: HttpContext): Observable<Array<SourceControlSummary>> {
     return this.getSourceControlSystem$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<SourceControl>>): Array<SourceControl> => r.body)
+      map((r: StrictHttpResponse<Array<SourceControlSummary>>): Array<SourceControlSummary> => r.body)
     );
   }
 

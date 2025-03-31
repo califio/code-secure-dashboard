@@ -11,20 +11,20 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { createUserByAdmin } from '../fn/user/create-user-by-admin';
-import { CreateUserByAdmin$Params } from '../fn/user/create-user-by-admin';
-import { getProjectManagerUsers } from '../fn/user/get-project-manager-users';
-import { GetProjectManagerUsers$Params } from '../fn/user/get-project-manager-users';
-import { getUser } from '../fn/user/get-user';
-import { GetUser$Params } from '../fn/user/get-user';
-import { getUsers } from '../fn/user/get-users';
-import { GetUsers$Params } from '../fn/user/get-users';
-import { getUsersByAdmin } from '../fn/user/get-users-by-admin';
-import { GetUsersByAdmin$Params } from '../fn/user/get-users-by-admin';
+import { createUser } from '../fn/user/create-user';
+import { CreateUser$Params } from '../fn/user/create-user';
+import { findUserInfoById } from '../fn/user/find-user-info-by-id';
+import { FindUserInfoById$Params } from '../fn/user/find-user-info-by-id';
+import { listProjectManagerUser } from '../fn/user/list-project-manager-user';
+import { ListProjectManagerUser$Params } from '../fn/user/list-project-manager-user';
+import { queryUserInfo } from '../fn/user/query-user-info';
+import { QueryUserInfo$Params } from '../fn/user/query-user-info';
+import { queryUserSummary } from '../fn/user/query-user-summary';
+import { QueryUserSummary$Params } from '../fn/user/query-user-summary';
 import { sendConfirmEmail } from '../fn/user/send-confirm-email';
 import { SendConfirmEmail$Params } from '../fn/user/send-confirm-email';
-import { updateUserByAdmin } from '../fn/user/update-user-by-admin';
-import { UpdateUserByAdmin$Params } from '../fn/user/update-user-by-admin';
+import { updateUser } from '../fn/user/update-user';
+import { UpdateUser$Params } from '../fn/user/update-user';
 import { UserInfo } from '../models/user-info';
 import { UserInfoPage } from '../models/user-info-page';
 import { UserSummary } from '../models/user-summary';
@@ -36,152 +36,152 @@ export class UserService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getUsers()` */
-  static readonly GetUsersPath = '/api/user/public';
+  /** Path part for operation `queryUserSummary()` */
+  static readonly QueryUserSummaryPath = '/api/user/public';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getUsers()` instead.
+   * To access only the response body, use `queryUserSummary()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getUsers$Response(params?: GetUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
-    return getUsers(this.http, this.rootUrl, params, context);
+  queryUserSummary$Response(params?: QueryUserSummary$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
+    return queryUserSummary(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getUsers$Response()` instead.
+   * To access the full response (for headers, for example), `queryUserSummary$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getUsers(params?: GetUsers$Params, context?: HttpContext): Observable<UserSummaryPage> {
-    return this.getUsers$Response(params, context).pipe(
+  queryUserSummary(params?: QueryUserSummary$Params, context?: HttpContext): Observable<UserSummaryPage> {
+    return this.queryUserSummary$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserSummaryPage>): UserSummaryPage => r.body)
     );
   }
 
-  /** Path part for operation `getProjectManagerUsers()` */
-  static readonly GetProjectManagerUsersPath = '/api/user/project-manager';
+  /** Path part for operation `listProjectManagerUser()` */
+  static readonly ListProjectManagerUserPath = '/api/user/project-manager';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getProjectManagerUsers()` instead.
+   * To access only the response body, use `listProjectManagerUser()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getProjectManagerUsers$Response(params?: GetProjectManagerUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<UserSummary>>> {
-    return getProjectManagerUsers(this.http, this.rootUrl, params, context);
+  listProjectManagerUser$Response(params?: ListProjectManagerUser$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<UserSummary>>> {
+    return listProjectManagerUser(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getProjectManagerUsers$Response()` instead.
+   * To access the full response (for headers, for example), `listProjectManagerUser$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getProjectManagerUsers(params?: GetProjectManagerUsers$Params, context?: HttpContext): Observable<Array<UserSummary>> {
-    return this.getProjectManagerUsers$Response(params, context).pipe(
+  listProjectManagerUser(params?: ListProjectManagerUser$Params, context?: HttpContext): Observable<Array<UserSummary>> {
+    return this.listProjectManagerUser$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<UserSummary>>): Array<UserSummary> => r.body)
     );
   }
 
-  /** Path part for operation `getUsersByAdmin()` */
-  static readonly GetUsersByAdminPath = '/api/user/filter';
+  /** Path part for operation `queryUserInfo()` */
+  static readonly QueryUserInfoPath = '/api/user/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getUsersByAdmin()` instead.
+   * To access only the response body, use `queryUserInfo()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getUsersByAdmin$Response(params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfoPage>> {
-    return getUsersByAdmin(this.http, this.rootUrl, params, context);
+  queryUserInfo$Response(params?: QueryUserInfo$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfoPage>> {
+    return queryUserInfo(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getUsersByAdmin$Response()` instead.
+   * To access the full response (for headers, for example), `queryUserInfo$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getUsersByAdmin(params?: GetUsersByAdmin$Params, context?: HttpContext): Observable<UserInfoPage> {
-    return this.getUsersByAdmin$Response(params, context).pipe(
+  queryUserInfo(params?: QueryUserInfo$Params, context?: HttpContext): Observable<UserInfoPage> {
+    return this.queryUserInfo$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserInfoPage>): UserInfoPage => r.body)
     );
   }
 
-  /** Path part for operation `getUser()` */
-  static readonly GetUserPath = '/api/user/{userId}';
+  /** Path part for operation `findUserInfoById()` */
+  static readonly FindUserInfoByIdPath = '/api/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getUser()` instead.
+   * To access only the response body, use `findUserInfoById()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getUser$Response(params: GetUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
-    return getUser(this.http, this.rootUrl, params, context);
+  findUserInfoById$Response(params: FindUserInfoById$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+    return findUserInfoById(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getUser$Response()` instead.
+   * To access the full response (for headers, for example), `findUserInfoById$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getUser(params: GetUser$Params, context?: HttpContext): Observable<UserInfo> {
-    return this.getUser$Response(params, context).pipe(
+  findUserInfoById(params: FindUserInfoById$Params, context?: HttpContext): Observable<UserInfo> {
+    return this.findUserInfoById$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }
 
-  /** Path part for operation `updateUserByAdmin()` */
-  static readonly UpdateUserByAdminPath = '/api/user/{userId}';
+  /** Path part for operation `updateUser()` */
+  static readonly UpdateUserPath = '/api/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateUserByAdmin()` instead.
+   * To access only the response body, use `updateUser()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateUserByAdmin$Response(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
-    return updateUserByAdmin(this.http, this.rootUrl, params, context);
+  updateUser$Response(params: UpdateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+    return updateUser(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateUserByAdmin$Response()` instead.
+   * To access the full response (for headers, for example), `updateUser$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateUserByAdmin(params: UpdateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
-    return this.updateUserByAdmin$Response(params, context).pipe(
+  updateUser(params: UpdateUser$Params, context?: HttpContext): Observable<UserInfo> {
+    return this.updateUser$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }
 
-  /** Path part for operation `createUserByAdmin()` */
-  static readonly CreateUserByAdminPath = '/api/user';
+  /** Path part for operation `createUser()` */
+  static readonly CreateUserPath = '/api/user';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `createUserByAdmin()` instead.
+   * To access only the response body, use `createUser()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createUserByAdmin$Response(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
-    return createUserByAdmin(this.http, this.rootUrl, params, context);
+  createUser$Response(params?: CreateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+    return createUser(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `createUserByAdmin$Response()` instead.
+   * To access the full response (for headers, for example), `createUser$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createUserByAdmin(params?: CreateUserByAdmin$Params, context?: HttpContext): Observable<UserInfo> {
-    return this.createUserByAdmin$Response(params, context).pipe(
+  createUser(params?: CreateUser$Params, context?: HttpContext): Observable<UserInfo> {
+    return this.createUser$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
     );
   }

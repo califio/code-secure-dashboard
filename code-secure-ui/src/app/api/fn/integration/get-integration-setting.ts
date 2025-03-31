@@ -8,12 +8,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { IntegrationSetting } from '../../models/integration-setting';
+import { IntegrationStatus } from '../../models/integration-status';
 
 export interface GetIntegrationSetting$Params {
 }
 
-export function getIntegrationSetting(http: HttpClient, rootUrl: string, params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<IntegrationSetting>> {
+export function getIntegrationSetting(http: HttpClient, rootUrl: string, params?: GetIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<IntegrationStatus>> {
   const rb = new RequestBuilder(rootUrl, getIntegrationSetting.PATH, 'get');
   if (params) {
   }
@@ -23,7 +23,7 @@ export function getIntegrationSetting(http: HttpClient, rootUrl: string, params?
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<IntegrationSetting>;
+      return r as StrictHttpResponse<IntegrationStatus>;
     })
   );
 }

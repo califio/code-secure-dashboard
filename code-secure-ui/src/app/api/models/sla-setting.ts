@@ -4,6 +4,6 @@
 
 import { Sla } from '../models/sla';
 export interface SlaSetting {
-  sast: Sla;
-  sca: Sla;
+  sast?: Sla;
+  sca?: Sla;
 }

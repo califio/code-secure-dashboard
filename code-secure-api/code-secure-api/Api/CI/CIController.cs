@@ -1,6 +1,5 @@
 using CodeSecure.Api.CI.Model;
 using CodeSecure.Api.CI.Service;
-using CodeSecure.Manager.EnvVariable.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,13 +25,6 @@ public class CiController(ICiService ciService)
     public async Task<CiScanInfo> InitCiScan(CiScanRequest request)
     {
         return await ciService.InitScan(request);
-    }
-
-    [HttpGet]
-    [Route("scan/{scanId:guid}/env")]
-    public async Task<List<EnvironmentVariable>> GetScanEnvironmentVariables(Guid scanId)
-    {
-        return await ciService.GetEnvironmentVariables(scanId);
     }
 
     [HttpPut]

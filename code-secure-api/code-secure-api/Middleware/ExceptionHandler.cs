@@ -1,9 +1,9 @@
-using CodeSecure.Exception;
+using CodeSecure.Application.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace CodeSecure.Middleware;
 
-internal record Error(int Status, List<string> Errors);
+internal record Error(int Status, IEnumerable<string> Errors);
 
 public static class ExceptionHandler
 {
@@ -18,7 +18,7 @@ public static class ExceptionHandler
                 if (exception is WebException webException)
                 {
                     context.Response.StatusCode = webException.Status;
-                    message = new Error(webException.Status, [webException.Message]);
+                    message = new Error(webException.Status, webException.Errors);
                 }
                 else
                 {

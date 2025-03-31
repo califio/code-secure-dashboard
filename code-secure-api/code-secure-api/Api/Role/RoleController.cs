@@ -1,16 +1,23 @@
-using CodeSecure.Api.Role.Model;
-using CodeSecure.Api.Role.Service;
+using CodeSecure.Application.Exceptions;
+using CodeSecure.Application.Module.Role;
 using CodeSecure.Authentication;
+using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Role;
 
-public class RoleController(IRoleService roleService) : BaseController
+public class RoleController(IListRoleHandler listRoleHandler) : BaseController
 {
     [HttpGet]
     [Permission(PermissionType.Role, PermissionAction.Read)]
     public async Task<List<RoleSummary>> GetRoles()
     {
-        return await roleService.GetRolesAsync();
+        var result = await listRoleHandler.HandleAsync();
+        if (result.IsSuccess)
+        {
+            return result.Value;
+        }
+
+        throw new BadRequestException(result.ListErrors());
     }
 }

@@ -3,16 +3,16 @@
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Enable</span>
       <div class="w-full max-w-md">
-        <p-toggle-switch [formControl]="form.controls.active!"></p-toggle-switch>
+        <p-toggle-switch [(ngModel)]="setting.active"></p-toggle-switch>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Receiver</span>
       <div class="flex flex-col gap-1">
-        @for (email of receiver; track $index) {
+        @for (email of setting.receivers; track $index) {
           <div class="w-full max-w-md flex flex-row items-center gap-2">
-            <input pInputText type="email" class="w-full" [(ngModel)]="receiver[$index]" placeholder="Email address">
-            <ng-icon name="trash" class="cursor-pointer" (click)="deleteReceiver(receiver[$index])"></ng-icon>
+            <input pInputText type="email" class="w-full" [(ngModel)]="setting.receivers![$index]" placeholder="Email address">
+            <ng-icon name="trash" class="cursor-pointer" (click)="deleteReceiver(setting.receivers![$index])"></ng-icon>
           </div>
         }
         <p-button severity="secondary" (click)="addEmail()" label="Add another"/>
@@ -22,32 +22,40 @@
       <span class="w-36 md:w-48">Event</span>
       <div class="flex flex-col gap-1">
         <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.scanCompletedEvent!"></p-toggle-switch>
-          <label>Scan Completed</label>
-        </div>
-        <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.scanFailedEvent!"></p-toggle-switch>
-          <label>Scan Failed</label>
-        </div>
-        <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.securityAlertEvent!"></p-toggle-switch>
+          <p-toggle-switch [(ngModel)]="setting.securityAlertEvent"></p-toggle-switch>
           <label>Security Alert</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.newFindingEvent!"></p-toggle-switch>
+          <p-toggle-switch [(ngModel)]="setting.newFindingEvent"></p-toggle-switch>
           <label>New Finding</label>
         </div>
         <div class="flex flex-row gap-2 items-center">
-          <p-toggle-switch [formControl]="form.controls.fixedFindingEvent!"></p-toggle-switch>
+          <p-toggle-switch [(ngModel)]="setting.fixedFindingEvent"></p-toggle-switch>
           <label>Fixed Finding</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.needTriageFindingEvent"></p-toggle-switch>
+          <label>Need Triage Finding</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.scanCompletedEvent"></p-toggle-switch>
+          <label>Scan Completed</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.scanFailedEvent"></p-toggle-switch>
+          <label>Scan Failed</label>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <p-toggle-switch [(ngModel)]="setting.projectWithoutMemberEvent"></p-toggle-switch>
+          <label>Project Without Member</label>
         </div>
       </div>
     </div>
   </div>
   <div class="flex flex-row gap-2 items-center">
     <button pButton severity="primary"
-            [loading]="form.disabled"
-            [disabled]="form.disabled"
+            [loading]="loading"
+            [disabled]="loading"
             (click)="saveConfig()">Update
     </button>
   </div>

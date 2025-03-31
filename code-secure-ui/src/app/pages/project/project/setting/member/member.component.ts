@@ -8,7 +8,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../project.store';
 import {ProjectService} from '../../../../../api/services/project.service';
 import {finalize, Subject, switchMap, takeUntil, tap} from 'rxjs';
-import {ProjectUser} from '../../../../../api/models/project-user';
 import {ToastrService} from '../../../../../shared/services/toastr.service';
 import {UpdateMemberDialogComponent} from './update-member-popup/update-member-dialog.component';
 import {AddMemberDialogComponent} from './add-member-popup/add-member-dialog.component';
@@ -26,7 +25,8 @@ import {ConfirmationService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {Chip} from 'primeng/chip';
 import {Panel} from 'primeng/panel';
-import {ProjectUserFilter} from '../../../../../api/models/project-user-filter';
+import {ProjectMemberFilter} from '../../../../../api/models/project-member-filter';
+import {ProjectMember} from '../../../../../api/models/project-member';
 
 @Component({
   selector: 'app-member',
@@ -55,7 +55,7 @@ import {ProjectUserFilter} from '../../../../../api/models/project-user-filter';
 })
 export class MemberComponent implements OnInit, OnDestroy {
   isDesktop = true;
-  filter: ProjectUserFilter = {
+  filter: ProjectMemberFilter = {
     desc: true,
     name: '',
     page: 1,
@@ -111,7 +111,7 @@ export class MemberComponent implements OnInit, OnDestroy {
     )
   }
 
-  showConfirmDeleteMemberDialog(member: ProjectUser) {
+  showConfirmDeleteMemberDialog(member: ProjectMember) {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to delete?',
       header: 'Confirmation',
@@ -140,7 +140,7 @@ export class MemberComponent implements OnInit, OnDestroy {
     });
   }
 
-  showUpdateMemberPopup(member: ProjectUser) {
+  showUpdateMemberPopup(member: ProjectMember) {
     this.store.member.set(member);
     this.store.showUpdateMemberDialog.set(true);
   }

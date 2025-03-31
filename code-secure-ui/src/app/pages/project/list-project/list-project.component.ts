@@ -28,8 +28,8 @@ import {UserService} from '../../../api/services/user.service';
 import {
   SourceControlSelectComponent
 } from '../../../shared/components/source-control-select/source-control-select.component';
-import {SourceControl} from '../../../api/models/source-control';
 import {SourceControlService} from '../../../api/services/source-control.service';
+import {SourceControlSummary} from '../../../api/models/source-control-summary';
 
 @Component({
   selector: 'page-list-project',
@@ -74,13 +74,13 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   filter: ProjectFilter = {
     name: '',
     sortBy: ProjectSortField.CreatedAt,
-    userId: undefined,
+    memberUserId: undefined,
     size: 20,
     page: 1,
     desc: true,
     sourceControlId: undefined
   }
-  sourceControls = signal<SourceControl[]>([]);
+  sourceControls = signal<SourceControlSummary[]>([]);
   isDesktop = true;
   // paginator
   currentPage = signal(1);
@@ -107,7 +107,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     this.sourceControlService.getSourceControlSystem().subscribe(sourceControls => {
       this.sourceControls.set(sourceControls);
     });
-    this.userService.getProjectManagerUsers().subscribe(users => {
+    this.userService.listProjectManagerUser().subscribe(users => {
       this.users.set(users);
     })
     this.route.queryParams.pipe(
@@ -163,7 +163,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   }
 
   onChangeUser($event: any) {
-    this.filter.userId = $event;
+    this.filter.memberUserId = $event;
     updateQueryParams(this.router, this.filter);
   }
 

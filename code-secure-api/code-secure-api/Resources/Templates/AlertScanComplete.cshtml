@@ -1,0 +1,186 @@
+@using CodeSecure.Application
+@using CodeSecure.Core.Enum
+@model CodeSecure.Application.Module.Integration.AlertScanCompleteModel
+<table border="0" cellpadding="0" cellspacing="0" style="text-align:center;min-width:640px;width:100%;margin:0;padding:0" bgcolor="#fafafa">
+    <tbody>
+    <tr>
+        <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;height:4px;font-size:4px;line-height:4px"
+            bgcolor="#6b4fbb"></td>
+    </tr>
+    <tr>
+        <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0">
+        </td>
+    </tr>
+    <tr>
+        <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif">
+            <table border="0" cellpadding="0" cellspacing="0"
+                   style="width:640px;border-collapse:separate;border-spacing:0;margin:0 auto">
+                <tbody>
+                <tr>
+                    <td
+                        style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;border-radius:3px;overflow:hidden;padding:18px 25px;border:1px solid #ededed"
+                        align="left" bgcolor="#ffffff">
+                        <table border="0" cellpadding="0" cellspacing="0"
+                               style="width:100%;border-collapse:separate;border-spacing:0">
+                            <tbody>
+                            <tr style="padding-bottom:5px;background:#461d9f;background:linear-gradient(to right,#7530a6 0%,#461d9f 50%)">
+                                <td align="left" valign="top">
+                                    <div style="font-weight:bold; color: white; padding: 24px; text-transform: uppercase;">Code Secure</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;height:18px;font-size:18px;line-height:18px">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;border-radius:3px;overflow:hidden;padding:0 15px;border:1px solid #ededed">
+                                    <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
+                                        <tbody>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;margin:0;padding:14px 0">
+                                                Project
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;margin:0;padding:14px 0 14px 5px">
+                                                <a href="@Model.ProjectUrl()" style="font-weight:500;color:#333333;text-decoration:none;"
+                                                   target="_blank">@Model.Project.Name</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;border-top-width:1px;border-top-color:#ededed;border-top-style:solid;margin:0;padding:14px 0">
+                                                Scan on
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;border-top-width:1px;border-top-color:#ededed;border-top-style:solid;margin:0;padding:14px 0 14px 5px">
+                                                <table border="0" cellpadding="0" cellspacing="0"
+                                                       style="border-collapse:collapse">
+                                                    <tbody>
+                                                    <tr>
+                                                        @switch (Model.GitCommit.Type)
+                                                        {
+                                                            case CommitType.CommitTag:
+                                                                <td style="color:#5c5c5c;font-weight:300;padding-right: 5px">tag</td>
+                                                                break;
+                                                            case CommitType.CommitBranch:
+                                                                <td style="color:#5c5c5c;font-weight:300;padding-right: 5px">branch</td>
+                                                                break;
+                                                            default:
+                                                                <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4; padding-right: 5px"
+                                                                    valign="middle">
+                                                                    <a href="@Model.MergeRequestUrl()" style="color:#333333;text-decoration:none;white-space: nowrap"
+                                                                       target="_blank">merge request</a>
+                                                                </td>
+                                                                <td style="color:#5c5c5c;font-weight:300;padding-right: 5px">
+                                                                    from
+                                                                </td>
+                                                                break;
+                                                        }
+                                                        <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;padding-right: 5px"
+                                                            valign="middle">
+                                                            <a href="@Model.CommitUrl()" style="color:#333333;text-decoration:none"
+                                                               target="_blank">@Model.GitCommit.Branch</a>
+                                                        </td>
+                                                        @if (Model.GitCommit.Type == CommitType.MergeRequest)
+                                                        {
+                                                            <td style="color:#5c5c5c;font-weight:300;padding-right: 5px">to</td>
+                                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4"
+                                                                valign="middle">
+                                                                <a style="color:#333333;text-decoration:none"
+                                                                   target="_blank">@Model.GitCommit.TargetBranch</a>
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                                <div style="color:#5c5c5c;font-weight:300">
+                                                    @Model.GitCommit.CommitTitle
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;margin:0;padding:14px 0">
+                                                Scanner
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;margin:0;padding:14px 0 14px 5px">
+                                                <span style="font-weight:500;color:#333333;text-decoration:none;">@Model.Scanner.Name</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;margin:0;padding:14px 0">
+                                                Blocking Gate
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;margin:0;padding:14px 0 14px 5px">
+                                                @if (Model.IsBlock)
+                                                {
+                                                    <span style="font-weight:500;color:#333333;text-decoration:none;">Block</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="font-weight:500;color:#333333;text-decoration:none;">Pass</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;margin:0;padding:14px 0">
+                                                New Finding
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;margin:0;padding:14px 0 14px 5px">
+                                                <span style="font-weight:500;color:#333333;text-decoration:none;">@Model.NewFindingCount</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;margin:0;padding:14px 0">
+                                                Need To Fix
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;margin:0;padding:14px 0 14px 5px">
+                                                <span style="font-weight:500;color:#333333;text-decoration:none;">@Model.ConfirmedFindingCount</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#8c8c8c;font-weight:300;margin:0;padding:14px 0">
+                                                Fixed
+                                            </td>
+                                            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4;color:#333333;font-weight:500;width:75%;margin:0;padding:14px 0 14px 5px">
+                                                <span style="font-weight:500;color:#333333;text-decoration:none;">@Model.FixedFindingCount</span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;height:18px;font-size:18px;line-height:18px">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background:#fdf4f6;color:#d22852;padding:10px;border:1px solid #ededed;text-align:center;">
+                                    <a href="@Model.FindingUrl()" style="color:#3777b0;text-decoration:none;" target="_blank">View
+                                        Detail</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0">
+            <div>
+                You're receiving this email because of your account on
+                <a href="@Configuration.FrontendUrl"
+                   style="color:#3777b0;text-decoration:none"
+                   target="_blank">Code Secure</a>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr>
+        <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0"></td>
+    </tr>
+    </tbody>
+</table>

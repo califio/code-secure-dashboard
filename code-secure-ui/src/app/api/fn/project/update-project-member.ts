@@ -8,17 +8,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ProjectUser } from '../../models/project-user';
-import { UpdateMemberRequest } from '../../models/update-member-request';
+import { ProjectMember } from '../../models/project-member';
+import { UpdateProjectMemberRequest } from '../../models/update-project-member-request';
 
 export interface UpdateProjectMember$Params {
   projectId: string;
   userId: string;
-      body?: UpdateMemberRequest
+      body?: UpdateProjectMemberRequest
 }
 
-export function updateProjectMember(http: HttpClient, rootUrl: string, params: UpdateProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUser>> {
-  const rb = new RequestBuilder(rootUrl, updateProjectMember.PATH, 'put');
+export function updateProjectMember(http: HttpClient, rootUrl: string, params: UpdateProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMember>> {
+  const rb = new RequestBuilder(rootUrl, updateProjectMember.PATH, 'patch');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
     rb.path('userId', params.userId, {"style":"simple"});
@@ -30,7 +30,7 @@ export function updateProjectMember(http: HttpClient, rootUrl: string, params: U
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ProjectUser>;
+      return r as StrictHttpResponse<ProjectMember>;
     })
   );
 }

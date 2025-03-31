@@ -1,7 +1,7 @@
 using Aguacongas.AspNetCore.Authentication;
+using CodeSecure.Application;
 using CodeSecure.Authentication.Jwt;
-using CodeSecure.Database;
-using CodeSecure.Database.Entity;
+using CodeSecure.Core.Entity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,7 +46,7 @@ public static class AuthenticationExtensions
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ClockSkew = TimeSpan.Zero,
-                IssuerSigningKey = Application.Config.AccessTokenSecurityKey
+                IssuerSigningKey = Configuration.AccessTokenKey
             };
         });
         var authBuilder = services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

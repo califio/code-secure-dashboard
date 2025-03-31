@@ -69,18 +69,20 @@ export class SecurityThresholdComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.projectService.getProjectSetting({
+    this.projectService.getThresholdProject({
       projectId: this.store.projectId()
-    }).subscribe(setting => {
-      this.sastForm.patchValue(setting.sastSetting!);
-      this.scaForm.patchValue(setting.scaSetting!);
+    }).subscribe(threshold => {
+      this.sastForm.patchValue(threshold.sast!);
+      this.scaForm.patchValue(threshold.sca!);
     });
   }
 
   updateSastSetting() {
-    this.projectService.updateSastSettingProject({
+    this.projectService.updateThresholdProject({
       projectId: this.store.projectId(),
-      body: this.sastForm.getRawValue()
+      body: {
+        sast: this.sastForm.getRawValue()
+      }
     }).subscribe(() => {
       this.toastr.success({
         message: 'Update success!'
@@ -89,21 +91,15 @@ export class SecurityThresholdComponent implements OnInit {
   }
 
   updateScaSetting() {
-    this.projectService.updateScaSettingProject({
+    this.projectService.updateThresholdProject({
       projectId: this.store.projectId(),
-      body: this.scaForm.getRawValue()
+      body: {
+        sca: this.scaForm.getRawValue()
+      }
     }).subscribe(() => {
       this.toastr.success({
         message: 'Update success!'
       });
     })
-  }
-
-  changeSastMode($event: any) {
-    this.sastForm.controls.mode!.setValue($event);
-  }
-
-  changeScaMode($event: any) {
-    this.scaForm.controls.mode!.setValue($event);
   }
 }

@@ -1,4 +1,5 @@
-using CodeSecure.Extension;
+using CodeSecure.Core.Extension;
+using CodeSecure.Core.Utils;
 
 namespace CodeSecure.Tests;
 

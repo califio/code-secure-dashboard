@@ -11,12 +11,12 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { getRuleId } from '../fn/rule/get-rule-id';
-import { GetRuleId$Params } from '../fn/rule/get-rule-id';
 import { getRuleInfo } from '../fn/rule/get-rule-info';
 import { GetRuleInfo$Params } from '../fn/rule/get-rule-info';
 import { getRuleScanners } from '../fn/rule/get-rule-scanners';
 import { GetRuleScanners$Params } from '../fn/rule/get-rule-scanners';
+import { queryRuleId } from '../fn/rule/query-rule-id';
+import { QueryRuleId$Params } from '../fn/rule/query-rule-id';
 import { RuleInfoPage } from '../models/rule-info-page';
 import { Scanners } from '../models/scanners';
 import { syncRules } from '../fn/rule/sync-rules';
@@ -30,27 +30,27 @@ export class RuleService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getRuleId()` */
-  static readonly GetRuleIdPath = '/api/rule/list';
+  /** Path part for operation `queryRuleId()` */
+  static readonly QueryRuleIdPath = '/api/rule/list';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getRuleId()` instead.
+   * To access only the response body, use `queryRuleId()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getRuleId$Response(params?: GetRuleId$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
-    return getRuleId(this.http, this.rootUrl, params, context);
+  queryRuleId$Response(params?: QueryRuleId$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return queryRuleId(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getRuleId$Response()` instead.
+   * To access the full response (for headers, for example), `queryRuleId$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getRuleId(params?: GetRuleId$Params, context?: HttpContext): Observable<Array<string>> {
-    return this.getRuleId$Response(params, context).pipe(
+  queryRuleId(params?: QueryRuleId$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.queryRuleId$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
     );
   }

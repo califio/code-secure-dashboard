@@ -68,7 +68,7 @@ export class AppProfileMenu implements OnInit {
   logout() {
     this.authService.logout({
       body: {
-        token: this.authStore.refreshToken
+        token: this.authStore.refreshToken ?? ''
       }
     }).pipe(finalize(() => {
       this.authStore.clearSession();

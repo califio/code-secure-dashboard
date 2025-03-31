@@ -13,8 +13,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sast.controls.critical!"></p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sast!.critical"/>
                 <span>days</span>
               </div>
             </td>
@@ -28,8 +27,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sast.controls.high!"></p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sast!.high"/>
                 <span>days</span>
               </div>
             </td>
@@ -43,8 +41,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sast.controls.medium!"></p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sast!.medium"/>
                 <span>days</span>
               </div>
             </td>
@@ -59,8 +56,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sast.controls.low!"></p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sast!.low"/>
                 <span>days</span>
               </div>
             </td>
@@ -74,8 +70,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sast.controls.info!"></p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sast!.info"/>
                 <span>days</span>
               </div>
             </td>
@@ -94,9 +89,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sca.controls.critical!">
-                </p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sca!.critical"/>
                 <span>days</span>
               </div>
             </td>
@@ -110,9 +103,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sca.controls.high!">
-                </p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sca!.high"/>
                 <span>days</span>
               </div>
             </td>
@@ -126,9 +117,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sca.controls.medium!">
-                </p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sca!.medium"/>
                 <span>days</span>
               </div>
             </td>
@@ -143,9 +132,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sca.controls.low!">
-                </p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sca!.low"/>
                 <span>days</span>
               </div>
             </td>
@@ -159,9 +146,7 @@
             </td>
             <td class="px-4">
               <div class="flex flex-row gap-2 items-center">
-                <p-input-number inputStyleClass="max-w-20" min="0"
-                                [formControl]="form.controls.sca.controls.info!">
-                </p-input-number>
+                <p-input-number inputStyleClass="max-w-20" min="0" [(ngModel)]="slaSetting.sca!.info"/>
                 <span>days</span>
               </div>
             </td>
@@ -171,7 +156,7 @@
     </div>
   </div>
   <p-button severity="primary" label="Update"
-            [loading]="form.disabled"
-            [disabled]="form.disabled"
+            [loading]="loading"
+            [disabled]="loading"
             (click)="saveSla()"/>
 </div>

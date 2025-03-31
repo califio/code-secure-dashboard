@@ -1,64 +1,101 @@
-using CodeSecure.Api.User.Model;
-using CodeSecure.Api.User.Service;
+using CodeSecure.Application.Exceptions;
+using CodeSecure.Application.Module.User;
 using CodeSecure.Authentication;
-using CodeSecure.Database.Extension;
+using CodeSecure.Core.EntityFramework;
+using FluentResults.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.User;
 
-public class UserController(IUserService userService) : BaseController
+public class UserController(
+    IFindUserByIdHandler findUserByIdHandler,
+    ICreateUserHandler createUserHandler,
+    IUpdateUserHandler updateUserHandler,
+    ISendConfirmEmailHandler sendConfirmEmailHandler,
+    IQueryUserInfoHandler queryUserInfoHandler,
+    IQueryUserSummaryHandler queryUserSummaryHandler,
+    IListProjectManagerUserHandler listProjectManagerUserHandler
+) : BaseController
 {
     [HttpPost]
     [Route("public")]
-    public async Task<Page<UserSummary>> GetUsers(UserFilter filter)
+    public async Task<Page<UserSummary>> QueryUserSummary(UserFilter filter)
     {
-        return await userService.GetUserSummaryAsync(filter);
+        var result = await queryUserSummaryHandler.HandleAsync(filter);
+        return result.Value;
     }
-    
+
     [HttpGet]
     [Route("project-manager")]
-    public async Task<List<UserSummary>> GetProjectManagerUsers()
+    public async Task<List<UserSummary>> ListProjectManagerUser()
     {
-        return await userService.GetProjectManagerUsersAsync();
+        var result = await listProjectManagerUserHandler.HandleAsync(true);
+        return result.Value;
     }
 
     [HttpPost]
     [Route("filter")]
     [Permission(PermissionType.User, PermissionAction.Read)]
-    public async Task<Page<UserInfo>> GetUsersByAdmin(UserFilter filter)
+    public async Task<Page<UserInfo>> QueryUserInfo(UserFilter filter)
     {
-        return await userService.GetUserInfoAsync(filter);
+        var result = await queryUserInfoHandler.HandleAsync(filter);
+        return result.Value;
     }
 
     [HttpGet]
     [Route("{userId:guid}")]
     [Permission(PermissionType.User, PermissionAction.Read)]
-    public async Task<UserInfo> GetUser(Guid userId)
+    public async Task<UserInfo> FindUserInfoById(Guid userId)
     {
-        return await userService.GetUserInfoByIdAsync(userId);
+        var result = await findUserByIdHandler.HandleAsync(userId);
+        if (result.IsSuccess)
+        {
+            return result.Value;
+        }
+
+        throw new BadRequestException(result.Errors.Select(error => error.Message));
     }
 
     [HttpPost]
     [Permission(PermissionType.User, PermissionAction.Create)]
-    public async Task<UserInfo> CreateUserByAdmin(CreateUserRequest request)
+    public async Task<UserInfo> CreateUser(CreateUserRequest request)
     {
-        return await userService.CreateUserAsync(request);
+        var result = await createUserHandler.HandleAsync(request)
+            .Bind(user => findUserByIdHandler.HandleAsync(user.Id));
+        if (result.IsSuccess)
+        {
+            return result.Value;
+        }
+
+        throw new BadRequestException(result.Errors.Select(error => error.Message));
     }
 
 
     [HttpPut]
     [Route("{userId:guid}")]
     [Permission(PermissionType.User, PermissionAction.Update)]
-    public async Task<UserInfo> UpdateUserByAdmin(Guid userId, UpdateUserRequest request)
+    public async Task<UserInfo> UpdateUser(Guid userId, UpdateUserRequest request)
     {
-        return await userService.UpdateUserAsync(userId, request);
+        request.UserId = userId;
+        var result = await updateUserHandler.HandleAsync(request)
+            .Bind(user => findUserByIdHandler.HandleAsync(user.Id));
+        if (result.IsSuccess)
+        {
+            return result.Value;
+        }
+
+        throw new BadRequestException(result.Errors.Select(error => error.Message));
     }
-    
+
     [HttpPost]
     [Route("{userId:guid}/send-confirm-email")]
     [Permission(PermissionType.User, PermissionAction.Update)]
     public async Task SendConfirmEmail(Guid userId)
     {
-        await userService.SendConfirmEmailAsync(userId);
+        var result = await sendConfirmEmailHandler.HandleAsync(userId);
+        if (result.IsFailed)
+        {
+            throw new BadRequestException(result.Errors.Select(error => error.Message));
+        }
     }
 }

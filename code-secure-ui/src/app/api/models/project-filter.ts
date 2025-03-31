@@ -5,10 +5,10 @@
 import { ProjectSortField } from '../models/project-sort-field';
 export interface ProjectFilter {
   desc?: boolean;
+  memberUserId?: string | null;
   name?: string | null;
   page?: number;
   size?: number;
   sortBy?: ProjectSortField;
   sourceControlId?: string | null;
-  userId?: string | null;
 }

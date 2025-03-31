@@ -1,0 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace CodeSecure.Application.Module.Auth;
+
+public record SignInRequest
+{
+    [Required] public required string UserName { get; set; }
+
+    [Required] public required string Password { get; set; }
+}

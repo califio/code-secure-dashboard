@@ -11,13 +11,13 @@ import { RequestBuilder } from '../../request-builder';
 import { PackageInfo } from '../../models/package-info';
 
 export interface GetPackageDependencies$Params {
-  packageId?: string;
+  packageId: string;
 }
 
-export function getPackageDependencies(http: HttpClient, rootUrl: string, params?: GetPackageDependencies$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PackageInfo>>> {
+export function getPackageDependencies(http: HttpClient, rootUrl: string, params: GetPackageDependencies$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PackageInfo>>> {
   const rb = new RequestBuilder(rootUrl, getPackageDependencies.PATH, 'get');
   if (params) {
-    rb.query('packageId', params.packageId, {"style":"form"});
+    rb.path('packageId', params.packageId, {"style":"simple"});
   }
 
   return http.request(
@@ -30,4 +30,4 @@ export function getPackageDependencies(http: HttpClient, rootUrl: string, params
   );
 }
 
-getPackageDependencies.PATH = '/api/package';
+getPackageDependencies.PATH = '/api/package/{packageId}/dependencies';

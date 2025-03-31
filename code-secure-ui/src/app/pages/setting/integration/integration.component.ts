@@ -5,9 +5,9 @@ import {TimeagoModule} from 'ngx-timeago';
 import {TeamsComponent} from './teams/teams.component';
 import {JiraComponent} from "./jira/jira.component";
 import {IntegrationService} from '../../../api/services/integration.service';
-import {IntegrationSetting} from '../../../api/models/integration-setting';
 import {Panel} from "primeng/panel";
 import {MailComponent} from './mail/mail.component';
+import {IntegrationStatus} from '../../../api/models/integration-status';
 
 @Component({
   selector: 'app-integration',
@@ -30,7 +30,7 @@ export class IntegrationComponent implements OnInit {
     teams: false,
     jira: false
   }
-  integrationSetting: IntegrationSetting = {};
+  integrationSetting: IntegrationStatus = {};
 
   constructor(
     private integrationService: IntegrationService

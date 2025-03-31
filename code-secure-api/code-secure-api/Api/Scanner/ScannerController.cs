@@ -1,28 +1,19 @@
-using CodeSecure.Database.Entity;
-using CodeSecure.Manager.Scanner;
+using CodeSecure.Application.Module.Scanner;
+using CodeSecure.Core.Entity;
+using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Scanner;
 
-public class ScannerController(IScannerManager scannerManager) : BaseController
+public class ScannerController(
+    IListScannerHandler listScannerHandler
+) : BaseController
 {
-    [HttpGet]
-    public Task<List<Scanners>> GetScanners(Guid? projectId)
+    [HttpPost]
+    [Route("filter")]
+    public async Task<List<Scanners>> GetScanners(ScannerFilter filter)
     {
-        return scannerManager.GetScannersAsync(projectId);
-    }
-
-    [HttpGet]
-    [Route("sast")]
-    public Task<List<Scanners>> GetSastScanners(Guid? projectId)
-    {
-        return scannerManager.GetSastScannersAsync(projectId);
-    }
-
-    [HttpGet]
-    [Route("sca")]
-    public Task<List<Scanners>> GetScaScanners(Guid? projectId)
-    {
-        return scannerManager.GetScaScannersAsync(projectId);
+        var result = await listScannerHandler.HandleAsync(filter);
+        return result.GetResult();
     }
 }

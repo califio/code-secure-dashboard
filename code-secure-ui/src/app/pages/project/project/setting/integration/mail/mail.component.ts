@@ -1,20 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../../core/forms';
-import {AlertSetting} from '../../../../../../api/models/alert-setting';
+import {FormsModule} from '@angular/forms';
+import {FormService} from '../../../../../../core/forms';
 import {ProjectService} from '../../../../../../api/services/project.service';
 import {ProjectStore} from '../../../project.store';
 import {finalize} from 'rxjs';
 import {ToastrService} from '../../../../../../shared/services/toastr.service';
 import {ToggleSwitch} from 'primeng/toggleswitch';
 import {ButtonDirective} from 'primeng/button';
+import {MailProjectAlertSetting} from '../../../../../../api/models/mail-project-alert-setting';
 
 @Component({
   selector: 'mail-integration-project',
   standalone: true,
   imports: [
     FormsModule,
-    ReactiveFormsModule,
     ToggleSwitch,
     ButtonDirective
   ],
@@ -22,15 +21,16 @@ import {ButtonDirective} from 'primeng/button';
   styleUrl: './mail.component.scss'
 })
 export class MailComponent implements OnInit {
-  formConfig = new FormSection<ConfigOf<AlertSetting>>({
-    active: new FormField(true),
-    scanCompletedEvent: new FormField(false),
-    scanFailedEvent: new FormField(false),
-    securityAlertEvent: new FormField(false),
-    fixedFindingEvent: new FormField(false),
-    newFindingEvent: new FormField(false),
-  });
-  form: FormGroup<ControlsOf<AlertSetting>>
+  setting: MailProjectAlertSetting = {
+    active: false,
+    fixedFindingEvent: false,
+    needTriageFindingEvent: false,
+    newFindingEvent: false,
+    scanCompletedEvent: false,
+    scanFailedEvent: false,
+    securityAlertEvent: false
+  };
+  loading = false;
 
   constructor(
     private formService: FormService,
@@ -38,24 +38,24 @@ export class MailComponent implements OnInit {
     private projectStore: ProjectStore,
     private toastr: ToastrService
   ) {
-    this.form = this.formService.group(this.formConfig);
   }
 
   ngOnInit(): void {
     this.projectService.getMailIntegrationProject({
       projectId: this.projectStore.projectId()
     }).subscribe(setting => {
-      this.form.patchValue(setting);
+      this.setting = setting;
+
     });
   }
 
   saveConfig() {
-    this.form.disable();
+    this.loading = true;
     this.projectService.updateMailIntegrationProject({
       projectId: this.projectStore.projectId(),
-      body: this.form.getRawValue()
+      body: this.setting
     }).pipe(
-      finalize(() => this.form.enable())
+      finalize(() => this.loading = false)
     ).subscribe(() => {
       this.toastr.success({
         message: 'Update success!'

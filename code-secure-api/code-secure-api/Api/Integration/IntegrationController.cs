@@ -1,21 +1,32 @@
 using System.ComponentModel.DataAnnotations;
-using CodeSecure.Api.Integration.Model;
-using CodeSecure.Api.Integration.Service;
+using CodeSecure.Application.Module.Integration;
+using CodeSecure.Application.Module.Integration.Jira;
+using CodeSecure.Application.Module.Integration.Jira.Client;
+using CodeSecure.Application.Module.Integration.Mail;
+using CodeSecure.Application.Module.Integration.Teams;
 using CodeSecure.Authentication;
-using CodeSecure.Authentication.Jwt;
-using CodeSecure.Manager.Integration.TicketTracker.Jira;
-using CodeSecure.Manager.Setting;
+using CodeSecure.Core.Enum;
+using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Integration;
 
-public class IntegrationController(IIntegrationService integrationService) : BaseController
+public class IntegrationController(
+    IMailAlertSettingService mailAlertSettingService,
+    IJiraSettingService jiraSettingService,
+    ITeamsAlertSettingService teamsAlertSettingService
+) : BaseController
 {
     [HttpGet]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public async Task<IntegrationSetting> GetIntegrationSetting()
+    public async Task<IntegrationStatus> GetIntegrationSetting()
     {
-        return await integrationService.GetIntegrationSettingAsync();
+        return new IntegrationStatus
+        {
+            Mail = (await mailAlertSettingService.GetSettingAsync()).Active,
+            Jira = (await jiraSettingService.GetSettingAsync()).Active,
+            Teams = (await teamsAlertSettingService.GetSettingAsync()).Active,
+        };
     }
 
     #region Mail
@@ -25,7 +36,7 @@ public class IntegrationController(IIntegrationService integrationService) : Bas
     [Permission(PermissionType.Config, PermissionAction.Read)]
     public Task<MailAlertSetting> GetMailIntegrationSetting()
     {
-        return integrationService.GetMailIntegrationSettingAsync();
+        return mailAlertSettingService.GetSettingAsync();
     }
 
     [HttpPost]
@@ -33,7 +44,7 @@ public class IntegrationController(IIntegrationService integrationService) : Bas
     [Permission(PermissionType.Config, PermissionAction.Update)]
     public Task UpdateMailIntegrationSetting([FromBody] MailAlertSetting request)
     {
-        return integrationService.UpdateMailIntegrationSettingAsync(request);
+        return mailAlertSettingService.UpdateSettingAsync(request);
     }
 
     #endregion
@@ -43,25 +54,27 @@ public class IntegrationController(IIntegrationService integrationService) : Bas
     [HttpGet]
     [Route("teams")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public Task<TeamsSetting> GetTeamsIntegrationSetting()
+    public async Task<TeamsAlertSetting> GetTeamsIntegrationSetting()
     {
-        return integrationService.GetTeamsIntegrationSettingAsync();
+        return (await teamsAlertSettingService.GetSettingAsync()) with{Webhook = string.Empty};
     }
 
     [HttpPost]
     [Route("teams")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task UpdateTeamsIntegrationSetting([FromBody] TeamsSetting request)
+    public async Task<bool> UpdateTeamsIntegrationSetting([FromBody] TeamsAlertSetting request)
     {
-        return integrationService.UpdateTeamsIntegrationSettingAsync(request);
+        var result = await teamsAlertSettingService.UpdateSettingAsync(request);
+        return result.GetResult();
     }
 
     [HttpPost]
     [Route("teams/test")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task TestTeamsIntegrationSetting()
+    public async Task<bool> TestTeamsIntegrationSetting()
     {
-        return integrationService.TestTeamsIntegrationSettingAsync(User.UserClaims().Email);
+        var result = await teamsAlertSettingService.TestConnectionAsync();
+        return result.GetResult();
     }
 
     #endregion
@@ -71,49 +84,73 @@ public class IntegrationController(IIntegrationService integrationService) : Bas
     [HttpGet]
     [Route("jira")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public Task<JiraSetting> GetJiraIntegrationSetting()
+    public async Task<JiraSetting> GetJiraIntegrationSetting()
     {
-        return integrationService.GetJiraIntegrationSettingAsync();
+        var setting = await jiraSettingService.GetSettingAsync();
+        return setting with { Password = string.Empty };
     }
 
     [HttpPost]
     [Route("jira")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task UpdateJiraIntegrationSetting([FromBody] JiraSetting request)
+    public async Task<bool> UpdateJiraIntegrationSetting([FromBody] JiraSetting request)
     {
-        return integrationService.UpdateJiraIntegrationSettingAsync(request);
+        var result = await jiraSettingService.UpdateSettingAsync(request);
+        return result.GetResult();
     }
 
     [HttpPost]
     [Route("jira/test")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public Task TestJiraIntegrationSetting()
+    public async Task<bool> TestJiraIntegrationSetting()
     {
-        return integrationService.TestJiraIntegrationSettingAsync();
+        var result = await jiraSettingService.TestConnectionAsync();
+        return result.GetResult();
     }
 
     [HttpPost]
     [Route("jira/projects")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public Task<List<JiraProject>> GetJiraProjects([FromBody] JiraSetting? setting = null, bool reload = false)
+    public async Task<List<JiraProject>> GetJiraProjects([FromBody] JiraSetting? setting = null, bool reload = false)
     {
-        return integrationService.GetJiraProjectsAsync(setting, reload);
+        setting ??= await jiraSettingService.GetSettingAsync();
+        var jiraInstance = new JiraClient(new JiraConnection
+        {
+            Url = setting.WebUrl,
+            Password = setting.Password,
+            Username = setting.UserName
+        });
+        return await jiraInstance.GetProjectsSummaryAsync(reload);
     }
 
     [HttpPost]
     [Route("jira/issue-types")]
     //[Permission(PermissionType.Config, PermissionAction.Read)]
-    public Task<List<string>> GetJiraIssueTypes([Required] string projectKey)
+    public async Task<List<string>> GetJiraIssueTypes([Required] string projectKey)
     {
-        return integrationService.GetJiraIssueTypesAsync(projectKey);
+        var jiraSetting = await jiraSettingService.GetSettingAsync();
+        return await new JiraClient(new JiraConnection
+        {
+            Url = jiraSetting.WebUrl,
+            Password = jiraSetting.Password,
+            Username = jiraSetting.UserName
+        }).GetIssueTypesForProjectAsync(projectKey);
     }
 
     #endregion
 
     [HttpGet]
     [Route("ticket-trackers")]
-    public Task<List<TicketTracker>> GetTicketTrackers()
+    public async Task<List<TicketTracker>> GetTicketTrackers()
     {
-        return integrationService.GetTicketTrackersAsync();
+        var jiraSettings = await jiraSettingService.GetSettingAsync();
+        return
+        [
+            new TicketTracker
+            {
+                Active = jiraSettings.Active,
+                Type = TicketType.Jira
+            }
+        ];
     }
 }

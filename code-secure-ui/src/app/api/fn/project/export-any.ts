@@ -8,19 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ExportType } from '../../models/export-type';
-import { ProjectFindingFilter } from '../../models/project-finding-filter';
+import { ExportFindingRequest } from '../../models/export-finding-request';
 
 export interface Export$Any$Params {
-  format?: ExportType;
   projectId: string;
-      body?: ProjectFindingFilter
+      body?: ExportFindingRequest
 }
 
 export function export$Any(http: HttpClient, rootUrl: string, params: Export$Any$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
   const rb = new RequestBuilder(rootUrl, export$Any.PATH, 'post');
   if (params) {
-    rb.query('format', params.format, {"style":"form"});
     rb.path('projectId', params.projectId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
