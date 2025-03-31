@@ -29,8 +29,6 @@ import { renderMail } from '../fn/auth/render-mail';
 import { RenderMail$Params } from '../fn/auth/render-mail';
 import { resetPassword } from '../fn/auth/reset-password';
 import { ResetPassword$Params } from '../fn/auth/reset-password';
-import { server } from '../fn/auth/server';
-import { Server$Params } from '../fn/auth/server';
 import { SignInResponse } from '../models/sign-in-response';
 
 @Injectable({ providedIn: 'root' })
@@ -60,31 +58,6 @@ export class AuthService extends BaseService {
    */
   renderMail(params?: RenderMail$Params, context?: HttpContext): Observable<string> {
     return this.renderMail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<string>): string => r.body)
-    );
-  }
-
-  /** Path part for operation `server()` */
-  static readonly ServerPath = '/api/server';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `server()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  server$Response(params?: Server$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
-    return server(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `server$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  server(params?: Server$Params, context?: HttpContext): Observable<string> {
-    return this.server$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>): string => r.body)
     );
   }

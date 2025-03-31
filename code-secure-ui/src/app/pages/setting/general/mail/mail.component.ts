@@ -29,7 +29,9 @@ export class MailComponent implements OnInit {
     password: '',
     port: 0,
     server: '',
-    userName: ''
+    userName: '',
+    ignoreSsl: false,
+    useSsl: false
   }
   loading = false;
   loadingTestMail = false;

@@ -37,6 +37,12 @@
         <p-toggle-switch [(ngModel)]="smtpSetting.useSsl"/>
       </div>
     </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Ignore SSL</span>
+      <div class="w-full max-w-md">
+        <p-toggle-switch [(ngModel)]="smtpSetting.ignoreSsl"/>
+      </div>
+    </div>
   </div>
   <div class="flex flex-row gap-2 items-center">
     <p-button severity="primary" label="Update"

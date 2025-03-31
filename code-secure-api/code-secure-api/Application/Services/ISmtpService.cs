@@ -44,6 +44,10 @@ public class SmtpService(SmtpSetting setting) : ISmtpService
             message.Subject = model.Subject;
             message.Body = new TextPart(TextFormat.Html) { Text = model.Content };
             using var mailClient = new SmtpClient();
+            if (setting.IgnoreSsl)
+            {
+                mailClient.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            }
             await mailClient.ConnectAsync(setting.Server, setting.Port, setting.UseSsl);
             await mailClient.AuthenticateAsync(setting.UserName, setting.Password);
             await mailClient.SendAsync(message);
