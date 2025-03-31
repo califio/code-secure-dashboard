@@ -1,4 +1,4 @@
-import {Component, effect, input, signal} from '@angular/core';
+import {Component, effect, input} from '@angular/core';
 import {UserInfo} from '../../../api/models/user-info';
 import {UserStore} from '../user.store';
 import {UpdateUserRequest} from '../../../api/models/update-user-request';
@@ -6,9 +6,7 @@ import {UserService} from '../../../api/services/user.service';
 import {finalize} from 'rxjs';
 import {ToastrService} from '../../../shared/services/toastr.service';
 import {UserStatus} from '../../../api/models';
-import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../core/forms';
-import {Select} from 'primeng/select';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
 import {Dialog} from 'primeng/dialog';
 import {InputText} from 'primeng/inputtext';
@@ -21,7 +19,6 @@ import {ToggleSwitch} from 'primeng/toggleswitch';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    Select,
     Button,
     Dialog,
     InputText,
@@ -32,16 +29,11 @@ import {ToggleSwitch} from 'primeng/toggleswitch';
 })
 export class UpdateUserPopupComponent {
   user = input<UserInfo>();
-  userId = signal('');
-  formConfig = new FormSection<ConfigOf<UpdateUserRequest>>({
-    userId: new FormField<string>(''),
-    status: new FormField(UserStatus.Active, Validators.required),
-    email: new FormField('', Validators.required),
-    role: new FormField('', Validators.required),
-    fullName: new FormField('', Validators.required),
-    verified: new FormField(true)
-  });
-  form: FormGroup<ControlsOf<UpdateUserRequest>>;
+  userId: string = '';
+  body: UpdateUserRequest = {
+    email: undefined, fullName: undefined, role: undefined, status: undefined, verified: undefined
+  };
+  loading = false;
   statusOptions = [
     {
       value: UserStatus.Active,
@@ -57,26 +49,25 @@ export class UpdateUserPopupComponent {
     public store: UserStore,
     private userService: UserService,
     private toastr: ToastrService,
-    private formService: FormService,
   ) {
-    this.form = this.formService.group(this.formConfig);
     effect(() => {
       const user = this.user();
       if (user) {
-        this.userId.set(user.id!);
-        this.form.patchValue(user);
-        this.form.controls.userId.setValue(user.id!);
+        this.userId = user.id!;
+        this.body = {
+          email: user.email, fullName: user.fullName, role: user.role, status: user.status, verified: user.verified
+        }
       }
     });
   }
 
   onUpdateUser() {
-    this.form.disable()
+    this.loading = true;
     this.userService.updateUser({
-      userId: this.userId(),
-      body: this.form.value as any
+      userId: this.userId,
+      body: this.body
     }).pipe(
-      finalize(() => this.form.enable())
+      finalize(() => this.loading = false)
     ).subscribe(user => {
       const users = this.store.users().map(value => {
         if (value.id != user.id) {

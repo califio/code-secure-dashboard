@@ -9,7 +9,6 @@ namespace CodeSecure.Application.Module.User;
 
 public class UpdateUserRequest
 {
-    [Required] public Guid UserId { get; set; }
     [StringLength(64)] public string? FullName { get; set; }
 
     [StringLength(64)] [EmailAddress] public string? Email { get; set; }
@@ -18,13 +17,16 @@ public class UpdateUserRequest
     public string? Role { get; set; }
 }
 
-public interface IUpdateUserHandler : IHandler<UpdateUserRequest, Users>;
+public interface IUpdateUserHandler
+{
+    Task<Result<Users>> HandleAsync(Guid userId, UpdateUserRequest request);
+}
 
 public class UpdateUserHandler(AppDbContext context, JwtUserManager userManager) : IUpdateUserHandler
 {
-    public async Task<Result<Users>> HandleAsync(UpdateUserRequest request)
+    public async Task<Result<Users>> HandleAsync(Guid userId, UpdateUserRequest request)
     {
-        var user = await context.Users.FirstOrDefaultAsync(user => user.Id == request.UserId);
+        var user = await context.Users.FirstOrDefaultAsync(user => user.Id == userId);
         if (user == null)
         {
             return Result.Fail("User not found");

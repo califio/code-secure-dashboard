@@ -3,37 +3,31 @@
     <div class="flex flex-col gap-4">
       <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Email</div>
-        <input class="col-span-4" pInputText type="text" name="email" [formControl]="form.controls.email!">
+        <input class="col-span-4" pInputText type="text" name="email" [(ngModel)]="body.email">
       </div>
       <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Role</div>
         <div class="col-span-4">
-          <p-select [options]="store.roles()" optionValue="name" optionLabel="name" appendTo="body"
-                    [formControl]="form.controls.role!">
-          </p-select>
-        </div>
-      </div>
-      <div class="grid grid-cols-5 gap-1 items-center">
-        <div class="font-semibold">Verified</div>
-        <div class="col-span-4">
-          <p-toggle-switch
-            [formControl]="form.controls.verified!">
-          </p-toggle-switch>
+          <p-select-button [options]="store.roles()" optionValue="name" optionLabel="name" [(ngModel)]="body.role"/>
         </div>
       </div>
       <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Status</div>
         <div class="col-span-4">
-          <p-select-button [options]="statusOptions"
-                           [formControl]="form.controls.status!">
-          </p-select-button>
+          <p-select-button [options]="statusOptions" [(ngModel)]="body.status"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-5 gap-1 items-center">
+        <div class="font-semibold">Verified</div>
+        <div class="col-span-4">
+          <p-toggle-switch [(ngModel)]="body.verified"/>
         </div>
       </div>
     </div>
     <div class="flex flex-row items-center gap-4 justify-end">
       <div class="flex flex-row items-center gap-4 w-fit">
         <p-button severity="secondary" (click)="closeDialog()" label="Cancel"/>
-        <p-button severity="primary" label="Update" [loading]="form.disabled" [disabled]="form.disabled"
+        <p-button severity="primary" label="Update" [loading]="loading" [disabled]="loading"
                   (click)="onUpdateUser()"/>
       </div>
     </div>

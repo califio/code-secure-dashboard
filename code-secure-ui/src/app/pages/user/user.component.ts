@@ -160,7 +160,6 @@ export class UserComponent implements OnInit, OnDestroy {
         this.userService.updateUser({
           userId: user.id!,
           body: {
-            userId: user.id!,
             status: UserStatus.Disabled
           }
         }).subscribe(user => {

@@ -76,8 +76,7 @@ public class UserController(
     [Permission(PermissionType.User, PermissionAction.Update)]
     public async Task<UserInfo> UpdateUser(Guid userId, UpdateUserRequest request)
     {
-        request.UserId = userId;
-        var result = await updateUserHandler.HandleAsync(request)
+        var result = await updateUserHandler.HandleAsync(userId, request)
             .Bind(user => findUserByIdHandler.HandleAsync(user.Id));
         if (result.IsSuccess)
         {
