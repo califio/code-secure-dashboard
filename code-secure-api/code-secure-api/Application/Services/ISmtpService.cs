@@ -2,6 +2,7 @@ using CodeSecure.Application.Module.Setting;
 using CodeSecure.Core.Extension;
 using FluentResults;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 
@@ -44,7 +45,12 @@ public class SmtpService(SmtpSetting setting) : ISmtpService
             message.Subject = model.Subject;
             message.Body = new TextPart(TextFormat.Html) { Text = model.Content };
             using var mailClient = new SmtpClient();
-            await mailClient.ConnectAsync(setting.Server, setting.Port);
+            var secureOption = SecureSocketOptions.None;
+            if (setting.UseSsl)
+            {
+                secureOption = SecureSocketOptions.Auto;
+            }
+            await mailClient.ConnectAsync(setting.Server, setting.Port, secureOption);
             await mailClient.AuthenticateAsync(setting.UserName, setting.Password);
             await mailClient.SendAsync(message);
             await mailClient.DisconnectAsync(true);
