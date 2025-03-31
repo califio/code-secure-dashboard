@@ -1,7 +1,5 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../../core/forms';
-import {JiraProjectSetting} from '../../../../../../api/models/jira-project-setting';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {ProjectService} from '../../../../../../api/services/project.service';
 import {ProjectStore} from '../../../project.store';
@@ -11,6 +9,7 @@ import {IntegrationService} from '../../../../../../api/services/integration.ser
 import {Button, ButtonDirective} from 'primeng/button';
 import {Select, SelectChangeEvent} from 'primeng/select';
 import {JiraProject} from '../../../../../../api/models/jira-project';
+import {JiraProjectSetting} from '../../../../../../api/models/jira-project-setting';
 
 @Component({
   selector: 'jira-integration-project',
@@ -20,7 +19,8 @@ import {JiraProject} from '../../../../../../api/models/jira-project';
     RouterLink,
     Button,
     Select,
-    ButtonDirective
+    ButtonDirective,
+    FormsModule
   ],
   templateUrl: './jira.component.html',
   styleUrl: './jira.component.scss'
@@ -28,12 +28,7 @@ import {JiraProject} from '../../../../../../api/models/jira-project';
 export class JiraComponent implements OnInit {
   jiraProjects = signal<JiraProject[]>([]);
   issueTypes = signal<{ label: string, value: string }[]>([]);
-  formConfig = new FormSection<ConfigOf<JiraProjectSetting>>({
-    active: new FormField(false),
-    projectKey: new FormField(''),
-    issueType: new FormField('')
-  })
-  form: FormGroup<ControlsOf<JiraProjectSetting>>;
+  setting: JiraProjectSetting = {active: false, issueType: '', projectKey: ''};
   loading = false;
   loadingIssueType = false;
 
@@ -41,22 +36,24 @@ export class JiraComponent implements OnInit {
     public projectStore: ProjectStore,
     private projectService: ProjectService,
     private integrationService: IntegrationService,
-    private formService: FormService,
     private toastr: ToastrService
   ) {
-    this.form = this.formService.group(this.formConfig);
-    this.form.controls.active!.setValue(this.projectStore.projectSetting().jiraSetting?.active);
   }
 
   ngOnInit(): void {
     this.getJiraSetting().subscribe(setting => {
+      this.setting = {
+        active: setting.active, issueType: setting.issueType, projectKey: setting.projectKey
+      };
+      console.log(this.setting);
       this.jiraProjects.set(setting.jiraProjects!);
-      this.loadIssueType(setting.projectKey!).subscribe(issueTypes => {
-        this.issueTypes.set(issueTypes.map(item => {
-          return {value: item, label: item}
-        }));
-        this.form.patchValue(setting)
-      })
+      if (setting.projectKey) {
+        this.loadIssueType(setting.projectKey!).subscribe(issueTypes => {
+          this.issueTypes.set(issueTypes.map(item => {
+            return {value: item, label: item}
+          }));
+        })
+      }
     });
 
   }
@@ -64,7 +61,7 @@ export class JiraComponent implements OnInit {
   onReload() {
     this.getJiraSetting(true).subscribe(setting => {
       this.jiraProjects.set(setting.jiraProjects!);
-    })
+    });
   }
 
   loadIssueType(projectKey: string) {
@@ -77,12 +74,12 @@ export class JiraComponent implements OnInit {
   }
 
   saveJiraSetting() {
-    this.form.disable();
+    this.loading = true;
     this.projectService.updateJiraIntegrationProject({
       projectId: this.projectStore.projectId(),
-      body: this.form.getRawValue()
+      body: this.setting
     }).pipe(
-      finalize(() => this.form.enable())
+      finalize(() => this.loading = false)
     ).subscribe(() => {
       this.toastr.success({
         message: 'Update success!'
@@ -100,10 +97,6 @@ export class JiraComponent implements OnInit {
         this.loading = false;
       })
     );
-  }
-
-  onChangeIssueType(issueType: any) {
-    this.form.controls.issueType!.setValue(issueType);
   }
 
   onChangeProject($event: SelectChangeEvent) {

@@ -12,17 +12,17 @@ import { RequestBuilder } from '../../request-builder';
 export interface TestJiraIntegrationSetting$Params {
 }
 
-export function testJiraIntegrationSetting(http: HttpClient, rootUrl: string, params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+export function testJiraIntegrationSetting(http: HttpClient, rootUrl: string, params?: TestJiraIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
   const rb = new RequestBuilder(rootUrl, testJiraIntegrationSetting.PATH, 'post');
   if (params) {
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return (r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }) as StrictHttpResponse<boolean>;
     })
   );
 }

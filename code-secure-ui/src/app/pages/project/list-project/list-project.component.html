@@ -6,7 +6,7 @@
     <div class="flex flex-row gap-2 w-full items-center">
       <p-icon-field>
         <p-inputicon styleClass="pi pi-search"/>
-        <input type="text" [(ngModel)]="filter.name" (keyup.enter)="onSearchChange()" pInputText
+        <input class="text-sm" type="text" [(ngModel)]="filter.name" (keyup.enter)="onSearchChange()" pInputText
                placeholder="Search..."/>
       </p-icon-field>
       <!--Source Control Filter-->
@@ -23,7 +23,7 @@
                   [options]="users()"
                   optionValue="id"
                   optionLabel="userName"
-                  [ngModel]="filter.userId"
+                  [ngModel]="filter.memberUserId"
                   (ngModelChange)="onChangeUser($event)">
         </p-select>
         <label for="on_project_manager_user">Manager</label>

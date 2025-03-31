@@ -7,7 +7,7 @@
       <div class="flex flex-row items-center gap-2">
         <p-icon-field>
           <p-inputicon styleClass="pi pi-search"/>
-          <input pInputText type="text"
+          <input pInputText type="text" class="text-sm"
                  [(ngModel)]="store.filter.name"
                  (keyup.enter)="onSearch()"
                  placeholder="Search..."/>

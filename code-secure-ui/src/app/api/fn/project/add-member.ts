@@ -8,15 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { AddMemberRequest } from '../../models/add-member-request';
-import { ProjectUser } from '../../models/project-user';
+import { CreateProjectMemberRequest } from '../../models/create-project-member-request';
+import { ProjectMember } from '../../models/project-member';
 
 export interface AddMember$Params {
   projectId: string;
-      body?: AddMemberRequest
+      body?: CreateProjectMemberRequest
 }
 
-export function addMember(http: HttpClient, rootUrl: string, params: AddMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUser>> {
+export function addMember(http: HttpClient, rootUrl: string, params: AddMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMember>> {
   const rb = new RequestBuilder(rootUrl, addMember.PATH, 'post');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -28,7 +28,7 @@ export function addMember(http: HttpClient, rootUrl: string, params: AddMember$P
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ProjectUser>;
+      return r as StrictHttpResponse<ProjectMember>;
     })
   );
 }

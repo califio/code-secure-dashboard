@@ -1,7 +1,6 @@
 using CodeSecure.Api.CI.Model;
-using CodeSecure.Database.Entity;
-using CodeSecure.Enum;
-using CodeSecure.Extension;
+using CodeSecure.Core.Extension;
+using CodeSecure.Core.Utils;
 
 namespace CodeSecure.Tests;
 

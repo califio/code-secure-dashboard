@@ -1,3 +1,4 @@
+using CodeSecure.Authentication.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,5 +11,8 @@ namespace CodeSecure.Api;
 [Consumes("application/json")]
 public abstract class BaseController : Controller
 {
-    
+    protected JwtUserClaims CurrentUser()
+    {
+        return User.UserClaims();
+    }
 }

@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { TeamsSetting } from '../../models/teams-setting';
+import { TeamsProjectSetting } from '../../models/teams-project-setting';
 
 export interface GetTeamsIntegrationProject$Params {
   projectId: string;
 }
 
-export function getTeamsIntegrationProject(http: HttpClient, rootUrl: string, params: GetTeamsIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
+export function getTeamsIntegrationProject(http: HttpClient, rootUrl: string, params: GetTeamsIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsProjectSetting>> {
   const rb = new RequestBuilder(rootUrl, getTeamsIntegrationProject.PATH, 'get');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -25,7 +25,7 @@ export function getTeamsIntegrationProject(http: HttpClient, rootUrl: string, pa
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<TeamsSetting>;
+      return r as StrictHttpResponse<TeamsProjectSetting>;
     })
   );
 }

@@ -1,6 +1,6 @@
-using CodeSecure;
+using CodeSecure.Api;
 using QuestPDF;
 using QuestPDF.Infrastructure;
 
 Settings.License = LicenseType.Community;
-Application.Run(args);
+ApiServer.Run(args);

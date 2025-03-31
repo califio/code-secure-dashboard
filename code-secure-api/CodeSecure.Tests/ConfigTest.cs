@@ -1,4 +1,4 @@
-using CodeSecure.Config;
+using CodeSecure.Core.Utils;
 
 namespace CodeSecure.Tests;
 

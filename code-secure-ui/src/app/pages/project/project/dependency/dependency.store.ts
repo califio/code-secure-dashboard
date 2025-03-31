@@ -2,9 +2,9 @@ import {computed, Injectable, signal} from '@angular/core';
 import {ProjectPackage} from '../../../../api/models/project-package';
 import {ProjectPackageFilter} from '../../../../api/models/project-package-filter';
 import {ProjectPackageSortField} from '../../../../api/models/project-package-sort-field';
-import {ProjectPackageDetail} from '../../../../api/models/project-package-detail';
 import {BranchOption} from '../../../../shared/components/branch-filter/branch-filter.component';
 import {PackageStatus} from '../../../../api/models/package-status';
+import {ProjectPackageDetailResponse} from '../../../../api/models/project-package-detail-response';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class DependencyStore {
   // dependency detail
   showDependency = signal(false);
   loadingDependency = signal(false);
-  packageDetail = signal<ProjectPackageDetail | null>(null);
+  packageDetail = signal<ProjectPackageDetailResponse | null>(null);
   filter: ProjectPackageFilter = {
     sortBy: ProjectPackageSortField.RiskLevel,
     size: 20,

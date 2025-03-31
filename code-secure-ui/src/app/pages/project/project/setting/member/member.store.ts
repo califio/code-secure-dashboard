@@ -1,14 +1,14 @@
 import {computed, Injectable, signal} from '@angular/core';
-import {ProjectUser} from '../../../../../api/models/project-user';
+import {ProjectMember} from '../../../../../api/models/project-member';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MemberStore {
   loading = signal(false);
-  members = signal<ProjectUser[]>([]);
+  members = signal<ProjectMember[]>([]);
   // update member
-  member = signal<ProjectUser>({});
+  member = signal<ProjectMember>({});
   showUpdateMemberDialog = signal(false);
   showAddMemberDialog = signal(false);
   //paginator

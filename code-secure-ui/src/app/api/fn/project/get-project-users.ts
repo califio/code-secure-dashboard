@@ -8,15 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ProjectUserFilter } from '../../models/project-user-filter';
-import { ProjectUserPage } from '../../models/project-user-page';
+import { ProjectMemberFilter } from '../../models/project-member-filter';
+import { ProjectMemberPage } from '../../models/project-member-page';
 
 export interface GetProjectUsers$Params {
   projectId: string;
-      body?: ProjectUserFilter
+      body?: ProjectMemberFilter
 }
 
-export function getProjectUsers(http: HttpClient, rootUrl: string, params: GetProjectUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectUserPage>> {
+export function getProjectUsers(http: HttpClient, rootUrl: string, params: GetProjectUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMemberPage>> {
   const rb = new RequestBuilder(rootUrl, getProjectUsers.PATH, 'post');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -28,7 +28,7 @@ export function getProjectUsers(http: HttpClient, rootUrl: string, params: GetPr
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ProjectUserPage>;
+      return r as StrictHttpResponse<ProjectMemberPage>;
     })
   );
 }

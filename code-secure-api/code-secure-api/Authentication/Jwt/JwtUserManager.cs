@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using CodeSecure.Database;
-using CodeSecure.Database.Entity;
+using CodeSecure.Application;
+using CodeSecure.Core.Entity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -29,10 +29,10 @@ public class JwtUserManager(
     private const int RefreshTokenTimeout = 30; //day
 
     private readonly SigningCredentials accessTokenKey =
-        new(Application.Config.AccessTokenSecurityKey, SecurityAlgorithms.HmacSha256Signature);
+        new(Configuration.AccessTokenKey, SecurityAlgorithms.HmacSha256Signature);
 
     private readonly SigningCredentials refreshTokenKey =
-        new(Application.Config.RefreshTokenSecurityKey, SecurityAlgorithms.HmacSha256Signature);
+        new(Configuration.RefreshTokenKey, SecurityAlgorithms.HmacSha256Signature);
 
     private readonly JwtSecurityTokenHandler tokenHandler = new();
 
@@ -43,7 +43,7 @@ public class JwtUserManager(
             // validate jwt token first
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
-                IssuerSigningKey = Application.Config.RefreshTokenSecurityKey,
+                IssuerSigningKey = Configuration.RefreshTokenKey,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = false,
@@ -74,7 +74,7 @@ public class JwtUserManager(
                 };
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             logger.LogError(ex.Message);
         }
@@ -151,7 +151,7 @@ public class JwtUserManager(
             // validate jwt token first
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
-                IssuerSigningKey = Application.Config.RefreshTokenSecurityKey,
+                IssuerSigningKey = Configuration.RefreshTokenKey,
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero
@@ -164,7 +164,7 @@ public class JwtUserManager(
             await context.SaveChangesAsync();
             return true;
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             logger.LogError(ex.Message);
         }

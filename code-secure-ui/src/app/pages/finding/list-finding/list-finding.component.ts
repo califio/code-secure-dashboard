@@ -3,7 +3,7 @@ import {Button} from 'primeng/button';
 import {Checkbox, CheckboxChangeEvent} from 'primeng/checkbox';
 import {FindingDetailComponent} from '../../../shared/components/finding/finding-detail/finding-detail.component';
 import {FindingSeverityComponent} from '../../../shared/components/finding/finding-severity/finding-severity.component';
-import {FormControl, FormsModule} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
@@ -44,7 +44,7 @@ import {Select} from 'primeng/select';
 import {
   FindingExportMenuComponent
 } from '../../../shared/components/finding/finding-export-menu/finding-export-menu.component';
-import {ExportType, FindingFilter, FindingSortField} from '../../../api/models';
+import {ExportType, FindingFilter, FindingSortField, ScannerType} from '../../../api/models';
 import {formatDate} from '@angular/common';
 import {toArray} from '../../../core/transform';
 import {SourceControlService} from '../../../api/services/source-control.service';
@@ -147,10 +147,14 @@ export class ListFindingComponent implements OnInit {
     this.sourceControlService.getSourceControlSystem().subscribe(sourceControl => {
       this.store.sourceControls.set(sourceControl);
     });
-    this.userService.getProjectManagerUsers().subscribe(users => {
+    this.userService.listProjectManagerUser().subscribe(users => {
       this.store.users.set(users);
     });
-    this.scannerService.getSastScanners().subscribe(scanners => {
+    this.scannerService.getScanners({
+      body: {
+        type: [ScannerType.Secret, ScannerType.Sast]
+      }
+    }).subscribe(scanners => {
       this.store.scanners.set(scanners);
     });
     this.route.queryParams.pipe(

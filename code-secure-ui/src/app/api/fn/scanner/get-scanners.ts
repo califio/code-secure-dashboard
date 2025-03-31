@@ -8,16 +8,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { ScannerFilter } from '../../models/scanner-filter';
 import { Scanners } from '../../models/scanners';
 
 export interface GetScanners$Params {
-  projectId?: string;
+      body?: ScannerFilter
 }
 
 export function getScanners(http: HttpClient, rootUrl: string, params?: GetScanners$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Scanners>>> {
-  const rb = new RequestBuilder(rootUrl, getScanners.PATH, 'get');
+  const rb = new RequestBuilder(rootUrl, getScanners.PATH, 'post');
   if (params) {
-    rb.query('projectId', params.projectId, {"style":"form"});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -30,4 +31,4 @@ export function getScanners(http: HttpClient, rootUrl: string, params?: GetScann
   );
 }
 
-getScanners.PATH = '/api/scanner';
+getScanners.PATH = '/api/scanner/filter';

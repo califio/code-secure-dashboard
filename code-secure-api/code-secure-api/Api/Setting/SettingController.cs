@@ -1,64 +1,56 @@
-using CodeSecure.Api.Setting.Model;
-using CodeSecure.Api.Setting.Service;
+using CodeSecure.Application;
+using CodeSecure.Application.Module.Setting;
+using CodeSecure.Application.Services;
 using CodeSecure.Authentication;
-using CodeSecure.Authentication.Jwt;
-using CodeSecure.Database.Extension;
-using CodeSecure.Exception;
-using CodeSecure.Manager.EnvVariable;
-using CodeSecure.Manager.Integration.Mail;
-using CodeSecure.Manager.Setting;
+using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Setting;
 
 [Route("api/setting")]
 public class SettingController(
-    ISettingService settingService,
-    IEnvVariableManager envVariableManager,
-    IMailSender mailSender
+    AppDbContext context,
+    IAuthSetting authSetting,
+    ISmtpService smtpService
 ) : BaseController
 {
     [HttpGet]
-    [Route("mail")]
+    [Route("smtp")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public async Task<MailSetting> GetMailSetting()
+    public async Task<SmtpSetting> GetSmtpSetting()
     {
-        return await settingService.GetMailSettingAsync();
+        var setting = await context.GetSmtpSettingAsync();
+        return setting with { Password = string.Empty };
     }
 
     [HttpPost]
-    [Route("mail")]
+    [Route("smtp")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task UpdateMailSetting([FromBody] MailSetting request)
+    public async Task UpdateSmtpSetting([FromBody] SmtpSetting request)
     {
-        await settingService.UpdateMailSettingAsync(request);
+        await context.UpdateSmtpSettingAsync(request);
     }
 
     [HttpPost]
-    [Route("mail/test")]
+    [Route("smtp/test")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<string> TestMailSetting(string? email)
+    public async Task<bool> TestSmtpSetting(string? email)
     {
         if (string.IsNullOrEmpty(email))
         {
-            email = User.UserClaims().Email;
+            email = CurrentUser().Email;
         }
 
-        var result = await mailSender.SendTestMailAsync(email);
-        if (!result.Succeeded)
-        {
-            throw new BadRequestException(result.Error);
-        }
-
-        return email;
+        var result = await smtpService.TestConnectionAsync(email);
+        return result.GetResult();
     }
-    
+
     [HttpGet]
     [Route("auth")]
     [Permission(PermissionType.Config, PermissionAction.Read)]
-    public async Task<AuthSetting> GetAuthSetting()
+    public Task<AuthSetting> GetAuthSetting()
     {
-        return await settingService.GetAuthSettingAsync();
+        return authSetting.GetAuthSettingAsync();
     }
 
     [HttpPost]
@@ -66,7 +58,7 @@ public class SettingController(
     [Permission(PermissionType.Config, PermissionAction.Update)]
     public async Task UpdateAuthSetting([FromBody] AuthSetting request)
     {
-        await settingService.UpdateAuthSettingAsync(request);
+        await authSetting.UpdateAuthSettingAsync(request);
     }
 
     [HttpGet]
@@ -74,38 +66,14 @@ public class SettingController(
     [Permission(PermissionType.Config, PermissionAction.Read)]
     public async Task<SlaSetting> GetSlaSetting()
     {
-        return await settingService.GetSlaSettingAsync();
+        return await context.GetSlaSettingAsync();
     }
 
     [HttpPost]
     [Route("sla")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
     public async Task UpdateSlaSetting([FromBody] SlaSetting request)
-    { 
-        await settingService.UpdateSlaSettingAsync(request);
-    }
-
-    [HttpPost]
-    [Route("env/filter")]
-    [Permission(PermissionType.Config, PermissionAction.Read)]
-    public async Task<Page<string>> GetEnvVariable(QueryFilter filter)
     {
-        return await envVariableManager.FilterAsync(filter);
-    }
-
-    [HttpPost]
-    [Route("env")]
-    [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task CreateEnvVariable(EnvVariableRequest request)
-    {
-        await envVariableManager.CreateAsync(request.Name);
-    }
-
-    [HttpDelete]
-    [Route("env/{env}")]
-    [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task DeleteEnvVariable(string env)
-    {
-        await envVariableManager.RemoveAsync(env);
+        await context.UpdateSlaSettingAsync(request);
     }
 }

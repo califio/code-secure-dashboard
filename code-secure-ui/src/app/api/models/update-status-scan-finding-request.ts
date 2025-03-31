@@ -4,6 +4,6 @@
 
 import { FindingStatus } from '../models/finding-status';
 export interface UpdateStatusScanFindingRequest {
-  scanId: string;
-  status: FindingStatus;
+  scanId?: string;
+  status?: FindingStatus;
 }

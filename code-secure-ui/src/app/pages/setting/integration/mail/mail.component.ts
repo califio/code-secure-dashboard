@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../core/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {IntegrationService} from '../../../../api/services/integration.service';
 import {ToastrService} from '../../../../shared/services/toastr.service';
 import {finalize} from 'rxjs';
@@ -25,40 +24,38 @@ import {InputText} from 'primeng/inputtext';
   templateUrl: './mail.component.html',
 })
 export class MailComponent implements OnInit {
-  formConfig = new FormSection<ConfigOf<MailAlertSetting>>({
-    receivers: new FormField([]),
-    active: new FormField(true),
-    scanCompletedEvent: new FormField(false),
-    scanFailedEvent: new FormField(false),
-    securityAlertEvent: new FormField(true),
-    fixedFindingEvent: new FormField(true),
-    newFindingEvent: new FormField(true),
-  })
-  form: FormGroup<ControlsOf<MailAlertSetting>>
-  receiver: string[] = [];
+  setting: MailAlertSetting = {
+    active: false,
+    fixedFindingEvent: false,
+    needTriageFindingEvent: false,
+    newFindingEvent: false,
+    projectWithoutMemberEvent: false,
+    scanCompletedEvent: false,
+    scanFailedEvent: false,
+    securityAlertEvent: false,
+    receivers: []
+  };
+  loading = false;
 
   constructor(
-    private formService: FormService,
     private integrationService: IntegrationService,
     private toastr: ToastrService
   ) {
-    this.form = this.formService.group(this.formConfig);
   }
 
   ngOnInit(): void {
     this.integrationService.getMailIntegrationSetting().subscribe(setting => {
-      this.form.patchValue(setting);
-      this.receiver = setting.receivers!;
+      this.setting = setting;
     })
   }
 
   saveConfig() {
-    this.form.disable();
-    this.form.controls.receivers!.setValue(this.receiver.filter(item => item.length > 0));
+    this.loading = true;
+    this.setting.receivers = this.setting.receivers?.filter(item => item.length > 0);
     this.integrationService.updateMailIntegrationSetting({
-      body: this.form.getRawValue()
+      body: this.setting
     }).pipe(
-      finalize(() => this.form.enable())
+      finalize(() => this.loading = false)
     ).subscribe(() => {
       this.toastr.success({
         message: 'Update success!'
@@ -67,10 +64,10 @@ export class MailComponent implements OnInit {
   }
 
   deleteReceiver(email: string) {
-    this.receiver = this.receiver.filter(item => item != email);
+    this.setting.receivers = this.setting.receivers?.filter(item => item != email);
   }
 
   addEmail() {
-    this.receiver.push('');
+    this.setting.receivers?.push('');
   }
 }

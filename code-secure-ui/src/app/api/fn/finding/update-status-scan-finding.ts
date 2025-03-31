@@ -8,6 +8,7 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { FindingStatus } from '../../models/finding-status';
 import { UpdateStatusScanFindingRequest } from '../../models/update-status-scan-finding-request';
 
 export interface UpdateStatusScanFinding$Params {
@@ -15,7 +16,7 @@ export interface UpdateStatusScanFinding$Params {
       body?: UpdateStatusScanFindingRequest
 }
 
-export function updateStatusScanFinding(http: HttpClient, rootUrl: string, params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+export function updateStatusScanFinding(http: HttpClient, rootUrl: string, params: UpdateStatusScanFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingStatus>> {
   const rb = new RequestBuilder(rootUrl, updateStatusScanFinding.PATH, 'patch');
   if (params) {
     rb.path('findingId', params.findingId, {"style":"simple"});
@@ -23,11 +24,11 @@ export function updateStatusScanFinding(http: HttpClient, rootUrl: string, param
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<FindingStatus>;
     })
   );
 }

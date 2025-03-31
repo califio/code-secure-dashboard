@@ -25,7 +25,7 @@ export class PackageService extends BaseService {
   }
 
   /** Path part for operation `getPackageDependencies()` */
-  static readonly GetPackageDependenciesPath = '/api/package';
+  static readonly GetPackageDependenciesPath = '/api/package/{packageId}/dependencies';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -33,7 +33,7 @@ export class PackageService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPackageDependencies$Response(params?: GetPackageDependencies$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PackageInfo>>> {
+  getPackageDependencies$Response(params: GetPackageDependencies$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PackageInfo>>> {
     return getPackageDependencies(this.http, this.rootUrl, params, context);
   }
 
@@ -43,7 +43,7 @@ export class PackageService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPackageDependencies(params?: GetPackageDependencies$Params, context?: HttpContext): Observable<Array<PackageInfo>> {
+  getPackageDependencies(params: GetPackageDependencies$Params, context?: HttpContext): Observable<Array<PackageInfo>> {
     return this.getPackageDependencies$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<PackageInfo>>): Array<PackageInfo> => r.body)
     );

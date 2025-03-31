@@ -12,29 +12,22 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { AuthSetting } from '../models/auth-setting';
-import { createEnvVariable } from '../fn/setting/create-env-variable';
-import { CreateEnvVariable$Params } from '../fn/setting/create-env-variable';
-import { deleteEnvVariable } from '../fn/setting/delete-env-variable';
-import { DeleteEnvVariable$Params } from '../fn/setting/delete-env-variable';
 import { getAuthSetting } from '../fn/setting/get-auth-setting';
 import { GetAuthSetting$Params } from '../fn/setting/get-auth-setting';
-import { getEnvVariable } from '../fn/setting/get-env-variable';
-import { GetEnvVariable$Params } from '../fn/setting/get-env-variable';
-import { getMailSetting } from '../fn/setting/get-mail-setting';
-import { GetMailSetting$Params } from '../fn/setting/get-mail-setting';
 import { getSlaSetting } from '../fn/setting/get-sla-setting';
 import { GetSlaSetting$Params } from '../fn/setting/get-sla-setting';
-import { MailSetting } from '../models/mail-setting';
+import { getSmtpSetting } from '../fn/setting/get-smtp-setting';
+import { GetSmtpSetting$Params } from '../fn/setting/get-smtp-setting';
 import { SlaSetting } from '../models/sla-setting';
-import { StringPage } from '../models/string-page';
-import { testMailSetting } from '../fn/setting/test-mail-setting';
-import { TestMailSetting$Params } from '../fn/setting/test-mail-setting';
+import { SmtpSetting } from '../models/smtp-setting';
+import { testSmtpSetting } from '../fn/setting/test-smtp-setting';
+import { TestSmtpSetting$Params } from '../fn/setting/test-smtp-setting';
 import { updateAuthSetting } from '../fn/setting/update-auth-setting';
 import { UpdateAuthSetting$Params } from '../fn/setting/update-auth-setting';
-import { updateMailSetting } from '../fn/setting/update-mail-setting';
-import { UpdateMailSetting$Params } from '../fn/setting/update-mail-setting';
 import { updateSlaSetting } from '../fn/setting/update-sla-setting';
 import { UpdateSlaSetting$Params } from '../fn/setting/update-sla-setting';
+import { updateSmtpSetting } from '../fn/setting/update-smtp-setting';
+import { UpdateSmtpSetting$Params } from '../fn/setting/update-smtp-setting';
 
 @Injectable({ providedIn: 'root' })
 export class SettingService extends BaseService {
@@ -42,78 +35,78 @@ export class SettingService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getMailSetting()` */
-  static readonly GetMailSettingPath = '/api/setting/mail';
+  /** Path part for operation `getSmtpSetting()` */
+  static readonly GetSmtpSettingPath = '/api/setting/smtp';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getMailSetting()` instead.
+   * To access only the response body, use `getSmtpSetting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMailSetting$Response(params?: GetMailSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<MailSetting>> {
-    return getMailSetting(this.http, this.rootUrl, params, context);
+  getSmtpSetting$Response(params?: GetSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<SmtpSetting>> {
+    return getSmtpSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getMailSetting$Response()` instead.
+   * To access the full response (for headers, for example), `getSmtpSetting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMailSetting(params?: GetMailSetting$Params, context?: HttpContext): Observable<MailSetting> {
-    return this.getMailSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<MailSetting>): MailSetting => r.body)
+  getSmtpSetting(params?: GetSmtpSetting$Params, context?: HttpContext): Observable<SmtpSetting> {
+    return this.getSmtpSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SmtpSetting>): SmtpSetting => r.body)
     );
   }
 
-  /** Path part for operation `updateMailSetting()` */
-  static readonly UpdateMailSettingPath = '/api/setting/mail';
+  /** Path part for operation `updateSmtpSetting()` */
+  static readonly UpdateSmtpSettingPath = '/api/setting/smtp';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateMailSetting()` instead.
+   * To access only the response body, use `updateSmtpSetting()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateMailSetting$Response(params?: UpdateMailSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return updateMailSetting(this.http, this.rootUrl, params, context);
+  updateSmtpSetting$Response(params?: UpdateSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateSmtpSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateMailSetting$Response()` instead.
+   * To access the full response (for headers, for example), `updateSmtpSetting$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateMailSetting(params?: UpdateMailSetting$Params, context?: HttpContext): Observable<void> {
-    return this.updateMailSetting$Response(params, context).pipe(
+  updateSmtpSetting(params?: UpdateSmtpSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateSmtpSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
-  /** Path part for operation `testMailSetting()` */
-  static readonly TestMailSettingPath = '/api/setting/mail/test';
+  /** Path part for operation `testSmtpSetting()` */
+  static readonly TestSmtpSettingPath = '/api/setting/smtp/test';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `testMailSetting()` instead.
+   * To access only the response body, use `testSmtpSetting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  testMailSetting$Response(params?: TestMailSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
-    return testMailSetting(this.http, this.rootUrl, params, context);
+  testSmtpSetting$Response(params?: TestSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return testSmtpSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `testMailSetting$Response()` instead.
+   * To access the full response (for headers, for example), `testSmtpSetting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  testMailSetting(params?: TestMailSetting$Params, context?: HttpContext): Observable<string> {
-    return this.testMailSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<string>): string => r.body)
+  testSmtpSetting(params?: TestSmtpSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.testSmtpSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 
@@ -213,81 +206,6 @@ export class SettingService extends BaseService {
    */
   updateSlaSetting(params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<void> {
     return this.updateSlaSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
-    );
-  }
-
-  /** Path part for operation `getEnvVariable()` */
-  static readonly GetEnvVariablePath = '/api/setting/env/filter';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getEnvVariable()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  getEnvVariable$Response(params?: GetEnvVariable$Params, context?: HttpContext): Observable<StrictHttpResponse<StringPage>> {
-    return getEnvVariable(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getEnvVariable$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  getEnvVariable(params?: GetEnvVariable$Params, context?: HttpContext): Observable<StringPage> {
-    return this.getEnvVariable$Response(params, context).pipe(
-      map((r: StrictHttpResponse<StringPage>): StringPage => r.body)
-    );
-  }
-
-  /** Path part for operation `createEnvVariable()` */
-  static readonly CreateEnvVariablePath = '/api/setting/env';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `createEnvVariable()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  createEnvVariable$Response(params?: CreateEnvVariable$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return createEnvVariable(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `createEnvVariable$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  createEnvVariable(params?: CreateEnvVariable$Params, context?: HttpContext): Observable<void> {
-    return this.createEnvVariable$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
-    );
-  }
-
-  /** Path part for operation `deleteEnvVariable()` */
-  static readonly DeleteEnvVariablePath = '/api/setting/env/{env}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `deleteEnvVariable()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  deleteEnvVariable$Response(params: DeleteEnvVariable$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return deleteEnvVariable(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `deleteEnvVariable$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  deleteEnvVariable(params: DeleteEnvVariable$Params, context?: HttpContext): Observable<void> {
-    return this.deleteEnvVariable$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }

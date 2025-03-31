@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../core/forms';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ToastrService} from '../../../../shared/services/toastr.service';
 import {finalize} from 'rxjs';
-import {TeamsSetting} from "../../../../api/models/teams-setting";
 import {IntegrationService} from '../../../../api/services/integration.service';
 import {ButtonDirective} from 'primeng/button';
 import {ToggleSwitch} from "primeng/toggleswitch";
 import {InputText} from 'primeng/inputtext';
+import {TeamsAlertSetting} from '../../../../api/models/teams-alert-setting';
 
 @Component({
   selector: 'app-teams',
@@ -22,38 +21,38 @@ import {InputText} from 'primeng/inputtext';
   templateUrl: './teams.component.html',
 })
 export class TeamsComponent implements OnInit {
-  formConfig = new FormSection<ConfigOf<TeamsSetting>>({
-    webhook: new FormField(''),
-    active: new FormField(true),
-    scanCompletedEvent: new FormField(false),
-    scanFailedEvent: new FormField(false),
-    securityAlertEvent: new FormField(true),
-    fixedFindingEvent: new FormField(true),
-    newFindingEvent: new FormField(true),
-  })
-  form: FormGroup<ControlsOf<TeamsSetting>>
+  setting: TeamsAlertSetting = {
+    active: false,
+    fixedFindingEvent: false,
+    needTriageFindingEvent: false,
+    newFindingEvent: false,
+    projectWithoutMemberEvent: false,
+    scanCompletedEvent: false,
+    scanFailedEvent: false,
+    securityAlertEvent: false,
+    webhook: ''
+  };
+  loading = false;
   loadingTest = false;
 
   constructor(
-    private formService: FormService,
     private integrationService: IntegrationService,
     private toastr: ToastrService
   ) {
-    this.form = this.formService.group(this.formConfig);
   }
 
   ngOnInit(): void {
     this.integrationService.getTeamsIntegrationSetting().subscribe(setting => {
-      this.form.patchValue(setting);
+      this.setting = setting;
     })
   }
 
   saveConfig() {
-    this.form.disable();
+    this.loading = true;
     this.integrationService.updateTeamsIntegrationSetting({
-      body: this.form.getRawValue()
+      body: this.setting
     }).pipe(
-      finalize(() => this.form.enable())
+      finalize(() => this.loading = false)
     ).subscribe(() => {
       this.toastr.success({
         message: 'Update config success!'

@@ -9,7 +9,7 @@
         <div class="text-center mb-8">
           <ng-icon name="logo" size="48"></ng-icon>
           <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Active Account</div>
-          @if (!result.succeeded) {
+          @if (!result.success) {
             <p class="text-sm text-red-500">{{ result.error }}</p>
           } @else {
             <p class="text-sm text-muted-foreground">Your account has been activated!</p>

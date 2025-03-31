@@ -1,5 +1,5 @@
 <div class="flex flex-col">
-  @if (form.controls.active!.value) {
+  @if (setting.projectKey) {
     <div class="flex flex-col gap-2 w-full">
       <div class="flex flex-row gap-2 w-full items-center">
         <span class="w-36 md:w-48">Default Project</span>
@@ -7,7 +7,8 @@
           <p-select [options]="jiraProjects()"
                     optionLabel="name" optionValue="key"
                     placeholder="Jira Project"
-                    [formControl]="form.controls.projectKey!" (onChange)="onChangeProject($event)">
+                    [(ngModel)]="setting.projectKey"
+                    (onChange)="onChangeProject($event)">
           </p-select>
           <p-button severity="secondary" icon="pi pi-sync" (click)="onReload()" [loading]="loading"></p-button>
         </div>
@@ -19,20 +20,21 @@
                     optionValue="value"
                     optionLabel="label"
                     placeholder="Issue Type"
-                    [formControl]="form.controls.issueType!">
+                    [(ngModel)]="setting.issueType">
           </p-select>
         </div>
       </div>
+    </div>
+    <div class="flex flex-row gap-2 items-center">
+      <button pButton severity="primary"
+              [loading]="loading"
+              [disabled]="loading"
+              (click)="saveJiraSetting()">Update
+      </button>
     </div>
   } @else {
     <div>Not yet integrated with Jira. Go to <a routerLink="/setting/integration" class="font-semibold">Setting >
       Integration</a> to configure Jira first.
     </div>
   }
-  <div class="flex flex-row gap-2 items-center">
-    <button pButton severity="primary"
-            [loading]="form.disabled"
-            (click)="saveJiraSetting()">Update
-    </button>
-  </div>
 </div>

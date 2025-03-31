@@ -4,8 +4,8 @@
 
 import { JiraProject } from '../models/jira-project';
 export interface JiraProjectSettingResponse {
-  active?: boolean;
-  issueType?: string | null;
+  active: boolean;
+  issueType: string;
   jiraProjects?: Array<JiraProject> | null;
-  projectKey?: string | null;
+  projectKey: string;
 }

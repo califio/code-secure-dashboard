@@ -1,10 +1,10 @@
 import {Component, EventEmitter, input, Output} from '@angular/core';
 import {Select} from 'primeng/select';
-import {SourceControl} from '../../../api/models/source-control';
 import {FormsModule} from '@angular/forms';
 import {NgIcon} from '@ng-icons/core';
 import {LowerCasePipe} from '@angular/common';
 import {FloatLabel} from 'primeng/floatlabel';
+import {SourceControlSummary} from '../../../api/models/source-control-summary';
 
 @Component({
   selector: 'source-control-select',
@@ -20,7 +20,7 @@ import {FloatLabel} from 'primeng/floatlabel';
   styleUrl: './source-control-select.component.scss'
 })
 export class SourceControlSelectComponent {
-  options = input<SourceControl[]>();
+  options = input<SourceControlSummary[]>();
   sourceControlId = input<string | null>();
   @Output()
   onChange = new EventEmitter<string>();

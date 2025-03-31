@@ -1,241 +1,323 @@
 using System.Net.Mime;
-using CodeSecure.Api.Project.Model;
-using CodeSecure.Api.Project.Service;
-using CodeSecure.Database.Entity;
-using CodeSecure.Database.Extension;
-using CodeSecure.Enum;
-using CodeSecure.Manager.EnvVariable;
-using CodeSecure.Manager.EnvVariable.Model;
-using CodeSecure.Manager.Finding.Model;
-using CodeSecure.Manager.Project.Model;
-using CodeSecure.Manager.Setting;
+using CodeSecure.Application.Module.Project;
+using CodeSecure.Application.Module.Project.Integration;
+using CodeSecure.Application.Module.Project.Integration.Jira;
+using CodeSecure.Application.Module.Project.Integration.Mail;
+using CodeSecure.Application.Module.Project.Integration.Teams;
+using CodeSecure.Application.Module.Project.Member;
+using CodeSecure.Application.Module.Project.Model;
+using CodeSecure.Application.Module.Project.Package;
+using CodeSecure.Application.Module.Project.Threshold;
+using CodeSecure.Authentication;
+using CodeSecure.Core.Entity;
+using CodeSecure.Core.EntityFramework;
+using CodeSecure.Core.Enum;
+using CodeSecure.Core.Extension;
+using FluentResults.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Project;
 
-public class ProjectController(IProjectService projectService, IEnvVariableManager envVariableManager) : BaseController
+public class ProjectController(
+    IProjectAuthorize projectAuthorize, 
+    IFindProjectByIdHandler findProjectByIdHandler,
+    IFindProjectScanHandler findProjectScanHandler,
+    IListProjectCommitHandler listProjectCommitHandler,
+    IFindProjectPackageHandler findProjectPackageHandler,
+    IFindProjectPackageDetailHandler findProjectPackageDetailHandler,
+    IUpdateProjectPackageHandler updateProjectPackageHandler,
+    ICreateTicketPackageHandler createTicketPackageHandler,
+    IDeleteTicketPackageHandler deleteTicketPackageHandler,
+    IGetStatisticsProjectHandler getStatisticsProjectHandler,
+    IFindProjectMemberHandler findProjectMemberHandler,
+    ICreateProjectMemberHandler createProjectMemberHandler,
+    IUpdateProjectMemberHandler updateProjectMemberHandler,
+    IDeleteProjectMemberHandler deleteProjectMemberHandler,
+    IGetProjectThresholdHandler getProjectThresholdHandler,
+    IUpdateProjectThresholdHandler updateProjectThresholdHandler,
+    IJiraProjectIntegrationSetting jiraProjectIntegrationSetting,
+    ITeamsProjectIntegrationSetting teamsProjectIntegrationSetting,
+    IMailProjectIntegrationSetting mailProjectIntegrationSetting,
+    IExportFindingHandler exportFindingHandler,
+    IFindProjectHandler findProjectHandler
+    ) : BaseController
 {
     [HttpPost]
     [Route("filter")]
     public async Task<Page<ProjectSummary>> GetProjects(ProjectFilter filter)
     {
-        return await projectService.GetProjectsAsync(filter);
+        filter.CanReadAllProject = CurrentUser().HasClaim(PermissionType.Project, PermissionAction.Read);
+        filter.CurrentUserId = CurrentUser().Id;
+        var result = await findProjectHandler.HandleAsync(filter);
+        return result.GetResult();
     }
 
     [HttpGet]
-    [Route("{projectId}")]
+    [Route("{projectId:guid}")]
     public async Task<ProjectInfo> GetProjectInfo(Guid projectId)
     {
-        return await projectService.GetProjectInfoAsync(projectId);
-    }
-
-    [HttpGet]
-    [Route("{projectId}/statistic")]
-    public async Task<ProjectStatistics> GetProjectStatistic(Guid projectId)
-    {
-        return await projectService.GetStatisticsAsync(projectId);
-    }
-
-    [HttpGet]
-    [Route("{projectId}/commit")]
-    public async Task<List<ProjectCommitSummary>> GetProjectCommits(Guid projectId)
-    {
-        return await projectService.GetCommitsAsync(projectId);
-    }
-
-    [HttpGet]
-    [Route("{projectId}/scanner")]
-    public async Task<List<Scanners>> GetProjectScanners(Guid projectId)
-    {
-        return await projectService.GetScannersAsync(projectId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await findProjectByIdHandler.HandleAsync(projectId);
+        return result.GetResult();
     }
     
-
     [HttpPost]
-    [Route("{projectId}/scan/filter")]
+    [Route("{projectId:guid}/scan/filter")]
     public async Task<Page<ProjectScan>> GetProjectScans(Guid projectId, ProjectScanFilter filter)
     {
-        return await projectService.GetScansAsync(projectId, filter);
+        filter.ProjectId = projectId;
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await findProjectScanHandler.HandleAsync(filter);
+        return result.GetResult();
     }
 
-    [HttpPost]
-    [Route("{projectId}/finding/filter")]
-    public async Task<Page<FindingSummary>> GetProjectFindings(Guid projectId, ProjectFindingFilter filter)
+    [HttpGet]
+    [Route("{projectId:guid}/statistic")]
+    public async Task<ProjectStatistics> GetProjectStatistic(Guid projectId)
     {
-        return await projectService.GetFindingsAsync(projectId, filter);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await getStatisticsProjectHandler.HandleAsync(projectId);
+        return result.GetResult();
     }
 
+    [HttpGet]
+    [Route("{projectId:guid}/commit")]
+    public async Task<List<ProjectCommitSummary>> GetProjectCommits(Guid projectId)
+    {
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await listProjectCommitHandler.HandleAsync(projectId);
+        return result.GetResult();
+    }
+
+    #region Package
     [HttpPost]
     [Route("{projectId}/package/filter")]
     public async Task<Page<ProjectPackage>> GetProjectPackages(Guid projectId, ProjectPackageFilter filter)
     {
-        return await projectService.GetPackagesAsync(projectId, filter);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        filter.ProjectId = projectId;
+        var result = await findProjectPackageHandler.HandleAsync(filter);
+        return result.GetResult();
     }
     
     [HttpGet]
     [Route("{projectId:guid}/package/{packageId:guid}")]
-    public async Task<ProjectPackageDetail> GetProjectPackageDetail(Guid projectId, Guid packageId)
+    public async Task<ProjectPackageDetailResponse> GetProjectPackageDetail(Guid projectId, Guid packageId)
     {
-        return await projectService.GetPackageDetailAsync(projectId, packageId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await findProjectPackageDetailHandler.HandleAsync(new ProjectPackageDetailRequest
+            { ProjectId = projectId, PackageId = packageId });
+        return result.GetResult();
+    }
+    
+    [HttpPatch]
+    [Route("{projectId:guid}/package/{packageId:guid}")]
+    public async Task<ProjectPackageDetailResponse> UpdateProjectPackage(Guid projectId, Guid packageId, UpdateProjectPackageRequest request)
+    {
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        request.ProjectId = projectId;
+        request.PackageId = packageId;
+        var result = await updateProjectPackageHandler.HandleAsync(request)
+            .Bind(projectPackage => findProjectPackageDetailHandler.HandleAsync(new ProjectPackageDetailRequest
+            {
+                ProjectId = projectPackage.ProjectId,
+                PackageId = projectPackage.PackageId
+            }));
+        return result.GetResult();
     }
     
     [HttpPost]
     [Route("{projectId:guid}/package/{packageId:guid}/ticket")]
     public async Task<Tickets> CreateProjectTicket(Guid projectId, Guid packageId, TicketType ticketType)
     {
-        return await projectService.CreateTicketAsync(projectId, packageId, ticketType);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await createTicketPackageHandler.HandleAsync(new CreateTicketPackageProjectRequest
+        {
+            TicketType = ticketType,
+            ProjectId = projectId,
+            PackageId = packageId
+        });
+        return result.GetResult();
     }
     
     [HttpDelete]
     [Route("{projectId:guid}/package/{packageId:guid}/ticket")]
-    public async Task DeleteProjectTicket(Guid projectId, Guid packageId)
+    public async Task<bool> DeleteProjectTicket(Guid projectId, Guid packageId)
     {
-        await projectService.DeleteTicketAsync(projectId, packageId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await deleteTicketPackageHandler.HandleAsync(new DeleteTicketPackageRequest
+        {
+            ProjectId = projectId,
+            PackageId = packageId
+        });
+        return result.GetResult();
     }
-    
-    [HttpPatch]
-    [Route("{projectId:guid}/package/{packageId:guid}")]
-    public async Task<ProjectPackageDetail> UpdateProjectPackage(Guid projectId, Guid packageId, UpdateProjectPackageRequest request)
-    {
-        return await projectService.UpdateProjectPackageAsync(projectId, packageId, request);
-    }
+
+    #endregion
+
+    #region Member
 
     [HttpPost]
     [Route("{projectId}/member/filter")]
-    public async Task<Page<ProjectUser>> GetProjectUsers(Guid projectId, ProjectUserFilter filter)
+    public async Task<Page<ProjectMember>> GetProjectUsers(Guid projectId, ProjectMemberFilter filter)
     {
-        return await projectService.GetMembersAsync(projectId, filter);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        filter.ProjectId = projectId;
+        var result = await findProjectMemberHandler.HandleAsync(filter);
+        return result.GetResult();
     }
 
     [HttpPost]
     [Route("{projectId}/member")]
-    public async Task<ProjectUser> AddMember(Guid projectId, AddMemberRequest request)
+    public async Task<ProjectMember> AddMember(Guid projectId, CreateProjectMemberRequest request)
     {
-        return await projectService.AddMemberAsync(projectId, request);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        request.ProjectId = projectId;
+        request.CurrentUserId = CurrentUser().Id;
+        var result = await createProjectMemberHandler.HandleAsync(request);
+        return result.GetResult();
     }
 
-    [HttpPut]
+    [HttpPatch]
     [Route("{projectId}/member/{userId:guid}")]
-    public async Task<ProjectUser> UpdateProjectMember(Guid projectId, Guid userId, UpdateMemberRequest request)
+    public async Task<ProjectMember> UpdateProjectMember(Guid projectId, Guid userId, UpdateProjectMemberRequest request)
     {
-        return await projectService.UpdateMemberAsync(projectId, userId, request);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        request.ProjectId = projectId;
+        request.UserId = userId;
+        var result = await updateProjectMemberHandler.HandleAsync(request);
+        return result.GetResult();
     }
 
     [HttpDelete]
     [Route("{projectId}/member/{userId:guid}")]
-    public async Task DeleteProjectMember(Guid projectId, Guid userId)
+    public async Task<bool> DeleteProjectMember(Guid projectId, Guid userId)
     {
-        await projectService.DeleteMemberAsync(projectId, userId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await deleteProjectMemberHandler.HandleAsync(new DeleteProjectMemberRequest
+        {
+            ProjectId = projectId,
+            UserId = userId
+        });
+        return result.GetResult();
     }
 
+    #endregion
+    
+    #region Threshold
     [HttpGet]
-    [Route("{projectId}/setting")]
-    public async Task<ProjectSetting> GetProjectSetting(Guid projectId)
+    [Route("{projectId}/threshold")]
+    public async Task<ThresholdProject> GetThresholdProject(Guid projectId)
     {
-        return await projectService.GetProjectSettingAsync(projectId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await getProjectThresholdHandler.HandleAsync(projectId);
+        return result.GetResult();
     }
 
     [HttpPost]
-    [Route("{projectId}/setting/sast")]
-    public async Task UpdateSastSettingProject(Guid projectId, ThresholdSetting request)
+    [Route("{projectId}/threshold")]
+    public async Task<bool> UpdateThresholdProject(Guid projectId, UpdateProjectThresholdRequest request)
     {
-        await projectService.UpdateSastSettingAsync(projectId, request);
-    }
-
-    [HttpPost]
-    [Route("{projectId}/setting/sca")]
-    public async Task UpdateScaSettingProject(Guid projectId, ThresholdSetting request)
-    {
-        await projectService.UpdateScaSettingAsync(projectId, request);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        request.ProjectId = projectId;
+        var result = await updateProjectThresholdHandler.HandleAsync(request);
+        return result.GetResult();
     }
     
+    #endregion
+    
+    #region Integration
     [HttpGet]
-    [Route("{projectId}/integration")]
+    [Route("{projectId:guid}/integration")]
     public async Task<ProjectIntegration> GetIntegrationProject(Guid projectId)
     {
-        return await projectService.GetIntegrationSettingAsync(projectId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        return new ProjectIntegration
+        {
+            Mail = (await mailProjectIntegrationSetting.GetSettingAsync(projectId)).GetResult().Active,
+            Jira = (await jiraProjectIntegrationSetting.GetSettingAsync(projectId)).GetResult().Active,
+            Teams = (await teamsProjectIntegrationSetting.GetSettingAsync(projectId)).GetResult().Active,
+        };
+
     }
 
     [HttpGet]
-    [Route("{projectId}/integration/jira")]
+    [Route("{projectId:guid}/integration/jira")]
     public async Task<JiraProjectSettingResponse> GetJiraIntegrationProject(Guid projectId, bool reload)
     {
-        return await projectService.GetJiraIntegrationSettingAsync(projectId, reload);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await jiraProjectIntegrationSetting.GetSettingAsync(projectId, reload);
+        return  result.GetResult();
     }
 
     [HttpPost]
-    [Route("{projectId}/integration/jira")]
-    public async Task UpdateJiraIntegrationProject(Guid projectId, [FromBody] JiraProjectSetting setting)
+    [Route("{projectId:guid}/integration/jira")]
+    public async Task<bool> UpdateJiraIntegrationProject(Guid projectId, [FromBody] JiraProjectSetting request)
     {
-        await projectService.UpdateJiraIntegrationSettingAsync(projectId, setting);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await jiraProjectIntegrationSetting.UpdateSettingAsync(projectId, request);
+        return result.GetResult();
     }
     
     [HttpGet]
-    [Route("{projectId}/integration/teams")]
-    public async Task<TeamsSetting> GetTeamsIntegrationProject(Guid projectId)
+    [Route("{projectId:guid}/integration/teams")]
+    public async Task<TeamsProjectSetting> GetTeamsIntegrationProject(Guid projectId)
     {
-        return await projectService.GetTeamsIntegrationSettingAsync(projectId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await teamsProjectIntegrationSetting.GetSettingAsync(projectId);
+        return result.GetResult();
     }
 
     [HttpPost]
-    [Route("{projectId}/integration/teams")]
-    public async Task UpdateTeamsIntegrationProject(Guid projectId, [FromBody] TeamsSetting setting)
+    [Route("{projectId:guid}/integration/teams")]
+    public async Task<bool> UpdateTeamsIntegrationProject(Guid projectId, [FromBody] TeamsProjectSetting request)
     {
-        await projectService.UpdateTeamsIntegrationSettingAsync(projectId, setting);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await teamsProjectIntegrationSetting.UpdateSettingAsync(projectId, request);
+        return result.GetResult();
     }
     
     [HttpPost]
-    [Route("{projectId}/integration/teams/test")]
-    public async Task TestTeamsIntegrationProject(Guid projectId)
+    [Route("{projectId:guid}/integration/teams/test")]
+    public async Task<bool> TestTeamsIntegrationProject(Guid projectId)
     {
-        await projectService.TestTeamsIntegrationSettingAsync(projectId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await teamsProjectIntegrationSetting.TestConnectionAsync(projectId);
+        return result.GetResult();
     }
     
     [HttpGet]
-    [Route("{projectId}/integration/mail")]
-    public async Task<AlertSetting> GetMailIntegrationProject(Guid projectId)
+    [Route("{projectId:guid}/integration/mail")]
+    public async Task<ProjectAlertEvent> GetMailIntegrationProject(Guid projectId)
     {
-        return await projectService.GetMailIntegrationSettingAsync(projectId);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await mailProjectIntegrationSetting.GetSettingAsync(projectId);
+        return result.GetResult();
     }
 
     [HttpPost]
-    [Route("{projectId}/integration/mail")]
-    public async Task UpdateMailIntegrationProject(Guid projectId, [FromBody] AlertSetting setting)
+    [Route("{projectId:guid}/integration/mail")]
+    public async Task<bool> UpdateMailIntegrationProject(Guid projectId, [FromBody] MailProjectAlertSetting request)
     {
-        await projectService.UpdateMailIntegrationSettingAsync(projectId, setting);
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await mailProjectIntegrationSetting.UpdateSettingAsync(projectId, request);
+        return result.GetResult();
     }
-
-    [HttpPost]
-    [Route("{projectId}/env/filter")]
-    public async Task<Page<EnvironmentVariable>> GetProjectEnvironment(Guid projectId, QueryFilter filter)
-    {
-        return await envVariableManager.GetProjectEnvironmentAsync(projectId, filter);
-    }
-
-    [HttpPost]
-    [Route("{projectId}/env")]
-    public async Task<EnvironmentVariable> SetProjectEnvironment(Guid projectId, EnvironmentVariable request)
-    {
-        return await envVariableManager.SetProjectEnvironmentAsync(projectId, request.Name, request.Value);
-    }
-
-    [HttpDelete]
-    [Route("{projectId}/env/{name}")]
-    public async Task RemoveProjectEnvironment(Guid projectId, string name)
-    {
-        await envVariableManager.RemoveProjectEnvironmentAsync(projectId, name);
-    }
+    #endregion
     
     [HttpPost]
-    [Route("{projectId}/export")]
+    [Route("{projectId:guid}/export")]
     [Produces(MediaTypeNames.Application.Octet)]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
-    public async Task<FileContentResult> Export(ExportType format, Guid projectId, ProjectFindingFilter filter)
+    public async Task<FileContentResult> Export(Guid projectId, ExportFindingRequest request)
     {
-        var result = await projectService.ExportAsync(format, projectId, filter);
-        return new FileContentResult(result.Data, MediaTypeNames.Application.Octet)
+        request.Filter.ProjectId = projectId;
+        request.Filter.CanReadAllFinding = CurrentUser().HasClaim(PermissionType.Finding, PermissionAction.Read);
+        request.Filter.CurrentUserId = CurrentUser().Id;
+        var result = await exportFindingHandler.HandleAsync(request);
+        return new FileContentResult(result.GetResult(), MediaTypeNames.Application.Octet)
         {
-            FileDownloadName = result.FileName
+            FileDownloadName = "export"
         };
     }
 }

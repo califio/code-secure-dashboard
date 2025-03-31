@@ -48,11 +48,6 @@ export class SettingComponent implements OnInit {
     private projectService: ProjectService,
     private router: Router,
   ) {
-    this.projectService.getProjectSetting({
-      projectId: this.projectStore.projectId()
-    }).subscribe(setting => {
-      this.projectStore.projectSetting.set(setting);
-    });
     if (this.router.url.endsWith("/setting")) {
       this.router.navigate(['/project', this.projectStore.projectId(), 'setting', 'member']).then();
     }

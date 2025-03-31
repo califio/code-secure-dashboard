@@ -4,11 +4,11 @@ import {ConfirmEmailRequest} from '../../../api/models/confirm-email-request';
 import {bindQueryParams} from '../../../core/router';
 import {AuthService} from '../../../api/services/auth.service';
 import {ReactiveFormsModule} from '@angular/forms';
-import {ConfirmEmailResult} from '../../../api/models/confirm-email-result';
 import {finalize} from 'rxjs';
 import {AppFloatingConfigurator} from '../../../layout/component/app.floatingconfigurator';
 import {Button} from 'primeng/button';
 import {NgIcon} from '@ng-icons/core';
+import {ConfirmEmailResponse} from '../../../api/models/confirm-email-response';
 
 @Component({
   selector: 'app-confirm-email',
@@ -27,7 +27,7 @@ export class ConfirmEmailComponent {
     token: '',
     username: ''
   }
-  result: ConfirmEmailResult = {};
+  result: ConfirmEmailResponse = {};
   loading = false;
 
   constructor(

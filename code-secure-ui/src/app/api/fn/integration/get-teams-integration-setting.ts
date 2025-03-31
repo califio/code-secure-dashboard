@@ -8,12 +8,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { TeamsSetting } from '../../models/teams-setting';
+import { TeamsAlertSetting } from '../../models/teams-alert-setting';
 
 export interface GetTeamsIntegrationSetting$Params {
 }
 
-export function getTeamsIntegrationSetting(http: HttpClient, rootUrl: string, params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsSetting>> {
+export function getTeamsIntegrationSetting(http: HttpClient, rootUrl: string, params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsAlertSetting>> {
   const rb = new RequestBuilder(rootUrl, getTeamsIntegrationSetting.PATH, 'get');
   if (params) {
   }
@@ -23,7 +23,7 @@ export function getTeamsIntegrationSetting(http: HttpClient, rootUrl: string, pa
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<TeamsSetting>;
+      return r as StrictHttpResponse<TeamsAlertSetting>;
     })
   );
 }

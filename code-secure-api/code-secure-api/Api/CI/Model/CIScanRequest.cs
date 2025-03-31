@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using CodeSecure.Enum;
-using CodeSecure.Validator;
+using CodeSecure.Application.Validators;
+using CodeSecure.Core.Enum;
 
 namespace CodeSecure.Api.CI.Model;
 

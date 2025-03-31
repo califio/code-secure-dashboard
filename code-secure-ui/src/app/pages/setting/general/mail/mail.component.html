@@ -3,43 +3,49 @@
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Server</span>
       <div class="w-full max-w-md">
-        <input pInputText class="w-full" [formControl]="form.controls.server!" placeholder="smtp.example.com">
+        <input pInputText class="w-full" [(ngModel)]="smtpSetting.server" placeholder="smtp.example.com">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Port</span>
       <div class="w-full max-w-md">
-        <input pInputText type="text" class="w-full" [formControl]="form.controls.port!" placeholder="587">
+        <input pInputText type="text" class="w-full" [(ngModel)]="smtpSetting.port" placeholder="587">
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 w-full items-center">
+      <span class="w-36 md:w-48">Name</span>
+      <div class="w-full max-w-md">
+        <input pInputText type="text" class="w-full" [(ngModel)]="smtpSetting.name" placeholder="Code Secure">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">UserName</span>
       <div class="w-full max-w-md">
-        <input pInputText type="text" class="w-full" [formControl]="form.controls.userName!">
+        <input pInputText type="text" class="w-full" [(ngModel)]="smtpSetting.userName">
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">Password</span>
       <div class="w-full max-w-md">
         <p-password [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full"
-                    [formControl]="form.controls.password!"></p-password>
+                    [(ngModel)]="smtpSetting.password"/>
       </div>
     </div>
     <div class="flex flex-row gap-2 w-full items-center">
       <span class="w-36 md:w-48">SSL</span>
       <div class="w-full max-w-md">
-        <p-toggle-switch [formControl]="form.controls.useSsl!"/>
+        <p-toggle-switch [(ngModel)]="smtpSetting.useSsl"/>
       </div>
     </div>
   </div>
   <div class="flex flex-row gap-2 items-center">
     <p-button severity="primary" label="Update"
-              [loading]="form.disabled"
-              [disabled]="form.disabled"
+              [loading]="loading"
+              [disabled]="loading"
               (click)="saveConfig()"/>
     <p-button severity="secondary" label="Test Mail"
               [loading]="loadingTestMail"
               [disabled]="loadingTestMail"
-              (click)="testMail()"/>
+              (click)="testConnection()"/>
   </div>
 </div>

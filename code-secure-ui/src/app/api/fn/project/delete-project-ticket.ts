@@ -14,7 +14,7 @@ export interface DeleteProjectTicket$Params {
   packageId: string;
 }
 
-export function deleteProjectTicket(http: HttpClient, rootUrl: string, params: DeleteProjectTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+export function deleteProjectTicket(http: HttpClient, rootUrl: string, params: DeleteProjectTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
   const rb = new RequestBuilder(rootUrl, deleteProjectTicket.PATH, 'delete');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -22,11 +22,11 @@ export function deleteProjectTicket(http: HttpClient, rootUrl: string, params: D
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return (r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }) as StrictHttpResponse<boolean>;
     })
   );
 }

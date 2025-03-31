@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using CodeSecure.Database.Entity;
-using CodeSecure.Database.Metadata;
-using CodeSecure.Enum;
-using CodeSecure.Extension;
+using CodeSecure.Application.Module.Finding;
+using CodeSecure.Core.Entity;
+using CodeSecure.Core.Enum;
+using CodeSecure.Core.Extension;
+using CodeSecure.Core.Utils;
 
 namespace CodeSecure.Api.CI.Model;
 
@@ -34,7 +35,7 @@ public record CiFinding
             {
                 metadata = JSONSerializer.Deserialize<FindingMetadata>(finding.Metadata);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 metadata = null;
             }

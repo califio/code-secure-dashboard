@@ -94,7 +94,7 @@ export class UserComponent implements OnInit, OnDestroy {
         bindQueryParams(params, this.store.filter);
         this.store.currentPage.set(this.store.filter.page!);
         this.store.pageSize.set(this.store.filter.size!);
-        return this.userService.getUsersByAdmin({
+        return this.userService.queryUserInfo({
           body: this.store.filter
         }).pipe(
           finalize(() => {
@@ -157,9 +157,10 @@ export class UserComponent implements OnInit, OnDestroy {
         severity: 'danger',
       },
       accept: () => {
-        this.userService.updateUserByAdmin({
+        this.userService.updateUser({
           userId: user.id!,
           body: {
+            userId: user.id!,
             status: UserStatus.Disabled
           }
         }).subscribe(user => {

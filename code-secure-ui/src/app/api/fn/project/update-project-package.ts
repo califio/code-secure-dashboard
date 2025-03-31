@@ -8,7 +8,7 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ProjectPackageDetail } from '../../models/project-package-detail';
+import { ProjectPackageDetailResponse } from '../../models/project-package-detail-response';
 import { UpdateProjectPackageRequest } from '../../models/update-project-package-request';
 
 export interface UpdateProjectPackage$Params {
@@ -17,7 +17,7 @@ export interface UpdateProjectPackage$Params {
       body?: UpdateProjectPackageRequest
 }
 
-export function updateProjectPackage(http: HttpClient, rootUrl: string, params: UpdateProjectPackage$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackageDetail>> {
+export function updateProjectPackage(http: HttpClient, rootUrl: string, params: UpdateProjectPackage$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackageDetailResponse>> {
   const rb = new RequestBuilder(rootUrl, updateProjectPackage.PATH, 'patch');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
@@ -30,7 +30,7 @@ export function updateProjectPackage(http: HttpClient, rootUrl: string, params: 
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ProjectPackageDetail>;
+      return r as StrictHttpResponse<ProjectPackageDetailResponse>;
     })
   );
 }

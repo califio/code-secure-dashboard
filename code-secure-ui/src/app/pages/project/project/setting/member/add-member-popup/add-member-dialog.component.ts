@@ -107,7 +107,7 @@ export class AddMemberDialogComponent implements OnInit, OnDestroy {
 
   getUsers(search: string | null | undefined) {
     this.loadingUsers = true;
-    return this.userService.getUsers({
+    return this.userService.queryUserSummary({
       body: {
         name: search
       }
