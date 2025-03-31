@@ -5,22 +5,22 @@ import {CreateUserRequest} from '../../../api/models/create-user-request';
 import {FormsModule} from '@angular/forms';
 import {finalize} from 'rxjs';
 import {ToastrService} from '../../../shared/services/toastr.service';
-import {Select} from 'primeng/select';
 import {Button} from 'primeng/button';
 import {Dialog} from "primeng/dialog";
 import {InputText} from 'primeng/inputtext';
 import {ToggleSwitch} from 'primeng/toggleswitch';
+import {SelectButton} from "primeng/selectbutton";
 
 @Component({
   selector: 'app-add-user-popup',
   standalone: true,
   imports: [
     FormsModule,
-    Select,
     Button,
     Dialog,
     InputText,
     ToggleSwitch,
+    SelectButton,
   ],
   templateUrl: './add-user-popup.component.html',
 })

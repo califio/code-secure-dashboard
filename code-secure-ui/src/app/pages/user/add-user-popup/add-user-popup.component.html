@@ -8,10 +8,7 @@
       <div class="grid grid-cols-5 gap-1 items-center">
         <div class="font-semibold">Role</div>
         <div class="col-span-4">
-          <p-select [options]="store.roles()"
-                    optionValue="name" optionLabel="name" appendTo="body"
-                    [(ngModel)]="request.role">
-          </p-select>
+          <p-select-button [options]="store.roles()" optionValue="name" optionLabel="name" [(ngModel)]="request.role"/>
         </div>
       </div>
       <div class="grid grid-cols-5 gap-1 items-center">
