@@ -54,7 +54,9 @@ public static class ApiServer
             options.MultipartBodyLengthLimit = 26843545; // 25MB
         });
         builder.Services.AddSpaStaticFiles(configuration => { configuration.RootPath = "wwwroot"; });
+        builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
         var app = builder.Build();
+        app.MapHealthChecks("/healthz");
         app.InitApp();
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

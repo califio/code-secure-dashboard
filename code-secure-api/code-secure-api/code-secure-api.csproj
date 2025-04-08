@@ -28,6 +28,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.10" />
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.10"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10"/>
         <PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.1" />
