@@ -64,6 +64,23 @@ public class WeeklySecurityAlertJob(
                     await new ProjectAlertManager(dbContext, project.Id, smtpService, razorRender)
                         .AlertNeedTriageFinding(model);
                 }
+
+                // Reminder fix confirmed finding
+                var confirmedFindings = dbContext.Findings
+                    .Where(record => record.ProjectId == project.Id
+                                     && record.Status == FindingStatus.Confirmed).ToList();
+                if (confirmedFindings.Count > 0)
+                {
+                    confirmedFindings.Sort((f1, f2) => f2.Severity - f1.Severity);
+                    var model = new AlertConfirmedFindingModel
+                    {
+                        Project = project,
+                        Findings = confirmedFindings
+                    };
+                    await globalAlertManager.AlertConfirmedFinding(model);
+                    await new ProjectAlertManager(dbContext, project.Id, smtpService, razorRender)
+                        .AlertConfirmedFinding(model);
+                }
             }
 
             page++;

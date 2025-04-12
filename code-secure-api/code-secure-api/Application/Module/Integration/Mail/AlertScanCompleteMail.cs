@@ -7,12 +7,19 @@ public class AlertScanCompleteMail(ISmtpService smtpService, IRazorRender render
 {
     public async Task<Result<bool>> AlertAsync(List<string> receivers, AlertScanCompleteModel model)
     {
-        var content = await render.RenderAsync(Path.Combine("Resources", "Templates", "AlertScanComplete.cshtml"), model);
-        return await smtpService.SendAsync(new MailMessage
+        try
         {
-            Subject = $"Scan on \"{model.Project.Name}\" by {model.Scanner.Name} completed",
-            Receivers = receivers,
-            Content = content,
-        });
+            var content = await render.RenderAsync(Path.Combine("Resources", "Templates", "AlertScanComplete.cshtml"), model);
+            return await smtpService.SendAsync(new MailMessage
+            {
+                Subject = $"Scan on \"{model.Project.Name}\" by {model.Scanner.Name} completed",
+                Receivers = receivers,
+                Content = content,
+            });
+        }
+        catch (Exception e)
+        {
+            return Result.Fail(e.Message);
+        }
     }
 }

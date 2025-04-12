@@ -4,6 +4,7 @@ using CodeSecure.Application.Exceptions;
 using CodeSecure.Application.Helpers;
 using CodeSecure.Application.Module.Finding;
 using CodeSecure.Application.Module.Integration;
+using CodeSecure.Application.Module.Integration.JiraWebhook;
 using CodeSecure.Application.Module.Package;
 using CodeSecure.Application.Module.Project;
 using CodeSecure.Application.Module.Project.Integration;
@@ -23,6 +24,7 @@ public class DefaultCiService(
     AppDbContext context,
     IPackageService packageService,
     IGlobalAlertManager globalAlertManager,
+    IJiraWebHookService jiraWebHookService,
     ISmtpService smtpService,
     IRazorRender render,
     ILogger<DefaultCiService> logger) : ICiService
@@ -383,6 +385,18 @@ public class DefaultCiService(
             _ = globalAlertManager.AlertFixedFinding(model);
             _ = projectAlertManager.AlertFixedFinding(model);
         }
+
+        await jiraWebHookService.AlertScanCompleteAsync(new AlertScanCompleteModel
+        {
+            SourceType = project.SourceControl!.Type,
+            Project = project,
+            Scanner = scan.Scanner,
+            GitCommit = scan.Commit,
+            NewFindingCount = newBranchFindings.Count,
+            ConfirmedFindingCount = confirmedFindings.Count,
+            FixedFindingCount = fixedBranchFindings.Count,
+            IsBlock = isBlock
+        });
         return response;
     }
 

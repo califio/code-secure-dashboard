@@ -1,4 +1,5 @@
 using CodeSecure.Application.Module.Integration.Jira;
+using CodeSecure.Application.Module.Integration.JiraWebhook;
 using CodeSecure.Application.Module.Integration.Mail;
 using CodeSecure.Application.Module.Integration.Teams;
 using CodeSecure.Application.Services;
@@ -33,6 +34,9 @@ public class IntegrationModule : IModule
             var context = sp.GetRequiredService<AppDbContext>();
             return context.GetJiraSettingAsync().Result;
         });
+        // jira webhook
+        builder.AddScoped<IJiraWebHookService, JiraWebHookService>();
+        builder.AddScoped<IJiraWebhookSettingService, JIraWebhookSettingService>();
         // 
         builder.AddScoped<ITicketTrackerManager, TicketTrackerManager>();
         builder.AddScoped<IGlobalAlertManager, GlobalAlertManager>();

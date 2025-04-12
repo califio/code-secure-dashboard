@@ -13,4 +13,5 @@ public class AppSettings
     public string? MailAlertSetting { get; set; }
     public string? TeamsSetting { get; set; }
     public string? JiraSetting { get; set; }
+    public string? JiraWebhookSetting { get; set; }
 }

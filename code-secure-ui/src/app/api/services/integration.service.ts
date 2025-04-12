@@ -19,6 +19,8 @@ import { getJiraIssueTypes } from '../fn/integration/get-jira-issue-types';
 import { GetJiraIssueTypes$Params } from '../fn/integration/get-jira-issue-types';
 import { getJiraProjects } from '../fn/integration/get-jira-projects';
 import { GetJiraProjects$Params } from '../fn/integration/get-jira-projects';
+import { getJiraWebhookIntegrationSetting } from '../fn/integration/get-jira-webhook-integration-setting';
+import { GetJiraWebhookIntegrationSetting$Params } from '../fn/integration/get-jira-webhook-integration-setting';
 import { getMailIntegrationSetting } from '../fn/integration/get-mail-integration-setting';
 import { GetMailIntegrationSetting$Params } from '../fn/integration/get-mail-integration-setting';
 import { getTeamsIntegrationSetting } from '../fn/integration/get-teams-integration-setting';
@@ -28,15 +30,20 @@ import { GetTicketTrackers$Params } from '../fn/integration/get-ticket-trackers'
 import { IntegrationStatus } from '../models/integration-status';
 import { JiraProject } from '../models/jira-project';
 import { JiraSetting } from '../models/jira-setting';
+import { JiraWebhookSetting } from '../models/jira-webhook-setting';
 import { MailAlertSetting } from '../models/mail-alert-setting';
 import { TeamsAlertSetting } from '../models/teams-alert-setting';
 import { testJiraIntegrationSetting } from '../fn/integration/test-jira-integration-setting';
 import { TestJiraIntegrationSetting$Params } from '../fn/integration/test-jira-integration-setting';
+import { testJiraWebhookIntegrationSetting } from '../fn/integration/test-jira-webhook-integration-setting';
+import { TestJiraWebhookIntegrationSetting$Params } from '../fn/integration/test-jira-webhook-integration-setting';
 import { testTeamsIntegrationSetting } from '../fn/integration/test-teams-integration-setting';
 import { TestTeamsIntegrationSetting$Params } from '../fn/integration/test-teams-integration-setting';
 import { TicketTracker } from '../models/ticket-tracker';
 import { updateJiraIntegrationSetting } from '../fn/integration/update-jira-integration-setting';
 import { UpdateJiraIntegrationSetting$Params } from '../fn/integration/update-jira-integration-setting';
+import { updateJiraWebhookIntegrationSetting } from '../fn/integration/update-jira-webhook-integration-setting';
+import { UpdateJiraWebhookIntegrationSetting$Params } from '../fn/integration/update-jira-webhook-integration-setting';
 import { updateMailIntegrationSetting } from '../fn/integration/update-mail-integration-setting';
 import { UpdateMailIntegrationSetting$Params } from '../fn/integration/update-mail-integration-setting';
 import { updateTeamsIntegrationSetting } from '../fn/integration/update-teams-integration-setting';
@@ -320,6 +327,81 @@ export class IntegrationService extends BaseService {
   getJiraIssueTypes(params: GetJiraIssueTypes$Params, context?: HttpContext): Observable<Array<string>> {
     return this.getJiraIssueTypes$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+    );
+  }
+
+  /** Path part for operation `getJiraWebhookIntegrationSetting()` */
+  static readonly GetJiraWebhookIntegrationSettingPath = '/api/integration/jira-webhook';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getJiraWebhookIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraWebhookIntegrationSetting$Response(params?: GetJiraWebhookIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraWebhookSetting>> {
+    return getJiraWebhookIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getJiraWebhookIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraWebhookIntegrationSetting(params?: GetJiraWebhookIntegrationSetting$Params, context?: HttpContext): Observable<JiraWebhookSetting> {
+    return this.getJiraWebhookIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<JiraWebhookSetting>): JiraWebhookSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateJiraWebhookIntegrationSetting()` */
+  static readonly UpdateJiraWebhookIntegrationSettingPath = '/api/integration/jira-webhook';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateJiraWebhookIntegrationSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraWebhookIntegrationSetting$Response(params?: UpdateJiraWebhookIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateJiraWebhookIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateJiraWebhookIntegrationSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraWebhookIntegrationSetting(params?: UpdateJiraWebhookIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateJiraWebhookIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `testJiraWebhookIntegrationSetting()` */
+  static readonly TestJiraWebhookIntegrationSettingPath = '/api/integration/jira-webhook/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testJiraWebhookIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testJiraWebhookIntegrationSetting$Response(params?: TestJiraWebhookIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return testJiraWebhookIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testJiraWebhookIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testJiraWebhookIntegrationSetting(params?: TestJiraWebhookIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.testJiraWebhookIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

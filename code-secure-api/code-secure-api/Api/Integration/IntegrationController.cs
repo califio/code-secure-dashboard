@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using CodeSecure.Application.Module.Integration;
 using CodeSecure.Application.Module.Integration.Jira;
 using CodeSecure.Application.Module.Integration.Jira.Client;
+using CodeSecure.Application.Module.Integration.JiraWebhook;
 using CodeSecure.Application.Module.Integration.Mail;
 using CodeSecure.Application.Module.Integration.Teams;
 using CodeSecure.Authentication;
@@ -14,6 +15,7 @@ namespace CodeSecure.Api.Integration;
 public class IntegrationController(
     IMailAlertSettingService mailAlertSettingService,
     IJiraSettingService jiraSettingService,
+    IJiraWebhookSettingService jiraWebhookSettingService,
     ITeamsAlertSettingService teamsAlertSettingService
 ) : BaseController
 {
@@ -26,6 +28,7 @@ public class IntegrationController(
             Mail = (await mailAlertSettingService.GetSettingAsync()).Active,
             Jira = (await jiraSettingService.GetSettingAsync()).Active,
             Teams = (await teamsAlertSettingService.GetSettingAsync()).Active,
+            JiraWebhook = (await jiraWebhookSettingService.GetSettingAsync()).Active,
         };
     }
 
@@ -137,6 +140,34 @@ public class IntegrationController(
         }).GetIssueTypesForProjectAsync(projectKey);
     }
 
+    #endregion
+    
+    #region JiraWebhook
+    [HttpGet]
+    [Route("jira-webhook")]
+    [Permission(PermissionType.Config, PermissionAction.Read)]
+    public async Task<JiraWebhookSetting> GetJiraWebhookIntegrationSetting()
+    {
+        var setting = await jiraWebhookSettingService.GetSettingAsync();
+        return setting with { Token = string.Empty };
+    }
+    [HttpPost]
+    [Route("jira-webhook")]
+    [Permission(PermissionType.Config, PermissionAction.Update)]
+    public async Task<bool> UpdateJiraWebhookIntegrationSetting([FromBody] JiraWebhookSetting request)
+    {
+        var result = await jiraWebhookSettingService.UpdateSettingAsync(request);
+        return result.GetResult();
+    }
+
+    [HttpPost]
+    [Route("jira-webhook/test")]
+    [Permission(PermissionType.Config, PermissionAction.Update)]
+    public async Task<bool> TestJiraWebhookIntegrationSetting()
+    {
+        var result = await jiraWebhookSettingService.TestConnectionAsync();
+        return result.GetResult();
+    }
     #endregion
 
     [HttpGet]

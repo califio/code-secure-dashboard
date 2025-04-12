@@ -10,6 +10,7 @@ public interface IGlobalAlertManager
     public Task AlertNewFinding(AlertStatusFindingModel model);
     public Task AlertFixedFinding(AlertStatusFindingModel model);
     public Task AlertNeedTriageFinding(AlertNeedTriageFindingModel model);
+    public Task AlertConfirmedFinding(AlertConfirmedFindingModel model);
     public Task AlertVulnerableProjectPackage(AlertVulnerableProjectPackageModel model);
     public Task AlertProjectWithoutMember(AlertProjectWithoutMemberModel model);
 }
@@ -91,6 +92,31 @@ public class GlobalAlertManager(
         if (teamsAlertSetting is { Active: true, NeedTriageFindingEvent: true })
         {
             var result = await new AlertNeedTriageFindingTeams(teamsAlertSetting.Webhook)
+                .AlertAsync([], model);
+            if (result.IsFailed)
+            {
+                logger.LogError(result.ListErrors().First());
+            }
+        }
+    }
+
+    public async Task AlertConfirmedFinding(AlertConfirmedFindingModel model)
+    {
+        // mail
+        if (mailAlertSetting is { Active: true, SecurityAlertEvent: true, Receivers.Count: > 0 })
+        {
+            var result = await new AlertConfirmedFindingMail(smtpService, render)
+                .AlertAsync(mailAlertSetting.Receivers, model);
+            if (result.IsFailed)
+            {
+                logger.LogError(result.ListErrors().First());
+            }
+        }
+
+        // teams
+        if (teamsAlertSetting is { Active: true, SecurityAlertEvent: true })
+        {
+            var result = await new AlertConfirmedFindingTeams(teamsAlertSetting.Webhook)
                 .AlertAsync([], model);
             if (result.IsFailed)
             {

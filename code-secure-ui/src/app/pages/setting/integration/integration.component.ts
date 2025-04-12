@@ -8,6 +8,7 @@ import {IntegrationService} from '../../../api/services/integration.service';
 import {Panel} from "primeng/panel";
 import {MailComponent} from './mail/mail.component';
 import {IntegrationStatus} from '../../../api/models/integration-status';
+import {JiraWebhookComponent} from './jira-webhook/jira-webhook.component';
 
 @Component({
   selector: 'app-integration',
@@ -20,7 +21,8 @@ import {IntegrationStatus} from '../../../api/models/integration-status';
     JiraComponent,
     Panel,
     MailComponent,
-    MailComponent
+    MailComponent,
+    JiraWebhookComponent
   ],
   templateUrl: './integration.component.html',
 })
@@ -28,7 +30,8 @@ export class IntegrationComponent implements OnInit {
   config = {
     mail: false,
     teams: false,
-    jira: false
+    jira: false,
+    jiraWebhook: false
   }
   integrationSetting: IntegrationStatus = {};
 

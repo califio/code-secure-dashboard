@@ -1,0 +1,150 @@
+@using CodeSecure.Application
+@using CodeSecure.Core.Enum
+@model CodeSecure.Application.Module.Integration.AlertConfirmedFindingModel
+<!DOCTYPE html>
+
+<html lang="en">
+<body>
+<div width="100%" style="margin:0;background-color:#f6f7fb; font-family: Helvetica, sans-serif, 'Times New Roman'">
+    <div style="padding:0;overflow:hidden;width:100%;max-width:100%">
+        <table role="presentation" cellspacing="0" cellpadding="0"
+               border="0" align="center" width="100%" style="margin:auto">
+            <tbody>
+            <tr>
+                <td align="center" valign="top">
+                    <table border="0" cellpadding="0" cellspacing="0" style="background-color:#fff;margin:15px">
+                        <tbody>
+                        <tr>
+                            <td align="center" valign="top">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:640px; min-width: 640px">
+                                    <tbody>
+                                    <tr style="padding-bottom:5px;background:#461d9f;background:linear-gradient(to right,#7530a6 0%,#461d9f 50%)">
+                                        <td align="left" valign="top">
+                                            <div style="font-weight:bold; color: white; padding: 24px; text-transform: uppercase;">Code Secure</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style='padding:24px 24px;'>
+                                            <b>Hello,</b>
+                                            We are notifying you that <b>@Model.Project.Name</b> project has @Model.Findings.Count issues to fix.<br>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0 24px">
+                                            <table border="1" cellpadding="0" cellspacing="0" width="100%"
+                                                   style="margin-bottom:15px;padding-bottom:5px;border:1px solid #c5c5c5;border-collapse: collapse;font-family:Helvetica,Arial,sans-serif">
+                                                <tbody style="padding: 10px">
+                                                <tr valign="top" style="font-weight: bold">
+                                                    <td width="45" style="padding:5px">
+                                                        ID
+                                                    </td>
+                                                    <td style="padding:5px">
+                                                        Name
+                                                    </td>
+                                                    <td style="padding:5px">
+                                                        Severity
+                                                    </td>
+                                                </tr>
+                                                @for (var i = 0; i < Model.Findings.Count; i++)
+                                                {
+                                                    <tr valign="top">
+                                                        @{
+                                                            var index = i + 1;
+                                                            var findingUrl = $"{Configuration.FrontendUrl}/#/finding/{Model.Findings[i].Id}";
+                                                            var color = "#22C55E";
+                                                            var label = "N";
+                                                            @switch (Model.Findings[i].Severity)
+                                                            {
+                                                                case FindingSeverity.Critical:
+                                                                    color = "#ab1a1a";
+                                                                    label = "C";
+                                                                    break;
+                                                                case FindingSeverity.High:
+                                                                    color = "#ce5019";
+                                                                    label = "H";
+                                                                    break;
+                                                                case FindingSeverity.Medium:
+                                                                    color = "#d68000";
+                                                                    label = "M";
+                                                                    break;
+                                                                case FindingSeverity.Low:
+                                                                    color = "#88879e";
+                                                                    label = "L";
+                                                                    break;
+                                                                default:
+                                                                    color = "#22C55E";
+                                                                    label = "N";
+                                                                    break;
+                                                            }
+                                                        }
+                                                        <td style="padding:5px; width: 40px">
+                                                            @index
+                                                        </td>
+                                                        <td style="padding:5px">
+                                                            <a href="@findingUrl">
+                                                                @Model.Findings[i].Name
+                                                            </a>
+                                                        </td>
+                                                        <td style="padding:5px; width: 60px;text-align:center;">
+                                                            <div style="background-color:@color;color:#fff;display:block;text-align:center;width:30px">
+                                                                @label
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0 24px 24px 24px">
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div style="padding:0;margin:0;line-height:1.1;font-size:15px; white-space: nowrap;">
+                                                            <a href="@Model.FindingUrl()"
+                                                               style="background-color:#148888;background-image:linear-gradient(-180deg,#148888 0,#096969 100%);border-radius:0;font-size:14px;color:#fff;text-decoration:none;display:block;float:right"
+                                                               target="_blank">
+                                                                <span style="margin:8px 16px;display:block">View Detail</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%"
+           style="background:#f6f7fb;color:#000;font-size:15px;line-height:140%;text-align:center;max-width:600px">
+        <tbody>
+        <tr>
+            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0">
+                <div>
+                    You're receiving this email because of your account on
+                    <a href="@Configuration.FrontendUrl"
+                       style="color:#3777b0;text-decoration:none"
+                       target="_blank">Code Secure</a>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5c5c5c;padding:25px 0"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

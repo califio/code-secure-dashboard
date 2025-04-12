@@ -1,6 +1,6 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using Atlassian.Jira;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 
 namespace CodeSecure.Tests;
@@ -20,6 +20,24 @@ public class JiraTest
     }
 
     [Test]
+    public void ExtractJiraIssueIdTest()
+    {
+        string title = "feature SEC-01 SEC-02 fix";
+        string pattern = "([A-Z]+-\\d+)";
+
+        var match = Regex.Match(title, pattern);
+        if (match.Success)
+        {
+            string issueId = match.Groups[1].Value;
+            Console.WriteLine($"Found issue ID: {issueId}");
+        }
+        else
+        {
+            Console.WriteLine("No issue ID found.");
+        }
+    }
+
+    [Test]
     public void TestCreateIssueJira()
     {
         var issueTypes = jira.IssueTypes.GetIssueTypesAsync().Result;
@@ -28,7 +46,7 @@ public class JiraTest
             Console.WriteLine(JSONSerializer.Serialize(issueType));
         }
     }
-    
+
     [Test]
     public void TestUpdateIssueJira()
     {
@@ -46,7 +64,7 @@ public class JiraTest
             var project = jira.Projects.GetProjectAsync("ATTT").Result;
             Console.WriteLine(project.Key);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
             throw;

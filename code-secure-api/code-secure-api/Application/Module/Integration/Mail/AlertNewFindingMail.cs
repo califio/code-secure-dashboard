@@ -7,13 +7,20 @@ public class AlertNewFindingMail(ISmtpService smtpService, IRazorRender render) 
 {
     public async Task<Result<bool>> AlertAsync(List<string> receivers, AlertStatusFindingModel model)
     {
-        var content = await render.RenderAsync(Path.Combine("Resources", "Templates", "AlertNewFinding.cshtml"), model);
-        return await smtpService.SendAsync(new MailMessage
+        try
         {
-            Subject =
-                $"Security Alert: Found new finding on \"{model.Project.Name}\" project by {model.Scanner.Name}",
-            Receivers = receivers,
-            Content = content,
-        });
+            var content = await render.RenderAsync(Path.Combine("Resources", "Templates", "AlertNewFinding.cshtml"), model);
+            return await smtpService.SendAsync(new MailMessage
+            {
+                Subject =
+                    $"Security Alert: Found new finding on \"{model.Project.Name}\" project by {model.Scanner.Name}",
+                Receivers = receivers,
+                Content = content,
+            });
+        }
+        catch (Exception e)
+        {
+            return Result.Fail(e.Message);
+        }
     }
 }

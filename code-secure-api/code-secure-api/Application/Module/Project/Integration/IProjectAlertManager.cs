@@ -15,6 +15,7 @@ public interface IProjectAlertManager
     public Task AlertNewFinding(AlertStatusFindingModel model);
     public Task AlertFixedFinding(AlertStatusFindingModel model);
     public Task AlertNeedTriageFinding(AlertNeedTriageFindingModel model);
+    public Task AlertConfirmedFinding(AlertConfirmedFindingModel model);
     public Task AlertVulnerableProjectPackage(AlertVulnerableProjectPackageModel model);
 }
 
@@ -93,6 +94,26 @@ public class ProjectAlertManager : IProjectAlertManager
         if (teamsSetting is { Active: true, NeedTriageFindingEvent: true })
         {
             await new AlertNeedTriageFindingTeams(teamsSetting.Webhook).AlertAsync([], model);
+        }
+    }
+
+    public async Task AlertConfirmedFinding(AlertConfirmedFindingModel model)
+    {
+        var receivers = projectUsers
+            .Where(x => x.Role is ProjectRole.Developer or ProjectRole.Manager)
+            .Select(x => x.User?.Email!)
+            .Distinct().ToList();
+        if (!receivers.Any()) return;
+        // mail
+        if (mailAlertSetting is { Active: true, SecurityAlertEvent: true })
+        {
+            await new AlertConfirmedFindingMail(smtpService, render).AlertAsync(receivers, model);
+        }
+
+        // teams
+        if (teamsSetting is { Active: true, SecurityAlertEvent: true })
+        {
+            await new AlertConfirmedFindingTeams(teamsSetting.Webhook).AlertAsync([], model);
         }
     }
 

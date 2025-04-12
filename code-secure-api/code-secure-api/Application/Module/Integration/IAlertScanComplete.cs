@@ -36,6 +36,11 @@ public record AlertScanCompleteModel
         return $"{FrontendUrlHelper.ProjectFindingUrl(Project.Id)}?commitId={GitCommit.Id}";
     }
     
+    public string FindingUrlByStatus(FindingStatus status)
+    {
+        return $"{FindingUrl()}&status={status.ToString()}";
+    }
+    
     public string ProjectUrl()
     {
         return FrontendUrlHelper.ProjectUrl(Project.Id);

@@ -4,6 +4,7 @@
 
 export interface IntegrationStatus {
   jira?: boolean;
+  jiraWebhook?: boolean;
   mail?: boolean;
   teams?: boolean;
 }

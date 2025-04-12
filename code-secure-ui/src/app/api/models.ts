@@ -46,6 +46,7 @@ export { JiraProject } from './models/jira-project';
 export { JiraProjectSetting } from './models/jira-project-setting';
 export { JiraProjectSettingResponse } from './models/jira-project-setting-response';
 export { JiraSetting } from './models/jira-setting';
+export { JiraWebhookSetting } from './models/jira-webhook-setting';
 export { LogoutRequest } from './models/logout-request';
 export { MailAlertSetting } from './models/mail-alert-setting';
 export { MailProjectAlertSetting } from './models/mail-project-alert-setting';
