@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using Atlassian.Jira;
 using CodeSecure.Core.Utils;
@@ -37,6 +38,22 @@ public class JiraTest
         }
     }
 
+    [Test]
+    public void TestJiraWebhook()
+    {
+        var token = "";
+        var webhook = "";
+        // var message = "{panel:title=semgrep|bgColor=#FFFF00|borderStyle=solid}\nTest\n{panel}";
+        // var message = "{panel:title=semgrep|bgColor=#00FF00|borderStyle=solid}\nSuccess\n{panel}";
+        var message = "{panel:title=semgrep|borderStyle=solid}\nInfo\n{panel}";
+        message = message.Replace("\n", "\\n");
+        var body = $"{{\"issues\":[\"CAL-44\"], \"data\": {{\"message\":\"{message}\"}}}}";
+        Console.WriteLine(body);
+        using HttpClient client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Automation-Webhook-Token", token);
+        var content = new StringContent(body, Encoding.UTF8, "application/json");
+        client.PostAsync(webhook, content).Wait();
+    }
     [Test]
     public void TestCreateIssueJira()
     {

@@ -132,7 +132,7 @@ public class InitDataService(
                 RepoUrl = repoUrl,
                 RepoName = repoName,
                 GitAction = CommitType.CommitBranch,
-                ScanTitle = $"Fix issue CAL-44 test",
+                ScanTitle = $"Fix issue CAL-45 test",
                 CommitBranch = "dev",
                 CommitHash = $"35e32b6a00dec02ae7d7{i}",
                 TargetBranch = null,
@@ -151,7 +151,7 @@ public class InitDataService(
                     new CiFinding
                     {
                         RuleId = "java.spring.security.tainted-ssrf-spring-add.tainted-ssrf-spring-add",
-                        Identity = $"java.spring.security.tainted-ssrf-spring-add.tainted-ssrf-spring-add-new-4-{i}",
+                        Identity = $"java.spring.security.tainted-ssrf-spring-add.tainted-ssrf-spring-add-new-7-{i}",
                         Name =
                             "Java Spring Security Tainted Ssrf Spring Add at src/main/java/com/scalesec/vulnado/LinkLister.java",
                         Description =

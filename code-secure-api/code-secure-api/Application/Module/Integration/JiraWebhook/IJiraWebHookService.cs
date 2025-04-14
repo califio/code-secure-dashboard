@@ -29,26 +29,30 @@ public class JiraWebHookService(AppDbContext context, ILogger<JiraWebHookService
                 {
                     return;
                 }
-                var message = $"*Repo:* [{model.Project.Name}|{model.Project.RepoUrl}]";
-                message += $"\n\n*Commit:* [{model.GitCommit.CommitTitle}|{model.CommitUrl()}]";
+                // var message = $"*Repo:* [{model.Project.Name}|{model.Project.RepoUrl}]";
+                var mergeRequest = "";
                 if (model.GitCommit.Type == CommitType.MergeRequest &&
                     !string.IsNullOrEmpty(model.GitCommit.MergeRequestId))
                 {
                     var mergeRequestUrl = GitRepoHelpers.BuildMergeRequestUrl(model.SourceType, model.Project.RepoUrl,
                         model.GitCommit.MergeRequestId);
-                    message += $"\n\n*Merge Request:* [{model.GitCommit.MergeRequestId}|{mergeRequestUrl}]";
+                    mergeRequest += $"\n*Merge Request:* [{model.GitCommit.MergeRequestId}|{mergeRequestUrl}]";
                 }
-
+                var message = $"{{panel:title=Information|borderStyle=solid}}*Repo:* [{model.Project.Name}|{model.Project.RepoUrl}]\n*Commit:* [{model.GitCommit.CommitTitle}|{model.CommitUrl()}]{mergeRequest}{{panel}}";
                 var otherScans = GetOtherScanCompleteInCommit(model.GitCommit);
                 foreach (var otherScan in otherScans)
                 {
-                    message += $"\n\n{ResultString(otherScan)}";
+                    message += $"\n{ResultString(otherScan)}";
                 }
                 CacheAlertScanCompleteModel(model);
-                message += $"\n\n{ResultString(model)}";
+                message += $"\n{ResultString(model)}";
+                message = message.Replace("\n", "\\n");
                 var body = $"{{\"issues\":[\"{jiraIssueId}\"], \"data\": {{\"message\":\"{message}\"}}}}";
                 using HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("X-Automation-Webhook-Token", setting.Token);
+                Console.WriteLine(body);
+                Console.WriteLine(setting.Token);
+                Console.WriteLine(setting.Webhook);
                 var content = new StringContent(body, Encoding.UTF8, "application/json");
                 await client.PostAsync(setting.Webhook, content);
             }
@@ -94,17 +98,12 @@ public class JiraWebHookService(AppDbContext context, ILogger<JiraWebHookService
 
     private string ResultString(AlertScanCompleteModel model)
     {
-        var message = $"\n*{model.Scanner.Name}*";
         if (model.NewFindingCount > 0)
         {
-            message +=
-                $"\nFound {model.NewFindingCount} new finding. [View Detail|{model.FindingUrlByStatus(FindingStatus.Open)}]";
+            
+            var message = $"Found {model.NewFindingCount} new finding. [View Detail|{model.FindingUrlByStatus(FindingStatus.Open)}]";
+            return $"{{panel:title={model.Scanner.Name}|bgColor=#FFFF00|borderStyle=solid}}{message}{{panel}}";
         }
-        else
-        {
-            message = $"\nNo new finding";
-        }
-
-        return message;
+        return $"{{panel:title={model.Scanner.Name}|bgColor=#00FF00|borderStyle=solid}}No new finding{{panel}}";
     }
 }
