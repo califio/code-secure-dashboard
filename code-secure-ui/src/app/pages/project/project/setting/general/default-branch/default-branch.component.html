@@ -1,0 +1,23 @@
+<div class="flex flex-col">
+  <form class="flex flex-col gap-2 w-full">
+    <div class="flex flex-row gap-2 w-full">
+      <span class="w-36 md:w-48">Default Branch</span>
+      <div class="flex flex-col gap-1">
+        @for (branch of branches; track $index) {
+          <div class="w-full max-w-md flex flex-row items-center gap-2">
+            <input pInputText type="text" class="w-full" [(ngModel)]="branches[$index]" placeholder="Branch" [ngModelOptions]="{standalone: true}">
+            <ng-icon name="trash" class="cursor-pointer" (click)="deleteBranch(branches[$index])"></ng-icon>
+          </div>
+        }
+        <p-button severity="secondary" (click)="addBranch()" label="Add another"/>
+      </div>
+    </div>
+  </form>
+  <div class="flex flex-row gap-2 items-center">
+    <button pButton severity="primary"
+            [loading]="loading"
+            [disabled]="loading"
+            (click)="save()">Save
+    </button>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 using CodeSecure.Core.Enum;
 
-namespace CodeSecure.Application.Module.Project.Threshold;
+namespace CodeSecure.Application.Module.Project.Setting.Threshold;
 
 public class ThresholdSetting
 {

@@ -1,4 +1,4 @@
-using CodeSecure.Application.Module.Project.Threshold;
+using CodeSecure.Application.Module.Project.Setting.Threshold;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;

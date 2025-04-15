@@ -26,14 +26,14 @@ export class SettingComponent implements OnInit {
     const projectId = this.projectStore.projectId();
     return [
       {
+        label: 'General',
+        routerLink: `/project/${projectId}/setting/general`,
+        icon: 'heroAdjustmentsHorizontal',
+      },
+      {
         label: 'Member',
         routerLink: `/project/${projectId}/setting/member`,
         icon: 'users',
-      },
-      {
-        label: 'Security Threshold',
-        routerLink: `/project/${projectId}/setting/threshold`,
-        icon: 'threshold',
       },
       {
         label: 'Integration',
@@ -49,7 +49,7 @@ export class SettingComponent implements OnInit {
     private router: Router,
   ) {
     if (this.router.url.endsWith("/setting")) {
-      this.router.navigate(['/project', this.projectStore.projectId(), 'setting', 'member']).then();
+      this.router.navigate(['/project', this.projectStore.projectId(), 'setting', 'general']).then();
     }
   }
 

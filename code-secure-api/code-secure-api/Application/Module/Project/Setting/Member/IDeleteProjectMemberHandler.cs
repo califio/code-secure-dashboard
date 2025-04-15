@@ -2,7 +2,7 @@ using CodeSecure.Application.Module.Mail;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace CodeSecure.Application.Module.Project.Member;
+namespace CodeSecure.Application.Module.Project.Setting.Member;
 
 public record DeleteProjectMemberRequest
 {

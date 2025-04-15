@@ -1,0 +1,38 @@
+<div class="flex flex-col">
+  <h5>General Setting</h5>
+  <div class="flex flex-col gap-4">
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2 cursor-pointer">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="shieldCheck" size="28"/>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Security Threshold</div>
+            </div>
+            <div class="hidden md:block">Defines the security threshold that a project is allowed</div>
+          </div>
+        </div>
+      </ng-template>
+      <app-security-threshold></app-security-threshold>
+    </p-panel>
+
+    <p-panel [toggleable]="true" [collapsed]="true" toggler="header">
+      <ng-template #header>
+        <div class="flex flex-row gap-2 items-center py-2 cursor-pointer">
+          <div class="flex flex-row border border-surface w-10 h-10 rounded items-center justify-center">
+            <ng-icon name="gitBranch" size="28"/>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <div class="font-semibold">Default Branch</div>
+            </div>
+            <div class="hidden md:block">Defines the default branch—fixing a vulnerability on this branch means it’s considered fixed for the entire project.</div>
+          </div>
+        </div>
+      </ng-template>
+      <app-default-branch></app-default-branch>
+    </p-panel>
+  </div>
+</div>

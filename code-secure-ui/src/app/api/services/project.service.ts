@@ -23,6 +23,8 @@ import { export$Any } from '../fn/project/export-any';
 import { Export$Any$Params } from '../fn/project/export-any';
 import { export$Json } from '../fn/project/export-json';
 import { Export$Json$Params } from '../fn/project/export-json';
+import { getDefaultBranchesProject } from '../fn/project/get-default-branches-project';
+import { GetDefaultBranchesProject$Params } from '../fn/project/get-default-branches-project';
 import { getIntegrationProject } from '../fn/project/get-integration-project';
 import { GetIntegrationProject$Params } from '../fn/project/get-integration-project';
 import { getJiraIntegrationProject } from '../fn/project/get-jira-integration-project';
@@ -66,6 +68,8 @@ import { testTeamsIntegrationProject } from '../fn/project/test-teams-integratio
 import { TestTeamsIntegrationProject$Params } from '../fn/project/test-teams-integration-project';
 import { ThresholdProject } from '../models/threshold-project';
 import { Tickets } from '../models/tickets';
+import { updateDefaultBranchesProject } from '../fn/project/update-default-branches-project';
+import { UpdateDefaultBranchesProject$Params } from '../fn/project/update-default-branches-project';
 import { updateJiraIntegrationProject } from '../fn/project/update-jira-integration-project';
 import { UpdateJiraIntegrationProject$Params } from '../fn/project/update-jira-integration-project';
 import { updateMailIntegrationProject } from '../fn/project/update-mail-integration-project';
@@ -681,6 +685,56 @@ export class ProjectService extends BaseService {
    */
   updateMailIntegrationProject(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
     return this.updateMailIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `getDefaultBranchesProject()` */
+  static readonly GetDefaultBranchesProjectPath = '/api/project/{projectId}/defaultBranch';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getDefaultBranchesProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getDefaultBranchesProject$Response(params: GetDefaultBranchesProject$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return getDefaultBranchesProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getDefaultBranchesProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getDefaultBranchesProject(params: GetDefaultBranchesProject$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.getDefaultBranchesProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+    );
+  }
+
+  /** Path part for operation `updateDefaultBranchesProject()` */
+  static readonly UpdateDefaultBranchesProjectPath = '/api/project/{projectId}/defaultBranch';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateDefaultBranchesProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateDefaultBranchesProject$Response(params: UpdateDefaultBranchesProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateDefaultBranchesProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateDefaultBranchesProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateDefaultBranchesProject(params: UpdateDefaultBranchesProject$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateDefaultBranchesProject$Response(params, context).pipe(
       map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }

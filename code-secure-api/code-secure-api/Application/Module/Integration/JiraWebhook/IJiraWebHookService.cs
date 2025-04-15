@@ -50,9 +50,6 @@ public class JiraWebHookService(AppDbContext context, ILogger<JiraWebHookService
                 var body = $"{{\"issues\":[\"{jiraIssueId}\"], \"data\": {{\"message\":\"{message}\"}}}}";
                 using HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("X-Automation-Webhook-Token", setting.Token);
-                Console.WriteLine(body);
-                Console.WriteLine(setting.Token);
-                Console.WriteLine(setting.Webhook);
                 var content = new StringContent(body, Encoding.UTF8, "application/json");
                 await client.PostAsync(setting.Webhook, content);
             }

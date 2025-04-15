@@ -45,7 +45,6 @@ export class JiraComponent implements OnInit {
       this.setting = {
         active: setting.active, issueType: setting.issueType, projectKey: setting.projectKey
       };
-      console.log(this.setting);
       this.jiraProjects.set(setting.jiraProjects!);
       if (setting.projectKey) {
         this.loadIssueType(setting.projectKey!).subscribe(issueTypes => {

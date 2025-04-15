@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TimeagoModule} from 'ngx-timeago';
-import {ProjectStore} from '../../project.store';
-import {ProjectService} from '../../../../../api/services/project.service';
-import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../core/forms';
-import {ToastrService} from '../../../../../shared/services/toastr.service';
-import {ThresholdMode, ThresholdSetting} from '../../../../../api/models';
+import {ProjectStore} from '../../../project.store';
+import {ProjectService} from '../../../../../../api/services/project.service';
+import {ConfigOf, ControlsOf, FormField, FormSection, FormService} from '../../../../../../core/forms';
+import {ToastrService} from '../../../../../../shared/services/toastr.service';
+import {ThresholdMode, ThresholdSetting} from '../../../../../../api/models';
 import {Panel} from 'primeng/panel';
 import {SelectButton} from 'primeng/selectbutton';
 import {InputNumber} from 'primeng/inputnumber';

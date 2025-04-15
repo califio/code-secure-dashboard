@@ -4,10 +4,11 @@ using CodeSecure.Application.Module.Project.Integration;
 using CodeSecure.Application.Module.Project.Integration.Jira;
 using CodeSecure.Application.Module.Project.Integration.Mail;
 using CodeSecure.Application.Module.Project.Integration.Teams;
-using CodeSecure.Application.Module.Project.Member;
 using CodeSecure.Application.Module.Project.Model;
 using CodeSecure.Application.Module.Project.Package;
-using CodeSecure.Application.Module.Project.Threshold;
+using CodeSecure.Application.Module.Project.Setting;
+using CodeSecure.Application.Module.Project.Setting.Member;
+using CodeSecure.Application.Module.Project.Setting.Threshold;
 using CodeSecure.Authentication;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.EntityFramework;
@@ -20,6 +21,7 @@ namespace CodeSecure.Api.Project;
 
 public class ProjectController(
     IProjectAuthorize projectAuthorize, 
+    IGeneralSettingProjectService generalSettingProjectService,
     IFindProjectByIdHandler findProjectByIdHandler,
     IFindProjectScanHandler findProjectScanHandler,
     IListProjectCommitHandler listProjectCommitHandler,
@@ -304,7 +306,25 @@ public class ProjectController(
         return result.GetResult();
     }
     #endregion
-    
+
+    #region Default Branches
+    [HttpGet]
+    [Route("{projectId:guid}/defaultBranch")]
+    public async Task<HashSet<string>> GetDefaultBranchesProject(Guid projectId)
+    {
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await generalSettingProjectService.GetDefaultBranchesAsync(projectId);
+        return result.GetResult();
+    }
+    [HttpPost]
+    [Route("{projectId:guid}/defaultBranch")]
+    public async Task<bool> UpdateDefaultBranchesProject(Guid projectId, HashSet<string> defaultBranches)
+    {
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        var result = await generalSettingProjectService.UpdateDefaultBranchesAsync(projectId, defaultBranches);
+        return result.GetResult();
+    }
+    #endregion
     [HttpPost]
     [Route("{projectId:guid}/export")]
     [Produces(MediaTypeNames.Application.Octet)]

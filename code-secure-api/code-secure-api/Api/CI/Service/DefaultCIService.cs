@@ -8,6 +8,7 @@ using CodeSecure.Application.Module.Integration.JiraWebhook;
 using CodeSecure.Application.Module.Package;
 using CodeSecure.Application.Module.Project;
 using CodeSecure.Application.Module.Project.Integration;
+using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Application.Module.Rule;
 using CodeSecure.Application.Module.Scanner;
 using CodeSecure.Application.Module.SourceControl;
@@ -167,8 +168,11 @@ public class DefaultCiService(
             .Include(scan => scan.Commit)
             .FirstOrDefaultAsync(scan => scan.Id == request.ScanId);
         if (scan == null) throw new BadRequestException("Scan not found");
-
         if (scan.Status != ScanStatus.Running) throw new BadRequestException("Scan is not running");
+        var project = await context.Projects
+            .Include(record => record.SourceControl)
+            .FirstAsync(record => record.Id == scan.ProjectId);
+        var projectSetting = context.GetProjectSettingsAsync(scan.ProjectId).Result.GetResult();
         foreach (var finding in request.Findings.Where(finding => finding.RuleId != null))
         {
             await context.CreateRuleAsync(new Rules
@@ -278,6 +282,9 @@ public class DefaultCiService(
         }
         #endregion
         #region Handle Fixed Finding
+
+        var defaultBranches = projectSetting.GetDefaultBranches();
+        Console.WriteLine(JSONSerializer.Serialize(defaultBranches));
         foreach (var fixedFinding in fixedBranchFindings)
         {
             // update status (fixed) of finding on this scan
@@ -289,13 +296,14 @@ public class DefaultCiService(
             // add change status activity of finding on scan
             context.FindingActivities.Add(FindingActivities.FixedFinding(fixedFinding.Id, scan.CommitId));
             // fixed on default branch or the finding only effected on one branch -> fixed finding
-            if (scan.Commit.IsDefault || scan.Commit!.Branch == "main" || scan.Commit.Branch == "master" ||
+            
+            if (scan.Commit.IsDefault || 
+                (scan.Commit.Type == CommitType.CommitBranch && defaultBranches.Contains(scan.Commit.Branch)) || 
                 context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
             {
                 fixedFinding.Status = FindingStatus.Fixed;
                 fixedFinding.FixedAt = DateTime.UtcNow;
                 context.Findings.Update(fixedFinding);
-                // todo: notify 
             }
             await context.SaveChangesAsync();
         }
@@ -350,9 +358,6 @@ public class DefaultCiService(
         var isBlock = IsBlock(scan.ProjectId, response, scan.Scanner!.Type);
         response.IsBlock = isBlock;
         // send notification
-        var project = await context.Projects
-            .Include(record => record.SourceControl)
-            .FirstAsync(record => record.Id == scan.ProjectId);
         var projectAlertManager = new ProjectAlertManager(
             context:context, 
             projectId: project.Id, 

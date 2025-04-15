@@ -1,6 +1,5 @@
-using System.Text.Json;
 using CodeSecure.Application.Module.Integration.Teams.Client;
-using CodeSecure.Core.Extension;
+using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using FluentResults.Extensions;
@@ -26,7 +25,6 @@ public class TeamsProjectIntegrationSetting(AppDbContext context) : ITeamsProjec
 
     public async Task<Result<bool>> UpdateSettingAsync(Guid projectId, TeamsProjectSetting request)
     {
-        Console.WriteLine(JsonSerializer.Serialize(request));
         var projectSetting =
             await context.ProjectSettings.FirstOrDefaultAsync(record => record.ProjectId == projectId);
         if (projectSetting == null) return Result.Fail("Project not found");

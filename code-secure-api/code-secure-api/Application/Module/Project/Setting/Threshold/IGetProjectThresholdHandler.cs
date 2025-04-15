@@ -1,9 +1,8 @@
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace CodeSecure.Application.Module.Project.Threshold;
+namespace CodeSecure.Application.Module.Project.Setting.Threshold;
 
 public interface IGetProjectThresholdHandler : IHandler<Guid, ThresholdProject>;
 

@@ -1,15 +1,14 @@
 using CodeSecure.Application.Module.Integration.Jira;
 using CodeSecure.Application.Module.Project.Integration.Mail;
 using CodeSecure.Application.Module.Project.Integration.Teams;
-using CodeSecure.Application.Module.Project.Threshold;
+using CodeSecure.Application.Module.Project.Setting.Threshold;
 using CodeSecure.Core.Entity;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using JiraProjectSetting = CodeSecure.Application.Module.Project.Integration.Jira.JiraProjectSetting;
 
-namespace CodeSecure.Application.Module.Project;
+namespace CodeSecure.Application.Module.Project.Setting;
 
 public static class ProjectSettingExtension
 {
@@ -67,5 +66,15 @@ public static class ProjectSettingExtension
     public static ThresholdSetting GetScaSetting(this ProjectSettings setting)
     {
         return JSONSerializer.DeserializeOrDefault(setting.ScaSetting, new ThresholdSetting());
+    }
+    
+    public static HashSet<string> GetDefaultBranches(this ProjectSettings setting)
+    {
+        var branches = JSONSerializer.DeserializeOrDefault(setting.DefaultBranch, new HashSet<string>());
+        if (branches.Count == 0)
+        {
+            branches = ["main"];
+        }
+        return branches;
     }
 }

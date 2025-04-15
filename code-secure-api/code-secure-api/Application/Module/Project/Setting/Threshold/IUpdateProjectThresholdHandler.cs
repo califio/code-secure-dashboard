@@ -1,10 +1,9 @@
 using System.Text.Json.Serialization;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace CodeSecure.Application.Module.Project.Threshold;
+namespace CodeSecure.Application.Module.Project.Setting.Threshold;
 
 public record UpdateProjectThresholdRequest
 {

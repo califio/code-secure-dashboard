@@ -7,12 +7,12 @@ export const routes: Routes = [
     component: SettingComponent,
     children: [
       {
-        path: 'member',
-        loadComponent: () => import('./member/member.component').then(x => x.MemberComponent)
+        path: 'general',
+        loadComponent: () => import('./general/general.component').then(x => x.GeneralComponent)
       },
       {
-        path: 'threshold',
-        loadComponent: () => import('./security-threshold/security-threshold.component').then(x => x.SecurityThresholdComponent)
+        path: 'member',
+        loadComponent: () => import('./member/member.component').then(x => x.MemberComponent)
       },
       {
         path: 'integration',

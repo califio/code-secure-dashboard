@@ -4,7 +4,9 @@
       <div class="flex flex-row gap-2 w-full items-center">
         <span class="w-36 md:w-48">Default Project</span>
         <div class="flex flex-row items-center gap-2">
-          <p-select [options]="jiraProjects()"
+          <p-select [options]="jiraProjects()" [filter]="true"
+                    [filterFields]="['key', 'name']"
+                    appendTo="body"
                     optionLabel="name" optionValue="key"
                     placeholder="Jira Project"
                     [(ngModel)]="setting.projectKey"
@@ -16,7 +18,8 @@
       <div class="flex flex-row gap-2 w-full items-center">
         <span class="w-36 md:w-48">Issue Type</span>
         <div class="flex flex-row items-center gap-2">
-          <p-select [options]="issueTypes()"
+          <p-select [options]="issueTypes()" [filter]="true"
+                    appendTo="body"
                     optionValue="value"
                     optionLabel="label"
                     placeholder="Issue Type"
