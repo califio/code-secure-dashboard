@@ -284,7 +284,6 @@ public class DefaultCiService(
         #region Handle Fixed Finding
 
         var defaultBranches = projectSetting.GetDefaultBranches();
-        Console.WriteLine(JSONSerializer.Serialize(defaultBranches));
         foreach (var fixedFinding in fixedBranchFindings)
         {
             // update status (fixed) of finding on this scan
@@ -297,9 +296,7 @@ public class DefaultCiService(
             context.FindingActivities.Add(FindingActivities.FixedFinding(fixedFinding.Id, scan.CommitId));
             // fixed on default branch or the finding only effected on one branch -> fixed finding
             
-            if (scan.Commit.IsDefault || 
-                (scan.Commit.Type == CommitType.CommitBranch && defaultBranches.Contains(scan.Commit.Branch)) || 
-                context.ScanFindings.Count(record => record.FindingId == fixedFinding.Id) == 1)
+            if (scan.Commit.IsDefault || defaultBranches.Contains(scan.Commit.Branch))
             {
                 fixedFinding.Status = FindingStatus.Fixed;
                 fixedFinding.FixedAt = DateTime.UtcNow;
@@ -413,6 +410,7 @@ public class DefaultCiService(
             .FirstOrDefaultAsync(scan => scan.Id == request.ScanId);
         if (scan == null) throw new BadRequestException("scan not found");
         if (scan.Status != ScanStatus.Running) throw new BadRequestException("scan is not running");
+        var projectSetting = context.GetProjectSettingsAsync(scan.ProjectId).Result.GetResult();
         var scanUrl = $"{Configuration.FrontendUrl}/#/project/{scan.ProjectId}/scan/{scan.Id}";
         if (request.Packages == null)
         {
@@ -563,6 +561,7 @@ public class DefaultCiService(
                     record.Location == package.Location) == false)
             .ToList();
         // update status of scan
+        var defaultBranches = projectSetting.GetDefaultBranches();
         foreach (var fixedProjectPackage in fixedPackageOfScan)
         {
             if (fixedProjectPackage.Package!.RiskLevel == RiskLevel.None)
@@ -579,8 +578,7 @@ public class DefaultCiService(
                         .SetProperty(column => column.Status, PackageStatus.Fixed)
                         .SetProperty(column => column.FixedAt, DateTime.UtcNow)
                     );
-                if (scan.Commit!.IsDefault || scan.Commit!.Branch == "main" || scan.Commit.Branch == "master" ||
-                    context.ScanProjectPackages.Count(record => record.ProjectPackageId == fixedProjectPackage.Id) == 1)
+                if (scan.Commit!.IsDefault || (defaultBranches.Contains(scan.Commit.Branch)))
                 {
                     await context.ProjectPackages.Where(record => record.Id == fixedProjectPackage.Id)
                         .ExecuteUpdateAsync(setter => setter
