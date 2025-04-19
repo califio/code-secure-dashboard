@@ -1,19 +1,19 @@
 import {Routes} from '@angular/router';
-import {ListProjectComponent} from './list-project/list-project.component';
+import {ListComponent} from './list/list.component';
 import {ProjectComponent} from './project/project.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: ListProjectComponent,
+    component: ListComponent,
   },
   {
     path: ':projectId',
     component: ProjectComponent,
     children: [
       {
-        path: 'scan',
-        loadComponent: () => import('./project/scan/scan.component').then(x => x.ScanComponent)
+        path: 'overview',
+        loadComponent: () => import('./project/overview/overview.component').then(x => x.OverviewComponent)
       },
       {
         path: 'finding',

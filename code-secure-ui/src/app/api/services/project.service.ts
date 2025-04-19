@@ -33,6 +33,8 @@ import { getMailIntegrationProject } from '../fn/project/get-mail-integration-pr
 import { GetMailIntegrationProject$Params } from '../fn/project/get-mail-integration-project';
 import { getProjectCommits } from '../fn/project/get-project-commits';
 import { GetProjectCommits$Params } from '../fn/project/get-project-commits';
+import { getProjectCommitScanSummary } from '../fn/project/get-project-commit-scan-summary';
+import { GetProjectCommitScanSummary$Params } from '../fn/project/get-project-commit-scan-summary';
 import { getProjectInfo } from '../fn/project/get-project-info';
 import { GetProjectInfo$Params } from '../fn/project/get-project-info';
 import { getProjectPackageDetail } from '../fn/project/get-project-package-detail';
@@ -53,6 +55,7 @@ import { getThresholdProject } from '../fn/project/get-threshold-project';
 import { GetThresholdProject$Params } from '../fn/project/get-threshold-project';
 import { JiraProjectSettingResponse } from '../models/jira-project-setting-response';
 import { ProjectAlertEvent } from '../models/project-alert-event';
+import { ProjectCommitScanSummaryPage } from '../models/project-commit-scan-summary-page';
 import { ProjectCommitSummary } from '../models/project-commit-summary';
 import { ProjectInfo } from '../models/project-info';
 import { ProjectIntegration } from '../models/project-integration';
@@ -186,6 +189,31 @@ export class ProjectService extends BaseService {
   getProjectStatistic(params: GetProjectStatistic$Params, context?: HttpContext): Observable<ProjectStatistics> {
     return this.getProjectStatistic$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectStatistics>): ProjectStatistics => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectCommitScanSummary()` */
+  static readonly GetProjectCommitScanSummaryPath = '/api/project/{projectId}/commit/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectCommitScanSummary()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectCommitScanSummary$Response(params: GetProjectCommitScanSummary$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectCommitScanSummaryPage>> {
+    return getProjectCommitScanSummary(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectCommitScanSummary$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectCommitScanSummary(params: GetProjectCommitScanSummary$Params, context?: HttpContext): Observable<ProjectCommitScanSummaryPage> {
+    return this.getProjectCommitScanSummary$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectCommitScanSummaryPage>): ProjectCommitScanSummaryPage => r.body)
     );
   }
 

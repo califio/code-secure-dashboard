@@ -1,0 +1,41 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col font-normal gap-2">
+    <div class="flex flex-row gap-2 items-center text-base">
+      <ng-icon [name]="project().sourceType! | lowercase"></ng-icon>
+      <a [href]="project().repoUrl" target="_blank" class="hover:underline">{{ project().name }}</a>
+    </div>
+    <div class="flex flex-row items-center gap-1">
+      <div>You have</div>
+      @if (loading) {
+        <ng-icon name="spin" class="animate-spin"></ng-icon>
+      } @else {
+        <a class="font-bold text-primary hover:underline hover:underline-offset-4"
+           [routerLink]="['/project', project().id, 'finding']"
+           [queryParams]="{'status': 'Open'}">
+          {{ statistic.openFinding }}
+        </a>
+      }
+      <div>open vulnerabilities</div>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-4">
+    <div class="flex flex-col min-w-96 overflow-x-auto">
+      <h5>Static Application Security Testing (SAST)</h5>
+      <p-panel class="w-full">
+        <div class="flex flex-wrap">
+          <severity-chart [severity]="statistic.severitySast"></severity-chart>
+          <finding-status-chart [status]="statistic.statusSast"></finding-status-chart>
+        </div>
+      </p-panel>
+    </div>
+    <div class="flex flex-col">
+      <h5>Software Composition Analysis (SCA)</h5>
+      <p-panel class="w-full">
+        <div class="flex flex-wrap">
+          <severity-chart [severity]="statistic.severitySca"/>
+          <package-status-chart [status]="statistic.statusSca"/>
+        </div>
+      </p-panel>
+    </div>
+  </div>
+</div>

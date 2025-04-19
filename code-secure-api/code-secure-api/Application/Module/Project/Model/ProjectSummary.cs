@@ -12,6 +12,11 @@ public record ProjectSummary
     public required int SeverityMedium { get; set; }
     public required int SeverityLow { get; set; }
     public required int SeverityInfo { get; set; }
+    // status
+    public required int Open { get; set; }
+    public required int Confirmed { get; set; }
+    public required int Ignore { get; set; }
+    public required int Fixed { get; set; }
     public required DateTime CreatedAt { get; set; }
     public required DateTime? UpdatedAt { get; set; }
 }

@@ -1,12 +1,15 @@
 import {Component, Input} from '@angular/core';
 import {ScanStatus} from '../../../../api/models/scan-status';
-import {NgClass} from '@angular/common';
+import {LowerCasePipe, NgClass} from '@angular/common';
+import {Tooltip} from 'primeng/tooltip';
 
 @Component({
   selector: 'scan-status',
   standalone: true,
   imports: [
-    NgClass
+    NgClass,
+    Tooltip,
+    LowerCasePipe
   ],
   templateUrl: './scan-status.component.html',
   styleUrl: './scan-status.component.scss'

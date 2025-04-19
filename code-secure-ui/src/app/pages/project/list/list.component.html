@@ -40,39 +40,62 @@
           <p-checkbox [binary]="true" name="checkbox" value="all"></p-checkbox>
         </th>
         <th class="min-w-[300px]">PROJECT</th>
-        <th class="min-w-[180px]">FINDING</th>
+        <th class="min-w-[180px]">FINDING SEVERITY</th>
+        <th class="min-w-[180px]">FINDING STATUS</th>
         <th class="min-w-[180px]">CREATED AT</th>
         <th class="w-[60px]"></th>
       </tr>
     </ng-template>
-    <ng-template #body let-project>
+    <ng-template #body let-element>
+      @let project = castAsProject(element);
       <tr>
         <td class="text-center">
           <p-checkbox [value]="project.id"></p-checkbox>
         </td>
         <td>
-          <a [routerLink]="['/project', project.id, 'scan']" class="flex flex-row items-center gap-2">
+          <a [routerLink]="['/project', project.id, 'overview']" class="flex flex-row items-center gap-2">
             <ng-icon [name]="sourceIcon(project.sourceType)"></ng-icon>
             <span class="w-full">{{ project.name }}</span>
           </a>
         </td>
         <td>
           <div
-            class="mr-4 font-mono text-xs rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
-            <p class="flex-1 text-center bg-rose-600/20 text-rose-500 flex items-center justify-center h-full">
+            class="mr-4 font-mono rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
+            <p pTooltip="Critical" tooltipPosition="top" class="flex-1 text-center bg-rose-600/20 text-rose-500 flex items-center justify-center h-full">
               {{ project.severityCritical }}
             </p>
-            <p class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center h-full">
+            <p pTooltip="High" tooltipPosition="top" class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center h-full">
               {{ project.severityHigh }}
             </p>
-            <p class="flex-1 text-center bg-yellow-600/20 text-yellow-500 flex items-center justify-center h-full">
+            <p pTooltip="Medium" tooltipPosition="top" class="flex-1 text-center bg-yellow-600/20 text-yellow-500 flex items-center justify-center h-full">
               {{ project.severityMedium }}
             </p>
-            <p class="flex-1 text-center bg-indigo-500/20 text-indigo-400 flex items-center justify-center h-full">
+            <p pTooltip="Low" tooltipPosition="top" class="flex-1 text-center bg-indigo-500/20 text-indigo-400 flex items-center justify-center h-full">
               {{ project.severityLow }}
             </p>
-            <p class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center h-full">
+            <p pTooltip="Informative" tooltipPosition="top" class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center h-full">
               {{ project.severityInfo }}
+            </p>
+          </div>
+        </td>
+        <td class="min-w-32">
+          <div
+            class="mr-4 font-mono rounded-md overflow-hidden gap-1 shadow-sm shadow-black/20 h-[28px] flex items-stretch">
+            <p pTooltip="Open" tooltipPosition="top"
+               class="flex-1 text-center bg-gray-500/20 text-gray-500 flex items-center justify-center h-full">
+              {{ project.open }}
+            </p>
+            <p pTooltip="Confirmed" tooltipPosition="top"
+               class="flex-1 text-center bg-blue-500/20 text-blue-400 flex items-center justify-center h-full">
+              {{ project.confirmed }}
+            </p>
+            <p pTooltip="Accepted Risk" tooltipPosition="top"
+               class="flex-1 text-center bg-orange-600/20 text-orange-500 flex items-center justify-center h-full">
+              {{ project.ignore }}
+            </p>
+            <p pTooltip="Fixed" tooltipPosition="top"
+               class="flex-1 text-center bg-green-500/20 text-green-400 flex items-center justify-center h-full">
+              {{ project.fixed }}
             </p>
           </div>
         </td>

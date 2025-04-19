@@ -143,7 +143,7 @@ export class FindingComponent implements OnInit, OnDestroy {
         return <BranchOption>{
           id: item.commitId,
           commitBranch: item.branch,
-          commitType: item.action,
+          commitType: item.type,
           targetBranch: item.targetBranch
         }
       });

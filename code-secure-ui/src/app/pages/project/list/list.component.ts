@@ -30,6 +30,8 @@ import {
 } from '../../../shared/components/source-control-select/source-control-select.component';
 import {SourceControlService} from '../../../api/services/source-control.service';
 import {SourceControlSummary} from '../../../api/models/source-control-summary';
+import {FindingStatus} from '../../../api/models/finding-status';
+import {cast} from '../../../core/transform';
 
 @Component({
   selector: 'page-list-project',
@@ -52,9 +54,9 @@ import {SourceControlSummary} from '../../../api/models/source-control-summary';
     Select,
     SourceControlSelectComponent
   ],
-  templateUrl: './list-project.component.html',
+  templateUrl: './list.component.html',
 })
-export class ListProjectComponent implements OnInit, OnDestroy {
+export class ListComponent implements OnInit, OnDestroy {
   loading = false;
   sorts = [
     {
@@ -171,4 +173,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     this.filter.sourceControlId = $event;
     updateQueryParams(this.router, this.filter);
   }
+
+  protected readonly FindingStatus = FindingStatus;
+  castAsProject = cast<ProjectSummary>;
 }

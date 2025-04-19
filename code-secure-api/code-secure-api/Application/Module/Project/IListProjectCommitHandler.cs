@@ -16,7 +16,7 @@ public class ListProjectCommitHandler(AppDbContext context) : IListProjectCommit
             {
                 CommitId = record.Id,
                 Branch = record.Branch,
-                Action = record.Type,
+                Type = record.Type,
                 TargetBranch = record.TargetBranch,
                 IsDefault = record.IsDefault
             })
