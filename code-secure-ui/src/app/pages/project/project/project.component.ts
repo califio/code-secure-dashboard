@@ -22,7 +22,6 @@ import {Panel} from 'primeng/panel';
     Panel,
   ],
   templateUrl: './project.component.html',
-  styleUrl: './project.component.scss'
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   activeTab = 0;
@@ -31,7 +30,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     return [
       {
         label: 'Overview',
-        routerLink: `/project/${projectId}/scan`,
+        routerLink: `/project/${projectId}/overview`,
         icon: 'scan',
         routerLinkActiveOptions: {exact: false}
       },

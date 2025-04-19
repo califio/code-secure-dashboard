@@ -4,9 +4,13 @@
 
 import { SourceType } from '../models/source-type';
 export interface ProjectSummary {
+  confirmed?: number;
   createdAt?: string;
+  fixed?: number;
   id?: string;
+  ignore?: number;
   name?: string | null;
+  open?: number;
   severityCritical?: number;
   severityHigh?: number;
   severityInfo?: number;

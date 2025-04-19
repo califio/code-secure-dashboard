@@ -13,6 +13,7 @@ public class ProjectModule : IModule
         builder.AddScoped<IFindProjectScanHandler, FindProjectScanHandler>();
         builder.AddScoped<IGetStatisticsProjectHandler, GetStatisticsProjectHandler>();
         builder.AddScoped<IListProjectCommitHandler, ListProjectCommitHandler>();
+        builder.AddScoped<IGetProjectCommitScanSummary, GetProjectCommitScanSummary>();
         return builder;
     }
 }

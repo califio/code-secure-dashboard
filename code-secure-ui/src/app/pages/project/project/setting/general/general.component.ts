@@ -10,11 +10,8 @@ import {DefaultBranchComponent} from './default-branch/default-branch.component'
 @Component({
   selector: 'app-general',
   imports: [
-    AuthenticationComponent,
-    MailComponent,
     NgIcon,
     Panel,
-    SlaComponent,
     SecurityThresholdComponent,
     DefaultBranchComponent
   ],

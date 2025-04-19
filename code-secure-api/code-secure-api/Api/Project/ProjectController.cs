@@ -41,7 +41,8 @@ public class ProjectController(
     ITeamsProjectIntegrationSetting teamsProjectIntegrationSetting,
     IMailProjectIntegrationSetting mailProjectIntegrationSetting,
     IExportFindingHandler exportFindingHandler,
-    IFindProjectHandler findProjectHandler
+    IFindProjectHandler findProjectHandler,
+    IGetProjectCommitScanSummary projectCommitScanSummary
     ) : BaseController
 {
     [HttpPost]
@@ -79,6 +80,15 @@ public class ProjectController(
     {
         projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
         var result = await getStatisticsProjectHandler.HandleAsync(projectId);
+        return result.GetResult();
+    }
+    
+    [HttpPost]
+    [Route("{projectId:guid}/commit/filter")]
+    public async Task<Page<ProjectCommitScanSummary>> GetProjectCommitScanSummary(Guid projectId, ProjectCommitFilter filter)
+    {
+        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Read);
+        var result = await projectCommitScanSummary.HandleAsync(projectId,filter);
         return result.GetResult();
     }
 

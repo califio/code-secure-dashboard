@@ -1,3 +1,7 @@
+export function cast<T>(input: any): T {
+  return input as T;
+}
+
 export function transformArrayNotNull<T>(input: T[] | undefined | null): T[] {
   if (!input) {
     return [] as T[];

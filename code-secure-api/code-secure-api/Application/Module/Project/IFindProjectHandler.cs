@@ -44,23 +44,41 @@ public class FindProjectHandler(AppDbContext context) : IFindProjectHandler
             Id = p.Id,
             Name = p.Name,
             SeverityCritical = context.Findings.Count(finding =>
-                finding.ProjectId == p.Id && finding.Severity == FindingSeverity.Critical &&
+                finding.ProjectId == p.Id &&
+                finding.Severity == FindingSeverity.Critical &&
                 finding.Status != FindingStatus.Incorrect),
             SeverityHigh = context.Findings.Count(finding =>
-                finding.ProjectId == p.Id && finding.Severity == FindingSeverity.High &&
+                finding.ProjectId == p.Id &&
+                finding.Severity == FindingSeverity.High &&
                 finding.Status != FindingStatus.Incorrect),
             SeverityMedium = context.Findings.Count(finding =>
-                finding.ProjectId == p.Id && finding.Severity == FindingSeverity.Medium &&
+                finding.ProjectId == p.Id &&
+                finding.Severity == FindingSeverity.Medium &&
                 finding.Status != FindingStatus.Incorrect),
             SeverityLow = context.Findings.Count(finding =>
-                finding.ProjectId == p.Id && finding.Severity == FindingSeverity.Low &&
+                finding.ProjectId == p.Id &&
+                finding.Severity == FindingSeverity.Low &&
                 finding.Status != FindingStatus.Incorrect),
             SeverityInfo = context.Findings.Count(finding =>
-                finding.ProjectId == p.Id && finding.Severity == FindingSeverity.Info &&
+                finding.ProjectId == p.Id &&
+                finding.Severity == FindingSeverity.Info &&
                 finding.Status != FindingStatus.Incorrect),
+            
+            Open = context.Findings.Count(finding =>
+                finding.ProjectId == p.Id &&
+                finding.Status == FindingStatus.Open),
+            Confirmed = context.Findings.Count(finding =>
+                finding.ProjectId == p.Id &&
+                finding.Status == FindingStatus.Confirmed),
+            Ignore = context.Findings.Count(finding =>
+                finding.ProjectId == p.Id &&
+                finding.Status == FindingStatus.AcceptedRisk),
+            Fixed = context.Findings.Count(finding =>
+                finding.ProjectId == p.Id &&
+                finding.Status == FindingStatus.Fixed),
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt,
-            SourceType = p.SourceControl!.Type
+            SourceType = p.SourceControl!.Type,
         }).PageAsync(request.Page, request.Size);
     }
 }
