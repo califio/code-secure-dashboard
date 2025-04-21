@@ -45,13 +45,13 @@ public class GetProjectCommitScanSummary(AppDbContext context) : IGetProjectComm
                     .Count(e => e.ScanId == x.Id && e.Status == FindingStatus.Fixed),
                 JobUrl = x.JobUrl,
                 Critical = context.ScanFindings.Include(e => e.Finding)
-                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.Critical),
+                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.Critical && e.Finding.Status != FindingStatus.Incorrect),
                 High = context.ScanFindings.Include(e => e.Finding)
-                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.High),
+                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.High && e.Finding.Status != FindingStatus.Incorrect),
                 Medium = context.ScanFindings.Include(e => e.Finding)
-                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.Medium),
+                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.Medium && e.Finding.Status != FindingStatus.Incorrect),
                 Low = context.ScanFindings.Include(e => e.Finding)
-                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.Low),
+                    .Count(e => e.ScanId == x.Id && e.Finding!.Severity == FindingSeverity.Low && e.Finding.Status != FindingStatus.Incorrect),
             })
             .ToListAsync();
         var item = scans.GroupBy(x => x.Commit).Select(x => new ProjectCommitScanSummary
