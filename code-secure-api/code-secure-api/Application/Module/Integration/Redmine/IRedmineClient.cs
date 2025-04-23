@@ -18,17 +18,28 @@ public interface IRedmineClient
     Task<Issue> CreateIssueAsync(Issue issue);
 }
 
-public class RedmineClient(string url, string token) : IRedmineClient
+public class RedmineClient : IRedmineClient
 {
     private static List<IdName>? projects;
     private static List<IdName>? statuses;
     private static List<IdName>? trackers;
     private static List<IdName>? priorities;
-    
-    private readonly RedmineManager redmineManager = new(new RedmineManagerOptionsBuilder()
-        .WithHost(url)
-        .WithApiKeyAuthentication(token)
-    );
+    private readonly RedmineManager? redmineManager;
+
+    public RedmineClient(string url, string token)
+    {
+        try
+        {
+            redmineManager = new(new RedmineManagerOptionsBuilder()
+                .WithHost(url)
+                .WithApiKeyAuthentication(token)
+            );
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
+    }
 
     public Result<bool> TestConnection()
     {
@@ -42,8 +53,13 @@ public class RedmineClient(string url, string token) : IRedmineClient
             return Result.Fail(e.Message);
         }
     }
+
     public async Task<Result<List<IdName>>> GetProjectsAsync(bool reload)
     {
+        if (redmineManager == null)
+        {
+            return new Result<List<IdName>>();
+        }
         if (reload || projects == null)
         {
             try
@@ -56,11 +72,16 @@ public class RedmineClient(string url, string token) : IRedmineClient
                 return Result.Fail(e.Message);
             }
         }
+
         return projects;
     }
 
     public async Task<Result<List<IdName>>> GetStatusAsync(bool reload)
     {
+        if (redmineManager == null)
+        {
+            return new Result<List<IdName>>();
+        }
         if (reload || statuses == null)
         {
             try
@@ -79,6 +100,10 @@ public class RedmineClient(string url, string token) : IRedmineClient
 
     public async Task<Result<List<IdName>>> GetTrackersAsync(bool reload)
     {
+        if (redmineManager == null)
+        {
+            return new Result<List<IdName>>();
+        }
         if (reload || trackers == null)
         {
             try
@@ -91,12 +116,16 @@ public class RedmineClient(string url, string token) : IRedmineClient
                 return Result.Fail(e.Message);
             }
         }
+
         return trackers;
-        
     }
 
     public async Task<Result<List<IdName>>> GetPrioritiesAsync(bool reload)
     {
+        if (redmineManager == null)
+        {
+            return new Result<List<IdName>>();
+        }
         if (reload || priorities == null)
         {
             try
@@ -107,7 +136,7 @@ public class RedmineClient(string url, string token) : IRedmineClient
             catch (Exception e)
             {
                 return Result.Fail(e.Message);
-            }   
+            }
         }
 
         return priorities;
@@ -115,13 +144,13 @@ public class RedmineClient(string url, string token) : IRedmineClient
 
     public async Task<RedmineMetadata> GetMetadataAsync(bool reload)
     {
-        
         var projectsTask = GetProjectsAsync(reload);
         var statusTask = GetStatusAsync(reload);
         var trackersTask = GetTrackersAsync(reload);
         var prioritiesTask = GetPrioritiesAsync(reload);
         await Task.WhenAll(projectsTask, statusTask, trackersTask, prioritiesTask);
-        var results = new[] {
+        var results = new[]
+        {
             await projectsTask,
             await statusTask,
             await trackersTask,
@@ -155,11 +184,12 @@ public class RedmineClient(string url, string token) : IRedmineClient
             { "limit", "1" },
             { "project_id", issue.Project.Id.ToString() }
         };
-        var issues = redmineManager.Get<Issue>(new RequestOptions{ QueryString = parameters});
+        var issues = redmineManager.Get<Issue>(new RequestOptions { QueryString = parameters });
         if (issues == null || issues.Count == 0)
         {
             return await redmineManager.CreateAsync(issue);
         }
+
         return issues.First();
     }
 }
