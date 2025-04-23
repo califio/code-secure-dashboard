@@ -13,7 +13,7 @@
         <div class="flex flex-row gap-2 items-center">
           @if (finding) {
             <ng-icon [name]="finding.project!.sourceType! | lowercase"></ng-icon>
-            <a [routerLink]="['/project', finding.project?.id, 'scan']"
+            <a [routerLink]="['/project', finding.project?.id, 'overview']"
                class="hover:underline">{{ finding.project?.name }}</a>
           } @else {
             <p-skeleton width="12rem"/>
