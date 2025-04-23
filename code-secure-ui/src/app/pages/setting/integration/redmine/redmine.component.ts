@@ -52,13 +52,13 @@ export class RedmineComponent implements OnInit {
         if (setting.statusId! < 1 || setting.priorityId! < 1 || setting.projectId! < 1 || setting.trackerId! < 1) {
           this.activeStep = 2;
         } else {
+          this.loadRedmineMetadata(false);
           this.activeStep = 3;
         }
       } else {
         this.activeStep = 1;
       }
     });
-    this.loadRedmineMetadata(false);
   }
 
   testConnection() {
@@ -91,7 +91,6 @@ export class RedmineComponent implements OnInit {
   }
 
   tabTwo(activateCallback: any) {
-
     if (this.setting.url) {
       this.loadRedmineMetadata(true);
       activateCallback(2);
