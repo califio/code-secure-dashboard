@@ -1,0 +1,140 @@
+<div class="card flex">
+  <p-stepper [(value)]="activeStep" class="basis-[40rem]">
+    <p-step-list>
+      <p-step [value]="1">Authentication</p-step>
+      <p-step [value]="2">Default Option</p-step>
+      <p-step [value]="3">Done</p-step>
+    </p-step-list>
+    <p-step-panels>
+      <p-step-panel [value]="1">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="flex flex-col gap-2 w-full">
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Enable</span>
+              <div class="w-full max-w-md">
+                <p-toggle-switch [(ngModel)]="setting.active"></p-toggle-switch>
+              </div>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Redmine URL</span>
+              <div class="w-full max-w-md">
+                <input pInputText type="text" class="w-full" [(ngModel)]="setting.url">
+              </div>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Access Token</span>
+              <div class="w-full max-w-md">
+                <p-password [feedback]="false" toggleMask [(ngModel)]="setting.token" inputStyleClass="w-full" styleClass="w-full"></p-password>
+              </div>
+            </div>
+          </div>
+          <div class="flex pt-6 justify-end">
+            <p-button (onClick)="tabTwo(activateCallback);" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+          </div>
+        </ng-template>
+      </p-step-panel>
+
+      <p-step-panel [value]="2">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="flex flex-col gap-2">
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Default Project</span>
+              <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                        [options]="metadata.projects ?? []"
+                        [(ngModel)]="setting.projectId">
+              </p-select>
+              <p-button severity="secondary" icon="pi pi-sync"
+                        (click)="loadRedmineMetadata(true)"
+                        [loading]="loadingMetadata"/>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Default Tracker</span>
+              <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                        [options]="metadata.trackers ?? []"
+                        [(ngModel)]="setting.trackerId">
+              </p-select>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Default Priority</span>
+              <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                        [options]="metadata.priorities ?? []"
+                        [(ngModel)]="setting.priorityId">
+              </p-select>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Default Status</span>
+              <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                        [options]="metadata.statuses ?? []"
+                        [(ngModel)]="setting.statusId">
+              </p-select>
+            </div>
+          </div>
+
+          <div class="flex pt-6 justify-between">
+            <p-button (onClick)="activateCallback(1)" label="Back" severity="secondary" icon="pi pi-arrow-left" />
+            <p-button (onClick)="save(activateCallback)" [loading]="loading" label="Save" icon="pi pi-arrow-right" iconPos="right" />
+          </div>
+        </ng-template>
+      </p-step-panel>
+
+      <p-step-panel [value]="3">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="flex flex-col gap-2 w-full">
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Enable</span>
+              <div class="w-full max-w-md">
+                <p-toggle-switch [(ngModel)]="setting.active"></p-toggle-switch>
+              </div>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Redmine URL</span>
+              <div class="w-full max-w-md">
+                <input pInputText type="text" class="w-full" [(ngModel)]="setting.url">
+              </div>
+            </div>
+            <div class="flex flex-row gap-2 w-full items-center">
+              <span class="w-36 md:w-48">Access Token</span>
+              <div class="w-full max-w-md">
+                <p-password [feedback]="false" toggleMask [(ngModel)]="setting.token" inputStyleClass="w-full" styleClass="w-full"></p-password>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex flex-row gap-2 w-full items-center">
+                <span class="w-36 md:w-48">Default Project</span>
+                <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                          [options]="metadata.projects ?? []"
+                          [(ngModel)]="setting.projectId">
+                </p-select>
+              </div>
+              <div class="flex flex-row gap-2 w-full items-center">
+                <span class="w-36 md:w-48">Default Tracker</span>
+                <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                          [options]="metadata.trackers ?? []"
+                          [(ngModel)]="setting.trackerId">
+                </p-select>
+              </div>
+              <div class="flex flex-row gap-2 w-full items-center">
+                <span class="w-36 md:w-48">Default Priority</span>
+                <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                          [options]="metadata.priorities ?? []"
+                          [(ngModel)]="setting.priorityId">
+                </p-select>
+              </div>
+              <div class="flex flex-row gap-2 w-full items-center">
+                <span class="w-36 md:w-48">Default Status</span>
+                <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                          [options]="metadata.statuses ?? []"
+                          [(ngModel)]="setting.statusId">
+                </p-select>
+              </div>
+            </div>
+          </div>
+          <div class="flex pt-6 justify-between">
+            <p-button (onClick)="activateCallback(2)" label="Back" severity="secondary" icon="pi pi-arrow-left" />
+            <p-button (onClick)="testConnection()" [loading]="loadingTest" label="Test Connection" severity="primary" />
+          </div>
+        </ng-template>
+      </p-step-panel>
+    </p-step-panels>
+  </p-stepper>
+</div>

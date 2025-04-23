@@ -8,18 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { JiraProjectSettingResponse } from '../../models/jira-project-setting-response';
+import { JiraProjectSetting } from '../../models/jira-project-setting';
 
 export interface GetJiraIntegrationProject$Params {
   projectId: string;
-  reload?: boolean;
 }
 
-export function getJiraIntegrationProject(http: HttpClient, rootUrl: string, params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraProjectSettingResponse>> {
+export function getJiraIntegrationProject(http: HttpClient, rootUrl: string, params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraProjectSetting>> {
   const rb = new RequestBuilder(rootUrl, getJiraIntegrationProject.PATH, 'get');
   if (params) {
     rb.path('projectId', params.projectId, {"style":"simple"});
-    rb.query('reload', params.reload, {"style":"form"});
   }
 
   return http.request(
@@ -27,7 +25,7 @@ export function getJiraIntegrationProject(http: HttpClient, rootUrl: string, par
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<JiraProjectSettingResponse>;
+      return r as StrictHttpResponse<JiraProjectSetting>;
     })
   );
 }

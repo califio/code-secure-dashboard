@@ -81,10 +81,6 @@ export class JiraComponent implements OnInit {
     });
   }
 
-  onChangeIssueType(issueType: any) {
-    this.form.controls.issueType!.setValue(issueType);
-  }
-
   loadIssueType(projectKey: string) {
     this.loadingIssueType = true;
     return this.integrationService.getJiraIssueTypes({

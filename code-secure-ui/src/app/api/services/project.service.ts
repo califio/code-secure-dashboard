@@ -49,11 +49,18 @@ import { getProjectStatistic } from '../fn/project/get-project-statistic';
 import { GetProjectStatistic$Params } from '../fn/project/get-project-statistic';
 import { getProjectUsers } from '../fn/project/get-project-users';
 import { GetProjectUsers$Params } from '../fn/project/get-project-users';
+import { getRedmineIntegrationProject } from '../fn/project/get-redmine-integration-project';
+import { GetRedmineIntegrationProject$Params } from '../fn/project/get-redmine-integration-project';
+import { getRedmineMetadata } from '../fn/project/get-redmine-metadata';
+import { GetRedmineMetadata$Params } from '../fn/project/get-redmine-metadata';
 import { getTeamsIntegrationProject } from '../fn/project/get-teams-integration-project';
 import { GetTeamsIntegrationProject$Params } from '../fn/project/get-teams-integration-project';
 import { getThresholdProject } from '../fn/project/get-threshold-project';
 import { GetThresholdProject$Params } from '../fn/project/get-threshold-project';
-import { JiraProjectSettingResponse } from '../models/jira-project-setting-response';
+import { JiraProject } from '../models/jira-project';
+import { JiraProjectSetting } from '../models/jira-project-setting';
+import { listJiraProjects } from '../fn/project/list-jira-projects';
+import { ListJiraProjects$Params } from '../fn/project/list-jira-projects';
 import { ProjectAlertEvent } from '../models/project-alert-event';
 import { ProjectCommitScanSummaryPage } from '../models/project-commit-scan-summary-page';
 import { ProjectCommitSummary } from '../models/project-commit-summary';
@@ -66,6 +73,8 @@ import { ProjectPackagePage } from '../models/project-package-page';
 import { ProjectScanPage } from '../models/project-scan-page';
 import { ProjectStatistics } from '../models/project-statistics';
 import { ProjectSummaryPage } from '../models/project-summary-page';
+import { RedmineMetadata } from '../models/redmine-metadata';
+import { RedmineProjectSetting } from '../models/redmine-project-setting';
 import { TeamsProjectSetting } from '../models/teams-project-setting';
 import { testTeamsIntegrationProject } from '../fn/project/test-teams-integration-project';
 import { TestTeamsIntegrationProject$Params } from '../fn/project/test-teams-integration-project';
@@ -81,6 +90,8 @@ import { updateProjectMember } from '../fn/project/update-project-member';
 import { UpdateProjectMember$Params } from '../fn/project/update-project-member';
 import { updateProjectPackage } from '../fn/project/update-project-package';
 import { UpdateProjectPackage$Params } from '../fn/project/update-project-package';
+import { updateRedmineIntegrationProject } from '../fn/project/update-redmine-integration-project';
+import { UpdateRedmineIntegrationProject$Params } from '../fn/project/update-redmine-integration-project';
 import { updateTeamsIntegrationProject } from '../fn/project/update-teams-integration-project';
 import { UpdateTeamsIntegrationProject$Params } from '../fn/project/update-teams-integration-project';
 import { updateThresholdProject } from '../fn/project/update-threshold-project';
@@ -242,6 +253,353 @@ export class ProjectService extends BaseService {
     );
   }
 
+  /** Path part for operation `getIntegrationProject()` */
+  static readonly GetIntegrationProjectPath = '/api/project/{projectId}/integration';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getIntegrationProject$Response(params: GetIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectIntegration>> {
+    return getIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getIntegrationProject(params: GetIntegrationProject$Params, context?: HttpContext): Observable<ProjectIntegration> {
+    return this.getIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectIntegration>): ProjectIntegration => r.body)
+    );
+  }
+
+  /** Path part for operation `getDefaultBranchesProject()` */
+  static readonly GetDefaultBranchesProjectPath = '/api/project/{projectId}/defaultBranch';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getDefaultBranchesProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getDefaultBranchesProject$Response(params: GetDefaultBranchesProject$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return getDefaultBranchesProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getDefaultBranchesProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getDefaultBranchesProject(params: GetDefaultBranchesProject$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.getDefaultBranchesProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+    );
+  }
+
+  /** Path part for operation `updateDefaultBranchesProject()` */
+  static readonly UpdateDefaultBranchesProjectPath = '/api/project/{projectId}/defaultBranch';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateDefaultBranchesProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateDefaultBranchesProject$Response(params: UpdateDefaultBranchesProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateDefaultBranchesProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateDefaultBranchesProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateDefaultBranchesProject(params: UpdateDefaultBranchesProject$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateDefaultBranchesProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `export()` */
+  static readonly ExportPath = '/api/project/{projectId}/export';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `export$Any()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Any$Response(params: Export$Any$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return export$Any(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `export$Any$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Any(params: Export$Any$Params, context?: HttpContext): Observable<Blob> {
+    return this.export$Any$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `export$Json()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Json$Response(params: Export$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return export$Json(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `export$Json$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  export$Json(params: Export$Json$Params, context?: HttpContext): Observable<Blob> {
+    return this.export$Json$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+    );
+  }
+
+  /** Path part for operation `getJiraIntegrationProject()` */
+  static readonly GetJiraIntegrationProjectPath = '/api/project/{projectId}/integration/jira';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getJiraIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraIntegrationProject$Response(params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraProjectSetting>> {
+    return getJiraIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getJiraIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getJiraIntegrationProject(params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<JiraProjectSetting> {
+    return this.getJiraIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<JiraProjectSetting>): JiraProjectSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateJiraIntegrationProject()` */
+  static readonly UpdateJiraIntegrationProjectPath = '/api/project/{projectId}/integration/jira';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateJiraIntegrationProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraIntegrationProject$Response(params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateJiraIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateJiraIntegrationProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateJiraIntegrationProject(params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateJiraIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `listJiraProjects()` */
+  static readonly ListJiraProjectsPath = '/api/project/{projectId}/integration/jira/projects';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `listJiraProjects()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  listJiraProjects$Response(params: ListJiraProjects$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<JiraProject>>> {
+    return listJiraProjects(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `listJiraProjects$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  listJiraProjects(params: ListJiraProjects$Params, context?: HttpContext): Observable<Array<JiraProject>> {
+    return this.listJiraProjects$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<JiraProject>>): Array<JiraProject> => r.body)
+    );
+  }
+
+  /** Path part for operation `getMailIntegrationProject()` */
+  static readonly GetMailIntegrationProjectPath = '/api/project/{projectId}/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getMailIntegrationProject()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMailIntegrationProject$Response(params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectAlertEvent>> {
+    return getMailIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getMailIntegrationProject$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMailIntegrationProject(params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<ProjectAlertEvent> {
+    return this.getMailIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectAlertEvent>): ProjectAlertEvent => r.body)
+    );
+  }
+
+  /** Path part for operation `updateMailIntegrationProject()` */
+  static readonly UpdateMailIntegrationProjectPath = '/api/project/{projectId}/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateMailIntegrationProject()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationProject$Response(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateMailIntegrationProject(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateMailIntegrationProject$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationProject(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateMailIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `getProjectUsers()` */
+  static readonly GetProjectUsersPath = '/api/project/{projectId}/member/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProjectUsers()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectUsers$Response(params: GetProjectUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMemberPage>> {
+    return getProjectUsers(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProjectUsers$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getProjectUsers(params: GetProjectUsers$Params, context?: HttpContext): Observable<ProjectMemberPage> {
+    return this.getProjectUsers$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectMemberPage>): ProjectMemberPage => r.body)
+    );
+  }
+
+  /** Path part for operation `addMember()` */
+  static readonly AddMemberPath = '/api/project/{projectId}/member';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `addMember()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  addMember$Response(params: AddMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMember>> {
+    return addMember(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `addMember$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  addMember(params: AddMember$Params, context?: HttpContext): Observable<ProjectMember> {
+    return this.addMember$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectMember>): ProjectMember => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteProjectMember()` */
+  static readonly DeleteProjectMemberPath = '/api/project/{projectId}/member/{userId}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteProjectMember()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteProjectMember$Response(params: DeleteProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return deleteProjectMember(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteProjectMember$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteProjectMember(params: DeleteProjectMember$Params, context?: HttpContext): Observable<boolean> {
+    return this.deleteProjectMember$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `updateProjectMember()` */
+  static readonly UpdateProjectMemberPath = '/api/project/{projectId}/member/{userId}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateProjectMember()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectMember$Response(params: UpdateProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMember>> {
+    return updateProjectMember(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateProjectMember$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateProjectMember(params: UpdateProjectMember$Params, context?: HttpContext): Observable<ProjectMember> {
+    return this.updateProjectMember$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectMember>): ProjectMember => r.body)
+    );
+  }
+
   /** Path part for operation `getProjectPackages()` */
   static readonly GetProjectPackagesPath = '/api/project/{projectId}/package/filter';
 
@@ -367,106 +725,6 @@ export class ProjectService extends BaseService {
     );
   }
 
-  /** Path part for operation `getProjectUsers()` */
-  static readonly GetProjectUsersPath = '/api/project/{projectId}/member/filter';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getProjectUsers()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  getProjectUsers$Response(params: GetProjectUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMemberPage>> {
-    return getProjectUsers(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getProjectUsers$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  getProjectUsers(params: GetProjectUsers$Params, context?: HttpContext): Observable<ProjectMemberPage> {
-    return this.getProjectUsers$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectMemberPage>): ProjectMemberPage => r.body)
-    );
-  }
-
-  /** Path part for operation `addMember()` */
-  static readonly AddMemberPath = '/api/project/{projectId}/member';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `addMember()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  addMember$Response(params: AddMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMember>> {
-    return addMember(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `addMember$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  addMember(params: AddMember$Params, context?: HttpContext): Observable<ProjectMember> {
-    return this.addMember$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectMember>): ProjectMember => r.body)
-    );
-  }
-
-  /** Path part for operation `deleteProjectMember()` */
-  static readonly DeleteProjectMemberPath = '/api/project/{projectId}/member/{userId}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `deleteProjectMember()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  deleteProjectMember$Response(params: DeleteProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return deleteProjectMember(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `deleteProjectMember$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  deleteProjectMember(params: DeleteProjectMember$Params, context?: HttpContext): Observable<boolean> {
-    return this.deleteProjectMember$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
-    );
-  }
-
-  /** Path part for operation `updateProjectMember()` */
-  static readonly UpdateProjectMemberPath = '/api/project/{projectId}/member/{userId}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateProjectMember()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateProjectMember$Response(params: UpdateProjectMember$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectMember>> {
-    return updateProjectMember(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateProjectMember$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateProjectMember(params: UpdateProjectMember$Params, context?: HttpContext): Observable<ProjectMember> {
-    return this.updateProjectMember$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectMember>): ProjectMember => r.body)
-    );
-  }
-
   /** Path part for operation `getThresholdProject()` */
   static readonly GetThresholdProjectPath = '/api/project/{projectId}/threshold';
 
@@ -517,78 +775,78 @@ export class ProjectService extends BaseService {
     );
   }
 
-  /** Path part for operation `getIntegrationProject()` */
-  static readonly GetIntegrationProjectPath = '/api/project/{projectId}/integration';
+  /** Path part for operation `getRedmineIntegrationProject()` */
+  static readonly GetRedmineIntegrationProjectPath = '/api/project/{projectId}/integration/redmine';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getIntegrationProject()` instead.
+   * To access only the response body, use `getRedmineIntegrationProject()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getIntegrationProject$Response(params: GetIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectIntegration>> {
-    return getIntegrationProject(this.http, this.rootUrl, params, context);
+  getRedmineIntegrationProject$Response(params: GetRedmineIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<RedmineProjectSetting>> {
+    return getRedmineIntegrationProject(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getIntegrationProject$Response()` instead.
+   * To access the full response (for headers, for example), `getRedmineIntegrationProject$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getIntegrationProject(params: GetIntegrationProject$Params, context?: HttpContext): Observable<ProjectIntegration> {
-    return this.getIntegrationProject$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectIntegration>): ProjectIntegration => r.body)
+  getRedmineIntegrationProject(params: GetRedmineIntegrationProject$Params, context?: HttpContext): Observable<RedmineProjectSetting> {
+    return this.getRedmineIntegrationProject$Response(params, context).pipe(
+      map((r: StrictHttpResponse<RedmineProjectSetting>): RedmineProjectSetting => r.body)
     );
   }
 
-  /** Path part for operation `getJiraIntegrationProject()` */
-  static readonly GetJiraIntegrationProjectPath = '/api/project/{projectId}/integration/jira';
+  /** Path part for operation `updateRedmineIntegrationProject()` */
+  static readonly UpdateRedmineIntegrationProjectPath = '/api/project/{projectId}/integration/redmine';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getJiraIntegrationProject()` instead.
+   * To access only the response body, use `updateRedmineIntegrationProject()` instead.
    *
-   * This method doesn't expect any request body.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getJiraIntegrationProject$Response(params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<JiraProjectSettingResponse>> {
-    return getJiraIntegrationProject(this.http, this.rootUrl, params, context);
+  updateRedmineIntegrationProject$Response(params: UpdateRedmineIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateRedmineIntegrationProject(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getJiraIntegrationProject$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getJiraIntegrationProject(params: GetJiraIntegrationProject$Params, context?: HttpContext): Observable<JiraProjectSettingResponse> {
-    return this.getJiraIntegrationProject$Response(params, context).pipe(
-      map((r: StrictHttpResponse<JiraProjectSettingResponse>): JiraProjectSettingResponse => r.body)
-    );
-  }
-
-  /** Path part for operation `updateJiraIntegrationProject()` */
-  static readonly UpdateJiraIntegrationProjectPath = '/api/project/{projectId}/integration/jira';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateJiraIntegrationProject()` instead.
+   * To access the full response (for headers, for example), `updateRedmineIntegrationProject$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateJiraIntegrationProject$Response(params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return updateJiraIntegrationProject(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateJiraIntegrationProject$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateJiraIntegrationProject(params: UpdateJiraIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
-    return this.updateJiraIntegrationProject$Response(params, context).pipe(
+  updateRedmineIntegrationProject(params: UpdateRedmineIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateRedmineIntegrationProject$Response(params, context).pipe(
       map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `getRedmineMetadata()` */
+  static readonly GetRedmineMetadataPath = '/api/project/{projectId}/integration/redmine/metadata';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getRedmineMetadata()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getRedmineMetadata$Response(params: GetRedmineMetadata$Params, context?: HttpContext): Observable<StrictHttpResponse<RedmineMetadata>> {
+    return getRedmineMetadata(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getRedmineMetadata$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getRedmineMetadata(params: GetRedmineMetadata$Params, context?: HttpContext): Observable<RedmineMetadata> {
+    return this.getRedmineMetadata$Response(params, context).pipe(
+      map((r: StrictHttpResponse<RedmineMetadata>): RedmineMetadata => r.body)
     );
   }
 
@@ -664,153 +922,6 @@ export class ProjectService extends BaseService {
   testTeamsIntegrationProject(params: TestTeamsIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
     return this.testTeamsIntegrationProject$Response(params, context).pipe(
       map((r: StrictHttpResponse<boolean>): boolean => r.body)
-    );
-  }
-
-  /** Path part for operation `getMailIntegrationProject()` */
-  static readonly GetMailIntegrationProjectPath = '/api/project/{projectId}/integration/mail';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getMailIntegrationProject()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getMailIntegrationProject$Response(params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectAlertEvent>> {
-    return getMailIntegrationProject(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getMailIntegrationProject$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getMailIntegrationProject(params: GetMailIntegrationProject$Params, context?: HttpContext): Observable<ProjectAlertEvent> {
-    return this.getMailIntegrationProject$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ProjectAlertEvent>): ProjectAlertEvent => r.body)
-    );
-  }
-
-  /** Path part for operation `updateMailIntegrationProject()` */
-  static readonly UpdateMailIntegrationProjectPath = '/api/project/{projectId}/integration/mail';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateMailIntegrationProject()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateMailIntegrationProject$Response(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return updateMailIntegrationProject(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateMailIntegrationProject$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateMailIntegrationProject(params: UpdateMailIntegrationProject$Params, context?: HttpContext): Observable<boolean> {
-    return this.updateMailIntegrationProject$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
-    );
-  }
-
-  /** Path part for operation `getDefaultBranchesProject()` */
-  static readonly GetDefaultBranchesProjectPath = '/api/project/{projectId}/defaultBranch';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getDefaultBranchesProject()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getDefaultBranchesProject$Response(params: GetDefaultBranchesProject$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
-    return getDefaultBranchesProject(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getDefaultBranchesProject$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getDefaultBranchesProject(params: GetDefaultBranchesProject$Params, context?: HttpContext): Observable<Array<string>> {
-    return this.getDefaultBranchesProject$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
-    );
-  }
-
-  /** Path part for operation `updateDefaultBranchesProject()` */
-  static readonly UpdateDefaultBranchesProjectPath = '/api/project/{projectId}/defaultBranch';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateDefaultBranchesProject()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateDefaultBranchesProject$Response(params: UpdateDefaultBranchesProject$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return updateDefaultBranchesProject(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateDefaultBranchesProject$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateDefaultBranchesProject(params: UpdateDefaultBranchesProject$Params, context?: HttpContext): Observable<boolean> {
-    return this.updateDefaultBranchesProject$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
-    );
-  }
-
-  /** Path part for operation `export()` */
-  static readonly ExportPath = '/api/project/{projectId}/export';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `export$Any()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  export$Any$Response(params: Export$Any$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
-    return export$Any(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `export$Any$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  export$Any(params: Export$Any$Params, context?: HttpContext): Observable<Blob> {
-    return this.export$Any$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Blob>): Blob => r.body)
-    );
-  }
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `export$Json()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  export$Json$Response(params: Export$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
-    return export$Json(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `export$Json$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  export$Json(params: Export$Json$Params, context?: HttpContext): Observable<Blob> {
-    return this.export$Json$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Blob>): Blob => r.body)
     );
   }
 

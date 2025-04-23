@@ -17,7 +17,7 @@ public class DeleteTicketPackageHandler(AppDbContext context) : IDeleteTicketPac
     {
         var projectPackage = await context.ProjectPackages
             .FirstOrDefaultAsync(record =>
-                record.ProjectId == request.ProjectId && record.PackageId == request.ProjectId);
+                record.ProjectId == request.ProjectId && record.PackageId == request.PackageId);
         if (projectPackage == null)
         {
             return Result.Fail("Project package not found");

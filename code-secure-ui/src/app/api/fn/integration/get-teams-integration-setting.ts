@@ -28,4 +28,4 @@ export function getTeamsIntegrationSetting(http: HttpClient, rootUrl: string, pa
   );
 }
 
-getTeamsIntegrationSetting.PATH = '/api/integration/teams';
+getTeamsIntegrationSetting.PATH = '/api/teams-integration';

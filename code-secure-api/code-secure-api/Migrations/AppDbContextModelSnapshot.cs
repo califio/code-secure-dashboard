@@ -75,6 +75,9 @@ namespace CodeSecure.Migrations
                     b.Property<string>("MailSetting")
                         .HasColumnType("text");
 
+                    b.Property<string>("RedmineSetting")
+                        .HasColumnType("text");
+
                     b.Property<string>("SlaSastSetting")
                         .HasColumnType("text");
 
@@ -549,6 +552,9 @@ namespace CodeSecure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MailSetting")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RedmineSetting")
                         .HasColumnType("text");
 
                     b.Property<string>("SastSetting")

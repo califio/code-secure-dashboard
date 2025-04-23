@@ -30,4 +30,4 @@ export function updateTeamsIntegrationSetting(http: HttpClient, rootUrl: string,
   );
 }
 
-updateTeamsIntegrationSetting.PATH = '/api/integration/teams';
+updateTeamsIntegrationSetting.PATH = '/api/teams-integration';

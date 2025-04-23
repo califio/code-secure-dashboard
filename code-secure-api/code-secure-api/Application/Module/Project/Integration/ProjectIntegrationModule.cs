@@ -1,5 +1,6 @@
 using CodeSecure.Application.Module.Project.Integration.Jira;
 using CodeSecure.Application.Module.Project.Integration.Mail;
+using CodeSecure.Application.Module.Project.Integration.Redmine;
 using CodeSecure.Application.Module.Project.Integration.Teams;
 using CodeSecure.Core;
 
@@ -15,7 +16,8 @@ public class ProjectIntegrationModule : IModule
         builder.AddScoped<ITeamsProjectIntegrationSetting, TeamsProjectIntegrationSetting>();
         // mail
         builder.AddScoped<IMailProjectIntegrationSetting, MailProjectIntegrationSetting>();
-        //
+        // redmine
+        builder.AddScoped<IRedmineProjectIntegrationSetting, RedmineProjectIntegrationSetting>();
         return builder;
     }
 }

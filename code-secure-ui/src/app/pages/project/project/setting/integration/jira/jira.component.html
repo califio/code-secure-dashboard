@@ -2,6 +2,12 @@
   @if (setting.projectKey) {
     <div class="flex flex-col gap-2 w-full">
       <div class="flex flex-row gap-2 w-full items-center">
+        <span class="w-36 md:w-48">Enable</span>
+        <div class="w-full max-w-md">
+          <p-toggle-switch [(ngModel)]="setting.active"/>
+        </div>
+      </div>
+      <div class="flex flex-row gap-2 w-full items-center">
         <span class="w-36 md:w-48">Default Project</span>
         <div class="flex flex-row items-center gap-2">
           <p-select [options]="jiraProjects()" [filter]="true"
@@ -12,7 +18,7 @@
                     [(ngModel)]="setting.projectKey"
                     (onChange)="onChangeProject($event)">
           </p-select>
-          <p-button severity="secondary" icon="pi pi-sync" (click)="onReload()" [loading]="loading"></p-button>
+          <p-button severity="secondary" icon="pi pi-sync" (click)="loadJiraProjects()" [loading]="loading"></p-button>
         </div>
       </div>
       <div class="flex flex-row gap-2 w-full items-center">

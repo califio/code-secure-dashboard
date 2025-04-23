@@ -14,4 +14,5 @@ public class AppSettings
     public string? TeamsSetting { get; set; }
     public string? JiraSetting { get; set; }
     public string? JiraWebhookSetting { get; set; }
+    public string? RedmineSetting { get; set; }
 }

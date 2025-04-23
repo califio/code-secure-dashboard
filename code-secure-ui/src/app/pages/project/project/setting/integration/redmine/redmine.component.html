@@ -1,0 +1,54 @@
+<div class="flex flex-col">
+  @if (setting.projectId && setting.projectId > 0) {
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-row gap-2 w-full items-center">
+        <span class="w-36 md:w-48">Enable</span>
+        <div class="w-full max-w-md">
+          <p-toggle-switch [(ngModel)]="setting.active"/>
+        </div>
+      </div>
+      <div class="flex flex-row gap-2 w-full items-center">
+        <span class="w-36 md:w-48">Default Project</span>
+        <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                  [options]="metadata.projects ?? []"
+                  [(ngModel)]="setting.projectId">
+        </p-select>
+        <p-button severity="secondary" icon="pi pi-sync"
+                  (click)="loadRedmineMetadata(true)"
+                  [loading]="loadingMetadata"/>
+      </div>
+      <div class="flex flex-row gap-2 w-full items-center">
+        <span class="w-36 md:w-48">Default Tracker</span>
+        <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                  [options]="metadata.trackers ?? []"
+                  [(ngModel)]="setting.trackerId">
+        </p-select>
+      </div>
+      <div class="flex flex-row gap-2 w-full items-center">
+        <span class="w-36 md:w-48">Default Priority</span>
+        <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                  [options]="metadata.priorities ?? []"
+                  [(ngModel)]="setting.priorityId">
+        </p-select>
+      </div>
+      <div class="flex flex-row gap-2 w-full items-center">
+        <span class="w-36 md:w-48">Default Status</span>
+        <p-select optionLabel="name" optionValue="id" placeholder="Select"
+                  [options]="metadata.statuses ?? []"
+                  [(ngModel)]="setting.statusId">
+        </p-select>
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 items-center">
+      <button pButton severity="primary"
+              [loading]="loading"
+              [disabled]="loading"
+              (click)="saveSetting()">Update
+      </button>
+    </div>
+  } @else {
+    <div>Not yet integrated with Redmine. Go to <a routerLink="/setting/integration" class="font-semibold">Setting >
+      Integration</a> to configure Redmine first.
+    </div>
+  }
+</div>

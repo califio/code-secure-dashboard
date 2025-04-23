@@ -1,6 +1,7 @@
 using CodeSecure.Application.Module.Finding.Model;
 using CodeSecure.Application.Module.Integration;
 using CodeSecure.Application.Module.Integration.Jira;
+using CodeSecure.Application.Module.Integration.Redmine;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;
 using FluentResults;
@@ -10,7 +11,11 @@ namespace CodeSecure.Application.Module.Finding;
 
 public interface ICreateTicketFindingHandler : IHandler<CreateTicketFindingRequest, Tickets>;
 
-public class CreateTicketFindingHandler(AppDbContext context, JiraTicketTracker jiraTicketTracker)
+public class CreateTicketFindingHandler(
+    AppDbContext context,
+    JiraTicketTracker jiraTicketTracker,
+    RedmineTicketTracker redmineTicketTracker
+)
     : ICreateTicketFindingHandler
 {
     public async Task<Result<Tickets>> HandleAsync(CreateTicketFindingRequest request)
@@ -28,15 +33,21 @@ public class CreateTicketFindingHandler(AppDbContext context, JiraTicketTracker 
             .OrderByDescending(record => record.Scan!.CompletedAt)
             .Where(record => record.FindingId == finding.Id)
             .FirstAsync();
+        var ticket = new SastTicket
+        {
+            Commit = scanFinding.CommitHash,
+            Project = project,
+            Finding = finding,
+            Scanner = scanner
+        };
         if (request.TicketType == TicketType.Jira)
         {
-            return await jiraTicketTracker.CreateTicketAsync(new SastTicket
-            {
-                Commit = scanFinding.CommitHash,
-                Project = project,
-                Finding = finding,
-                Scanner = scanner
-            });
+            return await jiraTicketTracker.CreateTicketAsync(ticket);
+        }
+
+        if (request.TicketType == TicketType.Redmine)
+        {
+            return await redmineTicketTracker.CreateTicketAsync(ticket);
         }
 
         return Result.Fail("Not implement ticket type");

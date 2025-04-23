@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { TicketTracker } from '../../models/ticket-tracker';
+import { TicketTrackerStatus } from '../../models/ticket-tracker-status';
 
-export interface GetTicketTrackers$Params {
+export interface GetTicketTrackerStatus$Params {
 }
 
-export function getTicketTrackers(http: HttpClient, rootUrl: string, params?: GetTicketTrackers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<TicketTracker>>> {
-  const rb = new RequestBuilder(rootUrl, getTicketTrackers.PATH, 'get');
+export function getTicketTrackerStatus(http: HttpClient, rootUrl: string, params?: GetTicketTrackerStatus$Params, context?: HttpContext): Observable<StrictHttpResponse<TicketTrackerStatus>> {
+  const rb = new RequestBuilder(rootUrl, getTicketTrackerStatus.PATH, 'get');
   if (params) {
   }
 
@@ -23,9 +23,9 @@ export function getTicketTrackers(http: HttpClient, rootUrl: string, params?: Ge
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<TicketTracker>>;
+      return r as StrictHttpResponse<TicketTrackerStatus>;
     })
   );
 }
 
-getTicketTrackers.PATH = '/api/integration/ticket-trackers';
+getTicketTrackerStatus.PATH = '/api/integration/ticket-tracker-status';

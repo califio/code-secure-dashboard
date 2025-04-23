@@ -1,12 +1,10 @@
 using Atlassian.Jira;
 using CodeSecure.Application.Helpers;
 using CodeSecure.Application.Module.Integration.Jira.Client;
-using CodeSecure.Application.Module.Project;
 using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Application.Module.SourceControl;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;

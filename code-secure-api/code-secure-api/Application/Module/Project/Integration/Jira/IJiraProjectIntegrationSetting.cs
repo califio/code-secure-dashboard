@@ -1,7 +1,6 @@
 using CodeSecure.Application.Module.Integration.Jira;
 using CodeSecure.Application.Module.Integration.Jira.Client;
 using CodeSecure.Application.Module.Project.Setting;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using FluentResults.Extensions;
@@ -10,8 +9,9 @@ namespace CodeSecure.Application.Module.Project.Integration.Jira;
 
 public interface IJiraProjectIntegrationSetting
 {
-    Task<Result<JiraProjectSettingResponse>> GetSettingAsync(Guid projectId, bool reload = false);
+    Task<Result<JiraProjectSetting>> GetSettingAsync(Guid projectId);
     Task<Result<bool>> UpdateSettingAsync(Guid projectId, JiraProjectSetting setting);
+    Task<Result<List<JiraProject>>> ListJiraProjectsAsync(bool reload);
 }
 
 public class JiraProjectIntegrationSetting(
@@ -26,18 +26,18 @@ public class JiraProjectIntegrationSetting(
         Password = jiraSetting.Password,
         Username = jiraSetting.UserName
     });
-    public async Task<Result<JiraProjectSettingResponse>> GetSettingAsync(Guid projectId, bool reload = false)
+
+    public async Task<Result<JiraProjectSetting>> GetSettingAsync(Guid projectId)
     {
         return await context.GetProjectSettingsAsync(projectId)
             .Bind(async projectSetting =>
             {
                 var globalSetting = await jiraSettingService.GetSettingAsync();
                 var jiraSetting = projectSetting.GetJiraSetting(globalSetting);
-                return Result.Ok(new JiraProjectSettingResponse
+                return Result.Ok(new JiraProjectSetting
                 {
                     Active = jiraSetting.Active,
                     ProjectKey = jiraSetting.ProjectKey,
-                    JiraProjects = await jiraClient.GetProjectsSummaryAsync(reload),
                     IssueType = jiraSetting.IssueType
                 });
             });
@@ -58,5 +58,10 @@ public class JiraProjectIntegrationSetting(
                 await context.SaveChangesAsync();
                 return Result.Ok(true);
             });
+    }
+
+    public async Task<Result<List<JiraProject>>> ListJiraProjectsAsync(bool reload)
+    {
+        return await jiraClient.GetProjectsSummaryAsync(reload);
     }
 }

@@ -6,5 +6,6 @@ export interface IntegrationStatus {
   jira?: boolean;
   jiraWebhook?: boolean;
   mail?: boolean;
+  redmine?: boolean;
   teams?: boolean;
 }

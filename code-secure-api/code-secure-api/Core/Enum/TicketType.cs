@@ -5,5 +5,6 @@ namespace CodeSecure.Core.Enum;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TicketType
 {
-    Jira
+    Jira,
+    Redmine
 }

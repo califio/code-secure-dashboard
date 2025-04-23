@@ -1,5 +1,7 @@
 using CodeSecure.Application.Module.Integration.Jira;
+using CodeSecure.Application.Module.Integration.Redmine;
 using CodeSecure.Application.Module.Project.Integration.Mail;
+using CodeSecure.Application.Module.Project.Integration.Redmine;
 using CodeSecure.Application.Module.Project.Integration.Teams;
 using CodeSecure.Application.Module.Project.Setting.Threshold;
 using CodeSecure.Core.Entity;
@@ -49,14 +51,34 @@ public static class ProjectSettingExtension
         {
             jiraSetting.IssueType = globalSetting.IssueType;
         }
-
-        if (globalSetting.Active == false)
-        {
-            jiraSetting.Active = false;
-        }
+        
+        jiraSetting.Active = globalSetting.Active;
 
         return jiraSetting;
     }
+    public static RedmineProjectSetting GetRedmineSetting(this ProjectSettings setting, RedmineSetting globalSetting)
+    {
+        var redmineSetting = JSONSerializer.DeserializeOrDefault(setting.RedmineSetting, new RedmineProjectSetting());
+        if (redmineSetting.ProjectId == 0)
+        {
+            redmineSetting.ProjectId = globalSetting.ProjectId;
+        }
+        if (redmineSetting.StatusId == 0)
+        {
+            redmineSetting.StatusId = globalSetting.StatusId;
+        }
+        if (redmineSetting.TrackerId == 0)
+        {
+            redmineSetting.TrackerId = globalSetting.TrackerId;
+        }
+        if (redmineSetting.PriorityId == 0)
+        {
+            redmineSetting.PriorityId = globalSetting.PriorityId;
+        }
+        redmineSetting.Active = globalSetting.Active;
+        return redmineSetting;
+    }
+    
 
     public static ThresholdSetting GetSastSetting(this ProjectSettings setting)
     {

@@ -5,5 +5,6 @@
 export interface ProjectIntegration {
   jira?: boolean;
   mail?: boolean;
+  redmine?: boolean;
   teams?: boolean;
 }

@@ -9,6 +9,7 @@ import {Panel} from "primeng/panel";
 import {MailComponent} from './mail/mail.component';
 import {IntegrationStatus} from '../../../api/models/integration-status';
 import {JiraWebhookComponent} from './jira-webhook/jira-webhook.component';
+import {RedmineComponent} from './redmine/redmine.component';
 
 @Component({
   selector: 'app-integration',
@@ -22,7 +23,8 @@ import {JiraWebhookComponent} from './jira-webhook/jira-webhook.component';
     Panel,
     MailComponent,
     MailComponent,
-    JiraWebhookComponent
+    JiraWebhookComponent,
+    RedmineComponent
   ],
   templateUrl: './integration.component.html',
 })
@@ -31,7 +33,8 @@ export class IntegrationComponent implements OnInit {
     mail: false,
     teams: false,
     jira: false,
-    jiraWebhook: false
+    jiraWebhook: false,
+    redmine: false
   }
   integrationSetting: IntegrationStatus = {};
 

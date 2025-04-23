@@ -7,6 +7,7 @@ import {MailComponent} from './mail/mail.component';
 import {ProjectService} from '../../../../../api/services/project.service';
 import {ProjectIntegration} from '../../../../../api/models/project-integration';
 import {Panel} from 'primeng/panel';
+import {RedmineComponent} from './redmine/redmine.component';
 
 @Component({
   selector: 'app-integration',
@@ -23,7 +24,8 @@ import {Panel} from 'primeng/panel';
     TeamsComponent,
     JiraComponent,
     MailComponent,
-    MailComponent
+    MailComponent,
+    RedmineComponent
   ],
   templateUrl: './integration.component.html',
 })
@@ -32,7 +34,8 @@ export class IntegrationComponent {
   config = {
     mail: false,
     teams: false,
-    jira: false
+    jira: false,
+    redmine: false
   }
 
   constructor(

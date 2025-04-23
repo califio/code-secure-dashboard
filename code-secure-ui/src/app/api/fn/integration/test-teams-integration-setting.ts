@@ -27,4 +27,4 @@ export function testTeamsIntegrationSetting(http: HttpClient, rootUrl: string, p
   );
 }
 
-testTeamsIntegrationSetting.PATH = '/api/integration/teams/test';
+testTeamsIntegrationSetting.PATH = '/api/teams-integration/test';

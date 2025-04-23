@@ -47,16 +47,25 @@ export class TicketMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-    this.integrationService.getTicketTrackers().pipe(
+    this.integrationService.getTicketTrackerStatus().pipe(
       finalize(() => this.loading = false)
     ).subscribe(response => {
-      this.ticketTrackerOptions = response.filter(item => item.active).map(item => {
-        return {
-          label: item.type!.toUpperCase(),
-          icon: this.ticketIcon(item.type!),
-          type: item.type!,
-        };
-      });
+      const options: MenuItem[] = [];
+      if (response.jira) {
+        options.push({
+          label: 'JIRA',
+          icon: this.ticketIcon(TicketType.Jira),
+          type: TicketType.Jira,
+        })
+      }
+      if (response.redmine) {
+        options.push({
+          label: 'Redmine',
+          icon: this.ticketIcon(TicketType.Redmine),
+          type: TicketType.Redmine,
+        })
+      }
+      this.ticketTrackerOptions = options;
     })
   }
 
@@ -69,6 +78,9 @@ export class TicketMenuComponent implements OnInit {
   ticketIcon(ticketType: TicketType) {
     if (ticketType == TicketType.Jira) {
       return 'jira';
+    }
+    if (ticketType == TicketType.Redmine) {
+      return 'redmine';
     }
     return 'heroFlag';
   }

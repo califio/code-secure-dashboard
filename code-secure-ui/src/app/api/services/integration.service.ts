@@ -23,29 +23,39 @@ import { getJiraWebhookIntegrationSetting } from '../fn/integration/get-jira-web
 import { GetJiraWebhookIntegrationSetting$Params } from '../fn/integration/get-jira-webhook-integration-setting';
 import { getMailIntegrationSetting } from '../fn/integration/get-mail-integration-setting';
 import { GetMailIntegrationSetting$Params } from '../fn/integration/get-mail-integration-setting';
+import { getRedmineIntegrationSetting } from '../fn/integration/get-redmine-integration-setting';
+import { GetRedmineIntegrationSetting$Params } from '../fn/integration/get-redmine-integration-setting';
+import { getRedmineMetadataIntegration } from '../fn/integration/get-redmine-metadata-integration';
+import { GetRedmineMetadataIntegration$Params } from '../fn/integration/get-redmine-metadata-integration';
 import { getTeamsIntegrationSetting } from '../fn/integration/get-teams-integration-setting';
 import { GetTeamsIntegrationSetting$Params } from '../fn/integration/get-teams-integration-setting';
-import { getTicketTrackers } from '../fn/integration/get-ticket-trackers';
-import { GetTicketTrackers$Params } from '../fn/integration/get-ticket-trackers';
+import { getTicketTrackerStatus } from '../fn/integration/get-ticket-tracker-status';
+import { GetTicketTrackerStatus$Params } from '../fn/integration/get-ticket-tracker-status';
 import { IntegrationStatus } from '../models/integration-status';
 import { JiraProject } from '../models/jira-project';
 import { JiraSetting } from '../models/jira-setting';
 import { JiraWebhookSetting } from '../models/jira-webhook-setting';
 import { MailAlertSetting } from '../models/mail-alert-setting';
+import { RedmineMetadata } from '../models/redmine-metadata';
+import { RedmineSetting } from '../models/redmine-setting';
 import { TeamsAlertSetting } from '../models/teams-alert-setting';
 import { testJiraIntegrationSetting } from '../fn/integration/test-jira-integration-setting';
 import { TestJiraIntegrationSetting$Params } from '../fn/integration/test-jira-integration-setting';
 import { testJiraWebhookIntegrationSetting } from '../fn/integration/test-jira-webhook-integration-setting';
 import { TestJiraWebhookIntegrationSetting$Params } from '../fn/integration/test-jira-webhook-integration-setting';
+import { testRedmineIntegrationSetting } from '../fn/integration/test-redmine-integration-setting';
+import { TestRedmineIntegrationSetting$Params } from '../fn/integration/test-redmine-integration-setting';
 import { testTeamsIntegrationSetting } from '../fn/integration/test-teams-integration-setting';
 import { TestTeamsIntegrationSetting$Params } from '../fn/integration/test-teams-integration-setting';
-import { TicketTracker } from '../models/ticket-tracker';
+import { TicketTrackerStatus } from '../models/ticket-tracker-status';
 import { updateJiraIntegrationSetting } from '../fn/integration/update-jira-integration-setting';
 import { UpdateJiraIntegrationSetting$Params } from '../fn/integration/update-jira-integration-setting';
 import { updateJiraWebhookIntegrationSetting } from '../fn/integration/update-jira-webhook-integration-setting';
 import { UpdateJiraWebhookIntegrationSetting$Params } from '../fn/integration/update-jira-webhook-integration-setting';
 import { updateMailIntegrationSetting } from '../fn/integration/update-mail-integration-setting';
 import { UpdateMailIntegrationSetting$Params } from '../fn/integration/update-mail-integration-setting';
+import { updateRedmineIntegrationSetting } from '../fn/integration/update-redmine-integration-setting';
+import { UpdateRedmineIntegrationSetting$Params } from '../fn/integration/update-redmine-integration-setting';
 import { updateTeamsIntegrationSetting } from '../fn/integration/update-teams-integration-setting';
 import { UpdateTeamsIntegrationSetting$Params } from '../fn/integration/update-teams-integration-setting';
 
@@ -80,128 +90,28 @@ export class IntegrationService extends BaseService {
     );
   }
 
-  /** Path part for operation `getMailIntegrationSetting()` */
-  static readonly GetMailIntegrationSettingPath = '/api/integration/mail';
+  /** Path part for operation `getTicketTrackerStatus()` */
+  static readonly GetTicketTrackerStatusPath = '/api/integration/ticket-tracker-status';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getMailIntegrationSetting()` instead.
+   * To access only the response body, use `getTicketTrackerStatus()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMailIntegrationSetting$Response(params?: GetMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<MailAlertSetting>> {
-    return getMailIntegrationSetting(this.http, this.rootUrl, params, context);
+  getTicketTrackerStatus$Response(params?: GetTicketTrackerStatus$Params, context?: HttpContext): Observable<StrictHttpResponse<TicketTrackerStatus>> {
+    return getTicketTrackerStatus(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getMailIntegrationSetting$Response()` instead.
+   * To access the full response (for headers, for example), `getTicketTrackerStatus$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMailIntegrationSetting(params?: GetMailIntegrationSetting$Params, context?: HttpContext): Observable<MailAlertSetting> {
-    return this.getMailIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<MailAlertSetting>): MailAlertSetting => r.body)
-    );
-  }
-
-  /** Path part for operation `updateMailIntegrationSetting()` */
-  static readonly UpdateMailIntegrationSettingPath = '/api/integration/mail';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateMailIntegrationSetting()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateMailIntegrationSetting$Response(params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return updateMailIntegrationSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateMailIntegrationSetting$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateMailIntegrationSetting(params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<void> {
-    return this.updateMailIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
-    );
-  }
-
-  /** Path part for operation `getTeamsIntegrationSetting()` */
-  static readonly GetTeamsIntegrationSettingPath = '/api/integration/teams';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getTeamsIntegrationSetting()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getTeamsIntegrationSetting$Response(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsAlertSetting>> {
-    return getTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getTeamsIntegrationSetting$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getTeamsIntegrationSetting(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<TeamsAlertSetting> {
-    return this.getTeamsIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<TeamsAlertSetting>): TeamsAlertSetting => r.body)
-    );
-  }
-
-  /** Path part for operation `updateTeamsIntegrationSetting()` */
-  static readonly UpdateTeamsIntegrationSettingPath = '/api/integration/teams';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateTeamsIntegrationSetting()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateTeamsIntegrationSetting$Response(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return updateTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateTeamsIntegrationSetting$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateTeamsIntegrationSetting(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
-    return this.updateTeamsIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
-    );
-  }
-
-  /** Path part for operation `testTeamsIntegrationSetting()` */
-  static readonly TestTeamsIntegrationSettingPath = '/api/integration/teams/test';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `testTeamsIntegrationSetting()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  testTeamsIntegrationSetting$Response(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return testTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `testTeamsIntegrationSetting$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  testTeamsIntegrationSetting(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
-    return this.testTeamsIntegrationSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+  getTicketTrackerStatus(params?: GetTicketTrackerStatus$Params, context?: HttpContext): Observable<TicketTrackerStatus> {
+    return this.getTicketTrackerStatus$Response(params, context).pipe(
+      map((r: StrictHttpResponse<TicketTrackerStatus>): TicketTrackerStatus => r.body)
     );
   }
 
@@ -405,28 +315,228 @@ export class IntegrationService extends BaseService {
     );
   }
 
-  /** Path part for operation `getTicketTrackers()` */
-  static readonly GetTicketTrackersPath = '/api/integration/ticket-trackers';
+  /** Path part for operation `getMailIntegrationSetting()` */
+  static readonly GetMailIntegrationSettingPath = '/api/integration/mail';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getTicketTrackers()` instead.
+   * To access only the response body, use `getMailIntegrationSetting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getTicketTrackers$Response(params?: GetTicketTrackers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<TicketTracker>>> {
-    return getTicketTrackers(this.http, this.rootUrl, params, context);
+  getMailIntegrationSetting$Response(params?: GetMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<MailAlertSetting>> {
+    return getMailIntegrationSetting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getTicketTrackers$Response()` instead.
+   * To access the full response (for headers, for example), `getMailIntegrationSetting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getTicketTrackers(params?: GetTicketTrackers$Params, context?: HttpContext): Observable<Array<TicketTracker>> {
-    return this.getTicketTrackers$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<TicketTracker>>): Array<TicketTracker> => r.body)
+  getMailIntegrationSetting(params?: GetMailIntegrationSetting$Params, context?: HttpContext): Observable<MailAlertSetting> {
+    return this.getMailIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<MailAlertSetting>): MailAlertSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateMailIntegrationSetting()` */
+  static readonly UpdateMailIntegrationSettingPath = '/api/integration/mail';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateMailIntegrationSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationSetting$Response(params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateMailIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateMailIntegrationSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateMailIntegrationSetting(params?: UpdateMailIntegrationSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateMailIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getRedmineIntegrationSetting()` */
+  static readonly GetRedmineIntegrationSettingPath = '/api/integration/redmine';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getRedmineIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getRedmineIntegrationSetting$Response(params?: GetRedmineIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<RedmineSetting>> {
+    return getRedmineIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getRedmineIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getRedmineIntegrationSetting(params?: GetRedmineIntegrationSetting$Params, context?: HttpContext): Observable<RedmineSetting> {
+    return this.getRedmineIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<RedmineSetting>): RedmineSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateRedmineIntegrationSetting()` */
+  static readonly UpdateRedmineIntegrationSettingPath = '/api/integration/redmine';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateRedmineIntegrationSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateRedmineIntegrationSetting$Response(params?: UpdateRedmineIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateRedmineIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateRedmineIntegrationSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateRedmineIntegrationSetting(params?: UpdateRedmineIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateRedmineIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `testRedmineIntegrationSetting()` */
+  static readonly TestRedmineIntegrationSettingPath = '/api/integration/redmine/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testRedmineIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testRedmineIntegrationSetting$Response(params?: TestRedmineIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return testRedmineIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testRedmineIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testRedmineIntegrationSetting(params?: TestRedmineIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.testRedmineIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `getRedmineMetadataIntegration()` */
+  static readonly GetRedmineMetadataIntegrationPath = '/api/integration/redmine/metadata';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getRedmineMetadataIntegration()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getRedmineMetadataIntegration$Response(params?: GetRedmineMetadataIntegration$Params, context?: HttpContext): Observable<StrictHttpResponse<RedmineMetadata>> {
+    return getRedmineMetadataIntegration(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getRedmineMetadataIntegration$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getRedmineMetadataIntegration(params?: GetRedmineMetadataIntegration$Params, context?: HttpContext): Observable<RedmineMetadata> {
+    return this.getRedmineMetadataIntegration$Response(params, context).pipe(
+      map((r: StrictHttpResponse<RedmineMetadata>): RedmineMetadata => r.body)
+    );
+  }
+
+  /** Path part for operation `getTeamsIntegrationSetting()` */
+  static readonly GetTeamsIntegrationSettingPath = '/api/teams-integration';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getTeamsIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsIntegrationSetting$Response(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<TeamsAlertSetting>> {
+    return getTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getTeamsIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTeamsIntegrationSetting(params?: GetTeamsIntegrationSetting$Params, context?: HttpContext): Observable<TeamsAlertSetting> {
+    return this.getTeamsIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<TeamsAlertSetting>): TeamsAlertSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateTeamsIntegrationSetting()` */
+  static readonly UpdateTeamsIntegrationSettingPath = '/api/teams-integration';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateTeamsIntegrationSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateTeamsIntegrationSetting$Response(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return updateTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateTeamsIntegrationSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateTeamsIntegrationSetting(params?: UpdateTeamsIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.updateTeamsIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
+    );
+  }
+
+  /** Path part for operation `testTeamsIntegrationSetting()` */
+  static readonly TestTeamsIntegrationSettingPath = '/api/teams-integration/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testTeamsIntegrationSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testTeamsIntegrationSetting$Response(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return testTeamsIntegrationSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testTeamsIntegrationSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testTeamsIntegrationSetting(params?: TestTeamsIntegrationSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.testTeamsIntegrationSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

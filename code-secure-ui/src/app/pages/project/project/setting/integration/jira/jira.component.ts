@@ -10,6 +10,7 @@ import {Button, ButtonDirective} from 'primeng/button';
 import {Select, SelectChangeEvent} from 'primeng/select';
 import {JiraProject} from '../../../../../../api/models/jira-project';
 import {JiraProjectSetting} from '../../../../../../api/models/jira-project-setting';
+import {ToggleSwitch} from 'primeng/toggleswitch';
 
 @Component({
   selector: 'jira-integration-project',
@@ -20,10 +21,10 @@ import {JiraProjectSetting} from '../../../../../../api/models/jira-project-sett
     Button,
     Select,
     ButtonDirective,
-    FormsModule
+    FormsModule,
+    ToggleSwitch
   ],
   templateUrl: './jira.component.html',
-  styleUrl: './jira.component.scss'
 })
 export class JiraComponent implements OnInit {
   jiraProjects = signal<JiraProject[]>([]);
@@ -41,11 +42,9 @@ export class JiraComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadJiraProjects();
     this.getJiraSetting().subscribe(setting => {
-      this.setting = {
-        active: setting.active, issueType: setting.issueType, projectKey: setting.projectKey
-      };
-      this.jiraProjects.set(setting.jiraProjects!);
+      this.setting = setting;
       if (setting.projectKey) {
         this.loadIssueType(setting.projectKey!).subscribe(issueTypes => {
           this.issueTypes.set(issueTypes.map(item => {
@@ -57,9 +56,15 @@ export class JiraComponent implements OnInit {
 
   }
 
-  onReload() {
-    this.getJiraSetting(true).subscribe(setting => {
-      this.jiraProjects.set(setting.jiraProjects!);
+  loadJiraProjects() {
+    this.loading = true;
+    this.projectService.listJiraProjects({
+      projectId: this.projectStore.projectId(),
+      reload: true
+    }).pipe(
+      finalize(() => this.loading = false)
+    ).subscribe(projects => {
+      this.jiraProjects.set(projects);
     });
   }
 
@@ -86,11 +91,10 @@ export class JiraComponent implements OnInit {
     })
   }
 
-  private getJiraSetting(reload = false) {
+  private getJiraSetting() {
     this.loading = true;
     return this.projectService.getJiraIntegrationProject({
       projectId: this.projectStore.projectId(),
-      reload: reload
     }).pipe(
       finalize(() => {
         this.loading = false;
