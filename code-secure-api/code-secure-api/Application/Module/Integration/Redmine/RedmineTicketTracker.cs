@@ -9,23 +9,15 @@ using Redmine.Net.Api.Types;
 
 namespace CodeSecure.Application.Module.Integration.Redmine;
 
-public class RedmineTicketTracker : ITicketTracker
+public class RedmineTicketTracker(AppDbContext context) : ITicketTracker
 {
-    private readonly AppDbContext context;
-    private readonly RedmineSetting globalSetting;
-    private readonly IRedmineClient redmineClient;
-
-    public RedmineTicketTracker(AppDbContext context)
-    {
-        this.context = context;
-        globalSetting = context.GetRedmineSettingAsync().Result;
-        redmineClient = new RedmineClient(globalSetting.Url, globalSetting.Token);
-    }
+    private readonly RedmineSetting globalSetting = context.GetRedmineSettingAsync().Result;
 
     public async Task<Result<Tickets>> CreateTicketAsync(SastTicket request)
     {
         if (globalSetting.Active)
         {
+            var redmineClient = new RedmineClient(globalSetting.Url, globalSetting.Token);
             try
             {
                 var projectSetting =
@@ -76,6 +68,7 @@ public class RedmineTicketTracker : ITicketTracker
     {
         if (globalSetting.Active && request.Vulnerabilities.Count > 0)
         {
+            var redmineClient = new RedmineClient(globalSetting.Url, globalSetting.Token);
             try
             {
                 var package = request.Package;
