@@ -1,5 +1,4 @@
 using CodeSecure.Application.Module.Integration.Teams.Client;
-using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using FluentResults.Extensions;

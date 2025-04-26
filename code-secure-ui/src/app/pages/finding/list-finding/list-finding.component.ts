@@ -218,14 +218,13 @@ export class ListFindingComponent implements OnInit {
   }
 
   private getCategories() {
-    return this.findingService.getFindingCategories({
+    return this.findingService.listFindingCategory({
       body: this.filter
     });
   }
 
   private getFindings() {
     this.store.loading.set(true);
-    console.log(this.store.createdAtRangeDate());
     if (this.store.createdAtRangeDate().startDate) {
       this.filter.startCreatedAt = this.store.createdAtRangeDate().startDate!.toISOString();
     } else {
@@ -294,7 +293,7 @@ export class ListFindingComponent implements OnInit {
   onMarkAs(status: FindingStatus) {
     if (this.selectedFindings.size > 0) {
       const requests = Array.from(this.selectedFindings.values()).map(findingId => this.findingService.updateFinding({
-        id: findingId,
+        findingId: findingId,
         body: {
           status: status
         }

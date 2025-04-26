@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Scalar.AspNetCore;
+using Serilog;
 
 namespace CodeSecure.Api;
 
@@ -21,7 +22,8 @@ public static class ApiServer
         {
             options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
         });
-        builder.Logging.AddConsole();
+        builder.Host.UseSerilog((context, configuration) =>
+            configuration.ReadFrom.Configuration(context.Configuration));
         // App DB Context
         builder.Services.AddDbContext();
         // Memory Cache

@@ -6,7 +6,7 @@ public class SourceControlModule: IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<IListSourceControlHandler, ListSourceControlHandler>();
+        builder.AddScoped<ISourceControlService, SourceControlService>();
         return builder;
     }
 }

@@ -99,7 +99,7 @@ export class DependencyComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe();
 
-    this.projectService.getProjectCommits({
+    this.projectService.listProjectCommit({
       projectId: this.projectStore.projectId()
     }).subscribe(commits => {
       const options = commits.map(item => {

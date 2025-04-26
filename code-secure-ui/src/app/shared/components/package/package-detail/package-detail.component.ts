@@ -23,8 +23,6 @@ import {TicketMenuComponent} from '../../ticket-menu/ticket-menu.component';
 import {ToastrService} from '../../../services/toastr.service';
 import {finalize} from 'rxjs';
 
-const defaultValue: BranchStatusPackage[] = [];
-
 @Component({
   selector: 'package-detail',
   imports: [
@@ -94,7 +92,7 @@ export class PackageDetailComponent {
 
   createTicket(type: TicketType) {
     this.loadingTicket = true;
-    this.projectService.createProjectTicket({
+    this.projectService.createProjectPackageTicket({
       projectId: this.projectId()!,
       packageId: this.package()?.id!,
       ticketType: type

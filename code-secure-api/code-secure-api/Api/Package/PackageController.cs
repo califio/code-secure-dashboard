@@ -1,27 +1,24 @@
 using CodeSecure.Application.Module.Package;
-using CodeSecure.Core.Extension;
+using CodeSecure.Application.Module.Package.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Package;
 
 public class PackageController(
-    IFindPackageByIdHandler findPackageByIdHandler,
-    IListPackageDependencyHandler listPackageDependencyHandler
+    IPackageService packageService
 ) : BaseController
 {
     [HttpGet]
     [Route("{packageId:guid}/dependencies")]
-    public async Task<List<PackageInfo>> GetPackageDependencies(Guid packageId)
+    public Task<List<PackageInfo>> ListPackageDependency(Guid packageId)
     {
-        var result = await listPackageDependencyHandler.HandleAsync(packageId);
-        return result.GetResult();
+        return packageService.ListPackageDependencyAsync(packageId);
     }
 
     [HttpGet]
-    [Route("{id:guid}")]
-    public async Task<PackageDetail> GetPackageById(Guid id)
+    [Route("{packageId:guid}")]
+    public Task<PackageDetail> GetPackageById(Guid packageId)
     {
-        var result = await findPackageByIdHandler.HandleAsync(id);
-        return result.GetResult();
+        return packageService.GetPackageByIdAsync(packageId);
     }
 }

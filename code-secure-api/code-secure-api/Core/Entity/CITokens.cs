@@ -1,4 +1,3 @@
-using CodeSecure.Core.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeSecure.Core.Entity;

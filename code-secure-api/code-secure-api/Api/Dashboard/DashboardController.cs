@@ -1,9 +1,11 @@
-using CodeSecure.Application.Module.Statistic;
+using CodeSecure.Application;
+using CodeSecure.Application.Module.Stats;
+using CodeSecure.Application.Module.Stats.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Dashboard;
 
-public class DashboardController(IStatsPackageProject statsPackageProject, IStatsSastFinding statsSastFinding)
+public class DashboardController(AppDbContext context)
     : BaseController
 {
     [HttpPost]
@@ -12,9 +14,9 @@ public class DashboardController(IStatsPackageProject statsPackageProject, IStat
     {
         return new SastStatistic
         {
-            Severity = await statsSastFinding.StatsSastFindingBySeverityAsync(filter),
-            Status = await statsSastFinding.StatsSastFindingByStatusAsync(filter),
-            TopFindings = await statsSastFinding.StatsTopSastFindingAsync(filter, top: 10)
+            Severity = await context.StatsSastFindingBySeverityAsync(filter),
+            Status = await context.StatsSastFindingByStatusAsync(filter),
+            TopFindings = await context.StatsTopSastFindingAsync(filter, top: 10)
         };
     }
 
@@ -24,9 +26,9 @@ public class DashboardController(IStatsPackageProject statsPackageProject, IStat
     {
         return new ScaStatistic
         {
-            Severity = await statsPackageProject.StatsPackageProjectBySeverityAsync(filter),
-            Status = await statsPackageProject.StatsPackageProjectByStatusAsync(filter),
-            TopDependencies = await statsPackageProject.StatsTopDependenciesAsync(filter, top: 10)
+            Severity = await context.StatsPackageProjectBySeverityAsync(filter),
+            Status = await context.StatsPackageProjectByStatusAsync(filter),
+            TopDependencies = await context.StatsTopDependenciesAsync(filter, top: 10)
         };
     }
 }

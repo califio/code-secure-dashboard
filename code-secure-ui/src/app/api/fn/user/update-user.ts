@@ -9,14 +9,14 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { UpdateUserRequest } from '../../models/update-user-request';
-import { UserInfo } from '../../models/user-info';
+import { UserDetail } from '../../models/user-detail';
 
 export interface UpdateUser$Params {
   userId: string;
       body?: UpdateUserRequest
 }
 
-export function updateUser(http: HttpClient, rootUrl: string, params: UpdateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+export function updateUser(http: HttpClient, rootUrl: string, params: UpdateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
   const rb = new RequestBuilder(rootUrl, updateUser.PATH, 'put');
   if (params) {
     rb.path('userId', params.userId, {"style":"simple"});
@@ -28,7 +28,7 @@ export function updateUser(http: HttpClient, rootUrl: string, params: UpdateUser
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserInfo>;
+      return r as StrictHttpResponse<UserDetail>;
     })
   );
 }

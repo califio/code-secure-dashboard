@@ -6,14 +6,7 @@ public class UserModule : IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<IFindUserByIdHandler, FindUserByIdHandler>();
-        builder.AddScoped<ICreateUserHandler, CreateUserHandler>();
-        builder.AddScoped<IUpdateUserHandler, UpdateUserHandler>();
-        builder.AddScoped<IFindUserByIdHandler, FindUserByIdHandler>();
-        builder.AddScoped<IQueryUserInfoHandler, QueryUserInfoHandler>();
-        builder.AddScoped<IQueryUserSummaryHandler, QueryUserSummaryHandler>();
-        builder.AddScoped<IListProjectManagerUserHandler, ListProjectManagerUserHandler>();
-        builder.AddScoped<ISendConfirmEmailHandler, SendConfirmEmailHandler>();
+        builder.AddScoped<IUserService, UserService>();
         return builder;
     }
 }

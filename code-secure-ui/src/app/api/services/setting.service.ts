@@ -35,81 +35,6 @@ export class SettingService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getSmtpSetting()` */
-  static readonly GetSmtpSettingPath = '/api/setting/smtp';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getSmtpSetting()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSmtpSetting$Response(params?: GetSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<SmtpSetting>> {
-    return getSmtpSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getSmtpSetting$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getSmtpSetting(params?: GetSmtpSetting$Params, context?: HttpContext): Observable<SmtpSetting> {
-    return this.getSmtpSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<SmtpSetting>): SmtpSetting => r.body)
-    );
-  }
-
-  /** Path part for operation `updateSmtpSetting()` */
-  static readonly UpdateSmtpSettingPath = '/api/setting/smtp';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateSmtpSetting()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateSmtpSetting$Response(params?: UpdateSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return updateSmtpSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateSmtpSetting$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  updateSmtpSetting(params?: UpdateSmtpSetting$Params, context?: HttpContext): Observable<void> {
-    return this.updateSmtpSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
-    );
-  }
-
-  /** Path part for operation `testSmtpSetting()` */
-  static readonly TestSmtpSettingPath = '/api/setting/smtp/test';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `testSmtpSetting()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  testSmtpSetting$Response(params?: TestSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
-    return testSmtpSetting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `testSmtpSetting$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  testSmtpSetting(params?: TestSmtpSetting$Params, context?: HttpContext): Observable<boolean> {
-    return this.testSmtpSetting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<boolean>): boolean => r.body)
-    );
-  }
-
   /** Path part for operation `getAuthSetting()` */
   static readonly GetAuthSettingPath = '/api/setting/auth';
 
@@ -207,6 +132,81 @@ export class SettingService extends BaseService {
   updateSlaSetting(params?: UpdateSlaSetting$Params, context?: HttpContext): Observable<void> {
     return this.updateSlaSetting$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `getSmtpSetting()` */
+  static readonly GetSmtpSettingPath = '/api/setting/smtp';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getSmtpSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSmtpSetting$Response(params?: GetSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<SmtpSetting>> {
+    return getSmtpSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getSmtpSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getSmtpSetting(params?: GetSmtpSetting$Params, context?: HttpContext): Observable<SmtpSetting> {
+    return this.getSmtpSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SmtpSetting>): SmtpSetting => r.body)
+    );
+  }
+
+  /** Path part for operation `updateSmtpSetting()` */
+  static readonly UpdateSmtpSettingPath = '/api/setting/smtp';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateSmtpSetting()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateSmtpSetting$Response(params?: UpdateSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return updateSmtpSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateSmtpSetting$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateSmtpSetting(params?: UpdateSmtpSetting$Params, context?: HttpContext): Observable<void> {
+    return this.updateSmtpSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `testSmtpSetting()` */
+  static readonly TestSmtpSettingPath = '/api/setting/smtp/test';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `testSmtpSetting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testSmtpSetting$Response(params?: TestSmtpSetting$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
+    return testSmtpSetting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `testSmtpSetting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  testSmtpSetting(params?: TestSmtpSetting$Params, context?: HttpContext): Observable<boolean> {
+    return this.testSmtpSetting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

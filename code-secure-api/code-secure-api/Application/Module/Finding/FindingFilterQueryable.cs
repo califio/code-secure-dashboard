@@ -1,4 +1,6 @@
 using CodeSecure.Application.Module.Finding.Model;
+using CodeSecure.Authentication;
+using CodeSecure.Authentication.Jwt;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;
 
@@ -6,14 +8,14 @@ namespace CodeSecure.Application.Module.Finding;
 
 public static class FindingFilterQueryable
 {
-    public static IQueryable<Findings> FindingFilter(this IQueryable<Findings> query, AppDbContext context,
-        FindingFilter filter)
+    public static IQueryable<Findings> FindingFilter(this IQueryable<Findings> query, AppDbContext context, JwtUserClaims currentUser, FindingFilter filter)
     {
+        var canReadAllFinding  = currentUser.HasClaim(PermissionType.Finding, PermissionAction.Read);
         query = query.Where(finding => 
-                filter.CanReadAllFinding || 
+                canReadAllFinding || 
                 context.ProjectUsers.Any(projectUser => 
                     projectUser.ProjectId == finding.ProjectId && 
-                    projectUser.UserId == filter.CurrentUserId
+                    projectUser.UserId == currentUser.Id
                 )
             )
             .Where(finding => filter.SourceControlId == null || context.Projects.Any(record =>

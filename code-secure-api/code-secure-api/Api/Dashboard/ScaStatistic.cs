@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using CodeSecure.Application.Module.Statistic;
-using CodeSecure.Application.Module.Statistic.Model;
+using CodeSecure.Application.Module.Stats.Model;
 
 namespace CodeSecure.Api.Dashboard;
 

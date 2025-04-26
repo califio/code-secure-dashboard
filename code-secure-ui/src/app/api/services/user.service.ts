@@ -13,20 +13,20 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { createUser } from '../fn/user/create-user';
 import { CreateUser$Params } from '../fn/user/create-user';
-import { findUserInfoById } from '../fn/user/find-user-info-by-id';
-import { FindUserInfoById$Params } from '../fn/user/find-user-info-by-id';
+import { getUserById } from '../fn/user/get-user-by-id';
+import { GetUserById$Params } from '../fn/user/get-user-by-id';
+import { getUserDetailByFilter } from '../fn/user/get-user-detail-by-filter';
+import { GetUserDetailByFilter$Params } from '../fn/user/get-user-detail-by-filter';
+import { getUserSummaryByFilter } from '../fn/user/get-user-summary-by-filter';
+import { GetUserSummaryByFilter$Params } from '../fn/user/get-user-summary-by-filter';
 import { listProjectManagerUser } from '../fn/user/list-project-manager-user';
 import { ListProjectManagerUser$Params } from '../fn/user/list-project-manager-user';
-import { queryUserInfo } from '../fn/user/query-user-info';
-import { QueryUserInfo$Params } from '../fn/user/query-user-info';
-import { queryUserSummary } from '../fn/user/query-user-summary';
-import { QueryUserSummary$Params } from '../fn/user/query-user-summary';
 import { sendConfirmEmail } from '../fn/user/send-confirm-email';
 import { SendConfirmEmail$Params } from '../fn/user/send-confirm-email';
 import { updateUser } from '../fn/user/update-user';
 import { UpdateUser$Params } from '../fn/user/update-user';
-import { UserInfo } from '../models/user-info';
-import { UserInfoPage } from '../models/user-info-page';
+import { UserDetail } from '../models/user-detail';
+import { UserDetailPage } from '../models/user-detail-page';
 import { UserSummary } from '../models/user-summary';
 import { UserSummaryPage } from '../models/user-summary-page';
 
@@ -36,27 +36,27 @@ export class UserService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `queryUserSummary()` */
-  static readonly QueryUserSummaryPath = '/api/user/public';
+  /** Path part for operation `getUserSummaryByFilter()` */
+  static readonly GetUserSummaryByFilterPath = '/api/user/public';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `queryUserSummary()` instead.
+   * To access only the response body, use `getUserSummaryByFilter()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  queryUserSummary$Response(params?: QueryUserSummary$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
-    return queryUserSummary(this.http, this.rootUrl, params, context);
+  getUserSummaryByFilter$Response(params?: GetUserSummaryByFilter$Params, context?: HttpContext): Observable<StrictHttpResponse<UserSummaryPage>> {
+    return getUserSummaryByFilter(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `queryUserSummary$Response()` instead.
+   * To access the full response (for headers, for example), `getUserSummaryByFilter$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  queryUserSummary(params?: QueryUserSummary$Params, context?: HttpContext): Observable<UserSummaryPage> {
-    return this.queryUserSummary$Response(params, context).pipe(
+  getUserSummaryByFilter(params?: GetUserSummaryByFilter$Params, context?: HttpContext): Observable<UserSummaryPage> {
+    return this.getUserSummaryByFilter$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserSummaryPage>): UserSummaryPage => r.body)
     );
   }
@@ -86,53 +86,53 @@ export class UserService extends BaseService {
     );
   }
 
-  /** Path part for operation `queryUserInfo()` */
-  static readonly QueryUserInfoPath = '/api/user/filter';
+  /** Path part for operation `getUserDetailByFilter()` */
+  static readonly GetUserDetailByFilterPath = '/api/user/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `queryUserInfo()` instead.
+   * To access only the response body, use `getUserDetailByFilter()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  queryUserInfo$Response(params?: QueryUserInfo$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfoPage>> {
-    return queryUserInfo(this.http, this.rootUrl, params, context);
+  getUserDetailByFilter$Response(params?: GetUserDetailByFilter$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetailPage>> {
+    return getUserDetailByFilter(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `queryUserInfo$Response()` instead.
+   * To access the full response (for headers, for example), `getUserDetailByFilter$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  queryUserInfo(params?: QueryUserInfo$Params, context?: HttpContext): Observable<UserInfoPage> {
-    return this.queryUserInfo$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserInfoPage>): UserInfoPage => r.body)
+  getUserDetailByFilter(params?: GetUserDetailByFilter$Params, context?: HttpContext): Observable<UserDetailPage> {
+    return this.getUserDetailByFilter$Response(params, context).pipe(
+      map((r: StrictHttpResponse<UserDetailPage>): UserDetailPage => r.body)
     );
   }
 
-  /** Path part for operation `findUserInfoById()` */
-  static readonly FindUserInfoByIdPath = '/api/user/{userId}';
+  /** Path part for operation `getUserById()` */
+  static readonly GetUserByIdPath = '/api/user/{userId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `findUserInfoById()` instead.
+   * To access only the response body, use `getUserById()` instead.
    *
    * This method doesn't expect any request body.
    */
-  findUserInfoById$Response(params: FindUserInfoById$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
-    return findUserInfoById(this.http, this.rootUrl, params, context);
+  getUserById$Response(params: GetUserById$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
+    return getUserById(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `findUserInfoById$Response()` instead.
+   * To access the full response (for headers, for example), `getUserById$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  findUserInfoById(params: FindUserInfoById$Params, context?: HttpContext): Observable<UserInfo> {
-    return this.findUserInfoById$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
+  getUserById(params: GetUserById$Params, context?: HttpContext): Observable<UserDetail> {
+    return this.getUserById$Response(params, context).pipe(
+      map((r: StrictHttpResponse<UserDetail>): UserDetail => r.body)
     );
   }
 
@@ -145,7 +145,7 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateUser$Response(params: UpdateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+  updateUser$Response(params: UpdateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
     return updateUser(this.http, this.rootUrl, params, context);
   }
 
@@ -155,9 +155,9 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateUser(params: UpdateUser$Params, context?: HttpContext): Observable<UserInfo> {
+  updateUser(params: UpdateUser$Params, context?: HttpContext): Observable<UserDetail> {
     return this.updateUser$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
+      map((r: StrictHttpResponse<UserDetail>): UserDetail => r.body)
     );
   }
 
@@ -170,7 +170,7 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createUser$Response(params?: CreateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+  createUser$Response(params?: CreateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
     return createUser(this.http, this.rootUrl, params, context);
   }
 
@@ -180,9 +180,9 @@ export class UserService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createUser(params?: CreateUser$Params, context?: HttpContext): Observable<UserInfo> {
+  createUser(params?: CreateUser$Params, context?: HttpContext): Observable<UserDetail> {
     return this.createUser$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserInfo>): UserInfo => r.body)
+      map((r: StrictHttpResponse<UserDetail>): UserDetail => r.body)
     );
   }
 

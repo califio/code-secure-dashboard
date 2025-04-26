@@ -1,15 +1,14 @@
 using CodeSecure.Application.Module.Auth;
-using CodeSecure.Core.Extension;
+using CodeSecure.Application.Module.Auth.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Auth;
 
-public class ProfileController(IGetUserProfileHandler getUserProfileHandler) : BaseController
+public class ProfileController(IAuthService authService) : BaseController
 {
     [HttpGet]
-    public async Task<UserProfile> GetProfile()
+    public Task<UserProfile> GetProfile()
     {
-        var result = await getUserProfileHandler.HandleAsync(CurrentUser().Id);
-        return result.GetResult();
+        return authService.GetUserProfileAsync(CurrentUser.Id);
     }
 }

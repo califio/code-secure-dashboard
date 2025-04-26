@@ -9,13 +9,12 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { ConfirmEmailRequest } from '../../models/confirm-email-request';
-import { ConfirmEmailResponse } from '../../models/confirm-email-response';
 
 export interface ConfirmEmail$Params {
       body?: ConfirmEmailRequest
 }
 
-export function confirmEmail(http: HttpClient, rootUrl: string, params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<ConfirmEmailResponse>> {
+export function confirmEmail(http: HttpClient, rootUrl: string, params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
   const rb = new RequestBuilder(rootUrl, confirmEmail.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -26,7 +25,7 @@ export function confirmEmail(http: HttpClient, rootUrl: string, params?: Confirm
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ConfirmEmailResponse>;
+      return (r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }) as StrictHttpResponse<boolean>;
     })
   );
 }

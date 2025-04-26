@@ -6,7 +6,6 @@ public class SettingModule : IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<IAuthSetting, AuthSettingImpl>();
         builder.AddScoped<SmtpSetting>(sp =>
         {
             var context = sp.GetRequiredService<AppDbContext>();

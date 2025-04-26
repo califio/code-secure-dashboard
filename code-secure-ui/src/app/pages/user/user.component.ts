@@ -4,7 +4,7 @@ import {TimeagoModule} from "ngx-timeago";
 import {ActivatedRoute, Router} from '@angular/router';
 import {finalize, Subject, switchMap, takeUntil} from 'rxjs';
 import {bindQueryParams, updateQueryParams} from '../../core/router';
-import {UserInfo, UserSortField, UserStatus} from '../../api/models';
+import {UserDetail, UserSortField, UserStatus} from '../../api/models';
 import {UserService} from '../../api/services/user.service';
 import {UserStore} from './user.store';
 import {UserInfoComponent} from '../../shared/components/user-info/user-info.component';
@@ -70,7 +70,7 @@ export class UserComponent implements OnInit, OnDestroy {
       label: 'status'
     }
   ];
-  user: UserInfo = {};
+  user: UserDetail = {};
   isDesktop = true;
   private destroy$ = new Subject();
 
@@ -94,7 +94,7 @@ export class UserComponent implements OnInit, OnDestroy {
         bindQueryParams(params, this.store.filter);
         this.store.currentPage.set(this.store.filter.page!);
         this.store.pageSize.set(this.store.filter.size!);
-        return this.userService.queryUserInfo({
+        return this.userService.getUserDetailByFilter({
           body: this.store.filter
         }).pipe(
           finalize(() => {
@@ -137,12 +137,12 @@ export class UserComponent implements OnInit, OnDestroy {
     this.store.showAddUserDialog = true;
   }
 
-  onShowUpdateUserDialog(user: UserInfo) {
+  onShowUpdateUserDialog(user: UserDetail) {
     this.store.selectedUser.set(user);
     this.store.showUpdateUserDialog = true;
   }
 
-  onConfirmDisableUser(user: UserInfo) {
+  onConfirmDisableUser(user: UserDetail) {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to disable this user?',
       header: 'Confirmation',
@@ -178,7 +178,7 @@ export class UserComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendEmailConfirmDialog(user: UserInfo) {
+  onSendEmailConfirmDialog(user: UserDetail) {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to send confirm email to this user?',
       header: 'Confirmation',

@@ -1,8 +1,8 @@
 import {computed, Injectable, signal} from '@angular/core';
 import {UserFilter} from '../../api/models/user-filter';
 import {UserSortField} from '../../api/models/user-sort-field';
-import {UserInfo} from '../../api/models/user-info';
 import {RoleSummary} from '../../api/models/role-summary';
+import {UserDetail} from '../../api/models/user-detail';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,10 @@ export class UserStore {
     sortBy: UserSortField.CreatedAt,
     status: undefined,
   };
-  users = signal<UserInfo[]>([]);
+  users = signal<UserDetail[]>([]);
   roles = signal<RoleSummary[]>([]);
   // update user
-  selectedUser = signal<UserInfo | undefined>(undefined);
+  selectedUser = signal<UserDetail | undefined>(undefined);
   showUpdateUserDialog = false;
   // add user
   showAddUserDialog = false;

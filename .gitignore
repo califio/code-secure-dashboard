@@ -5,7 +5,8 @@ dist/
 /tmp
 /out-tsc
 /bazel-out
-
+Logs/
+logs/
 # Node
 node_modules/
 npm-debug.log

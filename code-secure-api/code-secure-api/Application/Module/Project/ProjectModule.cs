@@ -7,13 +7,10 @@ public class ProjectModule : IModule
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
         builder.AddScoped<IProjectAuthorize, ProjectAuthorize>();
-        builder.AddScoped<IExportFindingHandler, ExportFindingHandler>();
-        builder.AddScoped<IFindProjectByIdHandler, FindProjectByIdHandler>();
-        builder.AddScoped<IFindProjectHandler, FindProjectHandler>();
-        builder.AddScoped<IFindProjectScanHandler, FindProjectScanHandler>();
-        builder.AddScoped<IGetStatisticsProjectHandler, GetStatisticsProjectHandler>();
-        builder.AddScoped<IListProjectCommitHandler, ListProjectCommitHandler>();
-        builder.AddScoped<IGetProjectCommitScanSummary, GetProjectCommitScanSummary>();
+        builder.AddScoped<IProjectSettingService, ProjectSettingService>();
+        builder.AddScoped<IProjectMemberService, ProjectMemberService>();
+        builder.AddScoped<IProjectPackageService, ProjectPackageService>();
+        builder.AddScoped<IProjectService, ProjectService>();
         return builder;
     }
 }

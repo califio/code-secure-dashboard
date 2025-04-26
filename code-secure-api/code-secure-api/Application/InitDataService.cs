@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using CodeSecure.Api.CI.Model;
-using CodeSecure.Api.CI.Service;
+using CodeSecure.Application.Module.Ci;
+using CodeSecure.Application.Module.Ci.Model;
 using CodeSecure.Application.Module.Finding;
 using CodeSecure.Authentication;
 using CodeSecure.Authentication.Jwt;
@@ -125,7 +125,7 @@ public class InitDataService(
             var repoId = $"{i}";
             var repoName = $"Sample Project {i}";
             // sast scan
-            var scanInfo = await ciService.InitScan(new CiScanRequest
+            var scanInfo = await ciService.CreateCiScanAsync(new CiScanRequest
             {
                 Source = SourceType.GitLab,
                 RepoId = repoId,
@@ -217,12 +217,12 @@ public class InitDataService(
                     }
                 ]
             });
-            await ciService.UpdateScan(scanInfo.ScanId, new UpdateCiScanRequest
+            await ciService.UpdateCiScanAsync(scanInfo.ScanId, new UpdateCiScanRequest
             {
                 Status = ScanStatus.Completed
             });
             // dependency scan
-            scanInfo = await ciService.InitScan(new CiScanRequest
+            scanInfo = await ciService.CreateCiScanAsync(new CiScanRequest
             {
                 Source = SourceType.GitLab,
                 RepoId = repoId,
@@ -240,7 +240,7 @@ public class InitDataService(
                 IsDefault = false,
             });
             logger.LogInformation("Init scan trivy: " + scanInfo.ScanId);
-            await ciService.UploadDependency(new CiUploadDependencyRequest
+            await ciService.PushCiDependencyAsync(new CiUploadDependencyRequest
             {
                 ScanId = scanInfo.ScanId,
                 Packages =
@@ -303,7 +303,7 @@ public class InitDataService(
                     }
                 ]
             });
-            await ciService.UpdateScan(scanInfo.ScanId, new UpdateCiScanRequest
+            await ciService.UpdateCiScanAsync(scanInfo.ScanId, new UpdateCiScanRequest
             {
                 Status = ScanStatus.Completed
             });

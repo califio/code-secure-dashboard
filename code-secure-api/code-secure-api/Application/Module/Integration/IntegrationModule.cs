@@ -13,7 +13,6 @@ public class IntegrationModule : IModule
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
         //mail
-        builder.AddScoped<ISmtpService, SmtpService>();
         builder.AddScoped<IMailAlertSettingService, MailAlertSettingService>();
         builder.AddScoped<MailAlertSetting>(sp =>
         {

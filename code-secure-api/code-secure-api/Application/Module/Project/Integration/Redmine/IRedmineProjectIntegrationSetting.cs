@@ -1,5 +1,4 @@
 using CodeSecure.Application.Module.Integration.Redmine;
-using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using FluentResults.Extensions;

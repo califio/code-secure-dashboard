@@ -12,14 +12,14 @@ import { FindingDetail } from '../../models/finding-detail';
 import { UpdateFindingRequest } from '../../models/update-finding-request';
 
 export interface UpdateFinding$Params {
-  id: string;
+  findingId: string;
       body?: UpdateFindingRequest
 }
 
 export function updateFinding(http: HttpClient, rootUrl: string, params: UpdateFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingDetail>> {
   const rb = new RequestBuilder(rootUrl, updateFinding.PATH, 'patch');
   if (params) {
-    rb.path('id', params.id, {"style":"simple"});
+    rb.path('findingId', params.findingId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function updateFinding(http: HttpClient, rootUrl: string, params: UpdateF
   );
 }
 
-updateFinding.PATH = '/api/finding/{id}';
+updateFinding.PATH = '/api/finding/{findingId}';

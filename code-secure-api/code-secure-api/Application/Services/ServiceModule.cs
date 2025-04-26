@@ -8,6 +8,7 @@ public class ServiceModule: IModule
     {
         builder.AddMvcCore().AddRazorViewEngine();
         builder.AddScoped<IRazorRender, RazorRender>();
+        builder.AddScoped<ISmtpService, SmtpService>();
         return builder;
     }
 }

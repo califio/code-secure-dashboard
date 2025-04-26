@@ -1,7 +1,7 @@
 using Atlassian.Jira;
 using CodeSecure.Application.Helpers;
 using CodeSecure.Application.Module.Integration.Jira.Client;
-using CodeSecure.Application.Module.Project.Setting;
+using CodeSecure.Application.Module.Project;
 using CodeSecure.Application.Module.SourceControl;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;
@@ -11,18 +11,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeSecure.Application.Module.Integration.Jira;
 
-public class JiraTicketTracker(
-    AppDbContext context,
-    JiraSetting jiraGlobalSetting,
-    ILogger<JiraTicketTracker> logger
-) : ITicketTracker
+public class JiraTicketTracker : ITicketTracker
 {
-    private readonly IJiraClient jiraClient = new JiraClient(new JiraConnection
+    private readonly AppDbContext context;
+    private readonly JiraSetting jiraGlobalSetting;
+    private readonly IJiraClient jiraClient;
+
+    public JiraTicketTracker(AppDbContext context)
     {
-        Url = jiraGlobalSetting.WebUrl,
-        Password = jiraGlobalSetting.Password,
-        Username = jiraGlobalSetting.UserName
-    });
+        this.context = context;
+        jiraGlobalSetting = context.GetJiraSettingAsync().Result;
+        jiraClient = new JiraClient(new JiraConnection
+        {
+            Url = jiraGlobalSetting.WebUrl,
+            Password = jiraGlobalSetting.Password,
+            Username = jiraGlobalSetting.UserName
+        });
+    }
 
     public async Task<Result<Tickets>> CreateTicketAsync(SastTicket request)
     {
@@ -34,7 +39,7 @@ public class JiraTicketTracker(
                     .Value.GetJiraSetting(jiraGlobalSetting);
                 string description = Converter.MarkdownToJira(request.Finding.Description);
                 description += $"\n\n*Repo:* [{request.Project.Name}|{request.Project.RepoUrl}]";
-                var sourceType = (await context.FindSourceControlsByIdAsync(request.Project.SourceControlId)).Value
+                var sourceType = (await context.GetSourceControlsByIdAsync(request.Project.SourceControlId)).Value
                     .Type;
                 var location = GitRepoHelpers.UrlByCommit(sourceType, request.Project.RepoUrl, request.Commit,
                     request.Finding.Location!, request.Finding.StartLine, request.Finding.EndLine);
@@ -65,7 +70,6 @@ public class JiraTicketTracker(
             }
             catch (Exception e)
             {
-                logger.LogError(e.Message);
                 return Result.Fail(e.Message);
             }
         }
@@ -112,7 +116,6 @@ public class JiraTicketTracker(
             }
             catch (Exception e)
             {
-                logger.LogError(e.Message);
                 return Result.Fail(e.Message);
             }
         }

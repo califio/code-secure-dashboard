@@ -6,7 +6,7 @@ public class ScannerModule : IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<IListScannerHandler, ListScannerHandler>();
+        builder.AddScoped<IScannerService, ScannerService>();
         return builder;
     }
 }

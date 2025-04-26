@@ -13,8 +13,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { getPackageById } from '../fn/package/get-package-by-id';
 import { GetPackageById$Params } from '../fn/package/get-package-by-id';
-import { getPackageDependencies } from '../fn/package/get-package-dependencies';
-import { GetPackageDependencies$Params } from '../fn/package/get-package-dependencies';
+import { listPackageDependency } from '../fn/package/list-package-dependency';
+import { ListPackageDependency$Params } from '../fn/package/list-package-dependency';
 import { PackageDetail } from '../models/package-detail';
 import { PackageInfo } from '../models/package-info';
 
@@ -24,33 +24,33 @@ export class PackageService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getPackageDependencies()` */
-  static readonly GetPackageDependenciesPath = '/api/package/{packageId}/dependencies';
+  /** Path part for operation `listPackageDependency()` */
+  static readonly ListPackageDependencyPath = '/api/package/{packageId}/dependencies';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getPackageDependencies()` instead.
+   * To access only the response body, use `listPackageDependency()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getPackageDependencies$Response(params: GetPackageDependencies$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PackageInfo>>> {
-    return getPackageDependencies(this.http, this.rootUrl, params, context);
+  listPackageDependency$Response(params: ListPackageDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PackageInfo>>> {
+    return listPackageDependency(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getPackageDependencies$Response()` instead.
+   * To access the full response (for headers, for example), `listPackageDependency$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getPackageDependencies(params: GetPackageDependencies$Params, context?: HttpContext): Observable<Array<PackageInfo>> {
-    return this.getPackageDependencies$Response(params, context).pipe(
+  listPackageDependency(params: ListPackageDependency$Params, context?: HttpContext): Observable<Array<PackageInfo>> {
+    return this.listPackageDependency$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<PackageInfo>>): Array<PackageInfo> => r.body)
     );
   }
 
   /** Path part for operation `getPackageById()` */
-  static readonly GetPackageByIdPath = '/api/package/{id}';
+  static readonly GetPackageByIdPath = '/api/package/{packageId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

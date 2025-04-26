@@ -9,13 +9,13 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { CreateUserRequest } from '../../models/create-user-request';
-import { UserInfo } from '../../models/user-info';
+import { UserDetail } from '../../models/user-detail';
 
 export interface CreateUser$Params {
       body?: CreateUserRequest
 }
 
-export function createUser(http: HttpClient, rootUrl: string, params?: CreateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserInfo>> {
+export function createUser(http: HttpClient, rootUrl: string, params?: CreateUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetail>> {
   const rb = new RequestBuilder(rootUrl, createUser.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -26,7 +26,7 @@ export function createUser(http: HttpClient, rootUrl: string, params?: CreateUse
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserInfo>;
+      return r as StrictHttpResponse<UserDetail>;
     })
   );
 }

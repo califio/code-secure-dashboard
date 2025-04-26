@@ -93,8 +93,8 @@ export class FindingDetailComponent {
         this.finding = null;
         // load finding
         this.loading.finding = true;
-        this.findingService.getFinding({
-          id: findingId
+        this.findingService.getFindingById({
+          findingId: findingId
         }).pipe(
           finalize(() => this.loading.finding = false)
         ).subscribe(finding => {
@@ -128,7 +128,7 @@ export class FindingDetailComponent {
 
   onChangeStatus(status: FindingStatus) {
     this.findingService.updateFinding({
-      id: this.findingId()!,
+      findingId: this.findingId()!,
       body: {
         status: status
       }
@@ -174,7 +174,7 @@ export class FindingDetailComponent {
 
   private loadActivities() {
     this.findingService.getFindingActivities({
-      id: this.findingId()!,
+      findingId: this.findingId()!,
       body: {}
     }).subscribe(activities => {
       this.activities = activities.items!;
@@ -185,7 +185,7 @@ export class FindingDetailComponent {
 
   onChangeFixDeadline($event: Date) {
     this.findingService.updateFinding({
-      id: this.findingId()!,
+      findingId: this.findingId()!,
       body: {
         fixDeadline: $event.toISOString()
       }
@@ -199,7 +199,7 @@ export class FindingDetailComponent {
     if (this.comment) {
       this.loading.comment = true;
       this.findingService.addComment({
-        id: this.findingId()!,
+        findingId: this.findingId()!,
         body: {
           comment: this.comment
         }
@@ -218,7 +218,7 @@ export class FindingDetailComponent {
   createTicket(type: TicketType) {
     this.loading.ticket = true;
     this.findingService.createTicket({
-      id: this.findingId()!,
+      findingId: this.findingId()!,
       type: type
     }).pipe(
       finalize(() => this.loading.ticket = false)
@@ -229,7 +229,7 @@ export class FindingDetailComponent {
 
   deleteTicket() {
     this.findingService.deleteTicket({
-      id: this.findingId()!
+      findingId: this.findingId()!
     }).subscribe(() => {
       this.finding!.ticket = undefined;
     })
@@ -238,7 +238,7 @@ export class FindingDetailComponent {
   saveRecommendation() {
     this.loading.recommendation = true;
     this.findingService.updateFinding({
-      id: this.findingId()!,
+      findingId: this.findingId()!,
       body: {
         recommendation: this.finding!.recommendation
       }

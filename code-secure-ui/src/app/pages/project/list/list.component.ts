@@ -118,7 +118,7 @@ export class ListComponent implements OnInit, OnDestroy {
         bindQueryParams(params, this.filter);
         this.currentPage.set(this.filter.page!);
         this.pageSize.set(this.filter.size!);
-        return this.projectService.getProjects({
+        return this.projectService.getProjectByFilter({
           body: this.filter
         }).pipe(
           finalize(() => {

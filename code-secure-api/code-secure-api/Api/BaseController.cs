@@ -11,8 +11,5 @@ namespace CodeSecure.Api;
 [Consumes("application/json")]
 public abstract class BaseController : Controller
 {
-    protected JwtUserClaims CurrentUser()
-    {
-        return User.UserClaims();
-    }
+    protected JwtUserClaims CurrentUser => User.UserClaims();
 }

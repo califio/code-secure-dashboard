@@ -11,13 +11,13 @@ import { RequestBuilder } from '../../request-builder';
 import { PackageDetail } from '../../models/package-detail';
 
 export interface GetPackageById$Params {
-  id: string;
+  packageId: string;
 }
 
 export function getPackageById(http: HttpClient, rootUrl: string, params: GetPackageById$Params, context?: HttpContext): Observable<StrictHttpResponse<PackageDetail>> {
   const rb = new RequestBuilder(rootUrl, getPackageById.PATH, 'get');
   if (params) {
-    rb.path('id', params.id, {"style":"simple"});
+    rb.path('packageId', params.packageId, {"style":"simple"});
   }
 
   return http.request(
@@ -30,4 +30,4 @@ export function getPackageById(http: HttpClient, rootUrl: string, params: GetPac
   );
 }
 
-getPackageById.PATH = '/api/package/{id}';
+getPackageById.PATH = '/api/package/{packageId}';

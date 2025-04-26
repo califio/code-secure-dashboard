@@ -6,7 +6,7 @@ public class RoleModule: IModule
 {
     public IServiceCollection RegisterModule(IServiceCollection builder)
     {
-        builder.AddScoped<IListRoleHandler, ListRoleHandler>();
+        builder.AddScoped<IRoleService, RoleService>();
         return builder;
     }
 }

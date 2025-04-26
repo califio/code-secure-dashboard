@@ -18,7 +18,7 @@ public class JiraIntegrationController(
     [Route("{projectId:guid}/integration/jira")]
     public async Task<JiraProjectSetting> GetJiraIntegrationProject(Guid projectId)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await jiraProjectIntegrationSetting.GetSettingAsync(projectId);
         return result.GetResult();
     }
@@ -27,7 +27,7 @@ public class JiraIntegrationController(
     [Route("{projectId:guid}/integration/jira")]
     public async Task<bool> UpdateJiraIntegrationProject(Guid projectId, [FromBody] JiraProjectSetting request)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await jiraProjectIntegrationSetting.UpdateSettingAsync(projectId, request);
         return result.GetResult();
     }
@@ -36,7 +36,7 @@ public class JiraIntegrationController(
     [Route("{projectId:guid}/integration/jira/projects")]
     public async Task<List<JiraProject>> ListJiraProjects(Guid projectId, bool reload)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await jiraProjectIntegrationSetting.ListJiraProjectsAsync(reload);
         return result.GetResult();
     }

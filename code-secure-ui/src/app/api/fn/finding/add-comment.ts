@@ -12,14 +12,14 @@ import { FindingActivity } from '../../models/finding-activity';
 import { FindingCommentRequest } from '../../models/finding-comment-request';
 
 export interface AddComment$Params {
-  id: string;
+  findingId: string;
       body?: FindingCommentRequest
 }
 
 export function addComment(http: HttpClient, rootUrl: string, params: AddComment$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingActivity>> {
   const rb = new RequestBuilder(rootUrl, addComment.PATH, 'post');
   if (params) {
-    rb.path('id', params.id, {"style":"simple"});
+    rb.path('findingId', params.findingId, {"style":"simple"});
     rb.body(params.body, 'application/json');
   }
 
@@ -33,4 +33,4 @@ export function addComment(http: HttpClient, rootUrl: string, params: AddComment
   );
 }
 
-addComment.PATH = '/api/finding/{id}/comment';
+addComment.PATH = '/api/finding/{findingId}/comment';

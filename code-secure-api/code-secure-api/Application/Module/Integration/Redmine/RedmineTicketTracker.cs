@@ -1,5 +1,5 @@
 using CodeSecure.Application.Helpers;
-using CodeSecure.Application.Module.Project.Setting;
+using CodeSecure.Application.Module.Project;
 using CodeSecure.Application.Module.SourceControl;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;
@@ -24,7 +24,7 @@ public class RedmineTicketTracker(AppDbContext context) : ITicketTracker
                     (await context.GetProjectSettingsAsync(request.Project.Id)).Value.GetRedmineSetting(globalSetting);
                 string description = request.Finding.Description;
                 description += $"\n\n**Repo:** [{request.Project.Name}]({request.Project.RepoUrl})";
-                var sourceType = (await context.FindSourceControlsByIdAsync(request.Project.SourceControlId)).Value
+                var sourceType = (await context.GetSourceControlsByIdAsync(request.Project.SourceControlId)).Value
                     .Type;
                 var location = GitRepoHelpers.UrlByCommit(sourceType, request.Project.RepoUrl, request.Commit,
                     request.Finding.Location!, request.Finding.StartLine, request.Finding.EndLine);

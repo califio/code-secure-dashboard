@@ -11,12 +11,10 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { getRuleInfo } from '../fn/rule/get-rule-info';
-import { GetRuleInfo$Params } from '../fn/rule/get-rule-info';
+import { getRuleByFilter } from '../fn/rule/get-rule-by-filter';
+import { GetRuleByFilter$Params } from '../fn/rule/get-rule-by-filter';
 import { getRuleScanners } from '../fn/rule/get-rule-scanners';
 import { GetRuleScanners$Params } from '../fn/rule/get-rule-scanners';
-import { queryRuleId } from '../fn/rule/query-rule-id';
-import { QueryRuleId$Params } from '../fn/rule/query-rule-id';
 import { RuleInfoPage } from '../models/rule-info-page';
 import { Scanners } from '../models/scanners';
 import { syncRules } from '../fn/rule/sync-rules';
@@ -30,52 +28,27 @@ export class RuleService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `queryRuleId()` */
-  static readonly QueryRuleIdPath = '/api/rule/list';
+  /** Path part for operation `getRuleByFilter()` */
+  static readonly GetRuleByFilterPath = '/api/rule/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `queryRuleId()` instead.
+   * To access only the response body, use `getRuleByFilter()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  queryRuleId$Response(params?: QueryRuleId$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
-    return queryRuleId(this.http, this.rootUrl, params, context);
+  getRuleByFilter$Response(params?: GetRuleByFilter$Params, context?: HttpContext): Observable<StrictHttpResponse<RuleInfoPage>> {
+    return getRuleByFilter(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `queryRuleId$Response()` instead.
+   * To access the full response (for headers, for example), `getRuleByFilter$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  queryRuleId(params?: QueryRuleId$Params, context?: HttpContext): Observable<Array<string>> {
-    return this.queryRuleId$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
-    );
-  }
-
-  /** Path part for operation `getRuleInfo()` */
-  static readonly GetRuleInfoPath = '/api/rule/filter';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getRuleInfo()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  getRuleInfo$Response(params?: GetRuleInfo$Params, context?: HttpContext): Observable<StrictHttpResponse<RuleInfoPage>> {
-    return getRuleInfo(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getRuleInfo$Response()` instead.
-   *
-   * This method sends `application/json` and handles request body of type `application/json`.
-   */
-  getRuleInfo(params?: GetRuleInfo$Params, context?: HttpContext): Observable<RuleInfoPage> {
-    return this.getRuleInfo$Response(params, context).pipe(
+  getRuleByFilter(params?: GetRuleByFilter$Params, context?: HttpContext): Observable<RuleInfoPage> {
+    return this.getRuleByFilter$Response(params, context).pipe(
       map((r: StrictHttpResponse<RuleInfoPage>): RuleInfoPage => r.body)
     );
   }
@@ -139,7 +112,7 @@ export class RuleService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  syncRules$Response(params?: SyncRules$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  syncRules$Response(params?: SyncRules$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return syncRules(this.http, this.rootUrl, params, context);
   }
 
@@ -149,9 +122,9 @@ export class RuleService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  syncRules(params?: SyncRules$Params, context?: HttpContext): Observable<void> {
+  syncRules(params?: SyncRules$Params, context?: HttpContext): Observable<boolean> {
     return this.syncRules$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

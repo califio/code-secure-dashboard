@@ -136,7 +136,7 @@ export class FindingComponent implements OnInit, OnDestroy {
       this.store.totalRecords.set(result.findingPage.count!);
       this.store.ruleOptions.set(result.rules);
     });
-    this.projectService.getProjectCommits({
+    this.projectService.listProjectCommit({
       projectId: this.projectStore.projectId()
     }).subscribe(commits => {
       const options = commits.map(item => {
@@ -222,7 +222,7 @@ export class FindingComponent implements OnInit, OnDestroy {
   onMarkAs(status: FindingStatus) {
     if (this.selectedFindings.size > 0) {
       const requests = Array.from(this.selectedFindings.values()).map(findingId => this.findingService.updateFinding({
-        id: findingId,
+        findingId: findingId,
         body: {
           status: status
         }
@@ -311,10 +311,8 @@ export class FindingComponent implements OnInit, OnDestroy {
 
     this.projectService.export$Any({
       projectId: this.projectStore.projectId(),
-      body: {
-        exportType: $event,
-        filter: this.store.filter
-      }
+      exportType: $event,
+      body: this.store.filter
     }).pipe(
       finalize(() => {
         this.store.loadingExport.set(false);
@@ -337,5 +335,4 @@ export class FindingComponent implements OnInit, OnDestroy {
       URL.revokeObjectURL(objectUrl);
     });
   }
-
 }

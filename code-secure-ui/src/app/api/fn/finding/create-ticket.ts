@@ -12,14 +12,14 @@ import { Tickets } from '../../models/tickets';
 import { TicketType } from '../../models/ticket-type';
 
 export interface CreateTicket$Params {
-  id: string;
+  findingId: string;
   type?: TicketType;
 }
 
 export function createTicket(http: HttpClient, rootUrl: string, params: CreateTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<Tickets>> {
   const rb = new RequestBuilder(rootUrl, createTicket.PATH, 'post');
   if (params) {
-    rb.path('id', params.id, {"style":"simple"});
+    rb.path('findingId', params.findingId, {"style":"simple"});
     rb.query('type', params.type, {"style":"form"});
   }
 
@@ -33,4 +33,4 @@ export function createTicket(http: HttpClient, rootUrl: string, params: CreateTi
   );
 }
 
-createTicket.PATH = '/api/finding/{id}/ticket';
+createTicket.PATH = '/api/finding/{findingId}/ticket';

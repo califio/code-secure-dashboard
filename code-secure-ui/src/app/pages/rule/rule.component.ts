@@ -89,7 +89,7 @@ export class RuleComponent implements OnInit, OnDestroy {
         this.store.filter.confidence = toArray<any>(this.store.filter.confidence);
         this.store.filter.scannerId = toArray<any>(this.store.filter.scannerId);
         this.store.filter.status = toArray<any>(this.store.filter.status);
-        return this.ruleService.getRuleInfo({
+        return this.ruleService.getRuleByFilter({
           body: this.store.filter
         }).pipe(
           finalize(() => this.store.loading.set(false))

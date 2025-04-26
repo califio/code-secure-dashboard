@@ -1,7 +1,6 @@
 using CodeSecure.Application.Exceptions;
 using CodeSecure.Application.Module.Integration.Redmine;
 using CodeSecure.Authentication;
-using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Integration;
@@ -20,19 +19,17 @@ public class RedmineIntegrationController(IRedmineSettingService redmineSettingS
 
     [HttpPost]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<bool> UpdateRedmineIntegrationSetting([FromBody] RedmineSetting request)
+    public Task<bool> UpdateRedmineIntegrationSetting([FromBody] RedmineSetting request)
     {
-        var result = await redmineSettingService.UpdateSettingAsync(request);
-        return result.GetResult();
+        return redmineSettingService.UpdateSettingAsync(request);
     }
 
     [HttpPost]
     [Route("test")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<bool> TestRedmineIntegrationSetting()
+    public Task<bool> TestRedmineIntegrationSetting()
     {
-        var result = await redmineSettingService.TestConnectionAsync();
-        return result.GetResult();
+        return redmineSettingService.TestConnectionAsync();
     }
 
     [HttpPost]
@@ -46,6 +43,7 @@ public class RedmineIntegrationController(IRedmineSettingService redmineSettingS
         {
             throw new BadRequestException("url or token is missing");
         }
+
         var redmineClient = new RedmineClient(setting.Url, setting.Token);
         return await redmineClient.GetMetadataAsync(reload);
     }

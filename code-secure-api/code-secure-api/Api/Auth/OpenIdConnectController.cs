@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace CodeSecure.Api.Auth;
 
 [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
-public class OpenIdConnectController(IOpenIdConnectSignInHandler openIdConnectSignInHandler, ILogger<OpenIdConnectController> logger) : ControllerBase
+public class OpenIdConnectController(
+    IAuthService authService,
+    ILogger<OpenIdConnectController> logger) : ControllerBase
 {
     [HttpGet]
     [Route("/api/login/oidc")]
@@ -27,22 +29,24 @@ public class OpenIdConnectController(IOpenIdConnectSignInHandler openIdConnectSi
                 logger.LogInformation("Not found upn claim");
             }
         }
+
         if (email == null)
         {
             throw new BadRequestException(
                 "Email and upn claim type not found. Please mapping the email to the email or upn attribute");
         }
+
         if (!email.IsEmail())
         {
             throw new BadRequestException("Email format invalid");
         }
-        var result = await openIdConnectSignInHandler.HandleAsync(email);
-        if (!result.IsSuccess) throw new BadRequestException(result.Errors.Select(error => error.Message));
-        var queryParams = "oidc=true";
-        if (!string.IsNullOrEmpty(result.Value.Message)) queryParams += $"&message={result.Value.Message}";
-        if (result.Value.AuthResponse != null)
-            queryParams += $"&accessToken={result.Value.AuthResponse.AccessToken}&refreshToken={result.Value.AuthResponse.RefreshToken}";
 
+        var result = await authService.OpenIdConnectSignInAsync(email);
+        var queryParams = "oidc=true";
+        if (!string.IsNullOrEmpty(result.Message)) queryParams += $"&message={result.Message}";
+        if (result.AuthResponse != null)
+            queryParams +=
+                $"&accessToken={result.AuthResponse.AccessToken}&refreshToken={result.AuthResponse.RefreshToken}";
         var frontendUrl = $"{Configuration.FrontendUrl}/#/auth/login?{queryParams}";
         return Redirect(frontendUrl);
     }

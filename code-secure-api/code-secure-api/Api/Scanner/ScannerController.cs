@@ -1,19 +1,18 @@
 using CodeSecure.Application.Module.Scanner;
+using CodeSecure.Application.Module.Scanner.Model;
 using CodeSecure.Core.Entity;
-using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Scanner;
 
 public class ScannerController(
-    IListScannerHandler listScannerHandler
+    IScannerService scannerService
 ) : BaseController
 {
     [HttpPost]
     [Route("filter")]
-    public async Task<List<Scanners>> GetScanners(ScannerFilter filter)
+    public Task<List<Scanners>> GetScanners(ScannerFilter filter)
     {
-        var result = await listScannerHandler.HandleAsync(filter);
-        return result.GetResult();
+        return scannerService.ListScannersAsync(filter);
     }
 }

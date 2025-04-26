@@ -9,15 +9,15 @@ using QuestPDF.Fluent;
 
 namespace CodeSecure.Application.Module.Report;
 
-public class ReportManager : IReportManager
+public static class ReportManager 
 {
-    public byte[] ExportPdf(ReportModel model)
+    public static byte[] ExportPdf(ReportModel model)
     {
         var document = new ReportDocument(model);
         return document.GeneratePdf();
     }
 
-    public byte[] ExportExcel(ReportModel model)
+    public static byte[] ExportExcel(ReportModel model)
     {
         using var wb = new XLWorkbook();
         // information
@@ -97,7 +97,7 @@ public class ReportManager : IReportManager
         return stream.GetBuffer();
     }
 
-    public byte[] ExportJson(ReportModel model)
+    public static byte[] ExportJson(ReportModel model)
     {
         return JsonSerializer.SerializeToUtf8Bytes(model);
     }

@@ -1,5 +1,4 @@
 using CodeSecure.Application.Module.Setting;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 
 namespace CodeSecure.Application.Module.Integration.Mail;

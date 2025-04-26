@@ -1,11 +1,6 @@
-using CodeSecure.Application.Exceptions;
 using CodeSecure.Application.Module.Auth;
-using CodeSecure.Application.Module.Integration;
-using CodeSecure.Application.Module.Setting;
-using CodeSecure.Application.Services;
-using CodeSecure.Core.Entity;
-using CodeSecure.Core.Enum;
-using CodeSecure.Core.Extension;
+using CodeSecure.Application.Module.Auth.Command;
+using CodeSecure.Application.Module.Auth.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,149 +11,55 @@ namespace CodeSecure.Api.Auth;
 [Consumes("application/json")]
 [AllowAnonymous]
 public class AuthController(
-    IAuthSetting authSetting,
-    IPasswordSignInHandler passwordSignInHandler,
-    IRefreshTokenHandler refreshTokenHandler,
-    IForgotPasswordHandler forgotPasswordHandler,
-    IResetPasswordHandler resetPasswordHandler,
-    IConfirmEmailHandler confirmEmailHandler,
-    ILogoutHandler logoutHandler,
-    IRazorRender render
+    IAuthService authService
 ) : Controller
 {
-    [HttpGet]
-    [Route("/api/render-mail")]
-    public async Task<string> RenderMail()
-    {
-        var model = new AlertStatusFindingModel
-        {
-            SourceType = SourceType.GitLab,
-            Project = new Projects
-            {
-                Id = default,
-                Metadata = null,
-                CreatedAt = default,
-                UpdatedAt = null,
-                Name = null,
-                RepoId = null,
-                RepoUrl = null,
-                SourceControlId = default,
-                SourceControl = null
-            },
-            Scanner = new Scanners
-            {
-                Name = "Semgrep",
-                Type = ScannerType.Sast,
-            },
-            GitCommit = new GitCommits
-            {
-                CommitHash = "cbadbca1231ncabd",
-                CommitTitle = "Commit Main",
-                Type = CommitType.CommitBranch,
-                Branch = "main",
-                IsDefault = true,
-                TargetBranch = null,
-                MergeRequestId = null,
-                ProjectId = Guid.NewGuid(),
-            },
-            Findings = [
-                new Findings
-                {
-                    Id = Guid.NewGuid(),
-                    Identity = Guid.NewGuid().ToString(),
-                    Name = "Sql Injection 01",
-                    Description = "",
-                    Category = "SQL Injection",
-                    Recommendation = null,
-                    Status = FindingStatus.Open,
-                    Severity = FindingSeverity.Critical,
-                    VerifiedAt = null,
-                    FixedAt = null,
-                    FixDeadline = null,
-                    RuleId = null,
-                    Location = null,
-                    Snippet = null,
-                    StartLine = null,
-                    EndLine = null,
-                    StartColumn = null,
-                    EndColumn = null,
-                    ProjectId = Guid.NewGuid(),
-                    Project = null,
-                    ScannerId = Guid.NewGuid(),
-                    Scanner = null,
-                    TicketId = null,
-                    Ticket = null
-                }
-            ]
-        };
-        return await render.RenderAsync("Resources/Templates/AlertNewFinding.cshtml", model);
-    }
-
     [HttpGet]
     [Route("/api/auth-config")]
     public async Task<AuthConfig> GetAuthConfig()
     {
-        return await authSetting.GetAuthConfigAsync();
+        return await authService.GetAuthConfigAsync();
     }
 
     [HttpPost]
     [Route("/api/login")]
-    public async Task<SignInResponse> Login(SignInRequest request)
+    public Task<SignInResponse> Login(SignInRequest request)
     {
-        var result = await passwordSignInHandler.HandleAsync(request);
-        if (result.IsSuccess)
-        {
-            return result.Value;
-        }
-
-        throw new BadRequestException(result.Errors.Select(error => error.Message));
+        return authService.PasswordSignInAsync(request);
     }
 
     [HttpPost]
     [Route("/api/refresh-token")]
-    public async Task<SignInResponse> RefreshToken(RefreshTokenRequest request)
+    public Task<SignInResponse> RefreshToken(RefreshTokenRequest request)
     {
-        var result = await refreshTokenHandler.HandleAsync(request);
-        if (result.IsSuccess)
-        {
-            return result.Value;
-        }
-
-        throw new UnauthorizedException();
+        return authService.RefreshTokenAsync(request);
     }
 
     [HttpPost]
     [Route("/api/logout")]
-    public async Task<bool> Logout(LogoutRequest request)
+    public Task<bool> Logout(LogoutRequest request)
     {
-        var result = await logoutHandler.HandleAsync(request);
-        return result.Value;
+        return authService.LogoutAsync(request);
     }
 
     [HttpPost]
     [Route("/api/forgot-password")]
-    public async Task ForgotPassword(ForgotPasswordRequest request)
+    public async Task<bool> ForgotPassword(ForgotPasswordRequest request)
     {
-        await forgotPasswordHandler.HandleAsync(request);
+        return await authService.ForgotPasswordAsync(request);
     }
 
     [HttpPost]
     [Route("/api/reset-password")]
-    public async Task ResetPassword(ResetPasswordRequest request)
+    public Task<bool> ResetPassword(ResetPasswordRequest request)
     {
-        await resetPasswordHandler.HandleAsync(request);
+        return authService.ResetPasswordAsync(request);
     }
 
     [HttpPost]
     [Route("/api/confirm-email")]
-    public async Task<ConfirmEmailResponse> ConfirmEmail(ConfirmEmailRequest request)
+    public async Task<bool> ConfirmEmail(ConfirmEmailRequest request)
     {
-        var result = await confirmEmailHandler.HandleAsync(request);
-        if (result.IsSuccess)
-        {
-            return result.Value;
-        }
-
-        throw new BadRequestException(result.Errors.Select(error => error.Message));
+        return await authService.ConfirmEmailAsync(request);
     }
 }

@@ -1,6 +1,5 @@
 using CodeSecure.Application.Module.Integration.JiraWebhook;
 using CodeSecure.Authentication;
-using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Integration;
@@ -19,18 +18,8 @@ public class JiraWebhookIntegrationController(IJiraWebhookSettingService jiraWeb
 
     [HttpPost]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<bool> UpdateJiraWebhookIntegrationSetting([FromBody] JiraWebhookSetting request)
+    public Task<bool> UpdateJiraWebhookIntegrationSetting([FromBody] JiraWebhookSetting request)
     {
-        var result = await jiraWebhookSettingService.UpdateSettingAsync(request);
-        return result.GetResult();
-    }
-
-    [HttpPost]
-    [Route("test")]
-    [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<bool> TestJiraWebhookIntegrationSetting()
-    {
-        var result = await jiraWebhookSettingService.TestConnectionAsync();
-        return result.GetResult();
+        return jiraWebhookSettingService.UpdateSettingAsync(request);
     }
 }

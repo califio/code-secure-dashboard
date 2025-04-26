@@ -19,20 +19,23 @@ import {ToastrService} from '../../../../shared/services/toastr.service';
   ],
   templateUrl: './jira-webhook.component.html',
 })
-export class JiraWebhookComponent implements OnInit{
+export class JiraWebhookComponent implements OnInit {
   loading = false;
   loadingTest = false;
   setting: JiraWebhookSetting = {};
+
   constructor(
     private integrationService: IntegrationService,
     private toastr: ToastrService,
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
-     this.integrationService.getJiraWebhookIntegrationSetting().subscribe(setting => {
-       this.setting = setting;
-     });
+    this.integrationService.getJiraWebhookIntegrationSetting().subscribe(setting => {
+      this.setting = setting;
+    });
   }
+
   saveConfig() {
     this.loading = true;
     this.integrationService.updateJiraWebhookIntegrationSetting({
@@ -47,13 +50,8 @@ export class JiraWebhookComponent implements OnInit{
   }
 
   testConnection() {
-    this.loadingTest = true;
-    this.integrationService.testJiraWebhookIntegrationSetting().pipe(
-      finalize(() => this.loadingTest = false)
-    ).subscribe(() => {
-      this.toastr.success({
-        message: 'Success!'
-      });
+    this.toastr.warning({
+      message: 'Not support!'
     });
   }
 }

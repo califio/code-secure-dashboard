@@ -3,7 +3,7 @@ using CodeSecure.Authentication.OpenIdConnect;
 
 namespace CodeSecure.Application.Module.Setting;
 
-public class AuthSetting
+public record AuthSetting
 {
     public bool DisablePasswordLogon { get; set; }
     public bool AllowRegister { get; set; }

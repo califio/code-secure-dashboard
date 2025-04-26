@@ -18,7 +18,7 @@ public class MailIntegrationController(
     [Route("{projectId:guid}/integration/mail")]
     public async Task<ProjectAlertEvent> GetMailIntegrationProject(Guid projectId)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await mailProjectIntegrationSetting.GetSettingAsync(projectId);
         return result.GetResult();
     }
@@ -27,7 +27,7 @@ public class MailIntegrationController(
     [Route("{projectId:guid}/integration/mail")]
     public async Task<bool> UpdateMailIntegrationProject(Guid projectId, [FromBody] MailProjectAlertSetting request)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await mailProjectIntegrationSetting.UpdateSettingAsync(projectId, request);
         return result.GetResult();
     }

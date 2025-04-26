@@ -26,16 +26,16 @@ import { FindingActivityPage } from '../models/finding-activity-page';
 import { FindingDetail } from '../models/finding-detail';
 import { FindingStatus } from '../models/finding-status';
 import { FindingSummaryPage } from '../models/finding-summary-page';
-import { getFinding } from '../fn/finding/get-finding';
-import { GetFinding$Params } from '../fn/finding/get-finding';
 import { getFindingActivities } from '../fn/finding/get-finding-activities';
 import { GetFindingActivities$Params } from '../fn/finding/get-finding-activities';
-import { getFindingCategories } from '../fn/finding/get-finding-categories';
-import { GetFindingCategories$Params } from '../fn/finding/get-finding-categories';
+import { getFindingById } from '../fn/finding/get-finding-by-id';
+import { GetFindingById$Params } from '../fn/finding/get-finding-by-id';
 import { getFindingRules } from '../fn/finding/get-finding-rules';
 import { GetFindingRules$Params } from '../fn/finding/get-finding-rules';
 import { getFindings } from '../fn/finding/get-findings';
 import { GetFindings$Params } from '../fn/finding/get-findings';
+import { listFindingCategory } from '../fn/finding/list-finding-category';
+import { ListFindingCategory$Params } from '../fn/finding/list-finding-category';
 import { Tickets } from '../models/tickets';
 import { updateFinding } from '../fn/finding/update-finding';
 import { UpdateFinding$Params } from '../fn/finding/update-finding';
@@ -120,33 +120,33 @@ export class FindingService extends BaseService {
     );
   }
 
-  /** Path part for operation `getFinding()` */
-  static readonly GetFindingPath = '/api/finding/{id}';
+  /** Path part for operation `getFindingById()` */
+  static readonly GetFindingByIdPath = '/api/finding/{findingId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getFinding()` instead.
+   * To access only the response body, use `getFindingById()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getFinding$Response(params: GetFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingDetail>> {
-    return getFinding(this.http, this.rootUrl, params, context);
+  getFindingById$Response(params: GetFindingById$Params, context?: HttpContext): Observable<StrictHttpResponse<FindingDetail>> {
+    return getFindingById(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getFinding$Response()` instead.
+   * To access the full response (for headers, for example), `getFindingById$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getFinding(params: GetFinding$Params, context?: HttpContext): Observable<FindingDetail> {
-    return this.getFinding$Response(params, context).pipe(
+  getFindingById(params: GetFindingById$Params, context?: HttpContext): Observable<FindingDetail> {
+    return this.getFindingById$Response(params, context).pipe(
       map((r: StrictHttpResponse<FindingDetail>): FindingDetail => r.body)
     );
   }
 
   /** Path part for operation `updateFinding()` */
-  static readonly UpdateFindingPath = '/api/finding/{id}';
+  static readonly UpdateFindingPath = '/api/finding/{findingId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -196,7 +196,7 @@ export class FindingService extends BaseService {
   }
 
   /** Path part for operation `getFindingActivities()` */
-  static readonly GetFindingActivitiesPath = '/api/finding/{id}/activity';
+  static readonly GetFindingActivitiesPath = '/api/finding/{findingId}/activity';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -221,7 +221,7 @@ export class FindingService extends BaseService {
   }
 
   /** Path part for operation `addComment()` */
-  static readonly AddCommentPath = '/api/finding/{id}/comment';
+  static readonly AddCommentPath = '/api/finding/{findingId}/comment';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -246,7 +246,7 @@ export class FindingService extends BaseService {
   }
 
   /** Path part for operation `createTicket()` */
-  static readonly CreateTicketPath = '/api/finding/{id}/ticket';
+  static readonly CreateTicketPath = '/api/finding/{findingId}/ticket';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -271,7 +271,7 @@ export class FindingService extends BaseService {
   }
 
   /** Path part for operation `deleteTicket()` */
-  static readonly DeleteTicketPath = '/api/finding/{id}/ticket';
+  static readonly DeleteTicketPath = '/api/finding/{findingId}/ticket';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -320,27 +320,27 @@ export class FindingService extends BaseService {
     );
   }
 
-  /** Path part for operation `getFindingCategories()` */
-  static readonly GetFindingCategoriesPath = '/api/finding/category';
+  /** Path part for operation `listFindingCategory()` */
+  static readonly ListFindingCategoryPath = '/api/finding/category';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getFindingCategories()` instead.
+   * To access only the response body, use `listFindingCategory()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getFindingCategories$Response(params?: GetFindingCategories$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
-    return getFindingCategories(this.http, this.rootUrl, params, context);
+  listFindingCategory$Response(params?: ListFindingCategory$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+    return listFindingCategory(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getFindingCategories$Response()` instead.
+   * To access the full response (for headers, for example), `listFindingCategory$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getFindingCategories(params?: GetFindingCategories$Params, context?: HttpContext): Observable<Array<string>> {
-    return this.getFindingCategories$Response(params, context).pipe(
+  listFindingCategory(params?: ListFindingCategory$Params, context?: HttpContext): Observable<Array<string>> {
+    return this.listFindingCategory$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
     );
   }

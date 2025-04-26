@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using Aguacongas.AspNetCore.Authentication.EntityFramework;
 using CodeSecure.Core.Entity;
-using CodeSecure.Core.EntityFramework;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using EnvironmentName = CodeSecure.Core.Entity.EnvironmentName;

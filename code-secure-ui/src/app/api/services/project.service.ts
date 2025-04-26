@@ -13,8 +13,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { addMember } from '../fn/project/add-member';
 import { AddMember$Params } from '../fn/project/add-member';
-import { createProjectTicket } from '../fn/project/create-project-ticket';
-import { CreateProjectTicket$Params } from '../fn/project/create-project-ticket';
+import { createProjectPackageTicket } from '../fn/project/create-project-package-ticket';
+import { CreateProjectPackageTicket$Params } from '../fn/project/create-project-package-ticket';
 import { deleteProjectMember } from '../fn/project/delete-project-member';
 import { DeleteProjectMember$Params } from '../fn/project/delete-project-member';
 import { deleteProjectTicket } from '../fn/project/delete-project-ticket';
@@ -31,8 +31,8 @@ import { getJiraIntegrationProject } from '../fn/project/get-jira-integration-pr
 import { GetJiraIntegrationProject$Params } from '../fn/project/get-jira-integration-project';
 import { getMailIntegrationProject } from '../fn/project/get-mail-integration-project';
 import { GetMailIntegrationProject$Params } from '../fn/project/get-mail-integration-project';
-import { getProjectCommits } from '../fn/project/get-project-commits';
-import { GetProjectCommits$Params } from '../fn/project/get-project-commits';
+import { getProjectByFilter } from '../fn/project/get-project-by-filter';
+import { GetProjectByFilter$Params } from '../fn/project/get-project-by-filter';
 import { getProjectCommitScanSummary } from '../fn/project/get-project-commit-scan-summary';
 import { GetProjectCommitScanSummary$Params } from '../fn/project/get-project-commit-scan-summary';
 import { getProjectInfo } from '../fn/project/get-project-info';
@@ -41,8 +41,6 @@ import { getProjectPackageDetail } from '../fn/project/get-project-package-detai
 import { GetProjectPackageDetail$Params } from '../fn/project/get-project-package-detail';
 import { getProjectPackages } from '../fn/project/get-project-packages';
 import { GetProjectPackages$Params } from '../fn/project/get-project-packages';
-import { getProjects } from '../fn/project/get-projects';
-import { GetProjects$Params } from '../fn/project/get-projects';
 import { getProjectScans } from '../fn/project/get-project-scans';
 import { GetProjectScans$Params } from '../fn/project/get-project-scans';
 import { getProjectStatistic } from '../fn/project/get-project-statistic';
@@ -61,6 +59,8 @@ import { JiraProject } from '../models/jira-project';
 import { JiraProjectSetting } from '../models/jira-project-setting';
 import { listJiraProjects } from '../fn/project/list-jira-projects';
 import { ListJiraProjects$Params } from '../fn/project/list-jira-projects';
+import { listProjectCommit } from '../fn/project/list-project-commit';
+import { ListProjectCommit$Params } from '../fn/project/list-project-commit';
 import { ProjectAlertEvent } from '../models/project-alert-event';
 import { ProjectCommitScanSummaryPage } from '../models/project-commit-scan-summary-page';
 import { ProjectCommitSummary } from '../models/project-commit-summary';
@@ -103,27 +103,27 @@ export class ProjectService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getProjects()` */
-  static readonly GetProjectsPath = '/api/project/filter';
+  /** Path part for operation `getProjectByFilter()` */
+  static readonly GetProjectByFilterPath = '/api/project/filter';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getProjects()` instead.
+   * To access only the response body, use `getProjectByFilter()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getProjects$Response(params?: GetProjects$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSummaryPage>> {
-    return getProjects(this.http, this.rootUrl, params, context);
+  getProjectByFilter$Response(params?: GetProjectByFilter$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectSummaryPage>> {
+    return getProjectByFilter(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getProjects$Response()` instead.
+   * To access the full response (for headers, for example), `getProjectByFilter$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  getProjects(params?: GetProjects$Params, context?: HttpContext): Observable<ProjectSummaryPage> {
-    return this.getProjects$Response(params, context).pipe(
+  getProjectByFilter(params?: GetProjectByFilter$Params, context?: HttpContext): Observable<ProjectSummaryPage> {
+    return this.getProjectByFilter$Response(params, context).pipe(
       map((r: StrictHttpResponse<ProjectSummaryPage>): ProjectSummaryPage => r.body)
     );
   }
@@ -228,27 +228,27 @@ export class ProjectService extends BaseService {
     );
   }
 
-  /** Path part for operation `getProjectCommits()` */
-  static readonly GetProjectCommitsPath = '/api/project/{projectId}/commit';
+  /** Path part for operation `listProjectCommit()` */
+  static readonly ListProjectCommitPath = '/api/project/{projectId}/commit';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getProjectCommits()` instead.
+   * To access only the response body, use `listProjectCommit()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getProjectCommits$Response(params: GetProjectCommits$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectCommitSummary>>> {
-    return getProjectCommits(this.http, this.rootUrl, params, context);
+  listProjectCommit$Response(params: ListProjectCommit$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProjectCommitSummary>>> {
+    return listProjectCommit(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getProjectCommits$Response()` instead.
+   * To access the full response (for headers, for example), `listProjectCommit$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getProjectCommits(params: GetProjectCommits$Params, context?: HttpContext): Observable<Array<ProjectCommitSummary>> {
-    return this.getProjectCommits$Response(params, context).pipe(
+  listProjectCommit(params: ListProjectCommit$Params, context?: HttpContext): Observable<Array<ProjectCommitSummary>> {
+    return this.listProjectCommit$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<ProjectCommitSummary>>): Array<ProjectCommitSummary> => r.body)
     );
   }
@@ -675,27 +675,27 @@ export class ProjectService extends BaseService {
     );
   }
 
-  /** Path part for operation `createProjectTicket()` */
-  static readonly CreateProjectTicketPath = '/api/project/{projectId}/package/{packageId}/ticket';
+  /** Path part for operation `createProjectPackageTicket()` */
+  static readonly CreateProjectPackageTicketPath = '/api/project/{projectId}/package/{packageId}/ticket';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `createProjectTicket()` instead.
+   * To access only the response body, use `createProjectPackageTicket()` instead.
    *
    * This method doesn't expect any request body.
    */
-  createProjectTicket$Response(params: CreateProjectTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<Tickets>> {
-    return createProjectTicket(this.http, this.rootUrl, params, context);
+  createProjectPackageTicket$Response(params: CreateProjectPackageTicket$Params, context?: HttpContext): Observable<StrictHttpResponse<Tickets>> {
+    return createProjectPackageTicket(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `createProjectTicket$Response()` instead.
+   * To access the full response (for headers, for example), `createProjectPackageTicket$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  createProjectTicket(params: CreateProjectTicket$Params, context?: HttpContext): Observable<Tickets> {
-    return this.createProjectTicket$Response(params, context).pipe(
+  createProjectPackageTicket(params: CreateProjectPackageTicket$Params, context?: HttpContext): Observable<Tickets> {
+    return this.createProjectPackageTicket$Response(params, context).pipe(
       map((r: StrictHttpResponse<Tickets>): Tickets => r.body)
     );
   }

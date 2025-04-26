@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using CodeSecure.Application.Module.Integration.Jira;
 using CodeSecure.Application.Module.Integration.Jira.Client;
 using CodeSecure.Authentication;
-using CodeSecure.Core.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSecure.Api.Integration;
@@ -21,19 +19,17 @@ public class JiraIntegrationController(IJiraSettingService jiraSettingService) :
 
     [HttpPost]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<bool> UpdateJiraIntegrationSetting([FromBody] JiraSetting request)
+    public Task<bool> UpdateJiraIntegrationSetting([FromBody] JiraSetting request)
     {
-        var result = await jiraSettingService.UpdateSettingAsync(request);
-        return result.GetResult();
+        return jiraSettingService.UpdateSettingAsync(request);
     }
 
     [HttpPost]
     [Route("test")]
     [Permission(PermissionType.Config, PermissionAction.Update)]
-    public async Task<bool> TestJiraIntegrationSetting()
+    public Task<bool> TestJiraIntegrationSetting()
     {
-        var result = await jiraSettingService.TestConnectionAsync();
-        return result.GetResult();
+        return jiraSettingService.TestConnectionAsync();
     }
 
     [HttpPost]
@@ -53,9 +49,13 @@ public class JiraIntegrationController(IJiraSettingService jiraSettingService) :
 
     [HttpPost]
     [Route("issue-types")]
-    //[Permission(PermissionType.Config, PermissionAction.Read)]
-    public async Task<List<string>> GetJiraIssueTypes([Required] string projectKey)
+    public async Task<List<string>> GetJiraIssueTypes(string? projectKey)
     {
+        if (string.IsNullOrEmpty(projectKey))
+        {
+            return [];
+        }
+
         var jiraSetting = await jiraSettingService.GetSettingAsync();
         return await new JiraClient(new JiraConnection
         {

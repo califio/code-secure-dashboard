@@ -10,10 +10,10 @@ import { RequestBuilder } from '../../request-builder';
 
 
 export interface GetJiraIssueTypes$Params {
-  projectKey: string;
+  projectKey?: string;
 }
 
-export function getJiraIssueTypes(http: HttpClient, rootUrl: string, params: GetJiraIssueTypes$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+export function getJiraIssueTypes(http: HttpClient, rootUrl: string, params?: GetJiraIssueTypes$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
   const rb = new RequestBuilder(rootUrl, getJiraIssueTypes.PATH, 'post');
   if (params) {
     rb.query('projectKey', params.projectKey, {"style":"form"});

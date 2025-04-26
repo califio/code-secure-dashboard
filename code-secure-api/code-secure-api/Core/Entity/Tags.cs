@@ -1,4 +1,3 @@
-using CodeSecure.Core.EntityFramework;
 using CodeSecure.Core.Enum;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,5 @@
-using CodeSecure.Api.CI.Model;
-using CodeSecure.Api.CI.Service;
+using CodeSecure.Application.Module.Ci;
+using CodeSecure.Application.Module.Ci.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,14 +24,14 @@ public class CiController(ICiService ciService)
     [Route("scan")]
     public async Task<CiScanInfo> InitCiScan(CiScanRequest request)
     {
-        return await ciService.InitScan(request);
+        return await ciService.CreateCiScanAsync(request);
     }
 
     [HttpPut]
     [Route("scan/{scanId:guid}")]
     public async Task UpdateCiScan(Guid scanId, UpdateCiScanRequest request)
     {
-        await ciService.UpdateScan(scanId, request);
+        await ciService.UpdateCiScanAsync(scanId, request);
     }
 
     [HttpPost]
@@ -45,6 +45,6 @@ public class CiController(ICiService ciService)
     [Route("dependency")]
     public async Task<ScanDependencyResult> UploadCiDependency(CiUploadDependencyRequest request)
     {
-        return await ciService.UploadDependency(request);
+        return await ciService.PushCiDependencyAsync(request);
     }
 }

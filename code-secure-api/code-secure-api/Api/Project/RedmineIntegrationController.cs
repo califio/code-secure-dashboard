@@ -18,7 +18,7 @@ public class RedmineIntegrationController(
     [Route("{projectId:guid}/integration/redmine")]
     public async Task<RedmineProjectSetting> GetRedmineIntegrationProject(Guid projectId)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await redmineProjectIntegrationSetting.GetSettingAsync(projectId);
         return result.GetResult();
     }
@@ -27,7 +27,7 @@ public class RedmineIntegrationController(
     [Route("{projectId:guid}/integration/redmine")]
     public async Task<bool> UpdateRedmineIntegrationProject(Guid projectId, [FromBody] RedmineProjectSetting request)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await redmineProjectIntegrationSetting.UpdateSettingAsync(projectId, request);
         return result.GetResult();
     }
@@ -36,7 +36,7 @@ public class RedmineIntegrationController(
     [Route("{projectId:guid}/integration/redmine/metadata")]
     public async Task<RedmineMetadata> GetRedmineMetadata(Guid projectId, bool reload)
     {
-        projectAuthorize.Authorize(projectId, CurrentUser(), PermissionAction.Update);
+        projectAuthorize.Authorize(projectId, CurrentUser, PermissionAction.Update);
         var result = await redmineProjectIntegrationSetting.GetRedmineMetadataAsync(reload);
         return result.GetResult();
     }

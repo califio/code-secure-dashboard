@@ -1,6 +1,5 @@
 using CodeSecure.Authentication.OpenIdConnect;
 using CodeSecure.Core.Entity;
-using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +7,7 @@ namespace CodeSecure.Application.Module.Setting;
 
 public static class SettingExtension
 {
+    
     public static async Task<AppSettings> GetAppSettingsAsync(this AppDbContext context)
     {
         var config = await context.AppSettings.OrderBy(record => record.Id).FirstOrDefaultAsync();
@@ -41,6 +41,5 @@ public static class SettingExtension
         await context.SaveChangesAsync();
         return config;
     }
-    
     
 }

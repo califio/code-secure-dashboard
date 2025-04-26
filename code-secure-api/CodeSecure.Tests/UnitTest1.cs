@@ -1,4 +1,3 @@
-using CodeSecure.Api.CI.Model;
 using CodeSecure.Core.Extension;
 using CodeSecure.Core.Utils;
 

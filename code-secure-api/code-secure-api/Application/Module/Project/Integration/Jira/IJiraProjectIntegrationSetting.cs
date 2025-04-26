@@ -1,6 +1,5 @@
 using CodeSecure.Application.Module.Integration.Jira;
 using CodeSecure.Application.Module.Integration.Jira.Client;
-using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Core.Utils;
 using FluentResults;
 using FluentResults.Extensions;

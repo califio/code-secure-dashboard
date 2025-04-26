@@ -1,11 +1,10 @@
 import {Component, effect, input} from '@angular/core';
-import {UserInfo} from '../../../api/models/user-info';
 import {UserStore} from '../user.store';
 import {UpdateUserRequest} from '../../../api/models/update-user-request';
 import {UserService} from '../../../api/services/user.service';
 import {finalize} from 'rxjs';
 import {ToastrService} from '../../../shared/services/toastr.service';
-import {UserStatus} from '../../../api/models';
+import {UserDetail, UserStatus} from '../../../api/models';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
 import {Dialog} from 'primeng/dialog';
@@ -28,7 +27,7 @@ import {ToggleSwitch} from 'primeng/toggleswitch';
   templateUrl: './update-user-popup.component.html',
 })
 export class UpdateUserPopupComponent {
-  user = input<UserInfo>();
+  user = input<UserDetail>();
   userId: string = '';
   body: UpdateUserRequest = {
     email: undefined, fullName: undefined, role: undefined, status: undefined, verified: undefined

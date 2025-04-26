@@ -14,7 +14,6 @@ import { StrictHttpResponse } from '../strict-http-response';
 import { AuthConfig } from '../models/auth-config';
 import { confirmEmail } from '../fn/auth/confirm-email';
 import { ConfirmEmail$Params } from '../fn/auth/confirm-email';
-import { ConfirmEmailResponse } from '../models/confirm-email-response';
 import { forgotPassword } from '../fn/auth/forgot-password';
 import { ForgotPassword$Params } from '../fn/auth/forgot-password';
 import { getAuthConfig } from '../fn/auth/get-auth-config';
@@ -25,8 +24,6 @@ import { logout } from '../fn/auth/logout';
 import { Logout$Params } from '../fn/auth/logout';
 import { refreshToken } from '../fn/auth/refresh-token';
 import { RefreshToken$Params } from '../fn/auth/refresh-token';
-import { renderMail } from '../fn/auth/render-mail';
-import { RenderMail$Params } from '../fn/auth/render-mail';
 import { resetPassword } from '../fn/auth/reset-password';
 import { ResetPassword$Params } from '../fn/auth/reset-password';
 import { SignInResponse } from '../models/sign-in-response';
@@ -35,31 +32,6 @@ import { SignInResponse } from '../models/sign-in-response';
 export class AuthService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
-  }
-
-  /** Path part for operation `renderMail()` */
-  static readonly RenderMailPath = '/api/render-mail';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `renderMail()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  renderMail$Response(params?: RenderMail$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
-    return renderMail(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `renderMail$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  renderMail(params?: RenderMail$Params, context?: HttpContext): Observable<string> {
-    return this.renderMail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<string>): string => r.body)
-    );
   }
 
   /** Path part for operation `getAuthConfig()` */
@@ -171,7 +143,7 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  forgotPassword$Response(params?: ForgotPassword$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  forgotPassword$Response(params?: ForgotPassword$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return forgotPassword(this.http, this.rootUrl, params, context);
   }
 
@@ -181,9 +153,9 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  forgotPassword(params?: ForgotPassword$Params, context?: HttpContext): Observable<void> {
+  forgotPassword(params?: ForgotPassword$Params, context?: HttpContext): Observable<boolean> {
     return this.forgotPassword$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 
@@ -196,7 +168,7 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  resetPassword$Response(params?: ResetPassword$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  resetPassword$Response(params?: ResetPassword$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return resetPassword(this.http, this.rootUrl, params, context);
   }
 
@@ -206,9 +178,9 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  resetPassword(params?: ResetPassword$Params, context?: HttpContext): Observable<void> {
+  resetPassword(params?: ResetPassword$Params, context?: HttpContext): Observable<boolean> {
     return this.resetPassword$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 
@@ -221,7 +193,7 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  confirmEmail$Response(params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<ConfirmEmailResponse>> {
+  confirmEmail$Response(params?: ConfirmEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<boolean>> {
     return confirmEmail(this.http, this.rootUrl, params, context);
   }
 
@@ -231,9 +203,9 @@ export class AuthService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  confirmEmail(params?: ConfirmEmail$Params, context?: HttpContext): Observable<ConfirmEmailResponse> {
+  confirmEmail(params?: ConfirmEmail$Params, context?: HttpContext): Observable<boolean> {
     return this.confirmEmail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ConfirmEmailResponse>): ConfirmEmailResponse => r.body)
+      map((r: StrictHttpResponse<boolean>): boolean => r.body)
     );
   }
 

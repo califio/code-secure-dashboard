@@ -8,7 +8,6 @@ import {finalize} from 'rxjs';
 import {AppFloatingConfigurator} from '../../../layout/component/app.floatingconfigurator';
 import {Button} from 'primeng/button';
 import {NgIcon} from '@ng-icons/core';
-import {ConfirmEmailResponse} from '../../../api/models/confirm-email-response';
 
 @Component({
   selector: 'app-confirm-email',
@@ -27,7 +26,7 @@ export class ConfirmEmailComponent {
     token: '',
     username: ''
   }
-  result: ConfirmEmailResponse = {};
+  success = false;
   loading = false;
 
   constructor(
@@ -41,7 +40,7 @@ export class ConfirmEmailComponent {
     }).pipe(
       finalize(() => this.loading = false)
     ).subscribe(result => {
-      this.result = result;
+      this.success = result;
     })
   }
 }

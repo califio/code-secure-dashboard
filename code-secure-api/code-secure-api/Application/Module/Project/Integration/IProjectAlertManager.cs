@@ -3,7 +3,6 @@ using CodeSecure.Application.Module.Integration.Mail;
 using CodeSecure.Application.Module.Integration.Teams;
 using CodeSecure.Application.Module.Project.Integration.Mail;
 using CodeSecure.Application.Module.Project.Integration.Teams;
-using CodeSecure.Application.Module.Project.Setting;
 using CodeSecure.Application.Services;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;

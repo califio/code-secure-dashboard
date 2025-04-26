@@ -1,13 +1,13 @@
 using CodeSecure.Application.Module.Integration.Teams.Client;
-using FluentResults;
+using CodeSecure.Core.Extension;
 
 namespace CodeSecure.Application.Module.Integration.Teams;
 
 public interface ITeamsAlertSettingService
 {
     Task<TeamsAlertSetting> GetSettingAsync();
-    Task<Result<bool>> UpdateSettingAsync(TeamsAlertSetting alertSetting);
-    Task<Result<bool>> TestConnectionAsync();
+    Task<bool> UpdateSettingAsync(TeamsAlertSetting alertSetting);
+    Task<bool> TestConnectionAsync();
 }
 
 public class TeamsAlertSettingService(AppDbContext context) : ITeamsAlertSettingService
@@ -17,14 +17,15 @@ public class TeamsAlertSettingService(AppDbContext context) : ITeamsAlertSetting
         return context.GetTeamsAlertSettingAsync();
     }
 
-    public async Task<Result<bool>> UpdateSettingAsync(TeamsAlertSetting request)
+    public async Task<bool> UpdateSettingAsync(TeamsAlertSetting request)
     {
         return await context.UpdateTeamsAlertSettingAsync(request);
     }
 
-    public async Task<Result<bool>> TestConnectionAsync()
+    public async Task<bool> TestConnectionAsync()
     {
         var currentSetting = await GetSettingAsync();
-        return await new TeamsClient(currentSetting.Webhook).TestConnectionAsync();
+        var result = await new TeamsClient(currentSetting.Webhook).TestConnectionAsync();
+        return result.GetResult();
     }
 }

@@ -41,7 +41,7 @@ public class TicketTrackerManager : ITicketTrackerManager
     public async Task CreateTicketAsync(Findings finding)
     {
         var project = context.Projects.First(record => record.Id == finding.ProjectId);
-        var scanner = (await context.FindScannerByIdAsync(finding.ScannerId)).GetResult();
+        var scanner = (await context.GetScannerByIdAsync(finding.ScannerId)).GetResult();
         var scanFinding = await context.ScanFindings
             .Include(record => record.Scan!)
             .OrderByDescending(record => record.Scan!.CompletedAt)

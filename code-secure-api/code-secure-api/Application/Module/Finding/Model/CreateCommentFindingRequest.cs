@@ -1,12 +1,9 @@
-using System.Text.Json.Serialization;
-using CodeSecure.Authentication.Jwt;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeSecure.Application.Module.Finding.Model;
 
 public record CreateCommentFindingRequest
 {
-    public Guid FindingId { get; set; }
+    [Required]
     public required string Comment { get; set; }
-    [JsonIgnore] 
-    public required JwtUserClaims CurrentUser { get; set; }
 }

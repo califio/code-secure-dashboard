@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using CodeSecure.Core.EntityFramework;
 using CodeSecure.Core.Enum;
 
@@ -21,8 +20,4 @@ public record FindingFilter : QueryFilter
     public DateTime? StartFixedAt { get; set; }
     public DateTime? EndFixedAt { get; set; }
     public FindingSortField SortBy { get; set; } = FindingSortField.CreatedAt;
-    [JsonIgnore]    
-    public bool CanReadAllFinding {get; set;}
-    [JsonIgnore]
-    public Guid CurrentUserId {get; set;}
 }
