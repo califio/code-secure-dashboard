@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CodeSecure.Application.Module.Ci.Model;
 
-public record CiUploadDependencyRequest
+public record UploadCiDependencyRequest
 {
     [Required] 
     public required Guid ScanId { get; set; }

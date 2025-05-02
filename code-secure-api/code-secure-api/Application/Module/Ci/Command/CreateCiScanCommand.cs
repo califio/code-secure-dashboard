@@ -58,6 +58,7 @@ public class CreateCiScanCommand(AppDbContext context)
         }
 
         var commit = await commitQuery.FirstOrDefaultAsync();
+        string? lastCommitSha = null;
         if (commit == null)
         {
             commit = new GitCommits
@@ -77,6 +78,7 @@ public class CreateCiScanCommand(AppDbContext context)
         }
         else
         {
+            lastCommitSha = commit.CommitHash;
             commit.CommitHash = request.CommitHash;
             commit.CommitTitle = request.ScanTitle;
             context.ProjectCommits.Update(commit);
@@ -106,6 +108,10 @@ public class CreateCiScanCommand(AppDbContext context)
         }
         else
         {
+            if (scan.Status != ScanStatus.Completed)
+            {
+                lastCommitSha = null;
+            }
             scan.JobUrl = request.JobUrl;
             scan.StartedAt = DateTime.UtcNow;
             scan.CompletedAt = null;
@@ -119,7 +125,8 @@ public class CreateCiScanCommand(AppDbContext context)
         return new CiScanInfo
         {
             ScanId = scan.Id,
-            ScanUrl = $"{Configuration.FrontendUrl}/#/project/{scan.ProjectId}/scan"
+            ScanUrl = $"{Configuration.FrontendUrl}/#/project/{scan.ProjectId}/overview",
+            LastCommitSha = lastCommitSha
         };
     }
 }

@@ -36,14 +36,14 @@ public class CiController(ICiService ciService)
 
     [HttpPost]
     [Route("finding")]
-    public async Task<CiUploadFindingResponse> UploadCiFinding(CiUploadFindingRequest request)
+    public async Task<UploadCiFindingResponse> UploadCiFinding(UploadCiFindingRequest request)
     {
         return await ciService.UploadFinding(request);
     }
 
     [HttpPost]
     [Route("dependency")]
-    public async Task<ScanDependencyResult> UploadCiDependency(CiUploadDependencyRequest request)
+    public async Task<ScanDependencyResult> UploadCiDependency(UploadCiDependencyRequest request)
     {
         return await ciService.PushCiDependencyAsync(request);
     }

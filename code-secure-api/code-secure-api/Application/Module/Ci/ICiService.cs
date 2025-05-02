@@ -9,8 +9,8 @@ public interface ICiService
     Task<CiScanInfo> CreateCiScanAsync(CiScanRequest request);
     Task<bool> UpdateCiScanAsync(Guid scanId, UpdateCiScanRequest request);
 
-    Task<CiUploadFindingResponse> UploadFinding(CiUploadFindingRequest request);
-    Task<ScanDependencyResult> PushCiDependencyAsync(CiUploadDependencyRequest request);
+    Task<UploadCiFindingResponse> UploadFinding(UploadCiFindingRequest request);
+    Task<ScanDependencyResult> PushCiDependencyAsync(UploadCiDependencyRequest request);
 }
 
 public class CiService(
@@ -30,13 +30,13 @@ public class CiService(
             .ExecuteAsync(scanId, request)).GetResult();
     }
 
-    public async Task<CiUploadFindingResponse> UploadFinding(CiUploadFindingRequest request)
+    public async Task<UploadCiFindingResponse> UploadFinding(UploadCiFindingRequest request)
     {
         return (await new PushCiFindingCommand(serviceProvider)
             .ExecuteAsync(request)).GetResult();
     }
 
-    public Task<ScanDependencyResult> PushCiDependencyAsync(CiUploadDependencyRequest request)
+    public Task<ScanDependencyResult> PushCiDependencyAsync(UploadCiDependencyRequest request)
     {
         return new PushCiDependencyCommand(context).ExecuteAsync(request);
     }

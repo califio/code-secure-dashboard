@@ -13,7 +13,7 @@ namespace CodeSecure.Application.Module.Ci.Command;
 
 public class PushCiDependencyCommand(AppDbContext context)
 {
-    public async Task<ScanDependencyResult> ExecuteAsync(CiUploadDependencyRequest request)
+    public async Task<ScanDependencyResult> ExecuteAsync(UploadCiDependencyRequest request)
     {
         var scan = await context.Scans
             .Include(scan => scan.Scanner)

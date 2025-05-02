@@ -13,7 +13,7 @@ public record CiScanRequest
     [HttpUrl]
     public required string RepoUrl { get; set; }
 
-    [Required] public required string RepoName { get; set; }
+    public string RepoName { get; set; } = string.Empty;
 
     [Required] public required CommitType GitAction { get; set; }
 
@@ -30,7 +30,7 @@ public record CiScanRequest
 
     [Required] public required ScannerType Type { get; set; }
 
-    [Required] public required string JobUrl { get; set; }
+    public string JobUrl { get; set; } = string.Empty;
 
     public required bool IsDefault { get; set; }
     public string? ContainerImage { get; set; }

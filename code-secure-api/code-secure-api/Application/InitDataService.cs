@@ -143,7 +143,7 @@ public class InitDataService(
                 IsDefault = false,
             });
             logger.LogInformation("Init scan semgrep: " + scanInfo.ScanId);
-            await ciService.UploadFinding(new CiUploadFindingRequest
+            await ciService.UploadFinding(new UploadCiFindingRequest
             {
                 ScanId = scanInfo.ScanId,
                 Findings =
@@ -240,7 +240,7 @@ public class InitDataService(
                 IsDefault = false,
             });
             logger.LogInformation("Init scan trivy: " + scanInfo.ScanId);
-            await ciService.PushCiDependencyAsync(new CiUploadDependencyRequest
+            await ciService.PushCiDependencyAsync(new UploadCiDependencyRequest
             {
                 ScanId = scanInfo.ScanId,
                 Packages =

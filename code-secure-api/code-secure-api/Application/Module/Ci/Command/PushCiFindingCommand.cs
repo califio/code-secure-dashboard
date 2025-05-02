@@ -26,7 +26,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
     private readonly IGlobalAlertManager globalAlertManager  = serviceProvider.GetRequiredService<IGlobalAlertManager>();
     private readonly IJiraWebHookService jiraWebHookService  = serviceProvider.GetRequiredService<IJiraWebHookService>();
     
-    public async Task<Result<CiUploadFindingResponse>> ExecuteAsync(CiUploadFindingRequest request)
+    public async Task<Result<UploadCiFindingResponse>> ExecuteAsync(UploadCiFindingRequest request)
     {
         var scan = await context.Scans
             .Include(scan => scan.Scanner)
@@ -124,10 +124,21 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         var fixedBranchFindings = currentBranchFindings
             .Where(finding => 
                 inputFindings.Any(inputFinding => inputFinding.Identity == finding.Identity) == false &&
-                disableRules.Contains(finding.RuleId) == false
+                finding.RuleId != null && disableRules.Contains(finding.RuleId) == false
             )
             .ToList();
-
+        if (request.Strategy == ScanStrategy.ChangedFileOnly)
+        {
+            var deletedFiles = request.ChangedFiles
+                .Where(x => x.Status == ChangedFileStatus.Delete)
+                .Select(x => x.From).ToHashSet();
+            var addedOrModifiedFiles = request.ChangedFiles
+                .Where(x => x.Status != ChangedFileStatus.Delete)
+                .Select(x => x.To).ToHashSet();
+            fixedBranchFindings = fixedBranchFindings
+                .Where(x => deletedFiles.Contains(x.Location) || addedOrModifiedFiles.Contains(x.Location))
+                .ToList();
+        }
         #region Handle Finding
         #region Handle New Finding
         foreach (var finding in newBranchFindings)
@@ -145,9 +156,9 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
                 context.FindingActivities.Add(FindingActivities.OpenFinding(finding.Id, scan.CommitId));
                 await context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
+                // ignored
             }
         }
         #endregion
@@ -213,12 +224,12 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         var openFindings = knownFindings.Where(finding => finding.Status == FindingStatus.Open).ToList();
         // confirmed findings but is not fixed -> need to fix
         var confirmedFindings = knownFindings.Where(finding => finding.Status == FindingStatus.Confirmed).ToList();
-        var response = new CiUploadFindingResponse
+        var response = new UploadCiFindingResponse
         {
             NewFindings = newBranchFindings.Select(CiFinding.FromFinding),
             FixedFindings = fixedBranchFindings.Select(CiFinding.FromFinding),
             ConfirmedFindings = confirmedFindings.Select(CiFinding.FromFinding),
-            NeedsTriageFindings = openFindings.Select(CiFinding.FromFinding),
+            OpenFindings = openFindings.Select(CiFinding.FromFinding),
             IsBlock = false,
             FindingUrl = $"{FrontendUrlHelper.ProjectFindingUrl(scan.ProjectId)}?commitId={scan.CommitId}&scanner={scan.Scanner?.Name}"
         };
@@ -271,7 +282,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         });
         return response;
     }
-    private bool IsBlock(Guid projectId, CiUploadFindingResponse response, ScannerType scannerType)
+    private bool IsBlock(Guid projectId, UploadCiFindingResponse response, ScannerType scannerType)
     {
         
         var setting = context.GetProjectSettingsAsync(projectId).Result.Value;
@@ -289,7 +300,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         else
         {
             findings.AddRange(response.NewFindings);
-            findings.AddRange(response.NeedsTriageFindings);
+            findings.AddRange(response.OpenFindings);
             findings.AddRange(response.ConfirmedFindings);
         }
 
