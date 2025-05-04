@@ -172,18 +172,6 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         }
         if (request.Strategy == ScanStrategy.ChangedFileOnly)
         {
-            
-            request.ChangedFiles.ForEach(file =>
-            {
-                if (file.Status == ChangedFileStatus.Delete)
-                {
-                    logger.LogInformation($"[{file.Status.ToString()}] {file.From}");
-                }
-                else
-                {
-                    logger.LogInformation($"[{file.Status.ToString()}] {file.To}");
-                }
-            });
             var deletedFiles = request.ChangedFiles
                 .Where(x => x.Status == ChangedFileStatus.Delete)
                 .Select(x => x.From).ToHashSet();

@@ -17,7 +17,6 @@ public class CreateCiScanCommand(AppDbContext context)
 {
     public async Task<Result<CiScanInfo>> ExecuteAsync(CiScanRequest request)
     {
-        Console.WriteLine("Current Commit: " + request.CommitHash);
         if ((request.Type is ScannerType.Sast or ScannerType.Dependency or ScannerType.Secret) == false)
         {
             return Result.Fail($"Not implemented {request.Type.ToString()}");
@@ -118,7 +117,6 @@ public class CreateCiScanCommand(AppDbContext context)
             context.Scans.Update(scan);
         }
         await context.SaveChangesAsync();
-        Console.WriteLine("Last Commit: " + lastCommitSha);
         return new CiScanInfo
         {
             ScanId = scan.Id,
