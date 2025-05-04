@@ -32,8 +32,16 @@ public static class SchedulerExtensions
                 .AddJob<AlertProjectWithoutMemberJob>(projectWithoutMemberJobKey)
                 .AddTrigger(trigger => trigger
                     .ForJob(projectWithoutMemberJobKey)
-                    .WithSimpleSchedule(c => c.WithIntervalInMinutes(1).RepeatForever())
+                    // .WithSimpleSchedule(c => c.WithIntervalInMinutes(1).RepeatForever())
                     .WithCronSchedule("0 0 8 ? * MON")
+                );
+            // remove merge request or tag commit
+            var removeMergeRequestAndTagCommitJobKey = new JobKey(nameof(RemoveMergeRequestAndTagCommitJob));
+            configure
+                .AddJob<RemoveMergeRequestAndTagCommitJob>(removeMergeRequestAndTagCommitJobKey)
+                .AddTrigger(trigger => trigger
+                    .ForJob(removeMergeRequestAndTagCommitJobKey)
+                    .WithSimpleSchedule(c => c.WithIntervalInHours(12).RepeatForever())
                 );
         });
         
