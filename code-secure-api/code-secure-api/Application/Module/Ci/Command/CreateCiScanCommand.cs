@@ -17,6 +17,7 @@ public class CreateCiScanCommand(AppDbContext context)
 {
     public async Task<Result<CiScanInfo>> ExecuteAsync(CiScanRequest request)
     {
+        Console.WriteLine("Current Commit: " + request.CommitHash);
         if ((request.Type is ScannerType.Sast or ScannerType.Dependency or ScannerType.Secret) == false)
         {
             return Result.Fail($"Not implemented {request.Type.ToString()}");
@@ -58,7 +59,6 @@ public class CreateCiScanCommand(AppDbContext context)
         }
 
         var commit = await commitQuery.FirstOrDefaultAsync();
-        string? lastCommitSha = null;
         if (commit == null)
         {
             commit = new GitCommits
@@ -78,13 +78,12 @@ public class CreateCiScanCommand(AppDbContext context)
         }
         else
         {
-            lastCommitSha = commit.CommitHash;
             commit.CommitHash = request.CommitHash;
             commit.CommitTitle = request.ScanTitle;
             context.ProjectCommits.Update(commit);
             await context.SaveChangesAsync();
         }
-
+        string? lastCommitSha = null;
         var scan = await context.Scans.FirstOrDefaultAsync(record =>
             record.ProjectId == project.Id &&
             record.ScannerId == scanner.Id &&
@@ -103,25 +102,23 @@ public class CreateCiScanCommand(AppDbContext context)
                 ProjectId = project.Id,
                 ScannerId = scanner.Id,
                 CommitId = commit.Id,
+                LastCommitHash = request.CommitHash
             };
             context.Scans.Add(scan);
         }
         else
         {
-            if (scan.Status != ScanStatus.Completed)
-            {
-                lastCommitSha = null;
-            }
+            lastCommitSha = scan.Status != ScanStatus.Completed ? null : scan.LastCommitHash;
             scan.JobUrl = request.JobUrl;
             scan.StartedAt = DateTime.UtcNow;
             scan.CompletedAt = null;
             scan.Status = ScanStatus.Running;
             scan.Name = request.ScanTitle;
+            scan.LastCommitHash = request.CommitHash;
             context.Scans.Update(scan);
         }
-
         await context.SaveChangesAsync();
-
+        Console.WriteLine("Last Commit: " + lastCommitSha);
         return new CiScanInfo
         {
             ScanId = scan.Id,

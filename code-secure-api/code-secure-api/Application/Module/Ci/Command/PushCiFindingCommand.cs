@@ -1,4 +1,3 @@
-using CodeSecure.Application.Exceptions;
 using CodeSecure.Application.Helpers;
 using CodeSecure.Application.Module.Ci.Model;
 using CodeSecure.Application.Module.Finding;
@@ -25,6 +24,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
     private readonly IRazorRender render  = serviceProvider.GetRequiredService<IRazorRender>();
     private readonly IGlobalAlertManager globalAlertManager  = serviceProvider.GetRequiredService<IGlobalAlertManager>();
     private readonly IJiraWebHookService jiraWebHookService  = serviceProvider.GetRequiredService<IJiraWebHookService>();
+    private readonly ILogger<PushCiFindingCommand> logger  = serviceProvider.GetRequiredService<ILogger<PushCiFindingCommand>>();
     
     public async Task<Result<UploadCiFindingResponse>> ExecuteAsync(UploadCiFindingRequest request)
     {
@@ -55,26 +55,58 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         }
         List<FindingStatus> activeStatus = [FindingStatus.Open, FindingStatus.Confirmed, FindingStatus.AcceptedRisk];
         // remove false positive finding & disable finding 
-        var identityFalsePositiveFindings = context.Findings
+        var falsePositiveFindings = context.Findings
             .Where(finding =>
                 finding.ProjectId == scan.ProjectId &&
                 finding.ScannerId == scan.ScannerId &&
                 finding.Status == FindingStatus.Incorrect
             )
             .Select(finding => finding.Identity).ToHashSet();
-        var disableRules = context.Rules
+        var disabledRules = context.Rules
             .Where(rule => rule.ScannerId == scan.ScannerId && rule.Status == RuleStatus.Disable)
             .Select(rule => rule.Id).ToHashSet();
-        var inputFindings = request.Findings
+
+        var ciFindings = new List<CiFinding>();
+        var ciFindingsIdentity = new HashSet<string>();
+        request.Findings
             .Where(finding => 
-                identityFalsePositiveFindings.Contains(finding.Identity) == false &&
-                finding.RuleId != null && disableRules.Contains(finding.RuleId) == false
-            ).ToHashSet();
-        // load active scan findings
-        var currentBranchFindings = context.ScanFindings
+                falsePositiveFindings.Contains(finding.Identity) == false &&
+                finding.RuleId != null && disabledRules.Contains(finding.RuleId) == false
+            ).ToList().ForEach(finding =>
+            {
+                ciFindings.Add(finding);
+                ciFindingsIdentity.Add(finding.Identity);
+            });
+        foreach (var finding in ciFindings)
+        {
+            var existFinding = await context.Findings.FirstOrDefaultAsync(x => x.Identity == finding.Identity && x.ProjectId == scan.ProjectId);
+            if (existFinding != null)
+            {
+                existFinding.Description = finding.Description;
+                existFinding.Name = finding.Name;
+                existFinding.Location = finding.Location?.Path;
+                existFinding.Snippet = finding.Location?.Snippet;
+                existFinding.StartLine = finding.Location?.StartLine;
+                existFinding.EndLine = finding.Location?.EndLine;
+                existFinding.StartColumn = finding.Location?.StartColumn;
+                existFinding.EndColumn = finding.Location?.EndColumn;
+                context.Findings.Update(existFinding);
+                await context.SaveChangesAsync();
+            }
+        }
+        // last scan findings 
+        var lastScanFindings = new List<Findings>();
+        var lastScanFindingsIdentity = new HashSet<string>();
+        context.ScanFindings
             .Include(record => record.Finding)
             .Where(record => record.ScanId == scan.Id && activeStatus.Contains(record.Status))
-            .Select(record => record.Finding!).ToHashSet();
+            .Select(record => record.Finding!).ToList()
+            .ForEach(finding =>
+            {
+                lastScanFindings.Add(finding);
+                lastScanFindingsIdentity.Add(finding.Identity);
+            });
+        var targetBranchFindings = new List<Findings>();
         if (scan.Commit!.Type == CommitType.MergeRequest)
         {
             var targetScanId = context.Scans
@@ -90,13 +122,14 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
                 .Select(record => record.Finding!)
                 .ToList().ForEach(finding =>
                 {
-                    currentBranchFindings.Add(finding);
+                    targetBranchFindings.Add(finding);
+                    lastScanFindingsIdentity.Add(finding.Identity);
                 });
         }
         
         // new branch findings 
-        var newBranchFindings = inputFindings
-            .Where(inputFinding => currentBranchFindings.Any(branchFinding => branchFinding.Identity == inputFinding.Identity) == false)
+        var newBranchFindings = ciFindings
+            .Where(ciFinding => lastScanFindingsIdentity.Contains(ciFinding.Identity) == false)
             .Select(newFinding => context.CreateFindingAsync(new Findings
             {
                 Identity = newFinding.Identity,
@@ -121,14 +154,36 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
             .Select(x => x.Value)
             .ToList();
         // fixed branch findings
-        var fixedBranchFindings = currentBranchFindings
+        var fixedBranchFindings = lastScanFindings
             .Where(finding => 
-                inputFindings.Any(inputFinding => inputFinding.Identity == finding.Identity) == false &&
-                finding.RuleId != null && disableRules.Contains(finding.RuleId) == false
+                ciFindingsIdentity.Contains(finding.Identity) == false &&
+                finding.RuleId != null && disabledRules.Contains(finding.RuleId) == false
             )
-            .ToList();
+            .ToHashSet();
+        if (scan.Commit.Type == CommitType.MergeRequest)
+        {
+            targetBranchFindings.Where(finding => 
+                ciFindingsIdentity.Contains(finding.Identity) == false &&
+                finding.RuleId != null && disabledRules.Contains(finding.RuleId) == false
+            ).ToList().ForEach(finding =>
+            {
+                fixedBranchFindings.Add(finding);
+            });
+        }
         if (request.Strategy == ScanStrategy.ChangedFileOnly)
         {
+            
+            request.ChangedFiles.ForEach(file =>
+            {
+                if (file.Status == ChangedFileStatus.Delete)
+                {
+                    logger.LogInformation($"[{file.Status.ToString()}] {file.From}");
+                }
+                else
+                {
+                    logger.LogInformation($"[{file.Status.ToString()}] {file.To}");
+                }
+            });
             var deletedFiles = request.ChangedFiles
                 .Where(x => x.Status == ChangedFileStatus.Delete)
                 .Select(x => x.From).ToHashSet();
@@ -137,7 +192,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
                 .Select(x => x.To).ToHashSet();
             fixedBranchFindings = fixedBranchFindings
                 .Where(x => deletedFiles.Contains(x.Location) || addedOrModifiedFiles.Contains(x.Location))
-                .ToList();
+                .ToHashSet();
         }
         #region Handle Finding
         #region Handle New Finding
@@ -145,20 +200,29 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         {
             try
             {
-                context.ScanFindings.Add(new ScanFindings
+                var newScanFinding = context.ScanFindings.FirstOrDefault(x => x.ScanId == scan.Id && x.FindingId == finding.Id);
+                if (newScanFinding == null)
                 {
-                    ScanId = scan.Id,
-                    FindingId = finding.Id,
-                    Status = finding.Status,
-                    CommitHash = scan.Commit!.CommitHash ?? string.Empty
-                });
-                await context.SaveChangesAsync();
-                context.FindingActivities.Add(FindingActivities.OpenFinding(finding.Id, scan.CommitId));
+                    newScanFinding = new ScanFindings
+                    {
+                        ScanId = scan.Id,
+                        FindingId = finding.Id,
+                        Status = FindingStatus.Open,
+                        CommitHash = scan.Commit!.CommitHash ?? string.Empty
+                    };
+                    context.ScanFindings.Add(newScanFinding);
+                    context.FindingActivities.Add(FindingActivities.OpenFinding(finding.Id, scan.CommitId));
+                }
+                else
+                {
+                    newScanFinding.CommitHash = scan.Commit!.CommitHash ?? newScanFinding.CommitHash;
+                    context.ScanFindings.Update(newScanFinding);
+                }
                 await context.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // ignored
+                logger.LogError(e, e.Message);
             }
         }
         #endregion
@@ -175,7 +239,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
                 );
             // add change status activity of finding on scan
             context.FindingActivities.Add(FindingActivities.FixedFinding(fixedFinding.Id, scan.CommitId));
-            // fixed on default branch or the finding only effected on one branch -> fixed finding
+            // fixed on default branch -> fixed finding
             
             if (scan.Commit.IsDefault || defaultBranches.Contains(scan.Commit.Branch))
             {
@@ -193,7 +257,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
             .Where(record => record.ScanId == scan.Id && record.Status == FindingStatus.Fixed)
             .Select(record => record.Finding!)
             .ToList()
-            .Where(fixedFinding => inputFindings.Any(inputFinding => inputFinding.Identity == fixedFinding.Identity))
+            .Where(fixedFinding => ciFindingsIdentity.Contains(fixedFinding.Identity))
             .ToList();
         foreach (var finding in reopenFindings)
         {
@@ -201,7 +265,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
                 .ExecuteUpdateAsync(setter => setter.SetProperty(record => record.Status, FindingStatus.Confirmed));
             // add reopen activity of finding on scan
             context.FindingActivities.Add(FindingActivities.ReopenFinding(finding.Id, scan.CommitId));
-            if (scan.Commit.IsDefault || context.ScanFindings.Count(record => record.FindingId == finding.Id) == 1)
+            if (scan.Commit.IsDefault || defaultBranches.Contains(scan.Commit.Branch))
             {
                 finding.Status = FindingStatus.Confirmed;
                 finding.FixedAt = null;
@@ -212,8 +276,8 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         #endregion
         #endregion
         // the scan findings that found before
-        var knownFindings = currentBranchFindings
-            .Where(finding => inputFindings.Any(inputFinding => inputFinding.Identity == finding.Identity)).ToList();
+        var knownFindings = lastScanFindings
+            .Where(finding => fixedBranchFindings.Any(fixedFinding => fixedFinding.Identity == finding.Identity) == false).ToList();
         // update latest commit sha to known finding
         foreach (var finding in knownFindings)
         {
@@ -224,6 +288,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
         var openFindings = knownFindings.Where(finding => finding.Status == FindingStatus.Open).ToList();
         // confirmed findings but is not fixed -> need to fix
         var confirmedFindings = knownFindings.Where(finding => finding.Status == FindingStatus.Confirmed).ToList();
+        
         var response = new UploadCiFindingResponse
         {
             NewFindings = newBranchFindings.Select(CiFinding.FromFinding),
@@ -263,7 +328,7 @@ public class PushCiFindingCommand(IServiceProvider serviceProvider)
                 Project = project,
                 Scanner = scan.Scanner,
                 GitCommit = scan.Commit,
-                Findings = fixedBranchFindings,
+                Findings = fixedBranchFindings.ToList(),
             };
             _ = globalAlertManager.AlertFixedFinding(model);
             _ = projectAlertManager.AlertFixedFinding(model);

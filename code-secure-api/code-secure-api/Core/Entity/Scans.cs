@@ -12,6 +12,7 @@ public class Scans : BaseEntity
     public DateTime? CompletedAt { get; set; }
     public required Guid CommitId { get; set; }
     public GitCommits? Commit { get; set; }
+    public string? LastCommitHash { get; set; }
     public required Guid ProjectId { get; set; }
     public Projects? Project { get; set; }
     public required Guid ScannerId { get; set; }
