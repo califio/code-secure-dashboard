@@ -3,6 +3,7 @@ using CodeSecure.Application.Helpers;
 using CodeSecure.Core.Entity;
 using CodeSecure.Core.Enum;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CodeSecure.Application.Module.Integration.JiraWebhook;
 
@@ -24,7 +25,11 @@ public class JiraWebHookService(AppDbContext context, ILogger<JiraWebHookService
             var setting = await context.GetJiraWebhookSettingAsync();
             if (setting.Active)
             {
-                var jiraIssueId = model.GitCommit.CommitTitle?.JiraIssueId();
+                var jiraIssueId = model.GitCommit.Branch.JiraIssueId();
+                if (jiraIssueId.IsNullOrEmpty())
+                {
+                    jiraIssueId = model.GitCommit.CommitTitle?.JiraIssueId();
+                }
                 if (string.IsNullOrEmpty(jiraIssueId))
                 {
                     return;
