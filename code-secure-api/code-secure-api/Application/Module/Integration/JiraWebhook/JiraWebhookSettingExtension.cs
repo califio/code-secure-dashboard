@@ -37,11 +37,11 @@ public static class JiraWebhookSettingExtension
 
     public static string? JiraIssueId(this string title)
     {
-        string pattern = "([A-Z]+-\\d+)";
+        string pattern = "([A-Za-z]+-\\d+)";
         var match = Regex.Match(title, pattern);
         if (match.Success)
         {
-            return match.Groups[1].Value;
+            return match.Groups[1].Value.ToUpper();
         }
 
         return null;
