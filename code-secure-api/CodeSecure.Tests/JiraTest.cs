@@ -2,7 +2,9 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Atlassian.Jira;
+using CodeSecure.Application.Module.Integration.JiraWebhook;
 using CodeSecure.Core.Utils;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CodeSecure.Tests;
 
@@ -23,19 +25,9 @@ public class JiraTest
     [Test]
     public void ExtractJiraIssueIdTest()
     {
-        string title = "feature SEC-01 SEC-02 fix";
-        string pattern = "([A-Z]+-\\d+)";
-
-        var match = Regex.Match(title, pattern);
-        if (match.Success)
-        {
-            string issueId = match.Groups[1].Value;
-            Console.WriteLine($"Found issue ID: {issueId}");
-        }
-        else
-        {
-            Console.WriteLine("No issue ID found.");
-        }
+        string title = "feat/sec-01-fix-sqli";
+        var issueId = title.JiraIssueId();
+        Console.WriteLine(!issueId.IsNullOrEmpty() ? $"Found issue ID: {issueId}" : "No issue ID found.");
     }
 
     [Test]
