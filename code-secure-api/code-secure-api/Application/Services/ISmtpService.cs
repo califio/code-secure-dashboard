@@ -32,12 +32,15 @@ public class SmtpService(SmtpSetting setting) : ISmtpService
         try
         {
             using var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(setting.Name, setting.UserName));
+            message.From.Add(setting.UserName.IsEmail()
+                ? new MailboxAddress(setting.Name, setting.UserName)
+                : new MailboxAddress(setting.Name, setting.Name));
+
             foreach (var email in model.Receivers)
             {
-                if (email.IsEmail())
+                if (MailboxAddress.TryParse(email, out var address))
                 {
-                    message.To.Add(new MailboxAddress(string.Empty, email));
+                    message.To.Add(address);
                 }
             }
 
@@ -48,7 +51,16 @@ public class SmtpService(SmtpSetting setting) : ISmtpService
             {
                 mailClient.ServerCertificateValidationCallback = (s, c, h, e) => true;
             }
-            await mailClient.ConnectAsync(setting.Server, setting.Port, setting.UseSsl);
+
+            if (setting.UseSsl)
+            {
+                await mailClient.ConnectAsync(setting.Server, setting.Port, setting.UseSsl);
+            }
+            else
+            {
+                await mailClient.ConnectAsync(setting.Server, setting.Port);
+            }
+
             await mailClient.AuthenticateAsync(setting.UserName, setting.Password);
             await mailClient.SendAsync(message);
             await mailClient.DisconnectAsync(true);
@@ -56,6 +68,7 @@ public class SmtpService(SmtpSetting setting) : ISmtpService
         }
         catch (Exception e)
         {
+            Console.WriteLine(e.StackTrace);
             return Result.Fail(e.Message);
         }
     }
