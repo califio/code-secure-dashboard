@@ -10,6 +10,8 @@ export interface ProjectPackage {
   location?: string | null;
   name?: string | null;
   packageId?: string;
+  projectId?: string;
+  projectName?: string | null;
   riskImpact?: RiskImpact;
   riskLevel?: RiskLevel;
   type?: string | null;

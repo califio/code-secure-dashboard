@@ -13,4 +13,6 @@ public record ProjectPackageDetailResponse
     public required List<Packages> Dependencies { get; set; }
     public required List<BranchStatusPackage> BranchStatus { get; set; }
     public required Tickets? Ticket { get; set; }
+    public required Guid ProjectId { get; set; }
+    public required string ProjectName { get; set; }
 }

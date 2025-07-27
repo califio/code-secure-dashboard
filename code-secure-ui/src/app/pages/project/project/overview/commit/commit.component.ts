@@ -28,6 +28,7 @@ import {cast} from '../../../../../core/transform';
 import {LayoutService} from '../../../../../layout/layout.service';
 import {FormsModule} from '@angular/forms';
 import {FindingSeverity} from '../../../../../api/models/finding-severity';
+import {updateQueryParams} from '../../../../../core/router';
 
 @Component({
   selector: 'list-commit',
@@ -164,7 +165,8 @@ export class CommitComponent implements OnInit {
   }
 
   onPageChange($event: PaginatorState) {
-    this.filter.page = $event.page;
+    this.filter.page = $event.page! + 1;
+    this.filter.size = $event.rows;
     this.loadCommit();
   }
   onSearchChange() {

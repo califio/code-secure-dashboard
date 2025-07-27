@@ -13,15 +13,43 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { getPackageById } from '../fn/package/get-package-by-id';
 import { GetPackageById$Params } from '../fn/package/get-package-by-id';
+import { getPackagesByFilter } from '../fn/package/get-packages-by-filter';
+import { GetPackagesByFilter$Params } from '../fn/package/get-packages-by-filter';
 import { listPackageDependency } from '../fn/package/list-package-dependency';
 import { ListPackageDependency$Params } from '../fn/package/list-package-dependency';
 import { PackageDetail } from '../models/package-detail';
 import { PackageInfo } from '../models/package-info';
+import { ProjectPackagePage } from '../models/project-package-page';
 
 @Injectable({ providedIn: 'root' })
 export class PackageService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `getPackagesByFilter()` */
+  static readonly GetPackagesByFilterPath = '/api/package/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getPackagesByFilter()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getPackagesByFilter$Response(params?: GetPackagesByFilter$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackagePage>> {
+    return getPackagesByFilter(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getPackagesByFilter$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  getPackagesByFilter(params?: GetPackagesByFilter$Params, context?: HttpContext): Observable<ProjectPackagePage> {
+    return this.getPackagesByFilter$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ProjectPackagePage>): ProjectPackagePage => r.body)
+    );
   }
 
   /** Path part for operation `listPackageDependency()` */

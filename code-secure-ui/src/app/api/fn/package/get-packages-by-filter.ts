@@ -8,15 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ScanDependencyResult } from '../../models/scan-dependency-result';
-import { UploadCiDependencyRequest } from '../../models/upload-ci-dependency-request';
+import { PackageFilter } from '../../models/package-filter';
+import { ProjectPackagePage } from '../../models/project-package-page';
 
-export interface UploadCiDependency$Params {
-      body?: UploadCiDependencyRequest
+export interface GetPackagesByFilter$Params {
+      body?: PackageFilter
 }
 
-export function uploadCiDependency(http: HttpClient, rootUrl: string, params?: UploadCiDependency$Params, context?: HttpContext): Observable<StrictHttpResponse<ScanDependencyResult>> {
-  const rb = new RequestBuilder(rootUrl, uploadCiDependency.PATH, 'post');
+export function getPackagesByFilter(http: HttpClient, rootUrl: string, params?: GetPackagesByFilter$Params, context?: HttpContext): Observable<StrictHttpResponse<ProjectPackagePage>> {
+  const rb = new RequestBuilder(rootUrl, getPackagesByFilter.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -26,9 +26,9 @@ export function uploadCiDependency(http: HttpClient, rootUrl: string, params?: U
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ScanDependencyResult>;
+      return r as StrictHttpResponse<ProjectPackagePage>;
     })
   );
 }
 
-uploadCiDependency.PATH = '/api/ci/dependency';
+getPackagesByFilter.PATH = '/api/package/filter';

@@ -17,6 +17,7 @@ public class GetProjectPackageByFilterCommand(AppDbContext context)
 
         var query = context.ProjectPackages
             .Include(record => record.Package)
+            .Include(record => record.Project)
             .Where(record => record.ProjectId == project.Id);
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -54,6 +55,8 @@ public class GetProjectPackageByFilterCommand(AppDbContext context)
             FixedVersion = record.Package.FixedVersion,
             RiskImpact = record.Package.RiskImpact,
             RiskLevel = record.Package.RiskLevel,
+            ProjectId = record.ProjectId,
+            ProjectName = record.Project!.Name,
         }).OrderBy(filter.SortBy.ToString(), filter.Desc).PageAsync(filter.Page, filter.Size);
     }
 }

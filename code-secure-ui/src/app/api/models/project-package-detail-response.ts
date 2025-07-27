@@ -13,6 +13,8 @@ export interface ProjectPackageDetailResponse {
   ignoreReason?: string | null;
   info?: Packages;
   location?: string | null;
+  projectId?: string;
+  projectName?: string | null;
   status?: PackageStatus;
   ticket?: Tickets;
   vulnerabilities?: Array<Vulnerabilities> | null;

@@ -13,4 +13,6 @@ public record ProjectPackage
     public string? FixedVersion { get; set; }
     public required RiskImpact RiskImpact { get; set; }
     public required RiskLevel RiskLevel { get; set; }
+    public required Guid ProjectId { get; set; }
+    public required string? ProjectName { get; set; }
 }

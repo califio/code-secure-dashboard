@@ -1,0 +1,104 @@
+<div class="flex flex-row w-full gap-4" style="height: calc(100vh - 15rem)">
+  <div class="flex flex-col w-full">
+    <div class="flex flex-wrap p-4 gap-2 items-center justify-between border border-surface">
+      <div class="flex flex-row items-center gap-2 w-full">
+        <!--SEARCH-->
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search"/>
+          <input type="text"
+                 pInputText placeholder="Search..."
+                 [(ngModel)]="store.filter.name"
+                 (keyup.enter)="onSearchChange()"/>
+        </p-iconfield>
+        <!--Status Filter-->
+        <package-status-filter
+          [status]="store.filter.status"
+          (onChange)="onChangeStatus($event)">
+        </package-status-filter>
+        <!--Severity Filter-->
+        <package-severity-filter
+          [severity]="store.filter.severity"
+          (onChange)="onChangeSeverity($event)">
+        </package-severity-filter>
+        <sort-by [options]="sortOptions"
+                 [sortBy]="store.filter.sortBy"
+                 (onChange)="onSortChange($event)"/>
+        <p-button severity="secondary" icon="pi pi-sync" [loading]="store.loading()" (onClick)="onReload()"/>
+      </div>
+    </div>
+    <p-table [loading]="store.loading()" [value]="store.dependencies()" [scrollable]="true"
+             class="w-full overflow-y-auto">
+      <ng-template #body let-dependency>
+        <div
+          class="flex flex-row items-center gap-3 p-4 border-b border-surface hover:bg-surface-100 dark:hover:bg-surface-800">
+          <risk-level-icon [risk]="projectPackage(dependency).riskLevel"
+                           [impact]="projectPackage(dependency).riskImpact"
+                           class="text-xl"></risk-level-icon>
+          <div class="flex flex-row items-center gap-3 cursor-pointer w-full" (click)="onOpenDependency(dependency)">
+            <div class="flex flex-col gap-1 w-full">
+              <div class="flex flex-row items-center gap-2">
+                <div>
+                  {{ getNamePackage(dependency) }}
+                </div>
+                <package-type [packageType]="projectPackage(dependency).type"></package-type>
+              </div>
+              <div class="flex flex-row items-center justify-between w-full">
+                <div class="flex flex-row items-center gap-2">
+                  <span class="text-sm">{{ projectPackage(dependency).location }}</span>
+                  @if (projectPackage(dependency).projectName) {
+                    &#64;
+                    <a [routerLink]="['/project', projectPackage(dependency).projectId, 'overview']">
+                    <span class="underline">{{projectPackage(dependency).projectName}}</span>
+                  </a>
+                  }
+                </div>
+                <div class="flex flex-row items-center gap-2">
+                  @if (projectPackage(dependency).fixedVersion) {
+                    <span class="lowercase">fixed version</span>
+                    <div
+                      class="text-xs border border-surface px-2 py-0.5 rounded-lg w-fit text-[#0B5CAD] bg-[#CBE2F9] dark:bg-[#0B5CAD] dark:text-[#CBE2F9]">
+                      {{ projectPackage(dependency).fixedVersion }}
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-table>
+    <div class="flex flex-row justify-end">
+      <p-paginator class="sticky bottom-0"
+                   (onPageChange)="onPageChange($event)"
+                   [first]="store.firstRecord()"
+                   [rows]="store.pageSize()"
+                   [totalRecords]="store.totalRecords()"
+                   [showCurrentPageReport]="isDesktop"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                   [rowsPerPageOptions]="[10, 20, 50, 100]"/>
+    </div>
+  </div>
+  <div class="hidden lg:block w-720px w-full h-full overflow-y-auto">
+    @if (store.packageDetail() != null) {
+      <package-detail [package]="store.packageDetail()?.info"
+                      [vulnerabilities]="store.packageDetail()?.vulnerabilities"
+                      [dependencies]="store.packageDetail()?.dependencies"
+                      [projectId]="store.packageDetail()?.projectId"
+                      [projectName]="store.packageDetail()?.projectName"
+                      [location]="store.packageDetail()?.location"
+                      [branchStatus]="store.packageDetail()?.branchStatus"
+                      [ticket]="store.packageDetail()?.ticket"
+                      [status]="store.packageDetail()?.status">
+      </package-detail>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-full w-full">
+        @if (store.loadingDependency()) {
+          <ng-icon name="spin" class="animate-spin" size="24"></ng-icon>
+        } @else {
+          <ng-icon name="cursorArrowRays" size="24"></ng-icon>
+          <div>Select dependency to see its details.</div>
+        }
+      </div>
+    }
+  </div>
+</div>

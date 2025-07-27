@@ -11,10 +11,10 @@ export interface CiScanRequest {
   containerImage?: string | null;
   gitAction: CommitType;
   isDefault?: boolean;
-  jobUrl: string;
+  jobUrl?: string | null;
   mergeRequestId?: string | null;
   repoId: string;
-  repoName: string;
+  repoName?: string | null;
   repoUrl: string;
   scanTitle: string;
   scanner: string;

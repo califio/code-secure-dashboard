@@ -11,6 +11,7 @@ public class GetProjectPackageDetailCommand(AppDbContext context)
         var projectPackage = await context.ProjectPackages
             .Include(record => record.Package)
             .Include(record => record.Ticket)
+            .Include(record => record.Project)
             .Where(record => record.ProjectId == projectId && record.PackageId == packageId)
             .FirstOrDefaultAsync();
         if (projectPackage == null)
@@ -56,7 +57,9 @@ public class GetProjectPackageDetailCommand(AppDbContext context)
             BranchStatus = branchStatus,
             Status = projectPackage.Status,
             IgnoreReason = projectPackage.IgnoredReason,
-            Ticket = projectPackage.Ticket
+            Ticket = projectPackage.Ticket,
+            ProjectId = projectPackage.ProjectId,
+            ProjectName = projectPackage.Project!.Name
         };
     }
 }

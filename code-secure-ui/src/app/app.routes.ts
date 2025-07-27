@@ -28,6 +28,10 @@ export const routes: Routes = [
         loadChildren: () => import('./pages/finding/finding.routes').then((x) => x.routes)
       },
       {
+        path: 'dependency',
+        loadComponent: () => import('./pages/dependency/dependency.component').then((x) => x.DependencyComponent)
+      },
+      {
         path: 'user',
         loadComponent: () => import('./pages/user/user.component').then((x) => x.UserComponent)
       },

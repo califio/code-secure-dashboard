@@ -22,6 +22,10 @@ import {ProjectService} from '../../../../api/services/project.service';
 import {TicketMenuComponent} from '../../ticket-menu/ticket-menu.component';
 import {ToastrService} from '../../../services/toastr.service';
 import {finalize} from 'rxjs';
+import {LowerCasePipe} from '@angular/common';
+import {NgIcon} from '@ng-icons/core';
+import {Skeleton} from 'primeng/skeleton';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'package-detail',
@@ -36,6 +40,10 @@ import {finalize} from 'rxjs';
     Message,
     PackageStatusMenuComponent,
     TicketMenuComponent,
+    LowerCasePipe,
+    NgIcon,
+    Skeleton,
+    RouterLink,
   ],
   templateUrl: './package-detail.component.html',
   standalone: true,
@@ -46,6 +54,7 @@ export class PackageDetailComponent {
   vulnerabilities = input([], {transform: transformArrayNotNull<Vulnerabilities>});
   // for package project
   projectId = input<string | null>();
+  projectName = input<string | null>();
   status = input<PackageStatus | null>();
   location = input<string | null>();
   branchStatus = model<BranchStatusPackage[] | null | undefined>();

@@ -8,14 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { CiUploadFindingRequest } from '../../models/ci-upload-finding-request';
-import { CiUploadFindingResponse } from '../../models/ci-upload-finding-response';
+import { UploadCiFindingRequest } from '../../models/upload-ci-finding-request';
+import { UploadCiFindingResponse } from '../../models/upload-ci-finding-response';
 
 export interface UploadCiFinding$Params {
-      body?: CiUploadFindingRequest
+      body?: UploadCiFindingRequest
 }
 
-export function uploadCiFinding(http: HttpClient, rootUrl: string, params?: UploadCiFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<CiUploadFindingResponse>> {
+export function uploadCiFinding(http: HttpClient, rootUrl: string, params?: UploadCiFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<UploadCiFindingResponse>> {
   const rb = new RequestBuilder(rootUrl, uploadCiFinding.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -26,7 +26,7 @@ export function uploadCiFinding(http: HttpClient, rootUrl: string, params?: Uplo
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<CiUploadFindingResponse>;
+      return r as StrictHttpResponse<UploadCiFindingResponse>;
     })
   );
 }

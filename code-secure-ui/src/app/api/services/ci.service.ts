@@ -12,7 +12,6 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { CiScanInfo } from '../models/ci-scan-info';
-import { CiUploadFindingResponse } from '../models/ci-upload-finding-response';
 import { initCiScan } from '../fn/ci/init-ci-scan';
 import { InitCiScan$Params } from '../fn/ci/init-ci-scan';
 import { ping } from '../fn/ci/ping';
@@ -24,6 +23,7 @@ import { uploadCiDependency } from '../fn/ci/upload-ci-dependency';
 import { UploadCiDependency$Params } from '../fn/ci/upload-ci-dependency';
 import { uploadCiFinding } from '../fn/ci/upload-ci-finding';
 import { UploadCiFinding$Params } from '../fn/ci/upload-ci-finding';
+import { UploadCiFindingResponse } from '../models/upload-ci-finding-response';
 
 @Injectable({ providedIn: 'root' })
 export class CiService extends BaseService {
@@ -115,7 +115,7 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  uploadCiFinding$Response(params?: UploadCiFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<CiUploadFindingResponse>> {
+  uploadCiFinding$Response(params?: UploadCiFinding$Params, context?: HttpContext): Observable<StrictHttpResponse<UploadCiFindingResponse>> {
     return uploadCiFinding(this.http, this.rootUrl, params, context);
   }
 
@@ -125,9 +125,9 @@ export class CiService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  uploadCiFinding(params?: UploadCiFinding$Params, context?: HttpContext): Observable<CiUploadFindingResponse> {
+  uploadCiFinding(params?: UploadCiFinding$Params, context?: HttpContext): Observable<UploadCiFindingResponse> {
     return this.uploadCiFinding$Response(params, context).pipe(
-      map((r: StrictHttpResponse<CiUploadFindingResponse>): CiUploadFindingResponse => r.body)
+      map((r: StrictHttpResponse<UploadCiFindingResponse>): UploadCiFindingResponse => r.body)
     );
   }
 
