@@ -33,6 +33,9 @@ public class AppConfig
     [Option(Env = "FRONTEND_URL", Default = "")]
     public string FrontendUrl { get; set; } = string.Empty;
 
+    [Option(Env = "TRUSTED_PROXIES", Default = "127.0.0.1,::1")]
+    public string TrustedProxies { get; set; } = string.Empty;
+
     [JsonIgnore] internal SecurityKey AccessTokenSecurityKey = null!;
     [JsonIgnore] internal SecurityKey RefreshTokenSecurityKey = null!;
 
