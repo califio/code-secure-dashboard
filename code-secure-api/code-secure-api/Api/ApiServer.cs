@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CodeSecure.Application;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Scalar.AspNetCore;
 using Serilog;
+using IPNetwork = Microsoft.AspNetCore.HttpOverrides.IPNetwork;
 
 namespace CodeSecure.Api;
 
@@ -20,7 +23,9 @@ public static class ApiServer
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
-            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost |
+                                       ForwardedHeaders.XForwardedFor;
+            options.AddTrustedProxies(Configuration.TrustedProxies);
         });
         builder.Host.UseSerilog((context, configuration) =>
             configuration.ReadFrom.Configuration(context.Configuration));
@@ -88,6 +93,54 @@ public static class ApiServer
         app.MapControllers();
         app.LoadAuthenticationProviders();
         app.Run();
+    }
+
+    private static void AddTrustedProxies(this ForwardedHeadersOptions options, string trustedProxies)
+    {
+        if (string.IsNullOrWhiteSpace(trustedProxies))
+            return;
+        var proxies = trustedProxies.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var proxy in proxies)
+        {
+            var trimmedProxy = proxy.Trim();
+            // Check if it's a CIDR block
+            if (trimmedProxy.Contains('/'))
+            {
+                if (TryParseIpNetwork(trimmedProxy, out var network, out var prefixLength))
+                {
+                    options.KnownNetworks.Add(new IPNetwork(network, prefixLength));
+                }
+            }
+            // Single IP address
+            else if (IPAddress.TryParse(trimmedProxy, out var ipAddress))
+            {
+                options.KnownProxies.Add(ipAddress);
+            }
+        }
+    }
+
+    private static bool TryParseIpNetwork(string cidr, out IPAddress network, out int prefixLength)
+    {
+        network = IPAddress.None;
+        prefixLength = 0;
+
+        var parts = cidr.Split('/');
+        if (parts.Length != 2)
+            return false;
+
+        if (!IPAddress.TryParse(parts[0], out network))
+            return false;
+
+        if (!int.TryParse(parts[1], out prefixLength))
+            return false;
+
+        // Validate prefix length based on address family
+        var maxPrefixLength = network.AddressFamily == AddressFamily.InterNetwork ? 32 : 128;
+        if (prefixLength < 0 || prefixLength > maxPrefixLength)
+            return false;
+
+        return true;
     }
 }
 
