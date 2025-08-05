@@ -114,7 +114,7 @@ public static class ApiServer
             {
                 if (TryParseIPNetwork(trimmedProxy, out var network, out var prefixLength))
                 {
-                    options.KnownNetworks.Add(new IPNetwork(network, prefixLength));
+                    options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(network, prefixLength));
                 }
             }
             // Single IP address
