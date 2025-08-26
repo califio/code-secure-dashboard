@@ -164,6 +164,9 @@ export class FindingDetailComponent {
     if (this.finding!.project?.sourceType == SourceType.GitLab) {
       return `${this.finding!.project!.repoUrl}/-/blob/${commitSha}/${location.path}#L${location.startLine ?? '1'}`;
     }
+    if (this.finding!.project?.sourceType == SourceType.GitHub) {
+      return `${this.finding!.project!.repoUrl}/blob/${commitSha}/${location.path}#L${location.startLine ?? '1'}`;
+    }
     // todo: support other git
     return '';
   }

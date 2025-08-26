@@ -22,9 +22,6 @@ import {ProjectService} from '../../../../api/services/project.service';
 import {TicketMenuComponent} from '../../ticket-menu/ticket-menu.component';
 import {ToastrService} from '../../../services/toastr.service';
 import {finalize} from 'rxjs';
-import {LowerCasePipe} from '@angular/common';
-import {NgIcon} from '@ng-icons/core';
-import {Skeleton} from 'primeng/skeleton';
 import {RouterLink} from '@angular/router';
 
 @Component({
@@ -40,9 +37,6 @@ import {RouterLink} from '@angular/router';
     Message,
     PackageStatusMenuComponent,
     TicketMenuComponent,
-    LowerCasePipe,
-    NgIcon,
-    Skeleton,
     RouterLink,
   ],
   templateUrl: './package-detail.component.html',
