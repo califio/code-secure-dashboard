@@ -32,4 +32,29 @@ semgrep-sast-scan:
 
 ### GitHub Action
 
-Coming soon
+```yaml
+name: Security Scan
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+env:
+  CODE_SECURE_URL: ${{ vars.CODE_SECURE_URL }}
+  CODE_SECURE_TOKEN: ${{ secrets.CODE_SECURE_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    container: ghcr.io/califio/code-secure-semgrep:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Semgrep Scan
+        run: /analyzer run
+  
+```
