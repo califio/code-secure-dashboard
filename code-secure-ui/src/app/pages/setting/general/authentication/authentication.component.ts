@@ -48,7 +48,8 @@ export class AuthenticationComponent implements OnInit {
       authority: new FormField(''),
       clientId: new FormField(''),
       clientSecret: new FormField(''),
-      enable: new FormField(false)
+      enable: new FormField(false),
+      schemeOverride: new FormField('')
     }),
     allowRegister: new FormField(false),
     whiteListEmails: new FormField('')

@@ -8,4 +8,5 @@ export interface OpenIdConnectSetting {
   clientSecret?: string | null;
   displayName?: string | null;
   enable?: boolean;
+  schemeOverride?: string | null;
 }

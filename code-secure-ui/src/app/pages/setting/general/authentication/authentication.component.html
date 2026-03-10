@@ -52,6 +52,13 @@
                       [formControl]="form.controls.openIdConnectSetting.controls.clientSecret!"></p-password>
         </div>
       </div>
+      <div class="flex flex-row gap-2 w-full items-center">
+        <div class="w-36 md:w-48">Redirect URI Scheme</div>
+        <div class="w-full max-w-md">
+          <input pInputText class="w-full" placeholder="e.g. https"
+                 [formControl]="form.controls.openIdConnectSetting.controls.schemeOverride!">
+        </div>
+      </div>
     }
   </div>
   <p-button severity="primary" label="Update"
