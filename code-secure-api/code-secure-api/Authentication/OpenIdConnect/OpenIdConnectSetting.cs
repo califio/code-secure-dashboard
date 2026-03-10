@@ -11,6 +11,11 @@ public class OpenIdConnectSetting
     public string ClientId { get; set; } = string.Empty;
     public string ClientSecret { get; set; } = string.Empty;
     public bool Enable { get; set; } = false;
+    /// <summary>
+    /// Override the scheme used in the redirect_uri sent to the OIDC provider (e.g. "https").
+    /// Useful when running behind a reverse proxy that terminates TLS.
+    /// </summary>
+    public string SchemeOverride { get; set; } = string.Empty;
 
     public OpenIdConnectOptions ToOpenIdConnectOptions()
     {

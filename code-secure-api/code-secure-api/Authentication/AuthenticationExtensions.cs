@@ -1,12 +1,14 @@
 using Aguacongas.AspNetCore.Authentication;
 using CodeSecure.Application;
 using CodeSecure.Authentication.Jwt;
+using CodeSecure.Authentication.OpenIdConnect;
 using CodeSecure.Core.Entity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CodeSecure.Authentication;
@@ -61,6 +63,7 @@ public static class AuthenticationExtensions
             .AddDynamic()
             .AddEntityFrameworkStore<AppDbContext>();
         dynamicBuilder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, _ => { });
+        services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectSchemeOverrideOptions>();
         return services;
     }
 
